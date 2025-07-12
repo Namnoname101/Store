@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Lịch Làm Việc - Sếp Tổng</title>
+    <!-- Chúng ta sẽ tạo một file css riêng cho trang này để không bị rối -->
+    <link rel="stylesheet" href="septong-style.css"> 
+</head>
+<body>
+    <h1>Lịch Làm Việc Tuần</h1>
+
+    <table class="schedule-table">
+        <!-- Phần tiêu đề các ngày trong tuần -->
+        <thead>
+            <tr>
+                <th>Thứ Hai</th>
+                <th>Thứ Ba</th>
+                <th>Thứ Tư</th>
+                <th>Thứ Năm</th>
+                <th>Thứ Sáu</th>
+                <th>Thứ Bảy</th>
+                <th>Chủ Nhật</th>
+            </tr>
+        </thead>
+        <!-- Phần nội dung lịch làm -->
+        <tbody>
+            <!-- --- Hàng của PHA CHẾ --- -->
+            <tr class="pha-che">
+                <td data-bophan='pha-che' data-ngay='thu-hai' data-ca='sang-pc'></td>
+                <td data-bophan="pha-che" data-ngay="thu-ba" data-ca="sang-pc"></td>
+                <td data-bophan="pha-che" data-ngay="thu-tu" data-ca="sang-pc"></td>
+                <td data-bophan="pha-che" data-ngay="thu-nam" data-ca="sang-pc"></td>
+                <td data-bophan="pha-che" data-ngay="thu-sau" data-ca="sang-pc"></td>
+                <td data-bophan="pha-che" data-ngay="thu-bay" data-ca="sang-pc"></td>
+                <td data-bophan="pha-che" data-ngay="chu-nhat" data-ca="sang-pc"></td>
+                <th class="thongtinca">CA SÁNG 6H30 - 12H</th>
+            </tr>
+            <tr class="pha-che">
+                <td data-bophan="pha-che" data-ngay="thu-hai" data-ca="chieu-pc"></td>
+                <td data-bophan="pha-che" data-ngay="thu-ba" data-ca="chieu-pc"></td>
+                <td data-bophan="pha-che" data-ngay="thu-tu" data-ca="chieu-pc"></td>
+                <td data-bophan="pha-che" data-ngay="thu-nam" data-ca="chieu-pc"></td>
+                <td data-bophan="pha-che" data-ngay="thu-sau" data-ca="chieu-pc"></td>
+                <td data-bophan="pha-che" data-ngay="thu-bay" data-ca="chieu-pc"></td>
+                <td data-bophan="pha-che" data-ngay="chu-nhat" data-ca="chieu-pc"></td>
+                <th class="thongtinca">CA CHIỀU 12H - 18H</th>
+            </tr>
+            <tr class="pha-che">
+                <td data-bophan="pha-che" data-ngay="thu-hai" data-ca="toi-pc"></td>
+                <td data-bophan="pha-che" data-ngay="thu-ba" data-ca="toi-pc"></td>
+                <td data-bophan="pha-che" data-ngay="thu-tu" data-ca="toi-pc"></td>
+                <td data-bophan="pha-che" data-ngay="thu-nam" data-ca="toi-pc"></td>
+                <td data-bophan="pha-che" data-ngay="thu-sau" data-ca="toi-pc"></td>
+                <td data-bophan="pha-che" data-ngay="thu-bay" data-ca="toi-pc"></td>
+                <td data-bophan="pha-che" data-ngay="chu-nhat" data-ca="toi-pc"></td>
+                <th class="thongtinca">CA TỐI 18H - 22H</th>
+            </tr>
+            <!-- ======== ĐOẠN CODE MỚI BẠN CẦN THÊM VÀO ĐÂY ======== -->
+            <tr class="divider">
+                <td colspan="7">PHỤC VỤ</td>
+            </tr>
+            <!-- ======================================================= -->
+            <!-- --- Hàng của PHỤC VỤ --- -->
+            <tr class="phuc-vu">
+                <td data-bophan="phuc-vu" data-ngay="thu-hai" data-ca="sang-pv"></td>
+                <td data-bophan="phuc-vu" data-ngay="thu-ba" data-ca="sang-pv"></td>
+                <td data-bophan="phuc-vu" data-ngay="thu-tu" data-ca="sang-pv"></td>
+                <td data-bophan="phuc-vu" data-ngay="thu-nam" data-ca="sang-pv"></td>
+                <td data-bophan="phuc-vu" data-ngay="thu-sau" data-ca="sang-pv"></td>
+                <td data-bophan="phuc-vu" data-ngay="thu-bay" data-ca="sang-pv"></td>
+                <td data-bophan="phuc-vu" data-ngay="chu-nhat" data-ca="sang-pv"></td>
+                <th class="thongtinca">CA SÁNG 6H30 - 12H</th>
+            </tr>
+            <tr class="phuc-vu">
+                <td data-bophan="phuc-vu" data-ngay="thu-hai" data-ca="toi-pv"></td>
+                <td data-bophan="phuc-vu" data-ngay="thu-ba" data-ca="toi-pv"></td>
+                <td data-bophan="phuc-vu" data-ngay="thu-tu" data-ca="toi-pv"></td>
+                <td data-bophan="phuc-vu" data-ngay="thu-nam" data-ca="toi-pv"></td>
+                <td data-bophan="phuc-vu" data-ngay="thu-sau" data-ca="toi-pv"></td>
+                <td data-bophan="phuc-vu" data-ngay="thu-bay" data-ca="toi-pv"></td>
+                <td data-bophan="phuc-vu" data-ngay="chu-nhat" data-ca="toi-pv"></td>
+                <th class="thongtinca">CA TỐI 18H - 22H</th>
+            </tr>
+        </tbody>
+    </table>
+    <!-- <a href="SepTong.html" class="edit">Chỉnh sửa</a> -->
+    <button id="sapxepca" class="sapxep">Chia đều ca</button>
+    <button id="reset-button" class="reset">Clear</button>
+    <button class="submit-button">Xuất Lịch Làm</button>
+    <a href="index.html" class="home">Trang chủ</a>
+    <script src="septong-interactive.js" defer></script>
+</body>
+</html>

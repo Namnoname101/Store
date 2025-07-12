@@ -1,0 +1,95 @@
+/* Xóa bỏ khoảng trắng mặc định của trình duyệt */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif; /* Đặt một phông chữ chung cho đẹp */
+    
+    /* --- CÁC THUỘC TÍNH CHO HÌNH NỀN --- */
+    background-color: #2d2d25; 
+    /* Làm cho ảnh nền cố định khi cuộn trang, tạo hiệu ứng Parallax đơn giản */
+    background-attachment: fixed; 
+
+   /* Dùng Flexbox để căn giữa "món đồ" bên trong */
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center;     /* Căn giữa theo chiều dọc */
+}
+/* --- Bước 2: Thiết lập cho "món đồ" <img> --- */
+.centered-logo {
+    /* Đặt kích thước tối đa để nó không bị quá to trên màn hình lớn */
+    max-width: 90%; 
+    
+    /* Đặt một chiều rộng cụ thể hơn nếu muốn */
+    /* ví dụ: width: 500px; */
+
+    /* Đảm bảo chiều cao tự động theo tỷ lệ để không bị méo ảnh */
+    height: auto; 
+}
+
+/* === PHÉP THUẬT CĂN GIỮA TOÀN MÀN HÌNH === */
+/* Áp dụng cho chính cái hộp <body> */
+html, body {
+    height: 100%; /* Bước 1: Đảm bảo cả html và body cao 100% màn hình */
+}
+
+body {
+    /* Bước 2: Kích hoạt Flexbox */
+    display: flex;
+
+    /* Bước 3: Sắp xếp các món đồ theo chiều dọc */
+    flex-direction: column;
+
+    /* Bước 4: Căn giữa theo chiều dọc */
+    justify-content: center;
+
+    /* Bước 5: Căn giữa theo chiều ngang */
+    align-items: center;
+
+    /* (Tùy chọn) Thêm một khoảng cách giữa tiêu đề và khối nút */
+    gap: 40px; 
+}
+
+/* --- Style cho các thành phần còn lại (giữ nguyên hoặc tùy chỉnh) --- */
+
+h1 {
+    font-size: 2.5em; /* Làm chữ to hơn một chút */
+    color: #ffffff;
+}
+
+/* Style cho HỘP LỚN chứa các nút */
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Style cho HỘP NHỎ chứa 2 nút dưới */
+.button-row {
+    display: flex;
+    gap: 20px;
+}
+
+/* Style chung cho các nút bấm */
+.btn {
+    display: inline-block;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px; /* Bo góc nhiều hơn cho mềm mại */
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s; /* Thêm hiệu ứng đẹp mắt */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+    transform: translateY(-2px); /* Nút hơi nhô lên khi di chuột vào */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Màu riêng cho từng nút */
+.SepTong { background-color: #007bff; }
+.Phache { background-color: #28a745; }
+.Phucvu { background-color: #ffc107; color: #333; } /* Chữ đen cho nút vàng dễ đọc hơn */

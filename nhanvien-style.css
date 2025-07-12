@@ -1,0 +1,70 @@
+/*kiểu tổng thể cho trang*/
+body{
+    font-family: Arial, sans-serif;
+    text-align:center;
+    padding:20px;
+}
+
+.table-nhanvien{
+    width: 100%;;
+    border-collapse:     collapse; /* Gộp các đường viền lại cho đẹp */
+    margin-top: 20px;
+}
+/*kiểu cho tất cả các ô (cả tiêu đề và dữ liệu)*/
+th, td{
+    border: 2px solid black; /* Đường viền đen */
+    height: 60px;            /* Chiều cao của ô */
+    text-align: center;      /* Căn giữa chữ trong ô */
+    vertical-align: middle;
+    font-weight: bold;
+    cursor: pointer; /* Thêm con trỏ tay khi hover */
+    color: white;
+}
+/* Tiêu đề các ngày trong tuần */
+th {
+    background-color: #8998a6; /* Màu xám nhạt */
+}
+
+/* Ca Pha Chế */
+.pha-che .ca-sang { background-color: #ffffff; color: black; } /* Vàng */
+.pha-che .ca-chieu { background-color: #ffffff; } /* Đỏ */
+.pha-che .ca-toi { background-color: #ffffff; } /* Cam */
+.pha-che .thongtinca {
+    background-color: #8998a6; /* Màu xám nhạt */
+    color: black; /* Chữ đen cho dễ đọc */
+}
+
+/* Ca Phục Vụ */
+.phuc-vu .ca-sang-pv { background-color: #808080; } /* Xám */
+.phuc-vu .ca-chieu-trong { background-color: #006400; } /* Xanh lá đậm - ô trống */
+.phuc-vu .ca-toi-pv { background-color: #800000; } /* Đỏ đậm/Maroon */
+.home {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    background-color: #007bff; /* Màu xanh dương */
+    transition: opacity 0.3s;
+}
+/* === STYLE CHO Ô KHI ĐƯỢC CHỌN === */
+td.selected {
+    /* Cách 1: Dùng filter để làm màu nền tối đi một chút, cách này hay vì nó hoạt động với mọi màu nền */
+    filter: brightness(85%); 
+
+    /* Cách 2 (Tùy chọn): Thêm một viền trong để tạo cảm giác "lõm vào" */
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+}
+/* --- Style cho nút bấm --- */
+.submit-button {
+    margin-top: 30px;
+    padding: 12px 25px;
+    font-size: 18px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    opacity: 0.9;
+}
