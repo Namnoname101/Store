@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const tableBody = document.querySelector('.schedule-table tbody');
     const resetButton = document.getElementById('reset-button'); // Đảm bảo ID nút reset là 'reset-schedule-button'
     const assignButton = document.getElementById('sapxepca'); // Đảm bảo ID nút chia ca là 'auto-assign-button'
+    const exportButton = document.getElementById('submit-button');
 
     //================================================================
     // HÀM RENDER "SIÊU CẤP" - CÓ THỂ NHẬN CHỈ THỊ
@@ -40,8 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Nếu có "chỉ thị" (từ nút Chia Ca), hãy dùng tên người được giao
                     personToDisplay = assignments[key];
                 } else {
-                    // Mặc định, lấy người đăng ký đầu tiên
-                    personToDisplay = registrants[0].ten;
+                    // Mặc định, lấy tất cả người đăng ký, phân cách bằng dấu gạch ngang
+                    personToDisplay = registrants.map(r => r.ten).join(' - ');
                 }
 
                 // 2. Xây dựng HTML dựa trên quyết định trên
@@ -164,6 +165,45 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // --- 5. SỰ KIỆN CLICK NÚT XUẤT LỊCH (PHIÊN BẢN NÂNG CẤP) ---
+if (exportButton) {
+    exportButton.addEventListener('click', function() {
+        const table = document.querySelector('.schedule-table');
+        if (!table) {
+            alert('Không tìm thấy bảng lịch làm!');
+            return;
+        }
+
+        // TẠM ẨN CÁC PHẦN TỬ KHÔNG MONG MUỐN
+        const arrows = table.querySelectorAll('.dropdown-arrow');
+        arrows.forEach(arrow => arrow.classList.add('hide-for-export'));
+        
+        const options = {
+            scale: 2,
+            useCORS: true,
+            // Thêm tùy chọn này để đảm bảo ảnh nền cũng được vẽ (nếu có)
+            backgroundColor: 'white'
+        };
+
+        html2canvas(table, options).then(canvas => {
+            // "Chụp ảnh" xong, tạo link và tải về
+            const link = document.createElement('a');
+            link.download = 'lich-lam-viec.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+
+        }).catch(error => {
+            // Xử lý nếu có lỗi xảy ra
+            console.error("Lỗi khi xuất ảnh:", error);
+            alert("Đã có lỗi xảy ra trong quá trình xuất ảnh. Vui lòng thử lại.");
+
+        }).finally(() => {
+            // LUÔN LUÔN HIỆN LẠI CÁC MŨI TÊN
+            // .finally() sẽ được gọi dù cho quá trình .then() thành công hay .catch() thất bại
+            arrows.forEach(arrow => arrow.classList.remove('hide-for-export'));
+        });
+    });
+}
     // --- CHẠY LẦN ĐẦU KHI TẢI TRANG ---
     renderSchedule(); // Gọi không có tham số để hiển thị mặc định
 });
