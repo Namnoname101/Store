@@ -49,12 +49,36 @@ th {
     transition: opacity 0.3s;
 }
 /* === STYLE CHO Ô KHI ĐƯỢC CHỌN === */
+/* === STYLE CHO Ô KHI ĐƯỢC CHỌN (Kiểu B: Thêm icon ✓) === */
 td.selected {
-    /* Cách 1: Dùng filter để làm màu nền tối đi một chút, cách này hay vì nó hoạt động với mọi màu nền */
-    filter: brightness(85%); 
+    /* Vẫn làm tối nền đi một chút */
+    filter: brightness(90%);
+    position: relative; /* Bắt buộc phải có để định vị icon */
+}
 
-    /* Cách 2 (Tùy chọn): Thêm một viền trong để tạo cảm giác "lõm vào" */
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+/* Vẽ icon checkmark bằng CSS */
+td.selected::after {
+    content: '$_$'; /* Ký tự checkmark */
+    font-size: 24px;
+    font-weight: bold;
+    color: #8BC34A; /* Màu của dấu tick */
+    
+    /* Vị trí của dấu tick */
+    position: absolute;
+    top: 5px;
+    right: 8px;
+
+    /* Thêm bóng đổ cho dấu tick để nổi bật trên mọi nền */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+
+    /* Hiệu ứng xuất hiện */
+    animation: fadeIn 0.3s;
+}
+
+/* Định nghĩa animation cho hiệu ứng xuất hiện */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
 }
 /* --- Style cho nút bấm --- */
 .submit-button {

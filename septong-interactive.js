@@ -121,49 +121,65 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- 4. SỰ KIỆN CLICK NÚT CHIA CA ---
-    if (assignButton) {
-        assignButton.addEventListener('click', function() {
-            const allRegistrations = JSON.parse(localStorage.getItem('danhSachDangKy')) || [];
-            if (allRegistrations.length === 0) {
-                alert("Không có dữ liệu đăng ký nào để chia ca!");
-                return;
-            }
-            // --- THUẬT TOÁN CHIA ĐỀU (giữ nguyên) ---
-            const shiftCounts = {};
-            allRegistrations.forEach(reg => {
-                if (!shiftCounts.hasOwnProperty(reg.ten)) {
-                    shiftCounts[reg.ten] = 0;
-                }
-            });
-            const scheduleData = {};
-            allRegistrations.forEach(reg => {
-                if (reg && reg.boPhan && reg.ngay && reg.ca) {
-                    const key = `${reg.boPhan}|${reg.ngay}|${reg.ca}`;
-                    if (!scheduleData[key]) scheduleData[key] = [];
-                    scheduleData[key].push(reg);
-                }
-            });
-            const finalSchedule = {};
-            for (const key in scheduleData) {
-                const candidates = scheduleData[key];
-                candidates.sort((a, b) => {
-                    const countDiff = shiftCounts[a.ten] - shiftCounts[b.ten];
-                    if (countDiff !== 0) return countDiff;
-                    return a.timestamp - b.timestamp;
-                });
-                const winner = candidates[0];
-                finalSchedule[key] = winner.ten;
-                shiftCounts[winner.ten]++;
-            }
+    // --- 4. SỰ KIỆN CLICK NÚT CHIA CA (THUẬT TOÁN "BẢO HIỂM") ---
+// --- 4. SỰ KIỆN CLICK NÚT CHIA CA (THUẬT TOÁN "ƯU TIÊN TỐI ĐA") ---
+if (assignButton) {
+    assignButton.addEventListener('click', function() {
+        const allRegistrations = JSON.parse(localStorage.getItem('danhSachDangKy')) || [];
+        if (allRegistrations.length === 0) {
+            alert("Không có dữ liệu đăng ký nào để chia ca!");
+            return;
+        }
 
-            // ---- THAY ĐỔI QUAN TRỌNG NHẤT LÀ Ở ĐÂY ----
-            // Gọi lại "siêu" hàm render và truyền kết quả chia ca vào làm "chỉ thị"
-            renderSchedule(finalSchedule);
-            
-            console.log("Phân chia ca hoàn tất. Giao diện đã được cập nhật.");
+        // --- BƯỚC 1: CHUẨN BỊ DỮ LIỆU ---
+        const finalSchedule = {};
+
+        // 1.1. Đếm tổng số ca mỗi người đã ĐĂNG KÝ
+        const totalRegisteredShifts = {};
+        allRegistrations.forEach(reg => {
+            totalRegisteredShifts[reg.ten] = (totalRegisteredShifts[reg.ten] || 0) + 1;
         });
-    }
+
+        // 1.2. Lấy danh sách nhân viên và sắp xếp họ theo thứ tự ưu tiên (người ĐĂNG KÝ ÍT CA NHẤT lên đầu)
+        const staffNamesSortedByRarity = Object.keys(totalRegisteredShifts).sort((a, b) => {
+            return totalRegisteredShifts[a] - totalRegisteredShifts[b];
+        });
+        console.log("Thứ tự ưu tiên xử lý:", staffNamesSortedByRarity);
+
+
+        // --- BƯỚC 2: BẮT ĐẦU VÒNG LẶP ƯU TIÊN ---
+        // Duyệt qua từng nhân viên THEO THỨ TỰ ƯU TIÊN
+        staffNamesSortedByRarity.forEach(name => {
+            console.log(`--- Đang xét duyệt cho nhân viên ưu tiên: ${name}`);
+
+            // Lấy tất cả các ca mà người này đã đăng ký
+            const registeredShiftsForThisPerson = allRegistrations
+                .filter(reg => reg.ten === name)
+                .map(reg => `${reg.boPhan}|${reg.ngay}|${reg.ca}`);
+            
+            // Duyệt qua từng ca đã đăng ký của họ
+            registeredShiftsForThisPerson.forEach(shiftKey => {
+                // Nếu ca này vẫn còn trống...
+                if (!finalSchedule[shiftKey]) {
+                    // ... Giao ngay cho họ!
+                    finalSchedule[shiftKey] = name;
+                    console.log(`   -> Đã xếp cho ${name} vào ca còn trống: ${shiftKey}`);
+                }
+            });
+        });
+
+        
+        // BƯỚC 3: HIỂN THỊ KẾT QUẢ
+        renderSchedule(finalSchedule);
+        
+        const assignedShiftCounts = {};
+        Object.values(finalSchedule).forEach(name => {
+            assignedShiftCounts[name] = (assignedShiftCounts[name] || 0) + 1;
+        });
+        console.log("Phân chia ca hoàn tất. Kết quả cuối cùng:", finalSchedule);
+        console.log("Tổng số ca được giao của mỗi người:", assignedShiftCounts);
+    });
+}
 
     // --- 5. SỰ KIỆN CLICK NÚT XUẤT LỊCH (PHIÊN BẢN NÂNG CẤP) ---
 if (exportButton) {
