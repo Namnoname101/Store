@@ -18,4 +18,5 @@ All interfaces align with spec. Pre-flight clean. Ready for Task 1.
 - Task 3: complete (`05e764b`) — VietQR generation, memo parsing, and bank metadata verified and approved.
 - Task 4: complete (`80eda4a6bec87c12a7d03211b1b85d23b78dced4`) — Order creation, VietQR binding, 15m expiration, and status API verified and approved.
 - Task 5: complete (`10800df9d7d0f6f35543ecc62fdce78c36640b2c`) — Idempotent automated payment webhook handler (PayOS / SePay) verified and approved.
+- Task 6: complete (`3eee31ccd8d9f78eeacf7cd096b39ac5626210f7`) — Storefront UI, product catalog, categories, search, and detail page verified and approved.
 - Task 5: complete (`9e0f05c`) — Automated payment webhook handler (PayOS / SePay), idempotency guard, stock commit, and webhook API route verified.
