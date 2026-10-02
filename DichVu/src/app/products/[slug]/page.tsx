@@ -24,7 +24,8 @@ interface ProductPageProps {
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
-  const product = await getProductBySlug(params.slug);
+  const { slug } = await Promise.resolve(params);
+  const product = await getProductBySlug(slug);
   if (!product) {
     return {
       title: "Không tìm thấy sản phẩm - DigiStore.vn",
@@ -38,7 +39,8 @@ export async function generateMetadata({
 }
 
 export default async function ProductDetailPage({ params }: ProductPageProps) {
-  const product = await getProductBySlug(params.slug);
+  const { slug } = await Promise.resolve(params);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();

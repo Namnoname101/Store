@@ -1,5 +1,5 @@
 import { prisma, OrderStatus } from "@/lib/prisma";
-import { commitReservedItemsToSold } from "@/services/inventory.service";
+import { commitReservedItemsToSold, releaseExpiredReservations } from "@/services/inventory.service";
 import { parseOrderCodeFromMemo } from "@/lib/vietqr";
 
 export interface BankTransactionPayload {
@@ -204,7 +204,17 @@ export async function handleIncomingTransaction(
     };
   }
 
-  // 5. State Transition (Atomic Transaction for PENDING orders)
+  // 5. Expiration Guard for PENDING orders
+  if (order.status === OrderStatus.PENDING && new Date() > order.expiresAt) {
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { status: OrderStatus.EXPIRED },
+    });
+    await releaseExpiredReservations();
+    order.status = OrderStatus.EXPIRED;
+  }
+
+  // 6. State Transition (Atomic Transaction for PENDING orders)
   if (order.status === OrderStatus.PENDING) {
     await prisma.$transaction(
       async (tx) => {
