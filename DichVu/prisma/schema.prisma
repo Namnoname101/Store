@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// In SQLite, enums are represented as strings with defaults.
+// TypeScript enum helpers are exported from src/lib/prisma.ts.
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String?
+  name         String?
+  role         String    @default("USER") // Role: USER, ADMIN
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  orders       Order[]
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+}
+
+model Product {
+  id            String        @id @default(uuid())
+  title         String
+  slug          String        @unique
+  description   String
+  price         Int           // VND
+  originalPrice Int?          // VND
+  type          String        @default("LICENSE_KEY") // ProductType: LICENSE_KEY, ACCOUNT, COURSE_LINK
+  thumbnailUrl  String?
+  isActive      Boolean       @default(true)
+  categoryId    String
+  category      Category      @relation(fields: [categoryId], references: [id])
+  items         ProductItem[]
+  orderItems    OrderItem[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model ProductItem {
+  id            String      @id @default(uuid())
+  productId     String
+  product       Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  secretContent String      // Key, credentials (email|pass), or link
+  status        String      @default("AVAILABLE") // ItemStatus: AVAILABLE, RESERVED, SOLD
+  orderId       String?
+  order         Order?      @relation(fields: [orderId], references: [id])
+  reservedUntil DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Order {
+  id             String               @id @default(uuid())
+  orderCode      String               @unique // e.g. ORD849201
+  customerEmail  String
+  userId         String?
+  user           User?                @relation(fields: [userId], references: [id])
+  totalAmount    Int                  // VND
+  status         String               @default("PENDING") // OrderStatus: PENDING, PAID, CANCELLED, EXPIRED
+  paymentMethod  String               @default("VIETQR")
+  expiresAt      DateTime
+  paidAt         DateTime?
+  orderItems     OrderItem[]
+  deliveredItems ProductItem[]
+  transactions   PaymentTransaction[]
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  price     Int
+  quantity  Int
+}
+
+model PaymentTransaction {
+  id            String   @id @default(uuid())
+  orderId       String?
+  order         Order?   @relation(fields: [orderId], references: [id])
+  transactionId String   @unique // Mã giao dịch ngân hàng / gateway
+  amount        Int
+  bankCode      String?
+  content       String?
+  rawPayload    String?
+  createdAt     DateTime @default(now())
+}
