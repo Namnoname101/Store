@@ -11,3 +11,7 @@
 | Task 2 & 8 | Inventory Models & Bulk Importer | Clean: Importer creates `ProductItem` records with status `AVAILABLE` |
 
 All interfaces align with spec. Pre-flight clean. Ready for Task 1.
+
+## Task Progress
+- Task 1: complete (`ca68658dfebdef888b893a6eb7c832050f8e638b`) — Scaffolding, Prisma Schema & DB Tests verified and approved.
+
