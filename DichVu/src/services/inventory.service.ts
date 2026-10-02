@@ -147,39 +147,48 @@ export async function releaseExpiredReservations(): Promise<number> {
  * @returns Array of sold ProductItem records
  */
 export async function commitReservedItemsToSold(
-  orderId: string
+  orderId: string,
+  txClient?: any
 ): Promise<ProductItem[]> {
+  const execute = async (tx: any) => {
+    const reservedItems = await tx.productItem.findMany({
+      where: {
+        orderId,
+        status: ItemStatus.RESERVED,
+      },
+    });
+
+    if (reservedItems.length === 0) {
+      return [];
+    }
+
+    const itemIds = reservedItems.map((item: any) => item.id);
+
+    await tx.productItem.updateMany({
+      where: {
+        id: { in: itemIds },
+        status: ItemStatus.RESERVED,
+      },
+      data: {
+        status: ItemStatus.SOLD,
+        reservedUntil: null,
+      },
+    });
+
+    return await tx.productItem.findMany({
+      where: {
+        id: { in: itemIds },
+      },
+    });
+  };
+
+  if (txClient) {
+    return await execute(txClient);
+  }
+
   return await withRetry(async () => {
     return await prisma.$transaction(async (tx) => {
-      const reservedItems = await tx.productItem.findMany({
-        where: {
-          orderId,
-          status: ItemStatus.RESERVED,
-        },
-      });
-
-      if (reservedItems.length === 0) {
-        return [];
-      }
-
-      const itemIds = reservedItems.map((item) => item.id);
-
-      await tx.productItem.updateMany({
-        where: {
-          id: { in: itemIds },
-          status: ItemStatus.RESERVED,
-        },
-        data: {
-          status: ItemStatus.SOLD,
-          reservedUntil: null,
-        },
-      });
-
-      return await tx.productItem.findMany({
-        where: {
-          id: { in: itemIds },
-        },
-      });
+      return await execute(tx);
     });
   });
 }
