@@ -15,4 +15,5 @@ All interfaces align with spec. Pre-flight clean. Ready for Task 1.
 ## Task Progress
 - Task 1: complete (`ca68658dfebdef888b893a6eb7c832050f8e638b`) — Scaffolding, Prisma Schema & DB Tests verified and approved.
 - Task 2: complete (`7f94063258f6086cc67d3bec8e7421d642d46f63`) — Inventory reservation, expiration release, sold commit & concurrency protection verified and approved.
+- Task 3: complete (`05e764b`) — VietQR generation, memo parsing, and bank metadata verified and approved.
 

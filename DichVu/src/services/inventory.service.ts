@@ -48,56 +48,65 @@ export async function reserveItemsForOrder(
   productId: string,
   quantity: number,
   orderId: string,
-  durationMinutes: number = 15
+  durationMinutes: number = 15,
+  txClient?: any
 ): Promise<ProductItem[]> {
   if (quantity <= 0) {
     throw new Error("Insufficient stock available");
   }
 
+  const execute = async (tx: any) => {
+    // Query top available items
+    const availableItems = await tx.productItem.findMany({
+      where: {
+        productId,
+        status: ItemStatus.AVAILABLE,
+      },
+      take: quantity,
+      orderBy: { createdAt: "asc" },
+    });
+
+    if (availableItems.length < quantity) {
+      throw new Error("Insufficient stock available");
+    }
+
+    const itemIds = availableItems.map((item: any) => item.id);
+    const reservedUntil = new Date(Date.now() + durationMinutes * 60 * 1000);
+
+    // Atomic update with status guard to protect against concurrent updates
+    const updateResult = await tx.productItem.updateMany({
+      where: {
+        id: { in: itemIds },
+        status: ItemStatus.AVAILABLE,
+      },
+      data: {
+        status: ItemStatus.RESERVED,
+        orderId,
+        reservedUntil,
+      },
+    });
+
+    if (updateResult.count < quantity) {
+      throw new Error("Insufficient stock available");
+    }
+
+    return await tx.productItem.findMany({
+      where: {
+        id: { in: itemIds },
+        orderId,
+        status: ItemStatus.RESERVED,
+      },
+    });
+  };
+
+  if (txClient) {
+    return await execute(txClient);
+  }
+
   return await withRetry(async () => {
     return await prisma.$transaction(
       async (tx) => {
-        // Query top available items
-        const availableItems = await tx.productItem.findMany({
-          where: {
-            productId,
-            status: ItemStatus.AVAILABLE,
-          },
-          take: quantity,
-          orderBy: { createdAt: "asc" },
-        });
-
-        if (availableItems.length < quantity) {
-          throw new Error("Insufficient stock available");
-        }
-
-        const itemIds = availableItems.map((item) => item.id);
-        const reservedUntil = new Date(Date.now() + durationMinutes * 60 * 1000);
-
-        // Atomic update with status guard to protect against concurrent updates
-        const updateResult = await tx.productItem.updateMany({
-          where: {
-            id: { in: itemIds },
-            status: ItemStatus.AVAILABLE,
-          },
-          data: {
-            status: ItemStatus.RESERVED,
-            orderId,
-            reservedUntil,
-          },
-        });
-
-        if (updateResult.count < quantity) {
-          throw new Error("Insufficient stock available");
-        }
-
-        return await tx.productItem.findMany({
-          where: {
-            id: { in: itemIds },
-            orderId,
-            status: ItemStatus.RESERVED,
-          },
-        });
+        return await execute(tx);
       },
       {
         maxWait: 5000,
