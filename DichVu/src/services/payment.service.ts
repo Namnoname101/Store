@@ -64,12 +64,15 @@ export function normalizeTransactionPayload(
   }
 
   // SePay format or standard format
-  const txId =
+  const rawTxId =
     raw.transactionId ??
     raw.id ??
     raw.referenceCode ??
     raw.referenceNumber ??
     raw.reference;
+
+  const txId =
+    rawTxId !== undefined && rawTxId !== null ? String(rawTxId).trim() : "";
 
   const rawAmt =
     raw.amount ??
@@ -79,10 +82,10 @@ export function normalizeTransactionPayload(
   const amount =
     typeof rawAmt === "string" ? parseFloat(rawAmt) : Number(rawAmt);
   const content =
-    raw.content ??
-    raw.description ??
-    raw.transactionContent ??
-    raw.orderContent ??
+    (raw.content && String(raw.content).trim() !== "" ? String(raw.content).trim() : null) ||
+    (raw.description && String(raw.description).trim() !== "" ? String(raw.description).trim() : null) ||
+    (raw.transactionContent && String(raw.transactionContent).trim() !== "" ? String(raw.transactionContent).trim() : null) ||
+    (raw.orderContent && String(raw.orderContent).trim() !== "" ? String(raw.orderContent).trim() : null) ||
     "";
   const bankCode = raw.bankCode ?? raw.gateway;
 
@@ -90,13 +93,12 @@ export function normalizeTransactionPayload(
     txId &&
     typeof amount === "number" &&
     !isNaN(amount) &&
-    amount > 0 &&
-    content
+    amount >= 0
   ) {
     return {
-      transactionId: String(txId),
+      transactionId: txId,
       amount,
-      content: String(content),
+      content: String(content || ""),
       bankCode: bankCode ? String(bankCode) : undefined,
       rawPayload: raw,
     };

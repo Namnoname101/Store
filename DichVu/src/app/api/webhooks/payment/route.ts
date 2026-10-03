@@ -4,6 +4,13 @@ import {
   normalizeTransactionPayload,
 } from "@/services/payment.service";
 
+export async function GET() {
+  return NextResponse.json(
+    { success: true, message: "Payment webhook endpoint is active" },
+    { status: 200 }
+  );
+}
+
 export async function POST(request: Request) {
   // 1. Webhook Secret Authentication Check (if configured and not placeholder)
   const webhookSecret = process.env.PAYMENT_WEBHOOK_SECRET;
@@ -44,10 +51,20 @@ export async function POST(request: Request) {
     }
   }
 
-  // 2. Body parsing
+  // 2. Flexible Body parsing (JSON or Form Data)
   let body: any;
+  const contentType = request.headers.get("content-type") || "";
+
   try {
-    body = await request.json();
+    if (
+      contentType.includes("application/x-www-form-urlencoded") ||
+      contentType.includes("multipart/form-data")
+    ) {
+      const formData = await request.formData();
+      body = Object.fromEntries(formData.entries());
+    } else {
+      body = await request.json();
+    }
   } catch (error) {
     return NextResponse.json(
       { error: "Invalid JSON payload" },
@@ -55,13 +72,15 @@ export async function POST(request: Request) {
     );
   }
 
+  console.log("[Webhook Received Body]:", JSON.stringify(body));
+
   // 3. Normalization & validation
   const normalizedPayload = normalizeTransactionPayload(body);
   if (!normalizedPayload) {
     return NextResponse.json(
       {
         error:
-          "Malformed payload: transactionId, positive amount, and content are required",
+          "Malformed payload: transactionId and positive amount are required",
       },
       { status: 400 }
     );
@@ -75,8 +94,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: result.error }, { status: 400 });
     }
 
-    return NextResponse.json(result, { status: 200 });
+    // Always respond with HTTP 200 and success: true for gateways
+    return NextResponse.json(
+      {
+        success: true,
+        orderCode: result.orderCode,
+        status: result.status,
+        isDuplicate: result.isDuplicate,
+        message: result.message || (result.success ? "Processed" : result.error),
+      },
+      { status: 200 }
+    );
   } catch (error: any) {
+    console.error("[Webhook Error]:", error);
     return NextResponse.json(
       { error: error?.message || "Internal server error" },
       { status: 500 }

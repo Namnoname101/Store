@@ -466,6 +466,33 @@ describe("Payment Service & Webhook Handler", () => {
       expect(data.orderCode).toBe(order.orderCode);
     });
 
+    it("handles SePay test webhook (Gửi thử) gracefully with 200 and success: true", async () => {
+      const req = new Request("http://localhost:3000/api/webhooks/payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: 92704,
+          gateway: "Vietcombank",
+          transactionDate: "2024-07-02 11:08:33",
+          accountNumber: "1017588888",
+          subAccount: "",
+          code: "SEVN63DC8E5C",
+          content: "",
+          transferType: "in",
+          description: "NGUYEN VAN A chuyen tien",
+          transferAmount: 5000000,
+          accumulated: 105000000,
+          referenceCode: "FT24012345678",
+        }),
+      });
+
+      const res = await paymentWebhookRoute(req);
+      expect(res.status).toBe(200);
+      const data = await res.json();
+      expect(data.success).toBe(true);
+    });
+
+
     it("handles PayOS webhook payload format", async () => {
       await seedStock(testProductId, ["PAY-KEY-PAYOS-1"]);
 
