@@ -124,6 +124,7 @@ describe("Automated Upstream Fulfillment Pipeline", () => {
         supplierPrice: 40000,
         markupType: MarkupType.PERCENTAGE,
         markupValue: 50,
+        supplierStock: 99,
         isAutoSync: false,
       },
     });

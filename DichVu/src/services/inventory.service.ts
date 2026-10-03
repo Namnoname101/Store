@@ -1,4 +1,4 @@
-import { prisma, ItemStatus } from "@/lib/prisma";
+import { prisma, ItemStatus, FulfillmentType } from "@/lib/prisma";
 import type { ProductItem } from "@prisma/client";
 
 /**
@@ -195,6 +195,7 @@ export async function commitReservedItemsToSold(
 
 /**
  * Gets the current available stock count for a product.
+ * Returns live supplier stock for dropship items, or available local inventory for stock items.
  *
  * @param productId The ID of the product
  * @returns Available stock count
@@ -202,6 +203,33 @@ export async function commitReservedItemsToSold(
 export async function getAvailableStockCount(
   productId: string
 ): Promise<number> {
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    select: {
+      fulfillmentType: true,
+      isActive: true,
+      supplierMapping: {
+        select: {
+          supplierStock: true,
+          supplier: {
+            select: { isActive: true },
+          },
+        },
+      },
+    },
+  });
+
+  if (!product || !product.isActive) {
+    return 0;
+  }
+
+  if (product.fulfillmentType === FulfillmentType.API_DROPSHIP) {
+    if (!product.supplierMapping || !product.supplierMapping.supplier?.isActive) {
+      return 0;
+    }
+    return Math.max(0, product.supplierMapping.supplierStock);
+  }
+
   return await prisma.productItem.count({
     where: {
       productId,

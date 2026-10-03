@@ -112,6 +112,7 @@ export async function syncProductFromSupplier(
       where: { id: mappingId },
       data: {
         supplierPrice: info.price,
+        supplierStock: Math.max(0, info.inStock),
         lastSyncAt: new Date(),
       },
     }),

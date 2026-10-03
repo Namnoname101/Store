@@ -108,6 +108,7 @@ model SupplierProductMapping {
   supplier            Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   supplierProductCode String   // Mã/ID sản phẩm bên sàn nguồn
   supplierPrice       Int      // Giá vốn (VND) cập nhật lần cuối
+  supplierStock       Int      @default(0) // Số lượng tồn kho sàn nguồn cập nhật lần cuối
   markupType          String   @default("PERCENTAGE") // MarkupType: PERCENTAGE, FIXED_AMOUNT
   markupValue         Float    // e.g. 20 (cho 20%) hoặc 15000 (cho +15.000đ)
   isAutoSync          Boolean  @default(true)
