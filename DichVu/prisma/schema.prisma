@@ -38,14 +38,16 @@ model Product {
   price         Int           // VND
   originalPrice Int?          // VND
   type          String        @default("LICENSE_KEY") // ProductType: LICENSE_KEY, ACCOUNT, COURSE_LINK
-  thumbnailUrl  String?
-  isActive      Boolean       @default(true)
-  categoryId    String
-  category      Category      @relation(fields: [categoryId], references: [id])
-  items         ProductItem[]
-  orderItems    OrderItem[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  thumbnailUrl    String?
+  isActive        Boolean                 @default(true)
+  categoryId      String
+  category        Category                @relation(fields: [categoryId], references: [id])
+  fulfillmentType String                  @default("LOCAL_STOCK") // FulfillmentType: LOCAL_STOCK, API_DROPSHIP
+  supplierMapping SupplierProductMapping?
+  items           ProductItem[]
+  orderItems      OrderItem[]
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
 }
 
 model ProductItem {
@@ -70,6 +72,10 @@ model Order {
   totalAmount    Int                  // VND
   status         String               @default("PENDING") // OrderStatus: PENDING, PAID, CANCELLED, EXPIRED
   paymentMethod  String               @default("VIETQR")
+  upstreamStatus String               @default("NOT_APPLICABLE") // UpstreamStatus: NOT_APPLICABLE, PENDING_UPSTREAM, COMPLETED, FAILED, REFUNDED
+  upstreamOrderId String?
+  upstreamError  String?
+  refundInfo     String?              // Bank account info for refunds
   expiresAt      DateTime
   paidAt         DateTime?
   orderItems     OrderItem[]
@@ -77,6 +83,37 @@ model Order {
   transactions   PaymentTransaction[]
   createdAt      DateTime             @default(now())
   updatedAt      DateTime             @updatedAt
+}
+
+model Supplier {
+  id             String                   @id @default(uuid())
+  name           String                   // e.g. "Taphoammo.net", "Trumthe.vn"
+  code           String                   @unique // e.g. "TAPHOAMMO"
+  type           String                   @default("CUSTOM_REST") // SupplierType: TAPHOAMMO, TRUMTHE, CUSTOM_REST
+  baseUrl        String
+  apiKey         String
+  apiSecret      String?
+  currentBalance Int                      @default(0) // Số dư tài khoản đại lý (VND)
+  isActive       Boolean                  @default(true)
+  mappings       SupplierProductMapping[]
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+}
+
+model SupplierProductMapping {
+  id                  String   @id @default(uuid())
+  productId           String   @unique
+  product             Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  supplierId          String
+  supplier            Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  supplierProductCode String   // Mã/ID sản phẩm bên sàn nguồn
+  supplierPrice       Int      // Giá vốn (VND) cập nhật lần cuối
+  markupType          String   @default("PERCENTAGE") // MarkupType: PERCENTAGE, FIXED_AMOUNT
+  markupValue         Float    // e.g. 20 (cho 20%) hoặc 15000 (cho +15.000đ)
+  isAutoSync          Boolean  @default(true)
+  lastSyncAt          DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
 
 model OrderItem {
