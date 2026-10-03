@@ -1,6 +1,7 @@
-import { prisma, OrderStatus } from "@/lib/prisma";
+import { prisma, OrderStatus, FulfillmentType } from "@/lib/prisma";
 import { commitReservedItemsToSold, releaseExpiredReservations } from "@/services/inventory.service";
 import { parseOrderCodeFromMemo } from "@/lib/vietqr";
+import { fulfillOrderViaUpstream } from "@/services/upstream-fulfillment.service";
 
 export interface BankTransactionPayload {
   transactionId: string;
@@ -162,7 +163,18 @@ export async function handleIncomingTransaction(
   // 3. Order Lookup
   const order = await prisma.order.findUnique({
     where: { orderCode },
-    include: { orderItems: true },
+    include: {
+      orderItems: {
+        include: {
+          product: {
+            select: {
+              id: true,
+              fulfillmentType: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   if (!order) {
@@ -246,6 +258,22 @@ export async function handleIncomingTransaction(
         timeout: 10000,
       }
     );
+
+    // Fulfill dropship items via upstream if any
+    const hasDropshipItems = order.orderItems.some(
+      (item) => item.product?.fulfillmentType === FulfillmentType.API_DROPSHIP
+    );
+
+    if (hasDropshipItems) {
+      try {
+        await fulfillOrderViaUpstream(order.id);
+      } catch (upstreamErr) {
+        console.error(
+          `Failed to automatically fulfill dropship order ${order.id} via upstream:`,
+          upstreamErr
+        );
+      }
+    }
 
     return {
       success: true,

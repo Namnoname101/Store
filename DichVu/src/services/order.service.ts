@@ -1,4 +1,4 @@
-import { prisma, OrderStatus, ItemStatus } from "@/lib/prisma";
+import { prisma, OrderStatus, ItemStatus, FulfillmentType } from "@/lib/prisma";
 import {
   reserveItemsForOrder,
   releaseExpiredReservations,
@@ -25,6 +25,9 @@ export interface OrderDetailsResponse {
   totalAmount: number;
   status: string;
   paymentMethod: string;
+  upstreamStatus?: string;
+  upstreamOrderId?: string | null;
+  upstreamError?: string | null;
   expiresAt: Date;
   paidAt?: Date | null;
   expiresInSeconds?: number;
@@ -143,15 +146,18 @@ export async function createOrder(data: CreateOrderInput) {
         },
       });
 
-      // Reserve stock for each item in the order
+      // Reserve stock only for LOCAL_STOCK items in the order
       for (const item of data.items) {
-        await reserveItemsForOrder(
-          item.productId,
-          item.quantity,
-          createdOrder.id,
-          15,
-          tx
-        );
+        const product = productMap.get(item.productId)!;
+        if (product.fulfillmentType === FulfillmentType.LOCAL_STOCK) {
+          await reserveItemsForOrder(
+            item.productId,
+            item.quantity,
+            createdOrder.id,
+            15,
+            tx
+          );
+        }
       }
 
       return createdOrder;
@@ -306,6 +312,9 @@ export async function getOrderDetails(
     totalAmount: order.totalAmount,
     status: currentStatus,
     paymentMethod: order.paymentMethod,
+    upstreamStatus: order.upstreamStatus,
+    upstreamOrderId: order.upstreamOrderId,
+    upstreamError: order.upstreamError,
     expiresAt: order.expiresAt,
     paidAt: order.paidAt,
     expiresInSeconds: currentStatus === OrderStatus.PENDING ? expiresInSeconds : 0,
