@@ -5,19 +5,36 @@ import {
 } from "@/services/payment.service";
 
 export async function POST(request: Request) {
-  // 1. Webhook Secret Authentication Check (if configured)
+  // 1. Webhook Secret Authentication Check (if configured and not placeholder)
   const webhookSecret = process.env.PAYMENT_WEBHOOK_SECRET;
-  if (webhookSecret) {
+  const isSecretConfigured =
+    webhookSecret &&
+    webhookSecret.trim() !== "" &&
+    webhookSecret !== "secret_token_here" &&
+    webhookSecret !== "your_secret_token_here";
+
+  if (isSecretConfigured) {
     const url = new URL(request.url);
-    const headerSecret = request.headers.get("x-webhook-secret");
+    const headerSecret =
+      request.headers.get("x-webhook-secret") ||
+      request.headers.get("x-api-key");
     const authHeader = request.headers.get("authorization");
-    const bearerSecret = authHeader?.startsWith("Bearer ")
-      ? authHeader.slice(7).trim()
-      : null;
+    let authSecret: string | null = null;
+
+    if (authHeader) {
+      if (authHeader.startsWith("Bearer ")) {
+        authSecret = authHeader.slice(7).trim();
+      } else if (authHeader.startsWith("Apikey ")) {
+        authSecret = authHeader.slice(7).trim();
+      } else {
+        authSecret = authHeader.trim();
+      }
+    }
+
     const querySecret =
       url.searchParams.get("token") || url.searchParams.get("secret");
 
-    const providedSecret = headerSecret || bearerSecret || querySecret;
+    const providedSecret = headerSecret || authSecret || querySecret;
 
     if (!providedSecret || providedSecret !== webhookSecret) {
       return NextResponse.json(

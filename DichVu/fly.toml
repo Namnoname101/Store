@@ -1,0 +1,31 @@
+# fly.toml app configuration file generated for daitruong-store
+
+app = "daitruong-store"
+primary_region = "sin"
+
+[build]
+
+[env]
+  PORT = "3000"
+  DATABASE_URL = "file:/data/dev.db"
+  BANK_ID = "TPB"
+  BANK_ACCOUNT_NO = "93320022006"
+  BANK_ACCOUNT_NAME = "TRUONG CONG QUANG DAI"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+[mounts]
+  source = "data"
+  destination = "/data"
+  initial_size = "1gb"
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

@@ -68,6 +68,7 @@ export function normalizeTransactionPayload(
     raw.transactionId ??
     raw.id ??
     raw.referenceCode ??
+    raw.referenceNumber ??
     raw.reference;
 
   const rawAmt =
@@ -77,7 +78,12 @@ export function normalizeTransactionPayload(
 
   const amount =
     typeof rawAmt === "string" ? parseFloat(rawAmt) : Number(rawAmt);
-  const content = raw.content ?? raw.description ?? "";
+  const content =
+    raw.content ??
+    raw.description ??
+    raw.transactionContent ??
+    raw.orderContent ??
+    "";
   const bankCode = raw.bankCode ?? raw.gateway;
 
   if (
