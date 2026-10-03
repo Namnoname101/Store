@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma, SupplierType } from "@/lib/prisma";
 
-export async function GET(_request?: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const suppliers = await prisma.supplier.findMany({
       orderBy: { createdAt: "desc" },

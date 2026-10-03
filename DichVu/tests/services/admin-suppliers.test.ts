@@ -445,4 +445,38 @@ describe("Admin Suppliers & Mapping Dashboard API Endpoints", () => {
       expect(aliasedOrders.some((o) => o.id === testOrderId)).toBe(true);
     });
   });
+
+  afterAll(async () => {
+    await prisma.supplierProductMapping.deleteMany({
+      where: {
+        OR: [
+          { supplier: { code: { in: [TEST_SUPPLIER_CODE_1, TEST_SUPPLIER_CODE_2] } } },
+          { product: { slug: TEST_PROD_SLUG } },
+        ],
+      },
+    }).catch(() => {});
+
+    await prisma.orderItem.deleteMany({
+      where: { order: { orderCode: TEST_ORDER_CODE } },
+    }).catch(() => {});
+
+    await prisma.order.deleteMany({
+      where: { orderCode: TEST_ORDER_CODE },
+    }).catch(() => {});
+
+    await prisma.product.deleteMany({
+      where: { slug: TEST_PROD_SLUG },
+    }).catch(() => {});
+
+    await prisma.supplier.deleteMany({
+      where: { code: { in: [TEST_SUPPLIER_CODE_1, TEST_SUPPLIER_CODE_2] } },
+    }).catch(() => {});
+
+    await prisma.category.deleteMany({
+      where: { slug: TEST_CAT_SLUG },
+    }).catch(() => {});
+
+    resetAdapterRegistry();
+    await prisma.$disconnect();
+  });
 });
