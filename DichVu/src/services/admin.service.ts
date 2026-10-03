@@ -24,6 +24,10 @@ export interface AdminProductItem extends Omit<Product, "items"> {
 }
 
 export interface AdminOrderDetail extends Order {
+  upstreamStatus: string;
+  upstreamOrderId: string | null;
+  upstreamError: string | null;
+  refundInfo: string | null;
   orderItems: Array<
     OrderItem & {
       product: {
@@ -161,3 +165,6 @@ export async function getAllOrdersAdmin(
 
   return orders as AdminOrderDetail[];
 }
+
+export const getAdminOrders = getAllOrdersAdmin;
+

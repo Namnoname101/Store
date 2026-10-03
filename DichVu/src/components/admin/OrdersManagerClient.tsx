@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Clock,
   AlertCircle,
+  AlertTriangle,
   Copy,
   Check,
   ChevronDown,
@@ -14,6 +15,8 @@ import {
   CreditCard,
   KeyRound,
   ExternalLink,
+  RefreshCw,
+  Truck,
 } from "lucide-react";
 import type { AdminOrderDetail } from "@/services/admin.service";
 
@@ -29,6 +32,90 @@ export default function OrdersManagerClient({
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [retryingOrderId, setRetryingOrderId] = useState<string | null>(null);
+  const [retryMessage, setRetryMessage] = useState<{
+    id: string;
+    success: boolean;
+    text: string;
+  } | null>(null);
+
+  const handleRetryUpstream = async (orderId: string) => {
+    try {
+      setRetryingOrderId(orderId);
+      setRetryMessage(null);
+      const res = await fetch(`/api/admin/orders/${orderId}/retry-upstream`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setRetryMessage({
+          id: orderId,
+          success: true,
+          text: `Cấp mã lại thành công! (Mã đối tác: ${data.upstreamOrderId || "OK"})`,
+        });
+        setOrders((prev) =>
+          prev.map((o) =>
+            o.id === orderId
+              ? {
+                  ...o,
+                  upstreamStatus: data.status || "COMPLETED",
+                  upstreamOrderId: data.upstreamOrderId || o.upstreamOrderId,
+                  upstreamError: null,
+                }
+              : o
+          )
+        );
+      } else {
+        setRetryMessage({
+          id: orderId,
+          success: false,
+          text: data.error || "Thử lại thất bại",
+        });
+      }
+    } catch (err: any) {
+      setRetryMessage({
+        id: orderId,
+        success: false,
+        text: err?.message || "Lỗi kết nối khi gửi yêu cầu thử lại",
+      });
+    } finally {
+      setRetryingOrderId(null);
+    }
+  };
+
+  const getUpstreamStatusBadge = (upstreamStatus?: string) => {
+    switch (upstreamStatus) {
+      case "COMPLETED":
+        return (
+          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-400 border border-emerald-500/20">
+            <CheckCircle2 className="h-3 w-3 text-emerald-400" />
+            Cấp mã tự động: Thành công
+          </span>
+        );
+      case "PENDING_UPSTREAM":
+        return (
+          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-400 border border-amber-500/20">
+            <Clock className="h-3 w-3 text-amber-400 animate-spin" />
+            Đang cấp mã tự động...
+          </span>
+        );
+      case "FAILED":
+        return (
+          <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2.5 py-0.5 text-xs font-semibold text-rose-400 border border-rose-500/20">
+            <AlertCircle className="h-3 w-3 text-rose-400" />
+            Lỗi cấp mã đối tác
+          </span>
+        );
+      case "REFUNDED":
+        return (
+          <span className="inline-flex items-center gap-1 rounded-full bg-purple-500/10 px-2.5 py-0.5 text-xs font-semibold text-purple-400 border border-purple-500/20">
+            Đã hoàn tiền
+          </span>
+        );
+      default:
+        return null;
+    }
+  };
 
   const formatVND = (amount: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -224,8 +311,11 @@ export default function OrdersManagerClient({
                         <td className="px-5 py-4 font-bold text-white">
                           {formatVND(order.totalAmount)}
                         </td>
-                        <td className="px-5 py-4">
-                          {getStatusBadge(order.status)}
+                        <td className="px-5 py-4 space-y-1">
+                          <div>{getStatusBadge(order.status)}</div>
+                          {order.upstreamStatus && order.upstreamStatus !== "NOT_APPLICABLE" && (
+                            <div>{getUpstreamStatusBadge(order.upstreamStatus)}</div>
+                          )}
                         </td>
                         <td className="px-5 py-4 text-xs text-slate-400">
                           <div>Tạo: {formatDate(order.createdAt)}</div>
@@ -255,6 +345,110 @@ export default function OrdersManagerClient({
                         <tr className="bg-slate-950/80 border-b border-slate-800">
                           <td colSpan={7} className="px-6 py-5">
                             <div className="space-y-4">
+                              {/* Refund Request Info Banner */}
+                              {order.refundInfo && (() => {
+                                let refundData: any = null;
+                                try {
+                                  refundData = JSON.parse(order.refundInfo);
+                                } catch {
+                                  refundData = { raw: order.refundInfo };
+                                }
+
+                                return (
+                                  <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-xs space-y-2">
+                                    <div className="flex items-center gap-2 text-amber-400 font-bold">
+                                      <AlertTriangle className="h-4 w-4 shrink-0" />
+                                      <span className="text-sm">Yêu cầu hoàn tiền từ khách hàng</span>
+                                    </div>
+                                    {refundData.bankName ? (
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-1 text-slate-300">
+                                        <div>
+                                          <span className="text-slate-400 block text-[11px]">Ngân hàng:</span>
+                                          <span className="font-semibold text-white">{refundData.bankName}</span>
+                                        </div>
+                                        <div>
+                                          <span className="text-slate-400 block text-[11px]">Số tài khoản:</span>
+                                          <span className="font-mono font-bold text-amber-300 select-all">{refundData.accountNumber}</span>
+                                        </div>
+                                        <div>
+                                          <span className="text-slate-400 block text-[11px]">Chủ tài khoản:</span>
+                                          <span className="font-bold text-white uppercase">{refundData.accountName}</span>
+                                        </div>
+                                        <div>
+                                          <span className="text-slate-400 block text-[11px]">Thời gian yêu cầu:</span>
+                                          <span className="text-slate-300">{formatDate(refundData.requestedAt)}</span>
+                                        </div>
+                                        {refundData.note && (
+                                          <div className="sm:col-span-2 md:col-span-4 text-slate-300 bg-slate-900/60 p-2 rounded-lg border border-slate-800">
+                                            <span className="text-slate-400">Ghi chú:</span> {refundData.note}
+                                          </div>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <div className="font-mono text-slate-300 select-all">{refundData.raw || order.refundInfo}</div>
+                                    )}
+                                  </div>
+                                );
+                              })()}
+
+                              {/* Upstream Dropship Details & Retry */}
+                              {order.upstreamStatus && order.upstreamStatus !== "NOT_APPLICABLE" && (
+                                <div className="rounded-xl border border-slate-800 bg-slate-900 p-3.5 space-y-3">
+                                  <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <div className="flex items-center gap-2">
+                                      <Truck className="h-4 w-4 text-indigo-400" />
+                                      <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                                        Cấp phát tự động qua đối tác (Dropshipping)
+                                      </span>
+                                      {getUpstreamStatusBadge(order.upstreamStatus)}
+                                    </div>
+                                    {order.upstreamOrderId && (
+                                      <span className="text-xs text-slate-400 font-mono">
+                                        Mã đối tác: <strong className="text-indigo-300">{order.upstreamOrderId}</strong>
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  {order.upstreamError && (
+                                    <div className="rounded-lg bg-rose-950/40 border border-rose-800/40 p-2.5 text-xs text-rose-300 space-y-1">
+                                      <div className="font-semibold flex items-center gap-1.5">
+                                        <AlertCircle className="h-3.5 w-3.5 text-rose-400" />
+                                        <span>Lỗi phản hồi từ sàn nguồn:</span>
+                                      </div>
+                                      <p className="font-mono text-[11px] select-all">{order.upstreamError}</p>
+                                    </div>
+                                  )}
+
+                                  {retryMessage && retryMessage.id === order.id && (
+                                    <div
+                                      className={`p-2.5 rounded-lg text-xs font-medium border ${
+                                        retryMessage.success
+                                          ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300"
+                                          : "bg-rose-500/10 border-rose-500/20 text-rose-300"
+                                      }`}
+                                    >
+                                      {retryMessage.text}
+                                    </div>
+                                  )}
+
+                                  {order.upstreamStatus === "FAILED" && (
+                                    <div className="flex items-center gap-2 pt-1">
+                                      <button
+                                        onClick={() => handleRetryUpstream(order.id)}
+                                        disabled={retryingOrderId === order.id}
+                                        className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500 disabled:opacity-50 transition-all shadow-md shadow-indigo-600/20"
+                                      >
+                                        <RefreshCw
+                                          className={`h-3.5 w-3.5 ${
+                                            retryingOrderId === order.id ? "animate-spin" : ""
+                                          }`}
+                                        />
+                                        <span>{retryingOrderId === order.id ? "Đang gửi đơn..." : "Thử đặt lại qua API"}</span>
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                               {/* Delivered Items / Keys Section */}
                               <div>
                                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">

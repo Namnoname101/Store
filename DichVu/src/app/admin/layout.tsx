@@ -8,6 +8,7 @@ import {
   Package,
   KeyRound,
   ShoppingCart,
+  Truck,
   ArrowLeft,
   Shield,
   Menu,
@@ -46,6 +47,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       href: "/admin/orders",
       icon: ShoppingCart,
       current: pathname.startsWith("/admin/orders"),
+    },
+    {
+      name: "Nhà cung cấp",
+      href: "/admin/suppliers",
+      icon: Truck,
+      current: pathname.startsWith("/admin/suppliers"),
     },
   ];
 
