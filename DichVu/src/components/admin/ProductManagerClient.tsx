@@ -14,6 +14,8 @@ import {
   Layers,
   Sparkles,
   Truck,
+  Edit,
+  Trash2,
 } from "lucide-react";
 import type { AdminProductItem } from "@/services/admin.service";
 import type { Category } from "@prisma/client";
@@ -31,6 +33,7 @@ export default function ProductManagerClient({
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
@@ -64,62 +67,148 @@ export default function ProductManagerClient({
     setSlug(autoSlug);
   };
 
+  const handleOpenCreate = () => {
+    setEditingProductId(null);
+    setTitle("");
+    setSlug("");
+    setPrice("");
+    setOriginalPrice("");
+    setType("LICENSE_KEY");
+    setCategoryId(categories[0]?.id || "");
+    setDescription("");
+    setThumbnailUrl("");
+    setIsCreatingNewCategory(false);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (p: AdminProductItem) => {
+    setEditingProductId(p.id);
+    setTitle(p.title);
+    setSlug(p.slug);
+    setPrice(String(p.price));
+    setOriginalPrice(p.originalPrice ? String(p.originalPrice) : "");
+    setType(p.type);
+    setCategoryId(p.categoryId);
+    setDescription(p.description || "");
+    setThumbnailUrl(p.thumbnailUrl || "");
+    setIsCreatingNewCategory(false);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteProduct = async (productId: string, productTitle: string) => {
+    if (!confirm(`Bạn có chắc chắn muốn xóa/ẩn sản phẩm "${productTitle}"?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/admin/products/${productId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Không thể xóa sản phẩm");
+      }
+
+      setProducts((prev) => prev.filter((p) => p.id !== productId));
+      setAlert({
+        type: "success",
+        message: data.message || `Đã xóa sản phẩm "${productTitle}" thành công!`,
+      });
+    } catch (err: any) {
+      setAlert({ type: "error", message: err.message });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setAlert(null);
 
     try {
-      const res = await fetch("/api/admin/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          slug,
-          price: Number(price),
-          originalPrice: originalPrice ? Number(originalPrice) : null,
-          type,
-          categoryId: isCreatingNewCategory ? undefined : categoryId,
-          categoryName: isCreatingNewCategory ? newCategoryName : undefined,
-          description,
-          thumbnailUrl,
-        }),
-      });
+      if (editingProductId) {
+        // Edit existing product
+        const res = await fetch(`/api/admin/products/${editingProductId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title,
+            slug,
+            price: Number(price),
+            originalPrice: originalPrice ? Number(originalPrice) : null,
+            type,
+            categoryId: isCreatingNewCategory ? undefined : categoryId,
+            description,
+            thumbnailUrl,
+          }),
+        });
 
-      const data = await res.json();
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || "Không thể cập nhật sản phẩm");
+        }
 
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Không thể tạo sản phẩm");
+        setProducts((prev) =>
+          prev.map((prod) =>
+            prod.id === editingProductId
+              ? {
+                  ...prod,
+                  ...data.product,
+                  category: data.product.category || prod.category,
+                }
+              : prod
+          )
+        );
+
+        setAlert({
+          type: "success",
+          message: `Đã cập nhật chi tiết sản phẩm "${data.product.title}" thành công!`,
+        });
+        setIsModalOpen(false);
+      } else {
+        // Create new product
+        const res = await fetch("/api/admin/products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title,
+            slug,
+            price: Number(price),
+            originalPrice: originalPrice ? Number(originalPrice) : null,
+            type,
+            categoryId: isCreatingNewCategory ? undefined : categoryId,
+            categoryName: isCreatingNewCategory ? newCategoryName : undefined,
+            description,
+            thumbnailUrl,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || "Không thể tạo sản phẩm");
+        }
+
+        // Add to list
+        const newProduct: AdminProductItem = {
+          ...data.product,
+          availableStock: 0,
+          reservedStock: 0,
+          soldStock: 0,
+          totalStock: 0,
+        };
+
+        setProducts([newProduct, ...products]);
+        if (newProduct.category && !categories.some((c) => c.id === newProduct.category.id)) {
+          setCategories([...categories, newProduct.category]);
+        }
+
+        setAlert({
+          type: "success",
+          message: `Đã tạo thành công sản phẩm "${data.product.title}"!`,
+        });
+
+        setIsModalOpen(false);
       }
-
-      // Add to list
-      const newProduct: AdminProductItem = {
-        ...data.product,
-        availableStock: 0,
-        reservedStock: 0,
-        soldStock: 0,
-        totalStock: 0,
-      };
-
-      setProducts([newProduct, ...products]);
-      if (newProduct.category && !categories.some((c) => c.id === newProduct.category.id)) {
-        setCategories([...categories, newProduct.category]);
-      }
-
-      setAlert({
-        type: "success",
-        message: `Đã tạo thành công sản phẩm "${data.product.title}"!`,
-      });
-
-      // Reset form & close modal
-      setTitle("");
-      setSlug("");
-      setPrice("");
-      setOriginalPrice("");
-      setDescription("");
-      setThumbnailUrl("");
-      setIsCreatingNewCategory(false);
-      setIsModalOpen(false);
     } catch (err: any) {
       setAlert({ type: "error", message: err.message });
     } finally {
@@ -145,7 +234,7 @@ export default function ProductManagerClient({
           </p>
         </div>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={handleOpenCreate}
           className="flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/30 hover:bg-indigo-500 transition-all self-start sm:self-auto"
         >
           <Plus className="h-4 w-4" />
@@ -262,11 +351,11 @@ export default function ProductManagerClient({
                       </div>
                     </td>
                     <td className="px-5 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1.5">
                         {p.fulfillmentType === "API_DROPSHIP" ? (
                           <Link
                             href="/admin/suppliers"
-                            className="inline-flex items-center gap-1 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white px-2.5 py-1.5 text-xs font-medium border border-blue-500/30 transition-all"
+                            className="inline-flex items-center gap-1 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white px-2 py-1 text-xs font-medium border border-blue-500/30 transition-all"
                             title="Quản lý đối tác và đồng bộ tồn kho API sàn"
                           >
                             <Truck className="h-3.5 w-3.5" />
@@ -275,13 +364,30 @@ export default function ProductManagerClient({
                         ) : (
                           <Link
                             href={`/admin/inventory?productId=${p.id}`}
-                            className="inline-flex items-center gap-1 rounded-lg bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600 hover:text-white px-2.5 py-1.5 text-xs font-medium border border-indigo-500/30 transition-all"
+                            className="inline-flex items-center gap-1 rounded-lg bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600 hover:text-white px-2 py-1 text-xs font-medium border border-indigo-500/30 transition-all"
                             title="Nhập thêm key cho sản phẩm này"
                           >
                             <KeyRound className="h-3.5 w-3.5" />
                             <span>Nhập kho</span>
                           </Link>
                         )}
+
+                        <button
+                          onClick={() => handleOpenEdit(p)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all"
+                          title="Chỉnh sửa chi tiết, mô tả & giá"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+
+                        <button
+                          onClick={() => handleDeleteProduct(p.id, p.title)}
+                          className="p-1.5 rounded-lg text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-all"
+                          title="Xóa hoặc ẩn sản phẩm"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+
                         <Link
                           href={`/products/${p.slug}`}
                           target="_blank"
@@ -300,14 +406,16 @@ export default function ProductManagerClient({
         </div>
       </div>
 
-      {/* Create Product Modal */}
+      {/* Product Modal (Create / Edit) */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
           <div className="relative w-full max-w-xl rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-indigo-400" />
-                <h3 className="text-lg font-bold text-white">Thêm sản phẩm mới</h3>
+                <h3 className="text-lg font-bold text-white">
+                  {editingProductId ? "Chỉnh sửa chi tiết sản phẩm" : "Thêm sản phẩm mới"}
+                </h3>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -471,7 +579,13 @@ export default function ProductManagerClient({
                   disabled={loading}
                   className="rounded-xl bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-600/30 hover:bg-indigo-500 disabled:opacity-50"
                 >
-                  {loading ? "Đang tạo..." : "Tạo sản phẩm"}
+                  {loading
+                    ? editingProductId
+                      ? "Đang lưu..."
+                      : "Đang tạo..."
+                    : editingProductId
+                    ? "Lưu thay đổi"
+                    : "Tạo sản phẩm"}
                 </button>
               </div>
             </form>
