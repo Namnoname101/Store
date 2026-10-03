@@ -2,6 +2,7 @@ import { SupplierType } from "../../lib/prisma";
 import { ISupplierAdapter } from "./supplier-adapter.interface";
 import { TaphoammoAdapter } from "./adapters/taphoammo.adapter";
 import { TrumtheAdapter } from "./adapters/trumthe.adapter";
+import { LocketAdapter } from "./adapters/locket.adapter";
 
 const adapterRegistry = new Map<string, ISupplierAdapter>();
 
@@ -9,9 +10,11 @@ function initDefaultAdapters(): void {
   adapterRegistry.clear();
   const taphoa = new TaphoammoAdapter();
   const trumthe = new TrumtheAdapter();
+  const locket = new LocketAdapter();
 
   adapterRegistry.set(SupplierType.TAPHOAMMO, taphoa);
   adapterRegistry.set(SupplierType.TRUMTHE, trumthe);
+  adapterRegistry.set(SupplierType.LOCKET_VN, locket);
   adapterRegistry.set(SupplierType.CUSTOM_REST, taphoa);
 }
 

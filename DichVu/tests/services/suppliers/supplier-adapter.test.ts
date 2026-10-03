@@ -424,6 +424,13 @@ describe("Supplier Adapter Engine", () => {
       expect(typeof adapter.buyProduct).toBe("function");
     });
 
+    it("should return LocketAdapter for LOCKET_VN supplier type", () => {
+      const adapter = getSupplierAdapter(SupplierType.LOCKET_VN);
+      expect(adapter).toBeDefined();
+      expect(typeof adapter.fetchProductInfo).toBe("function");
+      expect(typeof adapter.buyProduct).toBe("function");
+    });
+
     it("should support registering and overriding custom adapters", () => {
       const customMock = new MockSupplierAdapter();
       registerSupplierAdapter("MOCK", customMock);
@@ -436,6 +443,71 @@ describe("Supplier Adapter Engine", () => {
       expect(() => getSupplierAdapter("NON_EXISTENT_SUPPLIER")).toThrow(
         /Unsupported supplier type: NON_EXISTENT_SUPPLIER/i
       );
+    });
+  });
+
+  describe("LocketAdapter", () => {
+    let locketAdapter: import("@/services/suppliers/adapters/locket.adapter").LocketAdapter;
+    const creds = {
+      baseUrl: "https://locket.com.vn/api/reseller/v1",
+      apiKey: "ntsh_test_key",
+    };
+
+    beforeEach(async () => {
+      const { LocketAdapter } = await import("@/services/suppliers/adapters/locket.adapter");
+      locketAdapter = new LocketAdapter();
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it("fetchProductInfo: parses product list and finds product by id", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          ok: true,
+          products: [
+            { id: 19, name: "Gemini 18 Months", price_vnd: 19555, stock: 42 },
+            { id: 82, name: "Duolingo 12 Tháng", price_vnd: 17777, stock: 49 },
+          ],
+        }),
+      } as any);
+
+      const info = await locketAdapter.fetchProductInfo(creds, "19");
+      expect(info.price).toBe(19555);
+      expect(info.inStock).toBe(42);
+      expect(info.name).toBe("Gemini 18 Months");
+    });
+
+    it("buyProduct: delivers keys on state: done", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          state: "done",
+          order_id: 12345,
+          items: ["user_gemini@mail.com|pass123456"],
+        }),
+      } as any);
+
+      const result = await locketAdapter.buyProduct(creds, "19", 1);
+      expect(result.success).toBe(true);
+      expect(result.deliveredKeys).toEqual(["user_gemini@mail.com|pass123456"]);
+      expect(result.upstreamOrderId).toBe("12345");
+    });
+
+    it("buyProduct: handles 402 insufficient balance error", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 402,
+        text: async () => "Wallet balance is 0đ",
+      } as any);
+
+      const result = await locketAdapter.buyProduct(creds, "19", 1);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain("Số dư ví");
     });
   });
 });

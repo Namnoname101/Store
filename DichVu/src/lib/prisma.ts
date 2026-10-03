@@ -37,6 +37,7 @@ export type FulfillmentType = (typeof FulfillmentType)[keyof typeof FulfillmentT
 export const SupplierType = {
   TAPHOAMMO: "TAPHOAMMO",
   TRUMTHE: "TRUMTHE",
+  LOCKET_VN: "LOCKET_VN",
   CUSTOM_REST: "CUSTOM_REST",
 } as const;
 export type SupplierType = (typeof SupplierType)[keyof typeof SupplierType];

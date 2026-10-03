@@ -1040,6 +1040,7 @@ export default function SupplierManagerClient({
                   >
                     <option value={SupplierType.TAPHOAMMO}>TAPHOAMMO (Tạp Hóa MMO)</option>
                     <option value={SupplierType.TRUMTHE}>TRUMTHE (Trùm Thẻ)</option>
+                    <option value={SupplierType.LOCKET_VN}>LOCKET_VN (Locket.com.vn Reseller v1)</option>
                     <option value={SupplierType.CUSTOM_REST}>CUSTOM_REST (API Tùy biến)</option>
                   </select>
                 </div>
