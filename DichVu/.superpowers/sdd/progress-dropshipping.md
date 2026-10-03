@@ -10,3 +10,7 @@
 | Task 2, 3, 4 & 6 | Core Services & Admin Management | Clean: Admin dashboard triggers sync, balance checks, and order retries |
 
 All interfaces align with spec. Pre-flight clean. Ready for Task 1.
+
+## Task Progress
+- Task 1: complete (`e3cdc7a4e23b5128016dc5ad90f7edd614119568`) — Supplier & Dropshipping schema extensions verified and approved.
+

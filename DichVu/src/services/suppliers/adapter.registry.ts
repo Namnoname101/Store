@@ -1,0 +1,38 @@
+import { SupplierType } from "../../lib/prisma";
+import { ISupplierAdapter } from "./supplier-adapter.interface";
+import { TaphoammoAdapter } from "./adapters/taphoammo.adapter";
+import { TrumtheAdapter } from "./adapters/trumthe.adapter";
+
+const adapterRegistry = new Map<string, ISupplierAdapter>();
+
+function initDefaultAdapters(): void {
+  adapterRegistry.clear();
+  const taphoa = new TaphoammoAdapter();
+  const trumthe = new TrumtheAdapter();
+
+  adapterRegistry.set(SupplierType.TAPHOAMMO, taphoa);
+  adapterRegistry.set(SupplierType.TRUMTHE, trumthe);
+  adapterRegistry.set(SupplierType.CUSTOM_REST, taphoa);
+}
+
+initDefaultAdapters();
+
+export function registerSupplierAdapter(
+  type: string,
+  adapter: ISupplierAdapter
+): void {
+  adapterRegistry.set(type.toUpperCase(), adapter);
+}
+
+export function getSupplierAdapter(type: string): ISupplierAdapter {
+  const normalized = type?.toUpperCase();
+  const adapter = adapterRegistry.get(normalized);
+  if (!adapter) {
+    throw new Error(`Unsupported supplier type: ${type}`);
+  }
+  return adapter;
+}
+
+export function resetAdapterRegistry(): void {
+  initDefaultAdapters();
+}
