@@ -13,6 +13,7 @@ import {
   X,
   Layers,
   Sparkles,
+  Truck,
 } from "lucide-react";
 import type { AdminProductItem } from "@/services/admin.service";
 import type { Category } from "@prisma/client";
@@ -250,6 +251,11 @@ export default function ProductManagerClient({
                         >
                           {p.availableStock} sẵn sàng
                         </span>
+                        {p.fulfillmentType === "API_DROPSHIP" && (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                            API Sàn
+                          </span>
+                        )}
                         <span className="text-xs text-slate-500">
                           (Đã bán: {p.soldStock})
                         </span>
@@ -257,14 +263,25 @@ export default function ProductManagerClient({
                     </td>
                     <td className="px-5 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <Link
-                          href={`/admin/inventory?productId=${p.id}`}
-                          className="inline-flex items-center gap-1 rounded-lg bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600 hover:text-white px-2.5 py-1.5 text-xs font-medium border border-indigo-500/30 transition-all"
-                          title="Nhập thêm key cho sản phẩm này"
-                        >
-                          <KeyRound className="h-3.5 w-3.5" />
-                          <span>Nhập kho</span>
-                        </Link>
+                        {p.fulfillmentType === "API_DROPSHIP" ? (
+                          <Link
+                            href="/admin/suppliers"
+                            className="inline-flex items-center gap-1 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white px-2.5 py-1.5 text-xs font-medium border border-blue-500/30 transition-all"
+                            title="Quản lý đối tác và đồng bộ tồn kho API sàn"
+                          >
+                            <Truck className="h-3.5 w-3.5" />
+                            <span>Đồng bộ sàn</span>
+                          </Link>
+                        ) : (
+                          <Link
+                            href={`/admin/inventory?productId=${p.id}`}
+                            className="inline-flex items-center gap-1 rounded-lg bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600 hover:text-white px-2.5 py-1.5 text-xs font-medium border border-indigo-500/30 transition-all"
+                            title="Nhập thêm key cho sản phẩm này"
+                          >
+                            <KeyRound className="h-3.5 w-3.5" />
+                            <span>Nhập kho</span>
+                          </Link>
+                        )}
                         <Link
                           href={`/products/${p.slug}`}
                           target="_blank"

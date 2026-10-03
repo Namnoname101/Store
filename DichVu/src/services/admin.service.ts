@@ -59,6 +59,10 @@ export async function getAdminOverviewStats(): Promise<AdminOverviewStats> {
       prisma.product.findMany({
         select: {
           id: true,
+          fulfillmentType: true,
+          supplierMapping: {
+            select: { supplierStock: true },
+          },
           _count: {
             select: {
               items: {
@@ -85,9 +89,13 @@ export async function getAdminOverviewStats(): Promise<AdminOverviewStats> {
     ]);
 
   const totalRevenue = revenueAgg._sum.totalAmount || 0;
-  const lowStockProductsCount = productsWithStock.filter(
-    (p) => p._count.items <= 5
-  ).length;
+  const lowStockProductsCount = productsWithStock.filter((p) => {
+    const available =
+      p.fulfillmentType === "API_DROPSHIP"
+        ? p.supplierMapping?.supplierStock ?? 0
+        : p._count.items;
+    return available <= 5;
+  }).length;
 
   return {
     totalRevenue,
@@ -110,10 +118,13 @@ export async function getAllProductsAdmin(): Promise<AdminProductItem[]> {
       items: {
         select: { status: true },
       },
+      supplierMapping: {
+        select: { supplierStock: true },
+      },
     },
   });
 
-  return products.map(({ items, ...product }) => {
+  return products.map(({ items, supplierMapping, ...product }) => {
     let availableStock = 0;
     let reservedStock = 0;
     let soldStock = 0;
@@ -124,12 +135,19 @@ export async function getAllProductsAdmin(): Promise<AdminProductItem[]> {
       else if (item.status === ItemStatus.SOLD) soldStock++;
     }
 
+    if (product.fulfillmentType === "API_DROPSHIP") {
+      availableStock = supplierMapping?.supplierStock ?? 0;
+    }
+
     return {
       ...product,
       availableStock,
       reservedStock,
       soldStock,
-      totalStock: items.length,
+      totalStock:
+        product.fulfillmentType === "API_DROPSHIP"
+          ? availableStock + soldStock
+          : items.length,
     };
   });
 }

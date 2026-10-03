@@ -41,6 +41,7 @@ export interface SupplierWithMappings {
     supplierId: string;
     supplierProductCode: string;
     supplierPrice: number;
+    supplierStock?: number;
     markupType: string;
     markupValue: number;
     isAutoSync: boolean;
@@ -60,6 +61,7 @@ export interface ProductMappingItem {
   supplierId: string;
   supplierProductCode: string;
   supplierPrice: number;
+  supplierStock?: number;
   markupType: string;
   markupValue: number;
   isAutoSync: boolean;
@@ -354,6 +356,7 @@ export default function SupplierManagerClient({
               ? {
                   ...m,
                   supplierPrice: item.supplierPrice,
+                  supplierStock: item.inStock,
                   lastSyncAt: new Date().toISOString(),
                   product: {
                     ...m.product,
@@ -888,6 +891,7 @@ export default function SupplierManagerClient({
                     <th className="px-5 py-3.5 font-semibold">Giá vốn sàn</th>
                     <th className="px-5 py-3.5 font-semibold">Công thức lời</th>
                     <th className="px-5 py-3.5 font-semibold">Giá niêm yết</th>
+                    <th className="px-5 py-3.5 font-semibold">Tồn kho sàn</th>
                     <th className="px-5 py-3.5 font-semibold">Tự động đồng bộ</th>
                     <th className="px-5 py-3.5 font-semibold">Lần đồng bộ cuối</th>
                     <th className="px-5 py-3.5 font-semibold text-right">Thao tác</th>
@@ -896,7 +900,7 @@ export default function SupplierManagerClient({
                 <tbody className="divide-y divide-slate-800/60">
                   {filteredMappings.length === 0 ? (
                     <tr>
-                      <td colSpan={9} className="px-5 py-12 text-center text-sm text-slate-500">
+                      <td colSpan={10} className="px-5 py-12 text-center text-sm text-slate-500">
                         Chưa có sản phẩm nào được liên kết dropshipping. Nhấn "Thêm liên kết sản phẩm" để cấu hình.
                       </td>
                     </tr>
@@ -930,6 +934,26 @@ export default function SupplierManagerClient({
                         </td>
                         <td className="px-5 py-4 font-mono font-bold text-emerald-400">
                           {formatVND(mapping.product.price)}
+                        </td>
+                        <td className="px-5 py-4">
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold border ${
+                              (mapping.supplierStock ?? 0) > 0
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                            }`}
+                          >
+                            <span
+                              className={`h-1.5 w-1.5 rounded-full ${
+                                (mapping.supplierStock ?? 0) > 0
+                                  ? "bg-emerald-400 animate-pulse"
+                                  : "bg-rose-400"
+                              }`}
+                            />
+                            {(mapping.supplierStock ?? 0) > 0
+                              ? `Còn ${mapping.supplierStock}`
+                              : "Hết hàng"}
+                          </span>
                         </td>
                         <td className="px-5 py-4">
                           {mapping.isAutoSync ? (
