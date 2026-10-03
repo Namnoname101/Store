@@ -32,6 +32,8 @@ export async function GET(
 
     return NextResponse.json({
       status: order.status,
+      upstreamStatus: order.upstreamStatus,
+      refundInfo: order.refundInfo ? JSON.parse(order.refundInfo) : null,
       paidAt: order.paidAt ?? null,
       deliveredItems: order.deliveredItems ?? [],
       vietQrUrl: order.vietQrUrl,

@@ -49,8 +49,12 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
     );
   }
 
-  // If already paid, immediately redirect to delivery screen
-  if (order.status === "PAID") {
+  // If already paid and fulfilled, immediately redirect to delivery screen
+  if (
+    order.status === "PAID" &&
+    order.upstreamStatus !== "PENDING_UPSTREAM" &&
+    order.upstreamStatus !== "FAILED"
+  ) {
     redirect(`/order-success/${orderCode}`);
   }
 

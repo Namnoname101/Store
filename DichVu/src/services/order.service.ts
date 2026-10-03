@@ -28,6 +28,7 @@ export interface OrderDetailsResponse {
   upstreamStatus?: string;
   upstreamOrderId?: string | null;
   upstreamError?: string | null;
+  refundInfo?: string | null;
   expiresAt: Date;
   paidAt?: Date | null;
   expiresInSeconds?: number;
@@ -315,6 +316,7 @@ export async function getOrderDetails(
     upstreamStatus: order.upstreamStatus,
     upstreamOrderId: order.upstreamOrderId,
     upstreamError: order.upstreamError,
+    refundInfo: order.refundInfo,
     expiresAt: order.expiresAt,
     paidAt: order.paidAt,
     expiresInSeconds: currentStatus === OrderStatus.PENDING ? expiresInSeconds : 0,

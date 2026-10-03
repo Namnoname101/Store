@@ -89,11 +89,18 @@ export default async function OrderSuccessPage({
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            Giao Hàng Tự Động Hoàn Tất!
+            {order.upstreamStatus === "PENDING_UPSTREAM"
+              ? "Đang Tự Động Cấp Phát Sản Phẩm..."
+              : order.upstreamStatus === "FAILED"
+              ? "Đã Nhận Thanh Toán - Đang Xử Lý Cấp Phát"
+              : "Giao Hàng Tự Động Hoàn Tất!"}
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-slate-300 max-w-lg leading-relaxed">
-            Hệ thống đã tự động xuất kho và bàn giao mã bản quyền / tài khoản số cho đơn hàng{" "}
-            <strong className="text-white">#{order.orderCode}</strong>.
+            {order.upstreamStatus === "PENDING_UPSTREAM"
+              ? `Hệ thống đang cấp phát mã tự động cho đơn hàng #${order.orderCode}. Vui lòng đợi trong giây lát.`
+              : order.upstreamStatus === "FAILED"
+              ? `Máy chủ cấp phát mã đang bị quá tải hoặc tạm thời gián đoạn. Chúng tôi đang hỗ trợ xử lý cho đơn hàng #${order.orderCode}.`
+              : `Hệ thống đã tự động xuất kho và bàn giao mã bản quyền / tài khoản số cho đơn hàng #${order.orderCode}.`}
           </p>
 
           {/* Quick Order Info Pill Grid */}
@@ -134,6 +141,9 @@ export default async function OrderSuccessPage({
       {/* Secret Display & Activation Guides */}
       <div className="mb-10">
         <SecretDisplay
+          orderCode={order.orderCode}
+          upstreamStatus={order.upstreamStatus}
+          refundInfo={order.refundInfo}
           deliveredItems={order.deliveredItems}
           orderItems={order.orderItems}
         />
