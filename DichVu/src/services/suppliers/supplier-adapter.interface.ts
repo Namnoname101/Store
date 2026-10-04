@@ -29,6 +29,7 @@ export interface ISupplierAdapter {
     creds: SupplierCredentials,
     supplierProductCode: string,
     quantity: number,
-    orderCode: string
+    orderCode: string,
+    extra?: any
   ): Promise<SupplierOrderResult>;
 }

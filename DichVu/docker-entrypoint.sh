@@ -16,5 +16,8 @@ export DATABASE_URL="file:/data/dev.db"
 echo "Applying Prisma schema..."
 npx prisma db push --skip-generate || true
 
+echo "Seeding HackTim products..."
+node prisma/seed-hacktim.js || true
+
 echo "Starting Next.js Server..."
 exec node server.js

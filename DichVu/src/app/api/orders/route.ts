@@ -4,12 +4,13 @@ import { createOrder } from "@/services/order.service";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { customerEmail, items, userId } = body || {};
+    const { customerEmail, items, userId, customerNote } = body || {};
 
     const order = await createOrder({
       customerEmail,
       items,
       userId,
+      customerNote,
     });
 
     return NextResponse.json(

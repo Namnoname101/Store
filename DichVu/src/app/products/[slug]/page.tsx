@@ -189,6 +189,14 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               price={product.price}
               stockCount={product.stockCount}
               productTitle={product.title}
+              requiresLink={
+                product.category?.slug === "dich-vu-mxh" ||
+                product.title.toLowerCase().includes("tiktok") ||
+                product.title.toLowerCase().includes("facebook") ||
+                product.title.toLowerCase().includes("tim") ||
+                product.title.toLowerCase().includes("like") ||
+                product.title.toLowerCase().includes("follow")
+              }
             />
           </div>
         </div>

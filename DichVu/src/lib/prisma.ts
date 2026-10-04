@@ -38,6 +38,7 @@ export const SupplierType = {
   TAPHOAMMO: "TAPHOAMMO",
   TRUMTHE: "TRUMTHE",
   LOCKET_VN: "LOCKET_VN",
+  HACKTIM: "HACKTIM",
   CUSTOM_REST: "CUSTOM_REST",
 } as const;
 export type SupplierType = (typeof SupplierType)[keyof typeof SupplierType];

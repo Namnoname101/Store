@@ -15,12 +15,14 @@ export interface CreateOrderInput {
   customerEmail: string;
   items: OrderItemInput[];
   userId?: string;
+  customerNote?: string;
 }
 
 export interface OrderDetailsResponse {
   id: string;
   orderCode: string;
   customerEmail: string;
+  customerNote?: string | null;
   userId?: string | null;
   totalAmount: number;
   status: string;
@@ -125,6 +127,7 @@ export async function createOrder(data: CreateOrderInput) {
         data: {
           orderCode,
           customerEmail: data.customerEmail.trim(),
+          customerNote: data.customerNote ? data.customerNote.trim() : null,
           userId: data.userId || null,
           totalAmount,
           status: OrderStatus.PENDING,
@@ -309,6 +312,7 @@ export async function getOrderDetails(
     id: order.id,
     orderCode: order.orderCode,
     customerEmail: order.customerEmail,
+    customerNote: order.customerNote,
     userId: order.userId,
     totalAmount: order.totalAmount,
     status: currentStatus,

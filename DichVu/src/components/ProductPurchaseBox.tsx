@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Plus,
   Minus,
+  Globe,
 } from "lucide-react";
 import { formatVND } from "@/components/ProductCard";
 
@@ -20,6 +21,7 @@ interface ProductPurchaseBoxProps {
   price: number;
   stockCount: number;
   productTitle: string;
+  requiresLink?: boolean;
 }
 
 export default function ProductPurchaseBox({
@@ -27,10 +29,12 @@ export default function ProductPurchaseBox({
   price,
   stockCount,
   productTitle,
+  requiresLink = false,
 }: ProductPurchaseBoxProps) {
   const router = useRouter();
   const [quantity, setQuantity] = useState<number>(1);
   const [email, setEmail] = useState<string>("");
+  const [targetLink, setTargetLink] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -55,7 +59,12 @@ export default function ProductPurchaseBox({
     setErrorMessage(null);
 
     if (!email.trim() || !validateEmail(email)) {
-      setErrorMessage("Vui lòng nhập địa chỉ email hợp lệ để nhận mã bản quyền / tài khoản.");
+      setErrorMessage("Vui lòng nhập địa chỉ email hợp lệ để nhận thông báo / mã đơn hàng.");
+      return;
+    }
+
+    if (requiresLink && !targetLink.trim()) {
+      setErrorMessage("Vui lòng nhập link bài viết / video / kênh cần tăng tương tác.");
       return;
     }
 
@@ -74,6 +83,7 @@ export default function ProductPurchaseBox({
         },
         body: JSON.stringify({
           customerEmail: email.trim(),
+          customerNote: requiresLink ? targetLink.trim() : undefined,
           items: [
             {
               productId,
@@ -173,6 +183,34 @@ export default function ProductPurchaseBox({
             </div>
           </div>
         </div>
+
+        {/* Target Link Input for SMM services */}
+        {requiresLink && (
+          <div>
+            <label
+              htmlFor="targetLink"
+              className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2"
+            >
+              Link video / bài viết / kênh <span className="text-rose-400">*</span>
+            </label>
+            <div className="relative">
+              <input
+                id="targetLink"
+                type="url"
+                required
+                placeholder="https://www.tiktok.com/@... hoặc https://facebook.com/..."
+                value={targetLink}
+                disabled={isLoading || !inStock}
+                onChange={(e) => setTargetLink(e.target.value)}
+                className="w-full rounded-xl border border-slate-700 bg-slate-800/90 py-3 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:border-indigo-500 focus:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 disabled:opacity-50 transition-all"
+              />
+              <Globe className="absolute left-3.5 top-3.5 h-4 w-4 text-indigo-400" />
+            </div>
+            <p className="mt-1.5 text-[11px] text-slate-400">
+              Dán chính xác link video TikTok hoặc bài viết/fanpage Facebook cần tăng.
+            </p>
+          </div>
+        )}
 
         {/* Customer Email Input */}
         <div>

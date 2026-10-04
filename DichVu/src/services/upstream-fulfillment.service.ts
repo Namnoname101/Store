@@ -130,7 +130,11 @@ export async function fulfillOrderViaUpstream(
         },
         mapping.supplierProductCode,
         quantityNeeded,
-        order.orderCode
+        order.orderCode,
+        {
+          link: order.customerNote || undefined,
+          customerNote: order.customerNote || undefined,
+        }
       );
 
       if (!purchaseResult.success) {
