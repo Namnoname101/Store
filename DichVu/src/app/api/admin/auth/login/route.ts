@@ -17,14 +17,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!verifyAdminPassword(password)) {
+    if (!(await verifyAdminPassword(password))) {
       return NextResponse.json(
         { error: "Mật khẩu quản trị không chính xác" },
         { status: 401 }
       );
     }
 
-    const token = createAdminSessionToken();
+    const token = await createAdminSessionToken();
     const cookieOpts = getAdminCookieOptions();
 
     const response = NextResponse.json({ success: true });

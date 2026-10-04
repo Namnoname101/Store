@@ -5,7 +5,7 @@ export const config = {
   matcher: ["/admin/:path*", "/api/admin/:path*"],
 };
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
 
   // Allow login page and login API without auth
@@ -19,7 +19,7 @@ export function middleware(req: NextRequest) {
   }
 
   const token = req.cookies.get(ADMIN_COOKIE_NAME)?.value;
-  const isValid = token ? verifyAdminSessionToken(token) : false;
+  const isValid = token ? await verifyAdminSessionToken(token) : false;
 
   if (!isValid) {
     if (pathname.startsWith("/api/admin")) {
