@@ -763,6 +763,23 @@ export default function CheckoutClient({
                   </div>
                 ))}
 
+                {order.discountAmount && order.discountAmount > 0 ? (
+                  <div className="pt-2.5 border-t border-slate-800/80 space-y-1.5 text-xs">
+                    <div className="flex items-center justify-between text-slate-400">
+                      <span>Tạm tính:</span>
+                      <span>{formatVND(order.subtotalAmount || order.totalAmount + order.discountAmount)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-emerald-400 font-medium">
+                      <span>Ưu đãi giảm giá:</span>
+                      <span>- {formatVND(order.discountAmount)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-white font-bold pt-1 border-t border-slate-800/40">
+                      <span>Tổng thanh toán:</span>
+                      <span className="text-indigo-400 font-extrabold">{formatVND(order.totalAmount)}</span>
+                    </div>
+                  </div>
+                ) : null}
+
                 <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
                   <span className="text-slate-400">Email nhận hàng:</span>
                   <span className="font-mono font-medium text-indigo-300 truncate max-w-[200px]">
@@ -873,6 +890,11 @@ export default function CheckoutClient({
                       <div className="text-xl font-black text-indigo-400">
                         {formatVND(order.totalAmount)}
                       </div>
+                      {order.discountAmount && order.discountAmount > 0 ? (
+                        <div className="text-[11px] text-emerald-400 font-medium mt-0.5">
+                          ✓ Đã áp dụng ưu đãi -{formatVND(order.discountAmount)}
+                        </div>
+                      ) : null}
                     </div>
 
                     <button

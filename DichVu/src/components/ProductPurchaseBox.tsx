@@ -13,6 +13,9 @@ import {
   Plus,
   Minus,
   Globe,
+  Ticket,
+  Tag,
+  X as CloseIcon,
 } from "lucide-react";
 import { formatVND } from "@/components/ProductCard";
 
@@ -49,8 +52,71 @@ export default function ProductPurchaseBox({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Coupon state
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    discountAmount: number;
+    finalTotal: number;
+  } | null>(null);
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState<boolean>(false);
+  const [couponFeedback, setCouponFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+
   const inStock = stockCount > 0;
   const totalPrice = price * (quantity || 0);
+  const netTotal = appliedCoupon
+    ? Math.max(1000, totalPrice - appliedCoupon.discountAmount)
+    : totalPrice;
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponFeedback({ type: "error", message: "Vui lòng nhập mã giảm giá" });
+      return;
+    }
+    setIsValidatingCoupon(true);
+    setCouponFeedback(null);
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponCode.trim(), cartTotal: totalPrice }),
+      });
+      const data = await res.json();
+      if (data.valid) {
+        setAppliedCoupon({
+          code: data.code,
+          discountAmount: data.discountAmount,
+          finalTotal: data.finalTotal,
+        });
+        setCouponFeedback({
+          type: "success",
+          message: data.message || `Đã áp dụng mã ${data.code}`,
+        });
+      } else {
+        setAppliedCoupon(null);
+        setCouponFeedback({
+          type: "error",
+          message: data.message || "Mã không hợp lệ",
+        });
+      }
+    } catch {
+      setCouponFeedback({
+        type: "error",
+        message: "Không thể kiểm tra mã giảm giá lúc này",
+      });
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponFeedback(null);
+  };
 
   const handleQuantityChange = (delta: number) => {
     setQuantity((prev) => {
@@ -106,6 +172,7 @@ export default function ProductPurchaseBox({
         body: JSON.stringify({
           customerEmail: email.trim(),
           customerNote: requiresLink ? targetLink.trim() : undefined,
+          couponCode: appliedCoupon?.code || undefined,
           items: [
             {
               productId,
@@ -370,6 +437,76 @@ export default function ProductPurchaseBox({
           </p>
         </div>
 
+        {/* Coupon Code Input */}
+        <div>
+          <label
+            htmlFor="couponCode"
+            className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2"
+          >
+            Mã giảm giá (Nếu có)
+          </label>
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <input
+                id="couponCode"
+                type="text"
+                placeholder="Nhập mã ưu đãi..."
+                value={couponCode}
+                disabled={isLoading || !inStock || appliedCoupon !== null}
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                className="w-full rounded-xl border border-slate-700 bg-slate-800/90 py-2.5 pl-10 pr-3 text-sm text-white placeholder-slate-500 uppercase focus:border-indigo-500 focus:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 disabled:opacity-50 transition-all font-mono"
+              />
+              <Ticket className="absolute left-3.5 top-3 h-4 w-4 text-indigo-400" />
+            </div>
+
+            {appliedCoupon ? (
+              <button
+                type="button"
+                onClick={handleRemoveCoupon}
+                className="px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-750 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1 transition-all"
+              >
+                <CloseIcon className="h-3.5 w-3.5 text-rose-400" />
+                <span>Hủy</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleApplyCoupon}
+                disabled={isValidatingCoupon || !couponCode.trim() || !inStock}
+                className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-indigo-600/20"
+              >
+                {isValidatingCoupon ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Tag className="h-3.5 w-3.5" />
+                )}
+                <span>Áp dụng</span>
+              </button>
+            )}
+          </div>
+
+          {/* Coupon Feedback */}
+          {couponFeedback && (
+            <div
+              className={`mt-2 text-xs flex items-center gap-1.5 ${
+                couponFeedback.type === "success"
+                  ? "text-emerald-400 font-medium"
+                  : "text-rose-400"
+              }`}
+            >
+              <span>{couponFeedback.type === "success" ? "✓" : "⚠️"}</span>
+              <span>{couponFeedback.message}</span>
+            </div>
+          )}
+
+          {appliedCoupon && (
+            <div className="mt-2 inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs">
+              <span className="font-mono font-bold">{appliedCoupon.code}</span>
+              <span>giảm -{formatVND(appliedCoupon.discountAmount)}</span>
+            </div>
+          )}
+        </div>
+
         {/* Error notification banner */}
         {errorMessage && (
           <div className="flex items-start gap-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
@@ -394,7 +531,10 @@ export default function ProductPurchaseBox({
               ) : (
                 <>
                   <Zap className="h-4 w-4 fill-white" />
-                  <span>MUA NGAY - {formatVND(totalPrice)}</span>
+                  <span>
+                    MUA NGAY - {formatVND(netTotal)}
+                    {appliedCoupon ? ` (Tiết kiệm ${formatVND(appliedCoupon.discountAmount)})` : ""}
+                  </span>
                 </>
               )}
             </button>
