@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Package,
@@ -13,6 +13,7 @@ import {
   Shield,
   Menu,
   X,
+  LogOut,
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -21,7 +22,27 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // If on admin login page, render children cleanly without sidebar
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await fetch("/api/admin/auth/logout", { method: "POST" });
+      router.push("/admin/login");
+      router.refresh();
+    } catch {
+      router.push("/admin/login");
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   const navigation = [
     {
@@ -113,8 +134,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </nav>
           </div>
 
-          {/* Footer Back Link */}
-          <div className="pt-6 border-t border-slate-800/60 mt-6">
+          {/* Footer Back & Logout Links */}
+          <div className="pt-6 border-t border-slate-800/60 mt-6 space-y-1">
             <Link
               href="/"
               className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-400 hover:bg-slate-800/60 hover:text-white transition-all"
@@ -122,6 +143,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <ArrowLeft className="h-4 w-4" />
               <span>Quay lại cửa hàng</span>
             </Link>
+            <button
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="w-full flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-sm font-medium text-red-400/80 hover:bg-red-500/10 hover:text-red-400 transition-all text-left disabled:opacity-50"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>{isLoggingOut ? "Đang đăng xuất..." : "Đăng xuất"}</span>
+            </button>
           </div>
         </div>
       </aside>
