@@ -4,6 +4,7 @@ import {
   releaseExpiredReservations,
 } from "@/services/inventory.service";
 import { generateVietQrUrl, generateOrderCode } from "@/lib/vietqr";
+import { validateCoupon } from "@/services/coupon.service";
 import type { Order, OrderItem, Product } from "@prisma/client";
 
 export interface OrderItemInput {
@@ -16,6 +17,7 @@ export interface CreateOrderInput {
   items: OrderItemInput[];
   userId?: string;
   customerNote?: string;
+  couponCode?: string;
 }
 
 export interface OrderDetailsResponse {
@@ -25,6 +27,9 @@ export interface OrderDetailsResponse {
   customerNote?: string | null;
   userId?: string | null;
   totalAmount: number;
+  subtotalAmount?: number;
+  discountAmount?: number;
+  couponId?: string | null;
   status: string;
   paymentMethod: string;
   upstreamStatus?: string;
@@ -104,11 +109,26 @@ export async function createOrder(data: CreateOrderInput) {
     }
   }
 
-  // Calculate real totalAmount
-  const totalAmount = data.items.reduce((sum, item) => {
+  // Calculate gross subtotalAmount
+  const subtotalAmount = data.items.reduce((sum, item) => {
     const product = productMap.get(item.productId)!;
     return sum + product.price * item.quantity;
   }, 0);
+
+  // Validate and calculate coupon discount if provided
+  let discountAmount = 0;
+  let couponId: string | null = null;
+  if (data.couponCode && data.couponCode.trim()) {
+    const validation = await validateCoupon(data.couponCode, subtotalAmount);
+    if (!validation.valid || !validation.coupon) {
+      throw new Error(validation.message || "Mã giảm giá không hợp lệ");
+    }
+    discountAmount = validation.discountAmount;
+    couponId = validation.coupon.id;
+  }
+
+  // Net total amount customer pays (with 1,000 VND minimum floor)
+  const totalAmount = Math.max(1000, subtotalAmount - discountAmount);
 
   // Generate unique orderCode
   let orderCode = "";
@@ -136,6 +156,9 @@ export async function createOrder(data: CreateOrderInput) {
           customerNote: data.customerNote ? data.customerNote.trim() : null,
           userId: data.userId || null,
           totalAmount,
+          subtotalAmount,
+          discountAmount,
+          couponId,
           status: OrderStatus.PENDING,
           paymentMethod: "VIETQR",
           expiresAt,
@@ -155,6 +178,14 @@ export async function createOrder(data: CreateOrderInput) {
           },
         },
       });
+
+      // Increment coupon usage count atomically if coupon applied
+      if (couponId) {
+        await tx.coupon.update({
+          where: { id: couponId },
+          data: { usedCount: { increment: 1 } },
+        });
+      }
 
       // Reserve stock only for LOCAL_STOCK items in the order
       for (const item of data.items) {
@@ -321,6 +352,9 @@ export async function getOrderDetails(
     customerNote: order.customerNote,
     userId: order.userId,
     totalAmount: order.totalAmount,
+    subtotalAmount: order.subtotalAmount,
+    discountAmount: order.discountAmount,
+    couponId: order.couponId,
     status: currentStatus,
     paymentMethod: order.paymentMethod,
     upstreamStatus: order.upstreamStatus,

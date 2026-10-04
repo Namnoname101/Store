@@ -4,13 +4,14 @@ import { createOrder } from "@/services/order.service";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { customerEmail, items, userId, customerNote } = body || {};
+    const { customerEmail, items, userId, customerNote, couponCode } = body || {};
 
     const order = await createOrder({
       customerEmail,
       items,
       userId,
       customerNote,
+      couponCode,
     });
 
     return NextResponse.json(
@@ -20,6 +21,8 @@ export async function POST(request: Request) {
           orderCode: order.orderCode,
           expiresAt: order.expiresAt,
           totalAmount: order.totalAmount,
+          subtotalAmount: order.subtotalAmount,
+          discountAmount: order.discountAmount,
           vietQrUrl: order.vietQrUrl,
         },
       },
