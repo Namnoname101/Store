@@ -11,6 +11,7 @@ import {
   X,
   ShoppingBag,
   ExternalLink,
+  ReceiptText,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -94,6 +95,14 @@ export default function Navbar() {
         {/* Actions - Desktop */}
         <div className="hidden sm:flex items-center gap-3">
           <Link
+            href="/lookup"
+            className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/80 px-3 py-2 text-xs font-medium text-slate-300 hover:border-indigo-500/50 hover:bg-slate-800 hover:text-white transition-all shadow-sm"
+          >
+            <ReceiptText className="h-3.5 w-3.5 text-indigo-400" />
+            <span>Tra cứu đơn</span>
+          </Link>
+
+          <Link
             href="/admin"
             className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/80 px-3.5 py-2 text-xs font-medium text-slate-300 hover:border-indigo-500/50 hover:bg-slate-800 hover:text-white transition-all shadow-sm"
           >
@@ -153,6 +162,14 @@ export default function Navbar() {
               className="text-base font-medium text-slate-300 hover:text-white px-2 py-1"
             >
               Quy trình mua hàng
+            </Link>
+            <Link
+              href="/lookup"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center gap-2 text-base font-medium text-slate-300 hover:text-white px-2 py-1"
+            >
+              <ReceiptText className="h-4 w-4 text-indigo-400" />
+              <span>Tra cứu đơn hàng</span>
             </Link>
             <div className="pt-2 border-t border-slate-800/80">
               <Link

@@ -337,3 +337,85 @@ export async function getOrderDetails(
     updatedAt: order.updatedAt,
   };
 }
+
+export interface LookupOrderSummary {
+  orderCode: string;
+  customerEmail: string;
+  totalAmount: number;
+  status: string;
+  createdAt: Date;
+  expiresAt: Date;
+  upstreamStatus?: string | null;
+  items: Array<{
+    productTitle: string;
+    quantity: number;
+    price: number;
+  }>;
+}
+
+/**
+ * Searches orders by orderCode or customerEmail.
+ */
+export async function lookupOrders(query: string): Promise<LookupOrderSummary[]> {
+  const cleanQuery = query?.trim();
+  if (!cleanQuery) return [];
+
+  const isEmail = cleanQuery.includes("@");
+  let orders;
+
+  if (isEmail) {
+    orders = await prisma.order.findMany({
+      where: {
+        customerEmail: {
+          equals: cleanQuery.toLowerCase(),
+        },
+      },
+      include: {
+        orderItems: {
+          include: {
+            product: {
+              select: { title: true },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+    });
+  } else {
+    // Lookup by orderCode (case-insensitive via uppercase)
+    orders = await prisma.order.findMany({
+      where: {
+        orderCode: {
+          equals: cleanQuery.toUpperCase(),
+        },
+      },
+      include: {
+        orderItems: {
+          include: {
+            product: {
+              select: { title: true },
+            },
+          },
+        },
+      },
+      take: 5,
+    });
+  }
+
+  return orders.map((order) => ({
+    orderCode: order.orderCode,
+    customerEmail: order.customerEmail,
+    totalAmount: order.totalAmount,
+    status: order.status,
+    createdAt: order.createdAt,
+    expiresAt: order.expiresAt,
+    upstreamStatus: order.upstreamStatus,
+    items: order.orderItems.map((item) => ({
+      productTitle: item.product?.title || "Sản phẩm",
+      quantity: item.quantity,
+      price: item.price,
+    })),
+  }));
+}
+

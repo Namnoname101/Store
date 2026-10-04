@@ -16,6 +16,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import type { Product } from "@prisma/client";
+import { playSuccessChime } from "@/lib/sound";
+import { saveRecentOrder } from "@/lib/order-storage";
 
 export interface InstructionGuide {
   title: string;
@@ -157,6 +159,25 @@ export default function SecretDisplay({
   const [isSubmittingRefund, setIsSubmittingRefund] = useState<boolean>(false);
   const [refundError, setRefundError] = useState<string | null>(null);
   const [refundSuccessMsg, setRefundSuccessMsg] = useState<string | null>(null);
+
+  // Play chime and save recent order on success page arrival
+  useEffect(() => {
+    if (orderCode) {
+      playSuccessChime();
+      const itemsSummary =
+        orderItems?.map((i) => i.product?.title || "Sản phẩm").join(", ") ||
+        "Sản phẩm số";
+      const totalAmount =
+        orderItems?.reduce((sum, i) => sum + (i.price || 0) * (i.quantity || 1), 0) || 0;
+      saveRecentOrder({
+        orderCode,
+        totalAmount,
+        createdAt: new Date().toISOString(),
+        itemsSummary,
+        status: "PAID",
+      });
+    }
+  }, [orderCode, orderItems]);
 
   // Auto-polling when PENDING_UPSTREAM
   useEffect(() => {

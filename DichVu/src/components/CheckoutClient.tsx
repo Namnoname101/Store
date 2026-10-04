@@ -24,6 +24,8 @@ import {
 import CountdownTimer from "@/components/CountdownTimer";
 import { formatVND } from "@/components/ProductCard";
 import type { OrderDetailsResponse } from "@/services/order.service";
+import { playSuccessChime } from "@/lib/sound";
+import { saveRecentOrder } from "@/lib/order-storage";
 
 export interface BankConfig {
   bankId: string;
@@ -77,6 +79,21 @@ export default function CheckoutClient({
 
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Save order to LocalStorage on mount
+  useEffect(() => {
+    const itemsSummary =
+      order.orderItems?.map((i) => i.product?.title || "Sản phẩm").join(", ") ||
+      "Sản phẩm số";
+    saveRecentOrder({
+      orderCode: order.orderCode,
+      totalAmount: order.totalAmount,
+      customerEmail: order.customerEmail,
+      createdAt: order.createdAt ? String(order.createdAt) : new Date().toISOString(),
+      itemsSummary,
+      status: order.status,
+    });
+  }, [order]);
+
   // If already paid and completed, navigate immediately
   useEffect(() => {
     if (status === "PAID") {
@@ -121,6 +138,18 @@ export default function CheckoutClient({
         }
 
         if (data.status === "PAID") {
+          playSuccessChime();
+          const itemsSummary =
+            order.orderItems?.map((i) => i.product?.title || "Sản phẩm").join(", ") ||
+            "Sản phẩm số";
+          saveRecentOrder({
+            orderCode: order.orderCode,
+            totalAmount: order.totalAmount,
+            customerEmail: order.customerEmail,
+            createdAt: order.createdAt ? String(order.createdAt) : new Date().toISOString(),
+            itemsSummary,
+            status: "PAID",
+          });
           if (
             data.upstreamStatus === "COMPLETED" ||
             !data.upstreamStatus ||
@@ -139,7 +168,7 @@ export default function CheckoutClient({
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
     };
-  }, [status, upstreamStatus, refundInfo, order.orderCode, router]);
+  }, [status, upstreamStatus, refundInfo, order, router]);
 
   const handleCopy = async (field: string, text: string) => {
     try {
