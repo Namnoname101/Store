@@ -58,6 +58,12 @@ export const UpstreamStatus = {
 } as const;
 export type UpstreamStatus = (typeof UpstreamStatus)[keyof typeof UpstreamStatus];
 
+export const CouponType = {
+  FIXED: "FIXED",
+  PERCENT: "PERCENT",
+} as const;
+export type CouponType = (typeof CouponType)[keyof typeof CouponType];
+
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };

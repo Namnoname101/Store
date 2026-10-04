@@ -74,6 +74,10 @@ model Order {
   userId         String?
   user           User?                @relation(fields: [userId], references: [id])
   totalAmount    Int                  // VND
+  subtotalAmount Int                  @default(0) // Gross amount before discount
+  discountAmount Int                  @default(0) // Discount VND subtracted
+  couponId       String?
+  coupon         Coupon?              @relation(fields: [couponId], references: [id])
   status         String               @default("PENDING") // OrderStatus: PENDING, PAID, CANCELLED, EXPIRED
   paymentMethod  String               @default("VIETQR")
   upstreamStatus String               @default("NOT_APPLICABLE") // UpstreamStatus: NOT_APPLICABLE, PENDING_UPSTREAM, COMPLETED, FAILED, REFUNDED
@@ -87,6 +91,22 @@ model Order {
   transactions   PaymentTransaction[]
   createdAt      DateTime             @default(now())
   updatedAt      DateTime             @updatedAt
+}
+
+model Coupon {
+  id            String    @id @default(uuid())
+  code          String    @unique // Normalized uppercase
+  type          String    @default("FIXED") // CouponType: FIXED, PERCENT
+  value         Int       // VND or percent
+  minOrderValue Int       @default(0) // VND
+  maxDiscount   Int?      // Max discount VND ceiling for percent
+  usageLimit    Int?      // Max total uses
+  usedCount     Int       @default(0)
+  expiresAt     DateTime?
+  isActive      Boolean   @default(true)
+  orders        Order[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model Supplier {
