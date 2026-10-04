@@ -42,72 +42,80 @@ async function main() {
   console.log("Category:", category.name);
   const productsToSeed = [
     {
-      title: "G\xF3i 1.000 Tim TikTok Vi\u1EC7t Nam (Si\xEAu T\u1ED1c)",
+      title: "T\u0103ng Tim / Like TikTok Vi\u1EC7t Nam (Si\xEAu T\u1ED1c)",
       slug: "tang-tim-tiktok-1000",
-      description: `T\u0103ng 1.000 tim/like cho video TikTok Vi\u1EC7t Nam ch\u1EA5t l\u01B0\u1EE3ng cao.
+      description: `T\u0103ng tim/like cho video TikTok Vi\u1EC7t Nam ch\u1EA5t l\u01B0\u1EE3ng cao.
 Kh\u1EDFi ch\u1EA1y t\u1EF1 \u0111\u1ED9ng sau khi thanh to\xE1n, t\u1ED1c \u0111\u1ED9 cao, t\u1EF7 l\u1EC7 t\u1EE5t c\u1EF1c th\u1EA5p.
 Vui l\xF2ng nh\u1EADp ch\xEDnh x\xE1c link video TikTok c\xF4ng khai c\u1EA7n t\u0103ng tim.`,
-      price: 25e3,
-      originalPrice: 45e3,
+      price: 25,
+      originalPrice: 45,
       type: "COURSE_LINK",
       fulfillmentType: "API_DROPSHIP",
+      minQuantity: 50,
+      maxQuantity: 15e3,
       thumbnailUrl: "https://images.unsplash.com/photo-1611162618071-b39a2ec055fb?w=600&auto=format&fit=crop&q=80",
       supplierProductCode: "6799",
-      supplierPrice: 4e3,
+      supplierPrice: 4,
       supplierStock: 999999,
       markupType: "FIXED_AMOUNT",
-      markupValue: 21e3
+      markupValue: 21
     },
     {
-      title: "G\xF3i 1.000 Follower TikTok Vi\u1EC7t Nam",
+      title: "T\u0103ng Follower TikTok Vi\u1EC7t Nam",
       slug: "tang-follow-tiktok-1000",
-      description: `T\u0103ng 1.000 ng\u01B0\u1EDDi theo d\xF5i (Followers) k\xEAnh TikTok Vi\u1EC7t Nam th\u1EADt.
+      description: `T\u0103ng ng\u01B0\u1EDDi theo d\xF5i (Followers) k\xEAnh TikTok Vi\u1EC7t Nam th\u1EADt.
 Gi\xFAp b\u1EADt t\xEDnh n\u0103ng ph\xE1t tr\u1EF1c ti\u1EBFp (Livestream) v\xE0 m\u1EDF gi\u1ECF h\xE0ng TikTok Shop nhanh ch\xF3ng.
 Vui l\xF2ng nh\u1EADp link profile k\xEAnh TikTok (d\u1EA1ng https://www.tiktok.com/@username).`,
-      price: 69e3,
-      originalPrice: 119e3,
+      price: 69,
+      originalPrice: 119,
       type: "COURSE_LINK",
       fulfillmentType: "API_DROPSHIP",
+      minQuantity: 50,
+      maxQuantity: 1e7,
       thumbnailUrl: "https://images.unsplash.com/photo-1611605698335-8b1569810432?w=600&auto=format&fit=crop&q=80",
       supplierProductCode: "6803",
-      supplierPrice: 2e4,
+      supplierPrice: 20,
       supplierStock: 999999,
       markupType: "FIXED_AMOUNT",
-      markupValue: 49e3
+      markupValue: 49
     },
     {
-      title: "G\xF3i 1.000 Like B\xE0i Vi\u1EBFt Facebook",
+      title: "T\u0103ng Like B\xE0i Vi\u1EBFt Facebook",
       slug: "tang-like-facebook-1000",
-      description: `T\u0103ng 1.000 l\u01B0\u1EE3t like/c\u1EA3m x\xFAc b\xE0i vi\u1EBFt Facebook Vi\u1EC7t Nam ng\u01B0\u1EDDi d\xF9ng th\u1EADt.
+      description: `T\u0103ng l\u01B0\u1EE3t like/c\u1EA3m x\xFAc b\xE0i vi\u1EBFt Facebook Vi\u1EC7t Nam ng\u01B0\u1EDDi d\xF9ng th\u1EADt.
 \u0110\u1EA9y t\u01B0\u01A1ng t\xE1c b\xE1n h\xE0ng, uy t\xEDn cho b\xE0i vi\u1EBFt tr\xEAn trang c\xE1 nh\xE2n ho\u1EB7c fanpage.
 Vui l\xF2ng \u0111\u1EC3 b\xE0i vi\u1EBFt \u1EDF ch\u1EBF \u0111\u1ED9 C\xF4ng khai (Public).`,
-      price: 35e3,
-      originalPrice: 6e4,
+      price: 35,
+      originalPrice: 60,
       type: "COURSE_LINK",
       fulfillmentType: "API_DROPSHIP",
+      minQuantity: 50,
+      maxQuantity: 2e3,
       thumbnailUrl: "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=600&auto=format&fit=crop&q=80",
       supplierProductCode: "6741",
-      supplierPrice: 8e3,
+      supplierPrice: 8,
       supplierStock: 999999,
       markupType: "FIXED_AMOUNT",
-      markupValue: 27e3
+      markupValue: 27
     },
     {
-      title: "G\xF3i 1.000 Follower Facebook (Profile/Page)",
+      title: "T\u0103ng Follower Facebook (Profile/Page)",
       slug: "tang-follow-facebook-1000",
-      description: `T\u0103ng 1.000 l\u01B0\u1EE3t theo d\xF5i trang c\xE1 nh\xE2n ho\u1EB7c Fanpage Facebook Vi\u1EC7t Nam.
+      description: `T\u0103ng l\u01B0\u1EE3t theo d\xF5i trang c\xE1 nh\xE2n ho\u1EB7c Fanpage Facebook Vi\u1EC7t Nam.
 T\xE0i kho\u1EA3n Vi\u1EC7t Nam ch\u1EA5t l\u01B0\u1EE3ng cao, \u0111\u1ED9 \u1ED5n \u0111\u1ECBnh cao, b\u1EA3o h\xE0nh \xEDt t\u1EE5t.
 Vui l\xF2ng b\u1EADt t\xEDnh n\u0103ng cho ph\xE9p ng\u01B0\u1EDDi theo d\xF5i c\xF4ng khai.`,
-      price: 49e3,
-      originalPrice: 89e3,
+      price: 49,
+      originalPrice: 89,
       type: "COURSE_LINK",
       fulfillmentType: "API_DROPSHIP",
+      minQuantity: 500,
+      maxQuantity: 1e5,
       thumbnailUrl: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&auto=format&fit=crop&q=80",
       supplierProductCode: "6709",
-      supplierPrice: 12e3,
+      supplierPrice: 12,
       supplierStock: 999999,
       markupType: "FIXED_AMOUNT",
-      markupValue: 37e3
+      markupValue: 37
     }
   ];
   for (const item of productsToSeed) {
@@ -120,6 +128,8 @@ Vui l\xF2ng b\u1EADt t\xEDnh n\u0103ng cho ph\xE9p ng\u01B0\u1EDDi theo d\xF5i c
         originalPrice: item.originalPrice,
         type: item.type,
         fulfillmentType: item.fulfillmentType,
+        minQuantity: item.minQuantity,
+        maxQuantity: item.maxQuantity,
         thumbnailUrl: item.thumbnailUrl,
         categoryId: category.id,
         isActive: true
@@ -132,6 +142,8 @@ Vui l\xF2ng b\u1EADt t\xEDnh n\u0103ng cho ph\xE9p ng\u01B0\u1EDDi theo d\xF5i c
         originalPrice: item.originalPrice,
         type: item.type,
         fulfillmentType: item.fulfillmentType,
+        minQuantity: item.minQuantity,
+        maxQuantity: item.maxQuantity,
         thumbnailUrl: item.thumbnailUrl,
         categoryId: category.id,
         isActive: true

@@ -123,6 +123,9 @@ export default function ProductCard({ product }: ProductCardProps) {
           <div>
             <div className="text-base font-bold text-white tracking-tight">
               {formatVND(price)}
+              {(product.category?.slug === "dich-vu-mxh" || (product.minQuantity && product.minQuantity > 1)) && (
+                <span className="text-[11px] font-normal text-slate-400 ml-1">/ lượt</span>
+              )}
             </div>
             {originalPrice && originalPrice > price && (
               <div className="text-xs text-slate-500 line-through">
@@ -133,7 +136,12 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {/* Stock Tag */}
           <div>
-            {inStock ? (
+            {product.category?.slug === "dich-vu-mxh" || stockCount >= 99999 ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-cyan-500/25 bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-medium text-cyan-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                Tự động 24/7
+              </span>
+            ) : inStock ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Còn {stockCount} hàng

@@ -96,6 +96,12 @@ export async function createOrder(data: CreateOrderInput) {
     if (!product.isActive) {
       throw new Error(`Product is not active: ${product.title}`);
     }
+    if (product.minQuantity && item.quantity < product.minQuantity) {
+      throw new Error(`Số lượng đặt tối thiểu cho "${product.title}" là ${product.minQuantity}`);
+    }
+    if (product.maxQuantity && item.quantity > product.maxQuantity) {
+      throw new Error(`Số lượng đặt tối đa cho "${product.title}" là ${product.maxQuantity}`);
+    }
   }
 
   // Calculate real totalAmount

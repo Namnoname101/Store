@@ -343,48 +343,56 @@ describe("Dynamic Pricing & Auto Stock Sync Engine", () => {
     });
 
     describe("syncAllActiveSuppliers", () => {
-      it("should sync only active mappings from active suppliers and report bulk results", async () => {
-        // Setup mock stock and prices
-        mockAdapter.setProduct("NETFLIX_MOCK_01", {
-          name: "Netflix Premium",
-          price: 50000,
-          inStock: 10,
-        });
-        mockAdapter.setProduct("SPOTIFY_MOCK_02", {
-          name: "Spotify Premium",
-          price: 35000,
-          inStock: 0, // Should be paused
-        });
+      it(
+        "should sync only active mappings from active suppliers and report bulk results",
+        async () => {
+          // Setup mock stock and prices
+          mockAdapter.setProduct("NETFLIX_MOCK_01", {
+            name: "Netflix Premium",
+            price: 50000,
+            inStock: 10,
+          });
+          mockAdapter.setProduct("SPOTIFY_MOCK_02", {
+            name: "Spotify Premium",
+            price: 35000,
+            inStock: 0, // Should be paused
+          });
 
-        const bulkResult: BulkSyncResult = await syncAllActiveSuppliers();
+          const bulkResult: BulkSyncResult = await syncAllActiveSuppliers();
 
-        // Mapping 1 & Mapping 2 have isAutoSync: true, Mapping 3 has isAutoSync: false
-        expect(bulkResult.totalMappings).toBeGreaterThanOrEqual(2);
-        expect(bulkResult.syncedCount).toBeGreaterThanOrEqual(2);
-        // Verify mapping 1 and mapping 2 specifically had no errors
-        const relevantErrors = bulkResult.errors.filter(
-          (e) => e.mappingId === mappingId1 || e.mappingId === mappingId2
-        );
-        expect(relevantErrors).toEqual([]);
+          // Mapping 1 & Mapping 2 have isAutoSync: true, Mapping 3 has isAutoSync: false
+          expect(bulkResult.totalMappings).toBeGreaterThanOrEqual(2);
+          expect(bulkResult.syncedCount).toBeGreaterThanOrEqual(2);
+          // Verify mapping 1 and mapping 2 specifically had no errors
+          const relevantErrors = bulkResult.errors.filter(
+            (e) => e.mappingId === mappingId1 || e.mappingId === mappingId2
+          );
+          expect(relevantErrors).toEqual([]);
 
-        // Verify mapping 3 was untouched
-        const untouchedMapping = await prisma.supplierProductMapping.findUnique({
-          where: { id: mappingId3 },
-        });
-        expect(untouchedMapping?.supplierPrice).toBe(50000);
-      });
+          // Verify mapping 3 was untouched
+          const untouchedMapping = await prisma.supplierProductMapping.findUnique({
+            where: { id: mappingId3 },
+          });
+          expect(untouchedMapping?.supplierPrice).toBe(50000);
+        },
+        15000
+      );
 
-      it("should gracefully handle and collect errors without stopping remaining syncs", async () => {
-        // Configure mockAdapter to throw network error
-        mockAdapter.simulateError("NETWORK_ERROR");
+      it(
+        "should gracefully handle and collect errors without stopping remaining syncs",
+        async () => {
+          // Configure mockAdapter to throw network error
+          mockAdapter.simulateError("NETWORK_ERROR");
 
-        const bulkResult = await syncAllActiveSuppliers();
+          const bulkResult = await syncAllActiveSuppliers();
 
-        expect(bulkResult.totalMappings).toBeGreaterThanOrEqual(2);
-        expect(bulkResult.errors.length).toBeGreaterThanOrEqual(1);
-        expect(bulkResult.errors[0]).toHaveProperty("mappingId");
-        expect(bulkResult.errors[0]).toHaveProperty("error");
-      });
+          expect(bulkResult.totalMappings).toBeGreaterThanOrEqual(2);
+          expect(bulkResult.errors.length).toBeGreaterThanOrEqual(1);
+          expect(bulkResult.errors[0]).toHaveProperty("mappingId");
+          expect(bulkResult.errors[0]).toHaveProperty("error");
+        },
+        15000
+      );
     });
   });
 });

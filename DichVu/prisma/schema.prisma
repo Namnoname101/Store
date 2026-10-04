@@ -44,6 +44,8 @@ model Product {
   categoryId      String
   category        Category                @relation(fields: [categoryId], references: [id])
   fulfillmentType String                  @default("LOCAL_STOCK") // FulfillmentType: LOCAL_STOCK, API_DROPSHIP
+  minQuantity     Int                     @default(1)
+  maxQuantity     Int?
   supplierMapping SupplierProductMapping?
   items           ProductItem[]
   orderItems      OrderItem[]

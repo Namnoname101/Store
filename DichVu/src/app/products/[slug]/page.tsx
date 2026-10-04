@@ -110,6 +110,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               <span className="text-3xl font-extrabold text-indigo-400">
                 {formatVND(product.price)}
               </span>
+              {(product.category?.slug === "dich-vu-mxh" || (product.minQuantity && product.minQuantity > 1)) && (
+                <span className="text-sm font-medium text-slate-400">
+                  / 1 {product.title.toLowerCase().includes("follow") ? "follow" : product.title.toLowerCase().includes("tim") ? "tim" : "like"}
+                </span>
+              )}
               {product.originalPrice && product.originalPrice > product.price && (
                 <span className="text-base text-slate-500 line-through">
                   {formatVND(product.originalPrice)}
@@ -184,20 +189,37 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         {/* Right column: Sticky Purchase Box */}
         <div className="lg:col-span-5">
           <div className="sticky top-24">
-            <ProductPurchaseBox
-              productId={product.id}
-              price={product.price}
-              stockCount={product.stockCount}
-              productTitle={product.title}
-              requiresLink={
+            {(() => {
+              const isSMM =
                 product.category?.slug === "dich-vu-mxh" ||
                 product.title.toLowerCase().includes("tiktok") ||
                 product.title.toLowerCase().includes("facebook") ||
                 product.title.toLowerCase().includes("tim") ||
                 product.title.toLowerCase().includes("like") ||
-                product.title.toLowerCase().includes("follow")
-              }
-            />
+                product.title.toLowerCase().includes("follow");
+
+              const unitLabel = product.title.toLowerCase().includes("follow")
+                ? "follow"
+                : product.title.toLowerCase().includes("tim")
+                ? "tim"
+                : product.title.toLowerCase().includes("like")
+                ? "like"
+                : "lượt";
+
+              return (
+                <ProductPurchaseBox
+                  productId={product.id}
+                  price={product.price}
+                  stockCount={product.stockCount}
+                  productTitle={product.title}
+                  requiresLink={isSMM}
+                  isCustomQuantity={isSMM}
+                  minQuantity={product.minQuantity || (isSMM ? 50 : 1)}
+                  maxQuantity={product.maxQuantity || null}
+                  unitLabel={unitLabel}
+                />
+              );
+            })()}
           </div>
         </div>
       </div>
