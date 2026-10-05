@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -12,12 +12,30 @@ import {
   ShoppingBag,
   ExternalLink,
   ReceiptText,
+  Wallet,
+  User,
 } from "lucide-react";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [user, setUser] = useState<{ id: string; username: string; balance: number } | null>(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.authenticated && data?.user) {
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      })
+      .catch(() => setUser(null))
+      .finally(() => setIsLoadingUser(false));
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,6 +120,39 @@ export default function Navbar() {
             <span>Tra cứu đơn</span>
           </Link>
 
+          {/* User Session / Wallet Widget */}
+          {!isLoadingUser && (
+            user ? (
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/topup"
+                  title="Nạp tiền vào ví"
+                  className="flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-950/40 px-3 py-2 text-xs font-semibold text-emerald-300 hover:border-emerald-400 hover:bg-emerald-900/50 transition-all shadow-sm shadow-emerald-950/50 group"
+                >
+                  <Wallet className="h-3.5 w-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                  <span>{user.balance.toLocaleString("vi-VN")}đ</span>
+                </Link>
+
+                <Link
+                  href="/profile"
+                  title="Trang cá nhân & Lịch sử số dư"
+                  className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/80 px-3 py-2 text-xs font-medium text-slate-200 hover:border-indigo-500/50 hover:bg-slate-800 transition-all shadow-sm"
+                >
+                  <User className="h-3.5 w-3.5 text-indigo-400" />
+                  <span className="max-w-[100px] truncate">{user.username}</span>
+                </Link>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-indigo-500 transition-all shadow-sm shadow-indigo-600/25"
+              >
+                <User className="h-3.5 w-3.5" />
+                <span>Đăng nhập</span>
+              </Link>
+            )
+          )}
+
           <Link
             href="/admin"
             className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/80 px-3.5 py-2 text-xs font-medium text-slate-300 hover:border-indigo-500/50 hover:bg-slate-800 hover:text-white transition-all shadow-sm"
@@ -171,6 +222,41 @@ export default function Navbar() {
               <ReceiptText className="h-4 w-4 text-indigo-400" />
               <span>Tra cứu đơn hàng</span>
             </Link>
+
+            {user ? (
+              <>
+                <Link
+                  href="/topup"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-between rounded-lg border border-emerald-500/30 bg-emerald-950/40 px-3 py-2 text-sm font-semibold text-emerald-300"
+                >
+                  <div className="flex items-center gap-2">
+                    <Wallet className="h-4 w-4 text-emerald-400" />
+                    <span>Ví số dư</span>
+                  </div>
+                  <span>{user.balance.toLocaleString("vi-VN")}đ</span>
+                </Link>
+
+                <Link
+                  href="/profile"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-2 text-base font-medium text-slate-300 hover:text-white px-2 py-1"
+                >
+                  <User className="h-4 w-4 text-indigo-400" />
+                  <span>Tài khoản ({user.username})</span>
+                </Link>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500"
+              >
+                <User className="h-4 w-4" />
+                <span>Đăng nhập / Đăng ký</span>
+              </Link>
+            )}
+
             <div className="pt-2 border-t border-slate-800/80">
               <Link
                 href="/admin"
