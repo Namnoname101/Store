@@ -202,11 +202,21 @@ export async function verifyUserSessionToken(token: string): Promise<UserSession
   }
 }
 
-// Get User Session from Cookie
-export async function getUserSession(): Promise<UserSessionPayload | null> {
+// Get User Session from Cookie (supports both Server Components and Route Handlers)
+export async function getUserSession(req?: { cookies: { get: (name: string) => { value: string } | undefined } }): Promise<UserSessionPayload | null> {
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get(USER_COOKIE_NAME)?.value;
+    let token: string | undefined;
+    if (req) {
+      token = req.cookies.get(USER_COOKIE_NAME)?.value;
+    }
+    if (!token) {
+      try {
+        const cookieStore = cookies();
+        token = cookieStore.get(USER_COOKIE_NAME)?.value;
+      } catch {
+        // cookies() may throw outside Next.js request store
+      }
+    }
     if (!token) return null;
     return await verifyUserSessionToken(token);
   } catch {
