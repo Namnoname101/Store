@@ -64,6 +64,22 @@ export const CouponType = {
 } as const;
 export type CouponType = (typeof CouponType)[keyof typeof CouponType];
 
+export const DepositStatus = {
+  PENDING: "PENDING",
+  COMPLETED: "COMPLETED",
+  EXPIRED: "EXPIRED",
+  CANCELLED: "CANCELLED",
+} as const;
+export type DepositStatus = (typeof DepositStatus)[keyof typeof DepositStatus];
+
+export const WalletTransactionType = {
+  TOPUP: "TOPUP",
+  ORDER_PAYMENT: "ORDER_PAYMENT",
+  REFUND: "REFUND",
+  ADMIN_ADJUST: "ADMIN_ADJUST",
+} as const;
+export type WalletTransactionType = (typeof WalletTransactionType)[keyof typeof WalletTransactionType];
+
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };

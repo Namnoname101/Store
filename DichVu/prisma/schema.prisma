@@ -12,14 +12,19 @@ datasource db {
 // TypeScript enum helpers are exported from src/lib/prisma.ts.
 
 model User {
-  id           String    @id @default(uuid())
-  email        String    @unique
-  passwordHash String?
-  name         String?
-  role         String    @default("USER") // Role: USER, ADMIN
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  orders       Order[]
+  id                 String              @id @default(uuid())
+  username           String?             @unique
+  email              String?             @unique
+  passwordHash       String?
+  name               String?
+  role               String              @default("CUSTOMER") // Role: CUSTOMER, ADMIN
+  balance            Int                 @default(0)          // Số dư ví VND (>= 0)
+  totalDeposited     Int                 @default(0)          // Tổng tiền đã nạp lũy kế
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  orders             Order[]
+  depositOrders      DepositOrder[]
+  walletTransactions WalletTransaction[]
 }
 
 model Category {
@@ -152,13 +157,48 @@ model OrderItem {
 }
 
 model PaymentTransaction {
+  id             String        @id @default(uuid())
+  orderId        String?
+  order          Order?        @relation(fields: [orderId], references: [id])
+  depositOrderId String?
+  depositOrder   DepositOrder? @relation(fields: [depositOrderId], references: [id])
+  transactionId  String        @unique // Mã giao dịch ngân hàng / gateway
+  amount         Int
+  bankCode       String?
+  content        String?
+  rawPayload     String?
+  createdAt      DateTime      @default(now())
+}
+
+model DepositOrder {
+  id           String               @id @default(uuid())
+  depositCode  String               @unique // Ví dụ: NAP582914
+  userId       String
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount       Int                  // Số tiền nạp VND (tối thiểu 20.000 VND)
+  status       String               @default("PENDING") // PENDING | COMPLETED | EXPIRED | CANCELLED
+  expiresAt    DateTime             // Hết hạn sau 30 phút
+  paidAt       DateTime?
+  transactions PaymentTransaction[]
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@index([depositCode])
+  @@index([userId])
+}
+
+model WalletTransaction {
   id            String   @id @default(uuid())
-  orderId       String?
-  order         Order?   @relation(fields: [orderId], references: [id])
-  transactionId String   @unique // Mã giao dịch ngân hàng / gateway
-  amount        Int
-  bankCode      String?
-  content       String?
-  rawPayload    String?
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type          String   // TOPUP | ORDER_PAYMENT | REFUND | ADMIN_ADJUST
+  amount        Int      // Số tiền thay đổi (+nạp, -thanh toán)
+  balanceBefore Int      // Số dư trước biến động
+  balanceAfter  Int      // Số dư sau biến động
+  referenceId   String?  // Mã đơn hàng (ORD...) hoặc mã nạp (NAP...) liên quan
+  description   String   // Diễn giải giao dịch
   createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([referenceId])
 }
