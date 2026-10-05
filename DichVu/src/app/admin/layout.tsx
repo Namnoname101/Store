@@ -15,6 +15,7 @@ import {
   X,
   LogOut,
   Ticket,
+  Users,
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -81,6 +82,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       href: "/admin/suppliers",
       icon: Truck,
       current: pathname.startsWith("/admin/suppliers"),
+    },
+    {
+      name: "Thành viên & Ví",
+      href: "/admin/users",
+      icon: Users,
+      current: pathname.startsWith("/admin/users"),
     },
   ];
 
