@@ -31,15 +31,16 @@ describe("Order Creation with Coupon Integration", () => {
           categoryId: cat.id,
         },
       });
-      // Add stock
-      await prisma.productItem.create({
-        data: {
-          productId: product.id,
-          secretContent: "TEST-KEY-12345",
-          status: "AVAILABLE",
-        },
-      });
     }
+
+    // Add stock item so product is guaranteed in stock
+    await prisma.productItem.create({
+      data: {
+        productId: product.id,
+        secretContent: "TEST-KEY-" + Date.now(),
+        status: "AVAILABLE",
+      },
+    });
 
     const coupon = await prisma.coupon.create({
       data: {
