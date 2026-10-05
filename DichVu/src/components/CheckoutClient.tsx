@@ -20,6 +20,9 @@ import {
   MessageCircle,
   PhoneCall,
   Send,
+  Wallet,
+  Zap,
+  PlusCircle,
 } from "lucide-react";
 import CountdownTimer from "@/components/CountdownTimer";
 import { formatVND } from "@/components/ProductCard";
@@ -78,6 +81,49 @@ export default function CheckoutClient({
   const [refundSuccessMsg, setRefundSuccessMsg] = useState<string | null>(null);
 
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
+
+  // User wallet state
+  const [currentUser, setCurrentUser] = useState<{ id: string; username: string; balance: number } | null>(null);
+  const [selectedMethod, setSelectedMethod] = useState<"VIETQR" | "WALLET">("VIETQR");
+  const [isPayingWallet, setIsPayingWallet] = useState<boolean>(false);
+  const [walletPayError, setWalletPayError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.authenticated && data?.user) {
+          setCurrentUser(data.user);
+          if (data.user.balance >= order.totalAmount) {
+            setSelectedMethod("WALLET");
+          }
+        }
+      })
+      .catch(() => {});
+  }, [order.totalAmount]);
+
+  const handleWalletPayment = async () => {
+    setWalletPayError(null);
+    setIsPayingWallet(true);
+    try {
+      const res = await fetch(`/api/orders/${order.orderCode}/pay-with-wallet`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setWalletPayError(data.message || "Thanh toán bằng số dư ví thất bại");
+        setIsPayingWallet(false);
+        return;
+      }
+
+      playSuccessChime();
+      setStatus("PAID");
+      router.push(`/order-success/${order.orderCode}`);
+    } catch {
+      setWalletPayError("Lỗi kết nối máy chủ. Vui lòng thử lại.");
+      setIsPayingWallet(false);
+    }
+  };
 
   // Save order to LocalStorage on mount
   useEffect(() => {
@@ -696,8 +742,174 @@ export default function CheckoutClient({
         </div>
       )}
 
+      {/* Payment Method Selector (VietQR vs Wallet) */}
+      {!isPaidPendingFulfillment && !isPaidFulfillmentFailed && !isExpired && (
+        <div className="mb-6 rounded-2xl border border-slate-800 bg-slate-900/80 p-4 backdrop-blur-md">
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
+            Chọn phương thức thanh toán
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Option 1: VietQR */}
+            <button
+              type="button"
+              onClick={() => setSelectedMethod("VIETQR")}
+              className={`flex items-center justify-between p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                selectedMethod === "VIETQR"
+                  ? "border-indigo-500 bg-indigo-950/30 ring-1 ring-indigo-500 text-white"
+                  : "border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0">
+                  <QrCode className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="text-sm font-bold">Chuyển khoản VietQR</div>
+                  <div className="text-[11px] text-slate-400">Quét mã QR từ mọi ngân hàng</div>
+                </div>
+              </div>
+              <div className={`h-4 w-4 rounded-full border flex items-center justify-center ${selectedMethod === "VIETQR" ? "border-indigo-500 bg-indigo-500 text-white" : "border-slate-600"}`}>
+                {selectedMethod === "VIETQR" && <Check className="h-3 w-3" />}
+              </div>
+            </button>
+
+            {/* Option 2: Wallet Balance */}
+            {currentUser ? (
+              <button
+                type="button"
+                onClick={() => setSelectedMethod("WALLET")}
+                className={`flex items-center justify-between p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  selectedMethod === "WALLET"
+                    ? "border-emerald-500 bg-emerald-950/30 ring-1 ring-emerald-500 text-white"
+                    : "border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                    <Wallet className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold flex items-center gap-2">
+                      <span>Ví thành viên</span>
+                      <span className="text-xs text-emerald-400 font-extrabold">
+                        ({currentUser.balance.toLocaleString("vi-VN")}đ)
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-slate-400">Thanh toán tức thì 1-click</div>
+                  </div>
+                </div>
+                <div className={`h-4 w-4 rounded-full border flex items-center justify-center ${selectedMethod === "WALLET" ? "border-emerald-500 bg-emerald-500 text-white" : "border-slate-600"}`}>
+                  {selectedMethod === "WALLET" && <Check className="h-3 w-3" />}
+                </div>
+              </button>
+            ) : (
+              <Link
+                href={`/login?callbackUrl=${encodeURIComponent(`/checkout/${order.orderCode}`)}`}
+                className="flex items-center justify-between p-3.5 rounded-xl border border-dashed border-slate-800 bg-slate-950/40 text-slate-400 hover:border-indigo-500/50 hover:text-indigo-300 transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 shrink-0">
+                    <Wallet className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium">Thanh toán bằng số dư ví?</div>
+                    <div className="text-[11px] text-indigo-400 font-semibold">Đăng nhập để dùng ví & nhận key 1-click →</div>
+                  </div>
+                </div>
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Wallet Checkout Card (Shown when selectedMethod === 'WALLET') */}
+      {selectedMethod === "WALLET" && currentUser && !isPaidPendingFulfillment && !isPaidFulfillmentFailed && !isExpired && (
+        <div className="mb-8 rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-slate-900 via-slate-900/95 to-emerald-950/20 p-6 sm:p-8 backdrop-blur-md shadow-2xl">
+          <div className="max-w-xl mx-auto text-center">
+            <div className="h-14 w-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mx-auto mb-4 shadow-lg shadow-emerald-950/50">
+              <Wallet className="h-7 w-7" />
+            </div>
+            <h2 className="text-xl font-bold text-white mb-1">
+              Thanh toán bằng Số dư Ví Thành viên
+            </h2>
+            <p className="text-xs text-slate-400 mb-6">
+              Số tiền đơn hàng sẽ được trừ trực tiếp và hệ thống sẽ cấp phát ngay lập tức.
+            </p>
+
+            {walletPayError && (
+              <div className="mb-5 flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-400 text-left">
+                <AlertCircle className="h-4 w-4 shrink-0 text-red-400" />
+                <span>{walletPayError}</span>
+              </div>
+            )}
+
+            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 mb-6 space-y-2.5 text-xs text-left">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Số dư ví hiện tại:</span>
+                <span className="text-sm font-bold text-emerald-300">{currentUser.balance.toLocaleString("vi-VN")}đ</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Tổng tiền đơn hàng:</span>
+                <span className="text-sm font-extrabold text-white">{formatVND(order.totalAmount)}</span>
+              </div>
+              <div className="border-t border-slate-800 pt-2 flex justify-between items-center">
+                <span className="text-slate-400">Số dư còn lại sau khi thanh toán:</span>
+                <span className={`text-sm font-bold ${currentUser.balance >= order.totalAmount ? "text-slate-200" : "text-rose-400"}`}>
+                  {currentUser.balance >= order.totalAmount
+                    ? (currentUser.balance - order.totalAmount).toLocaleString("vi-VN") + "đ"
+                    : "Không đủ số dư"}
+                </span>
+              </div>
+            </div>
+
+            {currentUser.balance >= order.totalAmount ? (
+              <button
+                type="button"
+                onClick={handleWalletPayment}
+                disabled={isPayingWallet}
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-600/30 hover:from-emerald-500 hover:to-teal-400 focus:outline-none disabled:opacity-60 transition-all cursor-pointer"
+              >
+                {isPayingWallet ? (
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                ) : (
+                  <>
+                    <Zap className="h-4 w-4" />
+                    <span>Xác nhận thanh toán ngay (1-click)</span>
+                  </>
+                )}
+              </button>
+            ) : (
+              <div className="space-y-3">
+                <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-300">
+                  Số dư ví không đủ. Bạn cần nạp thêm ít nhất{" "}
+                  <strong>{(order.totalAmount - currentUser.balance).toLocaleString("vi-VN")}đ</strong> để hoàn tất đơn hàng.
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2.5">
+                  <Link
+                    href="/topup"
+                    target="_blank"
+                    className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-indigo-600 py-3 text-xs font-bold text-white hover:bg-indigo-500"
+                  >
+                    <PlusCircle className="h-4 w-4" />
+                    <span>Nạp tiền vào ví ngay (Mở tab mới)</span>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedMethod("VIETQR")}
+                    className="flex-1 py-3 text-xs font-medium text-slate-300 bg-slate-800 rounded-xl hover:bg-slate-750"
+                  >
+                    Chuyển sang quét mã VietQR
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Standard Checkout View: QR Card + Payment Details Card (Shown when pending payment) */}
-      {!isPaidPendingFulfillment && !isPaidFulfillmentFailed && (
+      {!isPaidPendingFulfillment && !isPaidFulfillmentFailed && selectedMethod === "VIETQR" && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left column: QR Code Scan & instructions */}
           <div className="lg:col-span-5 flex flex-col gap-6">
