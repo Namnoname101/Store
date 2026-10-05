@@ -92,3 +92,15 @@ export function validateOrderCode(code: string): boolean {
 
   return /^ORD\d{6}$/i.test(code.trim());
 }
+
+/**
+ * Extracts deposit code in format NAP + 6 digits (e.g. NAP482910) from transaction memo/content.
+ */
+export function parseDepositCodeFromMemo(memo: string): string | null {
+  if (!memo || typeof memo !== 'string') {
+    return null;
+  }
+
+  const match = memo.match(/(?:^|[^a-zA-Z0-9])(NAP\d{6})(?![a-zA-Z0-9])/i);
+  return match ? match[1].toUpperCase() : null;
+}

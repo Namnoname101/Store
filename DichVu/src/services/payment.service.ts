@@ -1,6 +1,6 @@
-import { prisma, OrderStatus, FulfillmentType } from "@/lib/prisma";
+import { prisma, OrderStatus, FulfillmentType, DepositStatus, WalletTransactionType } from "@/lib/prisma";
 import { commitReservedItemsToSold, releaseExpiredReservations } from "@/services/inventory.service";
-import { parseOrderCodeFromMemo } from "@/lib/vietqr";
+import { parseOrderCodeFromMemo, parseDepositCodeFromMemo } from "@/lib/vietqr";
 import { fulfillOrderViaUpstream } from "@/services/upstream-fulfillment.service";
 
 export interface BankTransactionPayload {
@@ -14,6 +14,7 @@ export interface BankTransactionPayload {
 export interface PaymentProcessResult {
   success: boolean;
   orderCode?: string;
+  depositCode?: string;
   status?: string;
   isDuplicate?: boolean;
   message?: string;
@@ -132,12 +133,19 @@ export async function handleIncomingTransaction(
 
   if (existingTx) {
     let orderCode: string | undefined;
+    let depositCode: string | undefined;
     if (existingTx.orderId) {
       const existingOrder = await prisma.order.findUnique({
         where: { id: existingTx.orderId },
         select: { orderCode: true },
       });
       orderCode = existingOrder?.orderCode;
+    } else if (existingTx.depositOrderId) {
+      const existingDeposit = await prisma.depositOrder.findUnique({
+        where: { id: existingTx.depositOrderId },
+        select: { depositCode: true },
+      });
+      depositCode = existingDeposit?.depositCode;
     }
 
     return {
@@ -145,10 +153,122 @@ export async function handleIncomingTransaction(
       isDuplicate: true,
       message: "Transaction already processed",
       orderCode,
+      depositCode,
     };
   }
 
-  // 2. Order Code Extraction
+  // 2. Check for Wallet Top-up (NAPxxxxxx)
+  const depositCode = parseDepositCodeFromMemo(payload.content || "");
+  if (depositCode) {
+    const deposit = await prisma.depositOrder.findUnique({
+      where: { depositCode },
+      include: { user: true },
+    });
+
+    if (!deposit) {
+      await prisma.paymentTransaction.create({
+        data: {
+          transactionId: payload.transactionId,
+          amount: Math.round(payload.amount),
+          bankCode: payload.bankCode || null,
+          content: payload.content || null,
+          rawPayload: payload.rawPayload ? JSON.stringify(payload.rawPayload) : null,
+          depositOrderId: null,
+        },
+      });
+
+      return {
+        success: false,
+        error: `Deposit order "${depositCode}" not found`,
+        depositCode,
+      };
+    }
+
+    if (deposit.status === DepositStatus.COMPLETED) {
+      return {
+        success: true,
+        isDuplicate: true,
+        status: DepositStatus.COMPLETED,
+        message: "Lệnh nạp tiền đã hoàn tất trước đó",
+        depositCode,
+      };
+    }
+
+    // Check payment amount meets requirement
+    if (payload.amount < deposit.amount) {
+      await prisma.paymentTransaction.create({
+        data: {
+          transactionId: payload.transactionId,
+          amount: Math.round(payload.amount),
+          bankCode: payload.bankCode || null,
+          content: payload.content || null,
+          rawPayload: payload.rawPayload ? JSON.stringify(payload.rawPayload) : null,
+          depositOrderId: deposit.id,
+        },
+      });
+
+      return {
+        success: false,
+        error: `Số tiền thanh toán (${payload.amount}đ) không đủ cho lệnh nạp tiền (${deposit.amount}đ)`,
+        depositCode,
+      };
+    }
+
+    // Execute atomic transaction for wallet top-up
+    await prisma.$transaction(async (tx) => {
+      // 1. Mark deposit as COMPLETED
+      await tx.depositOrder.update({
+        where: { id: deposit.id },
+        data: {
+          status: DepositStatus.COMPLETED,
+          paidAt: new Date(),
+        },
+      });
+
+      // 2. Credit user balance & totalDeposited
+      const updatedUser = await tx.user.update({
+        where: { id: deposit.userId },
+        data: {
+          balance: { increment: deposit.amount },
+          totalDeposited: { increment: deposit.amount },
+        },
+      });
+
+      // 3. Create WalletTransaction ledger entry
+      await tx.walletTransaction.create({
+        data: {
+          userId: deposit.userId,
+          type: WalletTransactionType.TOPUP,
+          amount: deposit.amount,
+          balanceBefore: deposit.user.balance,
+          balanceAfter: updatedUser.balance,
+          referenceId: deposit.depositCode,
+          description: `Nạp tiền tự động qua VietQR (${deposit.depositCode})`,
+        },
+      });
+
+      // 4. Create PaymentTransaction
+      await tx.paymentTransaction.create({
+        data: {
+          transactionId: payload.transactionId,
+          amount: Math.round(payload.amount),
+          bankCode: payload.bankCode || null,
+          content: payload.content || null,
+          rawPayload: payload.rawPayload ? JSON.stringify(payload.rawPayload) : null,
+          depositOrderId: deposit.id,
+        },
+      });
+    });
+
+    return {
+      success: true,
+      status: DepositStatus.COMPLETED,
+      message: "Nạp tiền vào ví thành công",
+      depositCode,
+    };
+  }
+
+  // 3. Order Code Extraction
   const orderCode = parseOrderCodeFromMemo(payload.content || "");
   if (!orderCode) {
     await prisma.paymentTransaction.create({
@@ -168,7 +288,7 @@ export async function handleIncomingTransaction(
     };
   }
 
-  // 3. Order Lookup
+  // 4. Order Lookup
   const order = await prisma.order.findUnique({
     where: { orderCode },
     include: {
