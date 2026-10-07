@@ -19,5 +19,8 @@ npx prisma db push --skip-generate || true
 echo "Seeding HackTim products..."
 node prisma/seed-hacktim.js || true
 
+echo "Seeding Telegram Bot supplier..."
+node prisma/seed-telegram.js || true
+
 echo "Starting Next.js Server..."
 exec node server.js

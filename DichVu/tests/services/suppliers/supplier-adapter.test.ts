@@ -510,4 +510,26 @@ describe("Supplier Adapter Engine", () => {
       expect(result.error).toContain("Số dư ví");
     });
   });
+
+  describe("TelegramBotAdapter", () => {
+    it("should return TelegramBotAdapter for TELEGRAM_BOT supplier type", async () => {
+      const adapter = getSupplierAdapter(SupplierType.TELEGRAM_BOT);
+      const { TelegramBotAdapter } = await import(
+        "../../../src/services/suppliers/adapters/telegram-bot.adapter"
+      );
+      expect(adapter).toBeInstanceOf(TelegramBotAdapter);
+    });
+
+    it("fetchProductInfo returns correct product structure", async () => {
+      const adapter = getSupplierAdapter(SupplierType.TELEGRAM_BOT);
+      const info = await adapter.fetchProductInfo(
+        { baseUrl: "@nghientrickshop_bot", apiKey: "test" },
+        "19"
+      );
+      expect(info.supplierProductCode).toBe("19");
+      expect(info.name).toBe("Gemini 18 Months");
+      expect(info.price).toBe(14567);
+      expect(info.inStock).toBeGreaterThan(0);
+    });
+  });
 });

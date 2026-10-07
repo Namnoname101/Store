@@ -40,6 +40,7 @@ export const SupplierType = {
   LOCKET_VN: "LOCKET_VN",
   HACKTIM: "HACKTIM",
   CUSTOM_REST: "CUSTOM_REST",
+  TELEGRAM_BOT: "TELEGRAM_BOT",
 } as const;
 export type SupplierType = (typeof SupplierType)[keyof typeof SupplierType];
 
