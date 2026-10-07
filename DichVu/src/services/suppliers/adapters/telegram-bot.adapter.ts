@@ -4,8 +4,8 @@ import {
   SupplierProductInfo,
   SupplierOrderResult,
 } from "../supplier-adapter.interface";
-import { TelegramClient } from "telegram";
-import { StringSession } from "telegram/sessions";
+import { TelegramClient, sessions } from "telegram";
+const { StringSession } = sessions;
 
 export class TelegramBotAdapter implements ISupplierAdapter {
   private client: TelegramClient | null = null;
