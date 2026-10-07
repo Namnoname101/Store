@@ -131,3 +131,28 @@ export function getAdminCookieOptions() {
     maxAge: Math.floor(SESSION_DURATION_MS / 1000),
   };
 }
+
+export async function requireAdminAuth(
+  req?: any
+): Promise<{ id: string; username: string; role: "ADMIN" } | null> {
+  try {
+    let token: string | undefined;
+    if (req && typeof req.cookies?.get === "function") {
+      token = req.cookies.get(ADMIN_COOKIE_NAME)?.value;
+    }
+    if (!token && typeof document === "undefined") {
+      try {
+        const { cookies } = await import("next/headers");
+        token = cookies().get(ADMIN_COOKIE_NAME)?.value;
+      } catch {
+        // next/headers may not be invoked outside request context
+      }
+    }
+    if (!token) return null;
+    const isValid = await verifyAdminSessionToken(token);
+    if (!isValid) return null;
+    return { id: "admin", username: "admin", role: "ADMIN" };
+  } catch {
+    return null;
+  }
+}
