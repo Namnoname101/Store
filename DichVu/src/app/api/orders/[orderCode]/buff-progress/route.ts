@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getBuffProgress } from "@/services/buff-progress.service";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface RouteParams {
   params: {
@@ -25,7 +26,13 @@ export async function GET(request: Request, { params }: RouteParams) {
 
     const progress = await getBuffProgress(orderCode);
 
-    return NextResponse.json(progress);
+    return NextResponse.json(progress, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+    });
   } catch (error: any) {
     return NextResponse.json(
       {

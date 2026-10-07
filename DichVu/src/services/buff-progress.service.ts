@@ -31,9 +31,9 @@ export interface BuffProgressResult {
 
 const STAGE_LABELS: Record<BuffStage, string> = {
   RECEIVED: "Đang tiếp nhận đơn",
-  INITIALIZING: "Khởi tạo & Quét số gốc",
-  IN_PROGRESS: "Đang đẩy tương tác",
-  COMPLETED: "Đã hoàn thành",
+  INITIALIZING: "Đang kết nối & quét số gốc",
+  IN_PROGRESS: "Đang tăng tương tác",
+  COMPLETED: "Đã hoàn thành 100%",
   PARTIAL: "Hoàn tất một phần (Đã hoàn lại phần chưa chạy)",
   CANCELLED: "Đã hủy đơn",
   FAILED: "Lỗi kết nối máy chủ",
@@ -154,28 +154,34 @@ export async function getBuffProgress(orderCode: string): Promise<BuffProgressRe
       };
     }
 
+    const startCount =
+      statusRes.startCount !== undefined && !isNaN(statusRes.startCount)
+        ? statusRes.startCount
+        : 0;
+    let remains =
+      statusRes.remains !== undefined && !isNaN(statusRes.remains)
+        ? statusRes.remains
+        : totalQuantity;
+    let deliveredCount = Math.max(0, Math.min(totalQuantity, totalQuantity - remains));
+
     let stage: BuffStage = "IN_PROGRESS";
     const rawStatus = (statusRes.status || "").toUpperCase();
 
     if (rawStatus === "COMPLETED") {
       stage = "COMPLETED";
+      remains = 0;
+      deliveredCount = totalQuantity;
     } else if (rawStatus === "PARTIAL") {
       stage = "PARTIAL";
     } else if (rawStatus === "CANCELLED" || rawStatus === "CANCELED") {
       stage = "CANCELLED";
-    } else if (rawStatus === "PENDING" || rawStatus === "PROCESSING") {
+    } else if (rawStatus === "PENDING") {
       stage = "INITIALIZING";
+    } else if (rawStatus === "PROCESSING") {
+      // If startCount has been scanned or progress is delivered, mark as IN_PROGRESS
+      stage = startCount > 0 || deliveredCount > 0 ? "IN_PROGRESS" : "INITIALIZING";
     } else {
       stage = "IN_PROGRESS";
-    }
-
-    const startCount = statusRes.startCount ?? 0;
-    let remains = statusRes.remains !== undefined ? statusRes.remains : totalQuantity;
-    let deliveredCount = Math.max(0, Math.min(totalQuantity, totalQuantity - remains));
-
-    if (stage === "COMPLETED") {
-      remains = 0;
-      deliveredCount = totalQuantity;
     }
 
     const progressPercent =

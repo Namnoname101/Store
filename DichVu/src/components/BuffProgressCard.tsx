@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   RefreshCw,
   CheckCircle2,
@@ -14,7 +14,7 @@ import {
   Layers,
   Zap,
 } from "lucide-react";
-import type { BuffProgressResult, BuffStage } from "@/services/buff-progress.service";
+import type { BuffProgressResult } from "@/services/buff-progress.service";
 
 export interface BuffProgressCardProps {
   orderCode?: string;
@@ -22,76 +22,60 @@ export interface BuffProgressCardProps {
 }
 
 /**
- * Calculates simulated micro-increment ticking between server polling syncs
- * to provide a smooth, responsive, real-time feel to the customer.
+ * Returns strictly server delivered progress clamped to bounds.
+ * No synthetic or fake simulated increments.
  */
 export function calculateInterpolatedStep(
-  current: number,
+  _current: number,
   serverDelivered: number,
   total: number,
-  remains: number,
+  _remains: number,
   status: string
 ): number {
   if (status === "COMPLETED") {
     return total;
   }
   if (status === "CANCELLED" || status === "FAILED") {
-    return serverDelivered;
+    return Math.min(total, Math.max(0, serverDelivered));
   }
-
-  // If local count is behind server truth, catch up smoothly
-  if (current < serverDelivered) {
-    const jump = Math.max(1, Math.ceil((serverDelivered - current) / 2));
-    return Math.min(serverDelivered, current + jump);
-  }
-
-  // If running, simulate gentle incremental progress (+1 to +3 based on quantity)
-  // strictly capped to avoid overshooting before the next polling sync.
-  if (status === "IN_PROGRESS" && remains > 0 && current < total) {
-    const tickBonus = Math.max(1, Math.min(5, Math.floor(total / 500)));
-    const maxLocalCeiling = Math.min(
-      total,
-      serverDelivered + Math.max(3, Math.ceil(total * 0.05))
-    );
-    return Math.min(maxLocalCeiling, current + tickBonus);
-  }
-
-  return current;
+  return Math.min(total, Math.max(0, serverDelivered));
 }
 
 export function getTimelineSteps(
   status: string,
   startCount?: number,
-  remains?: number,
+  _remains?: number,
   delivered?: number
 ) {
   const isCompleted = status === "COMPLETED";
-  const isRunning = status === "IN_PROGRESS";
-  const isInitializing = status === "INITIALIZING" || status === "RECEIVED";
+  const hasScannedStart = typeof startCount === "number" && startCount > 0;
+  const isRunning =
+    status === "IN_PROGRESS" || (delivered !== undefined && delivered > 0);
 
   return [
     {
       id: 1,
       title: "Tiếp nhận đơn",
       desc: "Hệ thống xác thực liên kết mục tiêu",
-      status: "done", // Always completed if order exists
+      status: "done",
     },
     {
       id: 2,
       title: "Quét số lượng gốc",
-      desc:
-        startCount !== undefined && startCount > 0
-          ? `Số gốc ban đầu: ${startCount.toLocaleString("vi-VN")}`
-          : "Đang kết nối & quét dữ liệu",
-      status: isCompleted || isRunning ? "done" : "active",
+      desc: hasScannedStart
+        ? `Số gốc ban đầu: ${startCount.toLocaleString("vi-VN")}`
+        : isCompleted
+        ? "Đã xác nhận hoàn tất"
+        : "Đang kết nối & quét số lượng hiện tại",
+      status: isCompleted || hasScannedStart ? "done" : "active",
     },
     {
       id: 3,
       title: "Đang đẩy tương tác",
       desc:
         delivered !== undefined && delivered > 0
-          ? `Đã tăng: +${delivered.toLocaleString("vi-VN")}`
-          : "Đang tăng tốc đẩy luồng",
+          ? `Đã tăng thực tế: +${delivered.toLocaleString("vi-VN")}`
+          : "Đang phân bổ luồng máy chủ",
       status: isCompleted ? "done" : isRunning ? "active" : "pending",
     },
     {
@@ -110,9 +94,6 @@ export default function BuffProgressCard({
   const [progress, setProgress] = useState<BuffProgressResult | null>(
     initialData || null
   );
-  const [simulatedCount, setSimulatedCount] = useState<number>(
-    initialData?.deliveredCount || 0
-  );
   const [isLoading, setIsLoading] = useState<boolean>(!initialData);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [lastSyncedAt, setLastSyncedAt] = useState<Date>(new Date());
@@ -127,19 +108,22 @@ export default function BuffProgressCard({
       }
       if (isManual) setIsRefreshing(true);
       try {
-        const res = await fetch(`/api/orders/${orderCode}/buff-progress`);
+        const res = await fetch(
+          `/api/orders/${orderCode}/buff-progress?t=${Date.now()}`,
+          {
+            cache: "no-store",
+            headers: {
+              "Cache-Control": "no-cache",
+              Pragma: "no-cache",
+            },
+          }
+        );
         if (res.ok) {
           const data: BuffProgressResult = await res.json();
           if (data.isBuffOrder) {
             setProgress(data);
             setLastSyncedAt(new Date());
             setSecondsAgo(0);
-
-            // Re-sync simulated counter with server delivered count
-            setSimulatedCount((prev) => {
-              if (data.status === "COMPLETED") return data.totalQuantity || prev;
-              return Math.max(prev, data.deliveredCount || 0);
-            });
           }
         }
       } catch (err) {
@@ -147,7 +131,7 @@ export default function BuffProgressCard({
       } finally {
         setIsLoading(false);
         if (isManual) {
-          setTimeout(() => setIsRefreshing(false), 500);
+          setTimeout(() => setIsRefreshing(false), 400);
         }
       }
     },
@@ -159,7 +143,7 @@ export default function BuffProgressCard({
     fetchProgress(false);
   }, [fetchProgress]);
 
-  // Polling every 10 seconds while active
+  // Polling every 5 seconds while active
   useEffect(() => {
     if (!progress || progress.status === "COMPLETED" || progress.status === "CANCELLED") {
       return;
@@ -167,7 +151,7 @@ export default function BuffProgressCard({
 
     const pollInterval = setInterval(() => {
       fetchProgress(false);
-    }, 10000);
+    }, 5000);
 
     return () => clearInterval(pollInterval);
   }, [progress, fetchProgress]);
@@ -179,27 +163,6 @@ export default function BuffProgressCard({
     }, 1000);
     return () => clearInterval(timer);
   }, [lastSyncedAt]);
-
-  // Micro-increment ticking simulation for live feeling
-  useEffect(() => {
-    if (!progress || progress.status === "COMPLETED" || progress.status === "CANCELLED") {
-      return;
-    }
-
-    const tickInterval = setInterval(() => {
-      setSimulatedCount((curr) =>
-        calculateInterpolatedStep(
-          curr,
-          progress.deliveredCount || 0,
-          progress.totalQuantity || 0,
-          progress.remains || 0,
-          progress.status || "IN_PROGRESS"
-        )
-      );
-    }, 2000);
-
-    return () => clearInterval(tickInterval);
-  }, [progress]);
 
   const handleCopyLink = (text?: string) => {
     if (!text) return;
@@ -214,15 +177,19 @@ export default function BuffProgressCard({
   }
 
   const total = progress?.totalQuantity || 1;
-  const currentCount =
-    progress?.status === "COMPLETED" ? total : simulatedCount;
-  const displayPercent =
-    progress?.status === "COMPLETED"
-      ? 100
-      : Math.min(100, Math.max(0, Math.round((currentCount / total) * 100)));
-  const remainsCount = Math.max(0, total - currentCount);
   const isCompleted = progress?.status === "COMPLETED";
   const isRunning = progress?.status === "IN_PROGRESS";
+  const currentCount = isCompleted
+    ? total
+    : Math.min(total, progress?.deliveredCount || 0);
+  const remainsCount = isCompleted
+    ? 0
+    : progress?.remains !== undefined
+    ? progress.remains
+    : Math.max(0, total - currentCount);
+  const displayPercent = isCompleted
+    ? 100
+    : Math.min(100, Math.max(0, Math.round((currentCount / total) * 100)));
   const timelineSteps = getTimelineSteps(
     progress?.status || "IN_PROGRESS",
     progress?.startCount,
@@ -251,12 +218,12 @@ export default function BuffProgressCard({
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                 </span>
-                TRỰC TIẾP (LIVE STREAM)
+                TRỰC TIẾP (LIVE)
               </span>
             ) : (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/40 bg-indigo-500/10 px-3 py-1 text-xs font-bold text-indigo-300">
                 <Clock className="h-3.5 w-3.5 animate-spin" />
-                {progress?.statusLabel || "Đang khởi tạo"}
+                {progress?.statusLabel || "Đang kết nối & quét số gốc"}
               </span>
             )}
 
@@ -277,9 +244,12 @@ export default function BuffProgressCard({
         {/* Sync status & Manual refresh button */}
         <div className="flex items-center gap-3 self-start sm:self-auto">
           <div className="text-right text-[11px] text-slate-400 hidden sm:block">
-            <div>Đồng bộ tự động mỗi 10s</div>
+            <div className="text-emerald-400 font-medium flex items-center justify-end gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Số liệu chuẩn xác từ máy chủ
+            </div>
             <div className="text-slate-500">
-              {secondsAgo === 0 ? "Vừa xong" : `${secondsAgo} giây trước`}
+              {secondsAgo === 0 ? "Vừa xong" : `Cập nhật ${secondsAgo}s trước`}
             </div>
           </div>
 
@@ -342,16 +312,23 @@ export default function BuffProgressCard({
             <span>Số gốc quét được</span>
           </div>
           <div className="text-base sm:text-lg font-bold text-white font-mono">
-            {progress?.startCount !== undefined
-              ? progress.startCount.toLocaleString("vi-VN")
-              : "—"}
+            {progress?.startCount && progress.startCount > 0 ? (
+              progress.startCount.toLocaleString("vi-VN")
+            ) : isCompleted ? (
+              <span className="text-emerald-400 text-sm font-sans font-semibold">Đã đồng bộ</span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 text-xs font-sans font-medium text-amber-300">
+                <RefreshCw className="h-3 w-3 animate-spin text-amber-400" />
+                Đang quét...
+              </span>
+            )}
           </div>
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-3.5">
           <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1 flex items-center gap-1">
             <TrendingUp className="h-3 w-3 text-emerald-400" />
-            <span>Đã tăng</span>
+            <span>Đã tăng thực tế</span>
           </div>
           <div className="text-base sm:text-lg font-bold text-emerald-400 font-mono">
             +{currentCount.toLocaleString("vi-VN")}
@@ -387,7 +364,7 @@ export default function BuffProgressCard({
         </h4>
 
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-2">
-          {timelineSteps.map((step, idx) => {
+          {timelineSteps.map((step) => {
             const isStepDone = step.status === "done";
             const isStepActive = step.status === "active";
 

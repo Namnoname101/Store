@@ -30,6 +30,7 @@ export class HackTimAdapter implements ISupplierAdapter {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body,
+      cache: "no-store",
     });
 
     if (!res.ok) {
@@ -189,6 +190,7 @@ export class HackTimAdapter implements ISupplierAdapter {
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body,
+        cache: "no-store",
       });
 
       if (!res.ok) {
@@ -225,12 +227,25 @@ export class HackTimAdapter implements ISupplierAdapter {
         status = "CANCELLED";
       }
 
+      const parsedStart =
+        data.start_count !== undefined && data.start_count !== null && data.start_count !== ""
+          ? Number(data.start_count)
+          : undefined;
+      const parsedRemains =
+        data.remains !== undefined && data.remains !== null && data.remains !== ""
+          ? Number(data.remains)
+          : undefined;
+      const parsedCharge =
+        data.charge !== undefined && data.charge !== null && data.charge !== ""
+          ? Number(data.charge)
+          : undefined;
+
       return {
         success: true,
         status,
-        startCount: data.start_count !== undefined ? Number(data.start_count) : undefined,
-        remains: data.remains !== undefined ? Number(data.remains) : undefined,
-        charge: data.charge !== undefined ? Number(data.charge) : undefined,
+        startCount: parsedStart !== undefined && !isNaN(parsedStart) ? parsedStart : undefined,
+        remains: parsedRemains !== undefined && !isNaN(parsedRemains) ? parsedRemains : undefined,
+        charge: parsedCharge !== undefined && !isNaN(parsedCharge) ? parsedCharge : undefined,
         rawStatus: String(data.status || ""),
       };
     } catch (err: any) {
