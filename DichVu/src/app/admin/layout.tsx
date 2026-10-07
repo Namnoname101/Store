@@ -16,6 +16,7 @@ import {
   LogOut,
   Ticket,
   Users,
+  Zap,
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -88,6 +89,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       href: "/admin/users",
       icon: Users,
       current: pathname.startsWith("/admin/users"),
+    },
+    {
+      name: "Auto Locket Gold",
+      href: "/admin/locket-auto",
+      icon: Zap,
+      current: pathname.startsWith("/admin/locket-auto"),
     },
   ];
 
