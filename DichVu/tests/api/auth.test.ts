@@ -141,7 +141,7 @@ describe("User Auth API Endpoints", () => {
     const req = new NextRequest("http://localhost:3000/api/auth/logout", {
       method: "POST",
     });
-    const res = await logoutHandler(req);
+    const res = await logoutHandler();
     expect(res.status).toBe(200);
     const setCookie = res.headers.get("set-cookie");
     expect(setCookie).toContain("Max-Age=0");

@@ -19,7 +19,7 @@ import {
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [user, setUser] = useState<{ id: string; username: string; balance: number } | null>(null);
+  const [user, setUser] = useState<{ id: string; username: string; balance: number; role?: string } | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const router = useRouter();
 
@@ -153,13 +153,15 @@ export default function Navbar() {
             )
           )}
 
-          <Link
-            href="/admin"
-            className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/80 px-3.5 py-2 text-xs font-medium text-slate-300 hover:border-indigo-500/50 hover:bg-slate-800 hover:text-white transition-all shadow-sm"
-          >
-            <Shield className="h-3.5 w-3.5 text-indigo-400" />
-            <span>Quản trị</span>
-          </Link>
+          {user?.role === "ADMIN" && (
+            <Link
+              href="/admin"
+              className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/80 px-3.5 py-2 text-xs font-medium text-slate-300 hover:border-indigo-500/50 hover:bg-slate-800 hover:text-white transition-all shadow-sm"
+            >
+              <Shield className="h-3.5 w-3.5 text-indigo-400" />
+              <span>Quản trị</span>
+            </Link>
+          )}
         </div>
 
         {/* Mobile menu button */}
@@ -257,16 +259,18 @@ export default function Navbar() {
               </Link>
             )}
 
-            <div className="pt-2 border-t border-slate-800/80">
-              <Link
-                href="/admin"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white"
-              >
-                <Shield className="h-4 w-4 text-indigo-400" />
-                <span>Trang quản trị (Admin)</span>
-              </Link>
-            </div>
+            {user?.role === "ADMIN" && (
+              <div className="pt-2 border-t border-slate-800/80">
+                <Link
+                  href="/admin"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white"
+                >
+                  <Shield className="h-4 w-4 text-indigo-400" />
+                  <span>Trang quản trị (Admin)</span>
+                </Link>
+              </div>
+            )}
           </nav>
         </div>
       )}

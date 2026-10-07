@@ -131,8 +131,8 @@ export default function Footer() {
                 </span>
               </li>
               <li>
-                <Link href="/admin" className="hover:text-indigo-400 transition-colors text-slate-500">
-                  Cổng quản trị Admin
+                <Link href="/lookup" className="hover:text-indigo-400 transition-colors">
+                  Tra cứu lịch sử đơn hàng
                 </Link>
               </li>
             </ul>
