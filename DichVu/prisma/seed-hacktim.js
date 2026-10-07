@@ -108,14 +108,14 @@ Vui l\xF2ng b\u1EADt t\xEDnh n\u0103ng cho ph\xE9p ng\u01B0\u1EDDi theo d\xF5i c
       originalPrice: 89,
       type: "COURSE_LINK",
       fulfillmentType: "API_DROPSHIP",
-      minQuantity: 500,
-      maxQuantity: 1e5,
+      minQuantity: 10,
+      maxQuantity: 500000,
       thumbnailUrl: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&auto=format&fit=crop&q=80",
-      supplierProductCode: "6709",
-      supplierPrice: 12,
+      supplierProductCode: "5408",
+      supplierPrice: 5,
       supplierStock: 999999,
       markupType: "FIXED_AMOUNT",
-      markupValue: 37
+      markupValue: 44
     }
   ];
   for (const item of productsToSeed) {
