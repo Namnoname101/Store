@@ -58,6 +58,20 @@ describe("Dynamic Pricing & Auto Stock Sync Engine", () => {
       expect(price4).toBe(56000);
     });
 
+    it("should preserve exact per-unit pricing for SMM micro-transactions (< 1,000 VND)", () => {
+      // 12 VND + 37 VND = 49 VND
+      const price1 = calculateRetailPrice(12, MarkupType.FIXED_AMOUNT, 37);
+      expect(price1).toBe(49);
+
+      // 10 VND + 50% = 15 VND
+      const price2 = calculateRetailPrice(10, MarkupType.PERCENTAGE, 50);
+      expect(price2).toBe(15);
+
+      // 4 VND + 10 VND = 14 VND
+      const price3 = calculateRetailPrice(4, MarkupType.FIXED_AMOUNT, 10);
+      expect(price3).toBe(14);
+    });
+
     it("should enforce Loss Prevention Guard: retail price must never be strictly less than supplierPrice", () => {
       // Negative percentage markup (-20%)
       const price1 = calculateRetailPrice(50000, MarkupType.PERCENTAGE, -20);

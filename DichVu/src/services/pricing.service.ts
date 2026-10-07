@@ -51,7 +51,14 @@ export function calculateRetailPrice(
     basePrice = supplierPrice + markupValue;
   }
 
-  let retailPrice = Math.round(basePrice / 1000) * 1000;
+  // For micro-transactions/SMM buff services (< 1,000 VND per unit), preserve exact integer price.
+  // For standard products (keys, accounts >= 1,000 VND), round to nearest 1,000 VND.
+  let retailPrice: number;
+  if (basePrice < 1000) {
+    retailPrice = Math.round(basePrice);
+  } else {
+    retailPrice = Math.round(basePrice / 1000) * 1000;
+  }
 
   // Guard: Retail price must never be strictly less than supplierPrice
   if (retailPrice < supplierPrice) {

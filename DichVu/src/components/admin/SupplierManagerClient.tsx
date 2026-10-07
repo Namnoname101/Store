@@ -197,6 +197,9 @@ export default function SupplierManagerClient({
     } else {
       base = cost + val;
     }
+    if (base < 1000) {
+      return Math.max(cost, Math.round(base));
+    }
     let rounded = Math.round(base / 1000) * 1000;
     return Math.max(cost, rounded);
   }, [mappingFormData.supplierPrice, mappingFormData.markupType, mappingFormData.markupValue]);
@@ -1211,7 +1214,7 @@ export default function SupplierManagerClient({
                   <input
                     type="number"
                     min="0"
-                    step="1000"
+                    step="any"
                     value={mappingFormData.supplierPrice}
                     onChange={(e) => setMappingFormData({ ...mappingFormData, supplierPrice: Number(e.target.value) })}
                     className="w-full rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-white font-mono focus:border-indigo-500 focus:outline-none"
@@ -1237,6 +1240,7 @@ export default function SupplierManagerClient({
                   <input
                     type="number"
                     min="0"
+                    step="any"
                     value={mappingFormData.markupValue}
                     onChange={(e) => setMappingFormData({ ...mappingFormData, markupValue: Number(e.target.value) })}
                     className="w-full rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-white font-mono focus:border-indigo-500 focus:outline-none"

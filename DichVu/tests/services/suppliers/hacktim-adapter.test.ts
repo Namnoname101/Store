@@ -62,8 +62,8 @@ describe("HackTimAdapter", () => {
       const info = await adapter.fetchProductInfo(mockCreds, "6799");
       expect(info.supplierProductCode).toBe("6799");
       expect(info.name).toBe("TikTok Likes Việt Nam");
-      // 0.146 * 27000 = 3942 VND per 1000
-      expect(info.price).toBeGreaterThan(0);
+      // 0.146 * 27000 / 1000 = 3.942 VND => 4 VND per unit
+      expect(info.price).toBe(4);
       expect(info.inStock).toBeGreaterThan(0);
     });
 

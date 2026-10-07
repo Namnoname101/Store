@@ -87,7 +87,9 @@ export class HackTimAdapter implements ISupplierAdapter {
 
     const rateUSD = Number(found.rate || 0);
     const usdToVnd = this.getExchangeRate(creds);
-    const costVnd = Math.max(1000, Math.round(rateUSD * usdToVnd));
+    // Rate in SMM API v2 is per 1,000 units. Calculate cost per 1 unit in VND (minimum 1 VND).
+    const costPerUnit = Math.ceil((rateUSD * usdToVnd) / 1000);
+    const costVnd = Math.max(1, costPerUnit);
 
     return {
       supplierProductCode: String(found.service),
