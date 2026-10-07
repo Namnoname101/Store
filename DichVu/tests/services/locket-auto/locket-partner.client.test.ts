@@ -330,5 +330,174 @@ describe("LocketPartnerClient", () => {
       expect(res.status).toBe("FAILED");
       expect(res.message).toBe("Timeout connection");
     });
+
+    it("should include Origin, Referer and browser headers in triggerUsePass", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          success: true,
+          data: { job_id: "JOB-BROWSER" },
+        }),
+      } as any);
+
+      await LocketPartnerClient.triggerUsePass({
+        passId: "P_BROWSER",
+        linkVersion: 2,
+        signature: "SIG_BROWSER",
+        cookie: "session_val",
+        csrfToken: "csrf_val",
+      });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        "https://locketgold.yuichycsa.id.vn/api/v1/goldpass/use",
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Origin: "https://locketgold.yuichycsa.id.vn",
+            Referer: "https://locketgold.yuichycsa.id.vn/shop/gold-pass/?p=P_BROWSER&v=2&t=SIG_BROWSER",
+            "User-Agent": expect.stringContaining("Mozilla/5.0"),
+            "Sec-Fetch-Site": "same-origin",
+            "Sec-Fetch-Mode": "cors",
+            "X-CSRF-Token": "csrf_val",
+            Cookie: "session_val",
+          }),
+        })
+      );
+    });
+
+    it("should handle 403 origin_denied gracefully", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 403,
+        json: async () => ({
+          ok: false,
+          code: "origin_denied",
+          message: "Nguồn truy cập không hợp lệ.",
+        }),
+      } as any);
+
+      const res = await LocketPartnerClient.triggerUsePass({
+        passId: "P_DENIED",
+        linkVersion: 1,
+        signature: "SIG",
+        cookie: "session",
+      });
+
+      expect(res.ok).toBe(false);
+      expect(res.status).toBe("FAILED");
+      expect(res.message).toContain("Origin Denied");
+    });
+
+    it("should automatically resolve csrf token via fetchSessionInfo when csrfToken is missing", async () => {
+      global.fetch = vi
+        .fn()
+        .mockResolvedValueOnce({
+          // 1st call: fetchSessionInfo
+          ok: true,
+          status: 200,
+          json: async () => ({
+            ok: true,
+            data: {
+              username: "auto_user",
+              csrf_token: "auto_csrf_token_xyz",
+            },
+          }),
+        } as any)
+        .mockResolvedValueOnce({
+          // 2nd call: usePass
+          ok: true,
+          status: 200,
+          json: async () => ({
+            ok: true,
+            data: { job_id: "JOB-AUTO-CSRF" },
+          }),
+        } as any);
+
+      const res = await LocketPartnerClient.triggerUsePass({
+        passId: "P_AUTOCSRF",
+        linkVersion: 1,
+        signature: "SIG_AUTOCSRF",
+        cookie: "valid_session",
+      });
+
+      expect(res.ok).toBe(true);
+      expect(res.jobId).toBe("JOB-AUTO-CSRF");
+      expect(global.fetch).toHaveBeenCalledTimes(2);
+      expect(global.fetch).toHaveBeenNthCalledWith(
+        2,
+        "https://locketgold.yuichycsa.id.vn/api/v1/goldpass/use",
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            "X-CSRF-Token": "auto_csrf_token_xyz",
+          }),
+        })
+      );
+    });
+  });
+
+  describe("getBrowserHeaders", () => {
+    it("should construct required headers with correct origin and referer", () => {
+      const headers = LocketPartnerClient.getBrowserHeaders({
+        baseUrl: "https://locketgold.yuichycsa.id.vn",
+        passId: "P123",
+        linkVersion: 2,
+        signature: "SIG123",
+        cookie: "sess_cookie",
+        csrfToken: "csrf_token_val",
+      });
+
+      expect(headers.Origin).toBe("https://locketgold.yuichycsa.id.vn");
+      expect(headers.Referer).toBe(
+        "https://locketgold.yuichycsa.id.vn/shop/gold-pass/?p=P123&v=2&t=SIG123"
+      );
+      expect(headers["User-Agent"]).toContain("Mozilla/5.0");
+      expect(headers["Sec-Fetch-Site"]).toBe("same-origin");
+      expect(headers["Sec-Fetch-Mode"]).toBe("cors");
+      expect(headers["Cookie"]).toBe("sess_cookie");
+      expect(headers["X-CSRF-Token"]).toBe("csrf_token_val");
+    });
+  });
+
+  describe("fetchSessionInfo", () => {
+    it("should return username and csrf token on 200 ok", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          ok: true,
+          data: {
+            username: "yuicsa_admin",
+            csrf_token: "csrf_token_abc",
+          },
+        }),
+      } as any);
+
+      const res = await LocketPartnerClient.fetchSessionInfo({
+        cookie: "sess_ok",
+      });
+
+      expect(res.ok).toBe(true);
+      expect(res.username).toBe("yuicsa_admin");
+      expect(res.csrfToken).toBe("csrf_token_abc");
+    });
+
+    it("should handle error on 401 unauthenticated", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 401,
+        json: async () => ({
+          ok: false,
+          code: "login_required",
+          message: "Vui lòng đăng nhập.",
+        }),
+      } as any);
+
+      const res = await LocketPartnerClient.fetchSessionInfo({
+        cookie: "sess_bad",
+      });
+
+      expect(res.ok).toBe(false);
+      expect(res.error).toBe("Vui lòng đăng nhập.");
+    });
   });
 });

@@ -54,15 +54,19 @@ export async function POST(req: NextRequest) {
       cookie,
     });
 
-    if (result.ok && result.targetUsername) {
-      await LocketAutoService.saveConfig({
-        targetUsername: result.targetUsername,
-      });
+    if (result.ok) {
+      const updateData: { targetUsername?: string; csrfToken?: string } = {};
+      if (result.targetUsername) updateData.targetUsername = result.targetUsername;
+      if (result.csrfToken) updateData.csrfToken = result.csrfToken;
+      if (Object.keys(updateData).length > 0) {
+        await LocketAutoService.saveConfig(updateData);
+      }
     }
 
     return NextResponse.json({
       ok: result.ok,
       targetUsername: result.targetUsername,
+      csrfToken: result.csrfToken,
       statusLabel: result.statusLabel,
       cooldownRemaining: result.cooldownRemaining,
       error: result.error,
