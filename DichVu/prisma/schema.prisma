@@ -202,3 +202,34 @@ model WalletTransaction {
   @@index([userId])
   @@index([referenceId])
 }
+
+model LocketAutoConfig {
+  id              String    @id @default("default")
+  goldPassUrl     String    // Full URL GoldPass
+  passId          String    // Trích xuất từ URL (tham số ?p=)
+  linkVersion     Int       @default(1) // Tham số ?v=
+  signature       String    // Tham số ?t=
+  sessionCookie   String    // Cookie đăng nhập tài khoản Yuicsa
+  csrfToken       String?   // CSRF token nếu đối tác yêu cầu
+  targetUsername  String?   // @qthinh0106
+  isActive        Boolean   @default(false) // Trạng thái bật/tắt Auto 24/7
+  intervalSeconds Int       @default(60)    // Khoảng cách giữa các lần kích
+  lastRunAt       DateTime? // Lần kích gần nhất
+  lastStatus      String?   // SUCCESS | COOLDOWN | FAILED | SESSION_EXPIRED
+  lastMessage     String?   // Chi tiết phản hồi từ đối tác
+  updatedAt       DateTime  @updatedAt
+  createdAt       DateTime  @default(now())
+}
+
+model LocketAutoLog {
+  id          String   @id @default(uuid())
+  status      String   // SUCCESS | COOLDOWN | FAILED | SESSION_EXPIRED
+  jobId       String?  // Mã job nhận từ đối tác nếu có
+  message     String   // Mô tả kết quả
+  rawPayload  String?  // JSON response từ đối tác
+  durationMs  Int?     // Thời gian phản hồi mạng (ms)
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}
+
