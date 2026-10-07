@@ -459,7 +459,7 @@ describe("LocketPartnerClient", () => {
   });
 
   describe("fetchSessionInfo", () => {
-    it("should return username and csrf token on 200 ok", async () => {
+    it("should return username and csrf token on 200 ok from auth/me", async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
@@ -481,23 +481,57 @@ describe("LocketPartnerClient", () => {
       expect(res.csrfToken).toBe("csrf_token_abc");
     });
 
-    it("should handle error on 401 unauthenticated", async () => {
+    it("should fallback to guest/overview when auth/me fails (guest session)", async () => {
+      global.fetch = vi
+        .fn()
+        .mockResolvedValueOnce({
+          // 1st call: auth/me -> 401 session_expired
+          ok: false,
+          status: 401,
+          json: async () => ({
+            ok: false,
+            code: "session_expired",
+            message: "Phiên đăng nhập đã hết hạn.",
+          }),
+        } as any)
+        .mockResolvedValueOnce({
+          // 2nd call: guest/overview -> 200 ok
+          ok: true,
+          status: 200,
+          json: async () => ({
+            ok: true,
+            data: {
+              csrf_token: "guest_csrf_token_xyz",
+            },
+          }),
+        } as any);
+
+      const res = await LocketPartnerClient.fetchSessionInfo({
+        cookie: "__Host-yui_guest=guest_123",
+      });
+
+      expect(res.ok).toBe(true);
+      expect(res.username).toBe("Khách (Guest)");
+      expect(res.csrfToken).toBe("guest_csrf_token_xyz");
+      expect(global.fetch).toHaveBeenCalledTimes(2);
+    });
+
+    it("should handle error when both auth/me and guest/overview fail", async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: false,
-        status: 401,
+        status: 500,
         json: async () => ({
           ok: false,
-          code: "login_required",
-          message: "Vui lòng đăng nhập.",
+          message: "Lỗi máy chủ đối tác",
         }),
       } as any);
 
       const res = await LocketPartnerClient.fetchSessionInfo({
-        cookie: "sess_bad",
+        cookie: "sess_broken",
       });
 
       expect(res.ok).toBe(false);
-      expect(res.error).toBe("Vui lòng đăng nhập.");
+      expect(res.error).toBe("Lỗi máy chủ đối tác");
     });
   });
 });

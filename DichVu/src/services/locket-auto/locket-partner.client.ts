@@ -97,7 +97,8 @@ export class LocketPartnerClient {
   }
 
   /**
-   * Lấy thông tin phiên đăng nhập đối tác (username & csrf_token) qua /api/v1/auth/me
+   * Lấy thông tin phiên đối tác (username & csrf_token).
+   * Hỗ trợ cả tài khoản thành viên (/api/v1/auth/me) lẫn tài khoản khách (/api/v1/guest/overview).
    */
   static async fetchSessionInfo(params: {
     cookie: string;
@@ -111,7 +112,6 @@ export class LocketPartnerClient {
   }> {
     const { cookie, baseUrl = DEFAULT_BASE_URL } = params;
     const cleanBaseUrl = baseUrl.replace(/\/+$/, "");
-    const url = `${cleanBaseUrl}/api/v1/auth/me`;
 
     try {
       const headers = this.getBrowserHeaders({
@@ -119,37 +119,63 @@ export class LocketPartnerClient {
         cookie,
       });
 
-      const response = await fetch(url, {
-        method: "GET",
-        headers,
-        signal: AbortSignal.timeout(10000),
-      });
-
-      let payload: any = null;
+      // 1. Thử lấy thông tin tài khoản thành viên qua /api/v1/auth/me
       try {
-        payload = await response.json();
+        const authUrl = `${cleanBaseUrl}/api/v1/auth/me`;
+        const authResponse = await fetch(authUrl, {
+          method: "GET",
+          headers,
+          signal: AbortSignal.timeout(8000),
+        });
+
+        if (authResponse.status === 200) {
+          const authPayload = await authResponse.json().catch(() => null);
+          if (authPayload?.ok && authPayload?.data?.csrf_token) {
+            return {
+              ok: true,
+              username: authPayload?.data?.username,
+              csrfToken: authPayload?.data?.csrf_token,
+              rawPayload: authPayload,
+            };
+          }
+        }
       } catch {
-        payload = null;
+        // Fallback sang guest/overview
       }
 
-      if (response.status === 200 && payload?.ok) {
+      // 2. Fallback sang phiên khách /api/v1/guest/overview (dành cho cookie khách __Host-yui_guest hoặc phiên chưa đăng nhập)
+      const guestUrl = `${cleanBaseUrl}/api/v1/guest/overview`;
+      const guestResponse = await fetch(guestUrl, {
+        method: "GET",
+        headers,
+        signal: AbortSignal.timeout(8000),
+      });
+
+      let guestPayload: any = null;
+      try {
+        guestPayload = await guestResponse.json();
+      } catch {
+        guestPayload = null;
+      }
+
+      if (guestResponse.status === 200 && guestPayload?.ok && guestPayload?.data?.csrf_token) {
         return {
           ok: true,
-          username: payload?.data?.username,
-          csrfToken: payload?.data?.csrf_token,
-          rawPayload: payload,
+          username: "Khách (Guest)",
+          csrfToken: guestPayload.data.csrf_token,
+          rawPayload: guestPayload,
         };
       }
 
       return {
         ok: false,
-        error: payload?.message || `Lỗi xác thực phiên (${response.status})`,
-        rawPayload: payload,
+        error: guestPayload?.message || `Lỗi xác thực phiên (${guestResponse.status})`,
+        rawPayload: guestPayload,
       };
     } catch (err: any) {
       return {
         ok: false,
-        error: err?.message || "Lỗi kết nối auth/me",
+        error: err?.message || "Lỗi kết nối kiểm tra phiên",
       };
     }
   }
