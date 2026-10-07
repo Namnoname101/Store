@@ -3,6 +3,7 @@ import {
   SupplierCredentials,
   SupplierProductInfo,
   SupplierOrderResult,
+  SupplierOrderStatusResult,
 } from "../supplier-adapter.interface";
 
 export class HackTimAdapter implements ISupplierAdapter {
@@ -193,6 +194,7 @@ export class HackTimAdapter implements ISupplierAdapter {
       if (!res.ok) {
         const errText = await res.text().catch(() => "");
         return {
+          success: false,
           status: "PROCESSING",
           error: `HackTim status error (${res.status}): ${errText}`,
         };
@@ -201,6 +203,7 @@ export class HackTimAdapter implements ISupplierAdapter {
       const data = await res.json();
       if (data.error) {
         return {
+          success: false,
           status: "PROCESSING",
           error: String(data.error),
         };
@@ -223,6 +226,7 @@ export class HackTimAdapter implements ISupplierAdapter {
       }
 
       return {
+        success: true,
         status,
         startCount: data.start_count !== undefined ? Number(data.start_count) : undefined,
         remains: data.remains !== undefined ? Number(data.remains) : undefined,
@@ -231,6 +235,7 @@ export class HackTimAdapter implements ISupplierAdapter {
       };
     } catch (err: any) {
       return {
+        success: false,
         status: "PROCESSING",
         error: err?.message || "Lỗi kiểm tra tiến trình",
       };

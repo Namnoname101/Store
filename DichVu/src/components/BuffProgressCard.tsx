@@ -17,7 +17,7 @@ import {
 import type { BuffProgressResult, BuffStage } from "@/services/buff-progress.service";
 
 export interface BuffProgressCardProps {
-  orderCode: string;
+  orderCode?: string;
   initialData?: BuffProgressResult;
 }
 
@@ -121,6 +121,10 @@ export default function BuffProgressCard({
 
   const fetchProgress = useCallback(
     async (isManual = false) => {
+      if (!orderCode) {
+        setIsLoading(false);
+        return;
+      }
       if (isManual) setIsRefreshing(true);
       try {
         const res = await fetch(`/api/orders/${orderCode}/buff-progress`);
@@ -204,8 +208,8 @@ export default function BuffProgressCard({
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
-  // If order is not a buff order, do not render this widget
-  if (!isLoading && (!progress || !progress.isBuffOrder)) {
+  // If order is not a buff order or orderCode missing, do not render this widget
+  if (!orderCode || (!isLoading && (!progress || !progress.isBuffOrder))) {
     return null;
   }
 

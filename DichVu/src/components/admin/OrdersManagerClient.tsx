@@ -403,9 +403,19 @@ export default function OrdersManagerClient({
                                       {getUpstreamStatusBadge(order.upstreamStatus)}
                                     </div>
                                     {order.upstreamOrderId && (
-                                      <span className="text-xs text-slate-400 font-mono">
-                                        Mã đối tác: <strong className="text-indigo-300">{order.upstreamOrderId}</strong>
-                                      </span>
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-xs text-slate-400 font-mono">
+                                          Mã đối tác: <strong className="text-indigo-300">{order.upstreamOrderId}</strong>
+                                        </span>
+                                        <Link
+                                          href={`/order-success/${order.orderCode}`}
+                                          target="_blank"
+                                          className="text-[11px] text-indigo-400 hover:text-indigo-300 inline-flex items-center gap-1 font-medium bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-0.5 rounded border border-indigo-500/20 transition-colors"
+                                        >
+                                          <ExternalLink className="h-3 w-3" />
+                                          <span>Xem tiến trình</span>
+                                        </Link>
+                                      </div>
                                     )}
                                   </div>
 

@@ -20,6 +20,7 @@ export interface SupplierOrderResult {
 }
 
 export interface SupplierOrderStatusResult {
+  success: boolean;
   status: "PENDING" | "PROCESSING" | "IN_PROGRESS" | "COMPLETED" | "PARTIAL" | "CANCELLED";
   startCount?: number;
   remains?: number;

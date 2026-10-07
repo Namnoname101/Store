@@ -15,6 +15,7 @@ import {
   Loader2,
   ShieldCheck,
   ShoppingBag,
+  Activity,
 } from "lucide-react";
 import { formatVND } from "@/components/ProductCard";
 import { getRecentOrders, clearRecentOrders, type SavedOrder } from "@/lib/order-storage";
@@ -197,6 +198,20 @@ export default function OrderLookupPage() {
               {orders.map((order) => {
                 const isPaid = order.status === "PAID";
                 const isPending = order.status === "PENDING";
+                const isBuffOrder = order.items.some((i) => {
+                  const t = i.productTitle.toLowerCase();
+                  return (
+                    t.includes("follow") ||
+                    t.includes("like") ||
+                    t.includes("view") ||
+                    t.includes("buff") ||
+                    t.includes("sub") ||
+                    t.includes("mạng xã hội") ||
+                    t.includes("facebook") ||
+                    t.includes("tiktok") ||
+                    t.includes("instagram")
+                  );
+                });
                 const targetUrl = isPaid
                   ? `/order-success/${order.orderCode}`
                   : `/checkout/${order.orderCode}`;
@@ -247,10 +262,17 @@ export default function OrderLookupPage() {
                         }`}
                       >
                         {isPaid ? (
-                          <>
-                            <KeyRound className="h-3.5 w-3.5" />
-                            <span>Lấy Key / Xem hàng</span>
-                          </>
+                          isBuffOrder ? (
+                            <>
+                              <Activity className="h-3.5 w-3.5 text-emerald-300 animate-pulse" />
+                              <span>Xem tiến trình</span>
+                            </>
+                          ) : (
+                            <>
+                              <KeyRound className="h-3.5 w-3.5" />
+                              <span>Lấy Key / Xem hàng</span>
+                            </>
+                          )
                         ) : isPending ? (
                           <>
                             <QrCode className="h-3.5 w-3.5" />

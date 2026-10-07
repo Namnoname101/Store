@@ -18,6 +18,7 @@ import {
 import type { Product } from "@prisma/client";
 import { playSuccessChime } from "@/lib/sound";
 import { saveRecentOrder } from "@/lib/order-storage";
+import BuffProgressCard from "@/components/BuffProgressCard";
 
 export interface InstructionGuide {
   title: string;
@@ -150,6 +151,16 @@ export default function SecretDisplay({
     }
     return null;
   });
+
+  const isBuffService = Boolean(
+    orderItems?.some(
+      (item) =>
+        (item.product?.fulfillmentType && item.product.fulfillmentType !== "LOCAL_STOCK") ||
+        (item.product as any)?.category?.slug?.includes("buff") ||
+        (item.product as any)?.category?.slug?.includes("dich-vu") ||
+        item.product?.type === "COURSE_LINK"
+    )
+  );
 
   // Refund Form State
   const [refundBank, setRefundBank] = useState<string>("");
@@ -299,6 +310,14 @@ export default function SecretDisplay({
 
   // CASE 1: PENDING_UPSTREAM (Progress alert with spinning loader)
   if (currentUpstreamStatus === "PENDING_UPSTREAM") {
+    if (isBuffService) {
+      return (
+        <div className="space-y-6">
+          <BuffProgressCard orderCode={orderCode} />
+        </div>
+      );
+    }
+
     return (
       <div className="space-y-6">
         <div className="relative overflow-hidden rounded-3xl border border-indigo-500/30 bg-gradient-to-br from-indigo-950/50 via-slate-900 to-slate-950 p-8 sm:p-10 shadow-2xl text-center">
@@ -549,10 +568,15 @@ export default function SecretDisplay({
   // Fallback if no delivered items yet
   if (!deliveredItems || deliveredItems.length === 0) {
     return (
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 text-center">
-        <p className="text-sm text-slate-400">
-          Chưa có thông tin sản phẩm bàn giao cho đơn hàng này.
-        </p>
+      <div className="space-y-6">
+        <BuffProgressCard orderCode={orderCode} />
+        {!isBuffService && (
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 text-center">
+            <p className="text-sm text-slate-400">
+              Chưa có thông tin sản phẩm bàn giao cho đơn hàng này.
+            </p>
+          </div>
+        )}
       </div>
     );
   }
@@ -564,6 +588,7 @@ export default function SecretDisplay({
 
   return (
     <div className="space-y-6">
+      <BuffProgressCard orderCode={orderCode} />
       {/* Top action bar: count & Copy All button */}
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/80 px-5 py-4 backdrop-blur-md">
         <div className="flex items-center gap-2.5">
