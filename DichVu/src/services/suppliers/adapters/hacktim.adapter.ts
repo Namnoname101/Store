@@ -169,4 +169,71 @@ export class HackTimAdapter implements ISupplierAdapter {
       };
     }
   }
+
+  public async checkOrderStatus(
+    creds: SupplierCredentials,
+    upstreamOrderId: string
+  ): Promise<SupplierOrderStatusResult> {
+    const url = this.formatBaseUrl(creds.baseUrl);
+    const body = new URLSearchParams({
+      key: creds.apiKey.trim(),
+      action: "status",
+      order: String(upstreamOrderId).trim(),
+    });
+
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body,
+      });
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => "");
+        return {
+          status: "PROCESSING",
+          error: `HackTim status error (${res.status}): ${errText}`,
+        };
+      }
+
+      const data = await res.json();
+      if (data.error) {
+        return {
+          status: "PROCESSING",
+          error: String(data.error),
+        };
+      }
+
+      const raw = String(data.status || "").toLowerCase();
+      let status: SupplierOrderStatusResult["status"] = "IN_PROGRESS";
+      if (raw.includes("pending")) {
+        status = "PENDING";
+      } else if (raw.includes("process")) {
+        status = "PROCESSING";
+      } else if (raw.includes("progress")) {
+        status = "IN_PROGRESS";
+      } else if (raw.includes("completed") || raw.includes("success")) {
+        status = "COMPLETED";
+      } else if (raw.includes("partial")) {
+        status = "PARTIAL";
+      } else if (raw.includes("cancel")) {
+        status = "CANCELLED";
+      }
+
+      return {
+        status,
+        startCount: data.start_count !== undefined ? Number(data.start_count) : undefined,
+        remains: data.remains !== undefined ? Number(data.remains) : undefined,
+        charge: data.charge !== undefined ? Number(data.charge) : undefined,
+        rawStatus: String(data.status || ""),
+      };
+    } catch (err: any) {
+      return {
+        status: "PROCESSING",
+        error: err?.message || "Lỗi kiểm tra tiến trình",
+      };
+    }
+  }
 }

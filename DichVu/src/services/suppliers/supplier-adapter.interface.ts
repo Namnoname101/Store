@@ -19,6 +19,15 @@ export interface SupplierOrderResult {
   error?: string;
 }
 
+export interface SupplierOrderStatusResult {
+  status: "PENDING" | "PROCESSING" | "IN_PROGRESS" | "COMPLETED" | "PARTIAL" | "CANCELLED";
+  startCount?: number;
+  remains?: number;
+  charge?: number;
+  rawStatus?: string;
+  error?: string;
+}
+
 export interface ISupplierAdapter {
   checkBalance(creds: SupplierCredentials): Promise<number>;
   fetchProductInfo(
@@ -32,4 +41,8 @@ export interface ISupplierAdapter {
     orderCode: string,
     extra?: any
   ): Promise<SupplierOrderResult>;
+  checkOrderStatus?(
+    creds: SupplierCredentials,
+    upstreamOrderId: string
+  ): Promise<SupplierOrderStatusResult>;
 }
