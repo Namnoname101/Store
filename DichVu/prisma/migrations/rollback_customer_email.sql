@@ -1,10 +1,11 @@
--- Script Rollback an toàn cho Order.customerEmail về NOT NULL nếu cần thiết
--- 1. Điền giá trị fallback cho các đơn hàng vãng lai không có email trước khi thêm lại ràng buộc
-UPDATE "Order"
-SET "customerEmail" = 'guest@daitruong.store'
-WHERE "customerEmail" IS NULL;
+-- [CẢNH BÁO BẢO TOÀN DỮ LIỆU - RELEASE CANDIDATE]
+-- Tuyệt đối KHÔNG tự ý chạy script này trong môi trường Production.
+-- Trong kiến trúc Phase 3A/3B/4, Order.customerEmail là NULLABLE có chủ đích để hỗ trợ Guest Checkout.
+-- Khách vãng lai không nhập email sẽ giữ giá trị NULL và tra cứu đơn bảo mật thông qua accessToken.
+-- Việc điền email giả mạo ('guest@daitruong.store') sẽ làm ô nhiễm dữ liệu thật của khách hàng.
+-- Script dưới đây CHỈ là phương án kỹ thuật tham khảo trong trường hợp bắt buộc phải hạ cấp schema về NOT NULL:
+--
+-- UPDATE "Order"
+-- SET "customerEmail" = 'guest@daitruong.store'
+-- WHERE "customerEmail" IS NULL;
 
--- 2. Đổi lại schema trong prisma/schema.prisma:
---    customerEmail String
--- 3. Thực thi đồng bộ schema:
---    npx prisma db push

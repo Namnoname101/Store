@@ -12,6 +12,24 @@ function timingSafeEqualStr(a: string, b: string): boolean {
   return crypto.timingSafeEqual(bufA, bufB);
 }
 
+export function verifyPayOsSignature(data: any, signature: string, checksumKey: string): boolean {
+  if (!data || typeof data !== "object" || !signature || !checksumKey) return false;
+  try {
+    const sortedKeys = Object.keys(data).sort();
+    const signData = sortedKeys
+      .map((key) => {
+        const val = data[key];
+        const strVal = val === null || val === undefined ? "" : typeof val === "object" ? JSON.stringify(val) : String(val);
+        return `${key}=${strVal}`;
+      })
+      .join("&");
+    const calculatedSignature = crypto.createHmac("sha256", checksumKey).update(signData).digest("hex");
+    return timingSafeEqualStr(calculatedSignature.toLowerCase(), signature.toLowerCase());
+  } catch {
+    return false;
+  }
+}
+
 export async function GET() {
   return NextResponse.json(
     { success: true, message: "Payment webhook endpoint is active" },
@@ -20,8 +38,29 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  // 1. Webhook Secret Authentication Check (if configured and not placeholder)
-  const webhookSecret = process.env.PAYMENT_WEBHOOK_SECRET;
+  // 1. Flexible Body parsing (JSON or Form Data)
+  let body: any;
+  const contentType = request.headers.get("content-type") || "";
+
+  try {
+    if (
+      contentType.includes("application/x-www-form-urlencoded") ||
+      contentType.includes("multipart/form-data")
+    ) {
+      const formData = await request.formData();
+      body = Object.fromEntries(formData.entries());
+    } else {
+      body = await request.json();
+    }
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Invalid JSON payload" },
+      { status: 400 }
+    );
+  }
+
+  // 2. Authentication Check (SePay Apikey / Header Secret / PayOS HMAC Checksum)
+  const webhookSecret = process.env.PAYMENT_WEBHOOK_SECRET || process.env.PAYOS_CHECKSUM_KEY;
   const isSecretConfigured =
     webhookSecret &&
     webhookSecret.trim() !== "" &&
@@ -37,6 +76,9 @@ export async function POST(request: Request) {
   }
 
   if (isSecretConfigured) {
+    let isAuthenticated = false;
+
+    // A. Check Header / Query Token (SePay / Custom gateway)
     const url = new URL(request.url);
     const headerSecret =
       request.headers.get("x-webhook-secret") ||
@@ -56,36 +98,26 @@ export async function POST(request: Request) {
 
     const querySecret =
       url.searchParams.get("token") || url.searchParams.get("secret");
-
     const providedSecret = headerSecret || authSecret || querySecret;
 
-    if (!providedSecret || !timingSafeEqualStr(providedSecret, webhookSecret)) {
+    if (providedSecret && timingSafeEqualStr(providedSecret, webhookSecret)) {
+      isAuthenticated = true;
+    }
+
+    // B. Check PayOS HMAC-SHA256 signature if body.signature is present
+    if (!isAuthenticated && body && typeof body === "object" && body.signature && body.data) {
+      const payosKey = process.env.PAYOS_CHECKSUM_KEY || webhookSecret;
+      if (verifyPayOsSignature(body.data, body.signature, payosKey)) {
+        isAuthenticated = true;
+      }
+    }
+
+    if (!isAuthenticated) {
       return NextResponse.json(
-        { error: "Unauthorized: Invalid webhook secret" },
+        { error: "Unauthorized: Invalid webhook secret or signature" },
         { status: 401 }
       );
     }
-  }
-
-  // 2. Flexible Body parsing (JSON or Form Data)
-  let body: any;
-  const contentType = request.headers.get("content-type") || "";
-
-  try {
-    if (
-      contentType.includes("application/x-www-form-urlencoded") ||
-      contentType.includes("multipart/form-data")
-    ) {
-      const formData = await request.formData();
-      body = Object.fromEntries(formData.entries());
-    } else {
-      body = await request.json();
-    }
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Invalid JSON payload" },
-      { status: 400 }
-    );
   }
 
   // 3. Sanitize logging (avoid printing raw auth secrets/passwords)
