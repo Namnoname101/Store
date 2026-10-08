@@ -294,10 +294,10 @@ describe("Order Creation & Checkout Service", () => {
       expect(order.vietQrUrl).toContain("450000");
       expect(order.vietQrUrl).toContain(order.orderCode);
 
-      // Verify expiration is roughly 15 minutes in the future
+      // Verify expiration is roughly 10 minutes in the future (Phase 3B)
       const diffMs = order.expiresAt.getTime() - Date.now();
-      expect(diffMs).toBeGreaterThan(14 * 60 * 1000);
-      expect(diffMs).toBeLessThanOrEqual(15 * 60 * 1000 + 5000);
+      expect(diffMs).toBeGreaterThan(9 * 60 * 1000);
+      expect(diffMs).toBeLessThanOrEqual(10 * 60 * 1000 + 5000);
 
       // Verify items are reserved in DB
       const reservedItems = await prisma.productItem.findMany({

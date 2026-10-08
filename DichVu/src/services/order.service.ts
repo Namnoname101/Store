@@ -1,15 +1,27 @@
-import { prisma, OrderStatus, ItemStatus, FulfillmentType } from "@/lib/prisma";
+import {
+  prisma,
+  OrderStatus,
+  ItemStatus,
+  FulfillmentType,
+  PaymentIntentStatus,
+} from "@/lib/prisma";
 import {
   reserveItemsForOrder,
   releaseExpiredReservations,
 } from "@/services/inventory.service";
 import { generateVietQrUrl, generateOrderCode } from "@/lib/vietqr";
 import { validateCoupon } from "@/services/coupon.service";
+import {
+  createPaymentIntentForOrder,
+  QR_EXPIRY_MINUTES,
+} from "@/services/payment-intent.service";
 import type { Order, OrderItem, Product } from "@prisma/client";
 
 export interface OrderItemInput {
   productId: string;
   quantity: number;
+  targetLink?: string;
+  customerNote?: string;
 }
 
 export interface CreateOrderInput {
@@ -18,11 +30,13 @@ export interface CreateOrderInput {
   userId?: string;
   customerNote?: string;
   couponCode?: string;
+  idempotencyKey?: string;
 }
 
 export interface OrderDetailsResponse {
   id: string;
   orderCode: string;
+  accessToken?: string;
   customerEmail?: string | null;
   customerNote?: string | null;
   userId?: string | null;
@@ -36,6 +50,9 @@ export interface OrderDetailsResponse {
   upstreamOrderId?: string | null;
   upstreamError?: string | null;
   refundInfo?: string | null;
+  reconciliationStatus?: string | null;
+  reconciliationNote?: string | null;
+  activePaymentIntent?: any;
   expiresAt: Date;
   paidAt?: Date | null;
   expiresInSeconds?: number;
@@ -112,6 +129,35 @@ export async function createOrder(data: CreateOrderInput) {
     }
   }
 
+  // Idempotency check: if an order with this idempotencyKey already exists, return it
+  if (data.idempotencyKey && data.idempotencyKey.trim()) {
+    const existingOrder = await prisma.order.findUnique({
+      where: { idempotencyKey: data.idempotencyKey.trim() },
+      include: {
+        orderItems: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    if (existingOrder) {
+      const bankId = process.env.BANK_ID || "MB";
+      const bankAccountNo = process.env.BANK_ACCOUNT_NO || "0987654321";
+      const vietQrUrl = generateVietQrUrl(
+        bankId,
+        bankAccountNo,
+        existingOrder.totalAmount,
+        existingOrder.orderCode
+      );
+      return {
+        ...existingOrder,
+        vietQrUrl,
+      };
+    }
+  }
+
   // Calculate gross subtotalAmount
   const subtotalAmount = data.items.reduce((sum, item) => {
     const product = productMap.get(item.productId)!;
@@ -147,7 +193,7 @@ export async function createOrder(data: CreateOrderInput) {
     }
   }
 
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + QR_EXPIRY_MINUTES * 60 * 1000);
 
   // Database transaction: create order, order items, and reserve stock
   const order = await prisma.$transaction(
@@ -155,6 +201,7 @@ export async function createOrder(data: CreateOrderInput) {
       const createdOrder = await tx.order.create({
         data: {
           orderCode,
+          idempotencyKey: data.idempotencyKey?.trim() || null,
           customerEmail: data.customerEmail?.trim() || null,
           customerNote: data.customerNote ? data.customerNote.trim() : null,
           userId: data.userId || null,
@@ -170,6 +217,8 @@ export async function createOrder(data: CreateOrderInput) {
               productId: item.productId,
               price: productMap.get(item.productId)!.price,
               quantity: item.quantity,
+              targetLink: item.targetLink ? item.targetLink.trim() : null,
+              customerNote: item.customerNote ? item.customerNote.trim() : null,
             })),
           },
         },
@@ -198,11 +247,14 @@ export async function createOrder(data: CreateOrderInput) {
             item.productId,
             item.quantity,
             createdOrder.id,
-            15,
+            QR_EXPIRY_MINUTES,
             tx
           );
         }
       }
+
+      // Create initial 10-minute PaymentIntent
+      await createPaymentIntentForOrder(createdOrder.id, createdOrder.totalAmount, tx);
 
       return createdOrder;
     },
@@ -252,6 +304,11 @@ export async function checkAndExpireOrder(orderCode: string) {
     await tx.order.update({
       where: { id: order.id },
       data: { status: OrderStatus.EXPIRED },
+    });
+
+    await tx.paymentIntent.updateMany({
+      where: { orderId: order.id, status: PaymentIntentStatus.ACTIVE },
+      data: { status: PaymentIntentStatus.EXPIRED },
     });
 
     await tx.productItem.updateMany({
@@ -315,12 +372,17 @@ export async function getOrderDetails(
 
   const bankId = process.env.BANK_ID || "MB";
   const bankAccountNo = process.env.BANK_ACCOUNT_NO || "0987654321";
-  const vietQrUrl = generateVietQrUrl(
+  const defaultQrUrl = generateVietQrUrl(
     bankId,
     bankAccountNo,
     order.totalAmount,
     order.orderCode
   );
+
+  const activeIntent = await prisma.paymentIntent.findFirst({
+    where: { orderId: order.id, status: PaymentIntentStatus.ACTIVE },
+    orderBy: { createdAt: "desc" },
+  });
 
   const expiresInSeconds = Math.max(
     0,
@@ -351,6 +413,7 @@ export async function getOrderDetails(
   return {
     id: order.id,
     orderCode: order.orderCode,
+    accessToken: order.accessToken,
     customerEmail: order.customerEmail,
     customerNote: order.customerNote,
     userId: order.userId,
@@ -364,10 +427,13 @@ export async function getOrderDetails(
     upstreamOrderId: order.upstreamOrderId,
     upstreamError: order.upstreamError,
     refundInfo: order.refundInfo,
+    reconciliationStatus: order.reconciliationStatus,
+    reconciliationNote: order.reconciliationNote,
+    activePaymentIntent: activeIntent,
     expiresAt: order.expiresAt,
     paidAt: order.paidAt,
     expiresInSeconds: currentStatus === OrderStatus.PENDING ? expiresInSeconds : 0,
-    vietQrUrl,
+    vietQrUrl: activeIntent?.qrUrl || defaultQrUrl,
     orderItems: order.orderItems as any,
     deliveredItems,
     createdAt: order.createdAt,
