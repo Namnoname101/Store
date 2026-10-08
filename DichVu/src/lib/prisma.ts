@@ -81,6 +81,34 @@ export const WalletTransactionType = {
 } as const;
 export type WalletTransactionType = (typeof WalletTransactionType)[keyof typeof WalletTransactionType];
 
+export const PaymentIntentStatus = {
+  ACTIVE: "ACTIVE",
+  EXPIRED: "EXPIRED",
+  PAID: "PAID",
+  SUPERSEDED: "SUPERSEDED",
+  CANCELLED: "CANCELLED",
+} as const;
+export type PaymentIntentStatus = (typeof PaymentIntentStatus)[keyof typeof PaymentIntentStatus];
+
+export const ReconciliationStatus = {
+  MATCHED: "MATCHED",
+  UNDERPAID: "UNDERPAID",
+  OVERPAID: "OVERPAID",
+  MISMATCH_MEMO: "MISMATCH_MEMO",
+  EXPIRED_PAYMENT: "EXPIRED_PAYMENT",
+  MANUAL_RESOLVED: "MANUAL_RESOLVED",
+  UNMATCHED_ORDER: "UNMATCHED_ORDER",
+} as const;
+export type ReconciliationStatus = (typeof ReconciliationStatus)[keyof typeof ReconciliationStatus];
+
+export const AuditAction = {
+  RECONCILE_MATCH: "RECONCILE_MATCH",
+  RECONCILE_REFUND: "RECONCILE_REFUND",
+  RECONCILE_DISMISS: "RECONCILE_DISMISS",
+  OVERRIDE_FULFILLMENT: "OVERRIDE_FULFILLMENT",
+} as const;
+export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction];
+
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };

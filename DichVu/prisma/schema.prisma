@@ -72,30 +72,50 @@ model ProductItem {
 }
 
 model Order {
-  id             String               @id @default(uuid())
-  orderCode      String               @unique // e.g. ORD849201
-  customerEmail  String?
-  customerNote   String?              // e.g. Link video/profile for SMM services
-  userId         String?
-  user           User?                @relation(fields: [userId], references: [id])
-  totalAmount    Int                  // VND
-  subtotalAmount Int                  @default(0) // Gross amount before discount
-  discountAmount Int                  @default(0) // Discount VND subtracted
-  couponId       String?
-  coupon         Coupon?              @relation(fields: [couponId], references: [id])
-  status         String               @default("PENDING") // OrderStatus: PENDING, PAID, CANCELLED, EXPIRED
-  paymentMethod  String               @default("VIETQR")
-  upstreamStatus String               @default("NOT_APPLICABLE") // UpstreamStatus: NOT_APPLICABLE, PENDING_UPSTREAM, COMPLETED, FAILED, REFUNDED
-  upstreamOrderId String?
-  upstreamError  String?
-  refundInfo     String?              // Bank account info for refunds
-  expiresAt      DateTime
-  paidAt         DateTime?
-  orderItems     OrderItem[]
-  deliveredItems ProductItem[]
-  transactions   PaymentTransaction[]
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
+  id                  String               @id @default(uuid())
+  orderCode           String               @unique // e.g. ORD849201
+  accessToken         String               @unique @default(uuid()) // Secure access token for guest order lookup
+  idempotencyKey      String?              @unique // Prevent duplicate order creations
+  customerEmail       String?
+  customerNote        String?              // e.g. Link video/profile for SMM services
+  userId              String?
+  user                User?                @relation(fields: [userId], references: [id])
+  totalAmount         Int                  // VND
+  subtotalAmount      Int                  @default(0) // Gross amount before discount
+  discountAmount      Int                  @default(0) // Discount VND subtracted
+  couponId            String?
+  coupon              Coupon?              @relation(fields: [couponId], references: [id])
+  status              String               @default("PENDING") // OrderStatus: PENDING, PAID, CANCELLED, EXPIRED
+  paymentMethod       String               @default("VIETQR")
+  reconciliationStatus String?             // ReconciliationStatus: MATCHED, UNDERPAID, OVERPAID, MISMATCH_MEMO, EXPIRED_PAYMENT, MANUAL_RESOLVED
+  reconciliationNote   String?
+  reconciledAt        DateTime?
+  reconciledBy        String?              // "SYSTEM" | "OWNER"
+  upstreamStatus      String               @default("NOT_APPLICABLE") // UpstreamStatus: NOT_APPLICABLE, PENDING_UPSTREAM, COMPLETED, FAILED, REFUNDED
+  upstreamOrderId     String?
+  upstreamError       String?
+  refundInfo          String?              // Bank account info for refunds
+  expiresAt           DateTime
+  paidAt              DateTime?
+  orderItems          OrderItem[]
+  deliveredItems      ProductItem[]
+  transactions        PaymentTransaction[]
+  paymentIntents      PaymentIntent[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+}
+
+model PaymentIntent {
+  id         String   @id @default(uuid())
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  intentCode String   @unique // e.g. PI_ORD849201_1
+  qrUrl      String
+  amount     Int      // VND
+  expiresAt  DateTime // Exactly 10 minutes from creation
+  status     String   @default("ACTIVE") // ACTIVE, EXPIRED, PAID, SUPERSEDED, CANCELLED
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Coupon {
@@ -147,27 +167,43 @@ model SupplierProductMapping {
 }
 
 model OrderItem {
-  id        String   @id @default(uuid())
-  orderId   String
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product  @relation(fields: [productId], references: [id])
-  price     Int
-  quantity  Int
+  id           String   @id @default(uuid())
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id])
+  price        Int
+  quantity     Int
+  targetLink   String?  // Link kênh / video / profile riêng của từng sản phẩm SMM
+  customerNote String?  // Ghi chú riêng theo từng item
 }
 
 model PaymentTransaction {
-  id             String        @id @default(uuid())
-  orderId        String?
-  order          Order?        @relation(fields: [orderId], references: [id])
-  depositOrderId String?
-  depositOrder   DepositOrder? @relation(fields: [depositOrderId], references: [id])
-  transactionId  String        @unique // Mã giao dịch ngân hàng / gateway
-  amount         Int
-  bankCode       String?
-  content        String?
-  rawPayload     String?
-  createdAt      DateTime      @default(now())
+  id                   String        @id @default(uuid())
+  orderId              String?
+  order                Order?        @relation(fields: [orderId], references: [id])
+  depositOrderId       String?
+  depositOrder         DepositOrder? @relation(fields: [depositOrderId], references: [id])
+  transactionId        String        @unique // Mã giao dịch ngân hàng / gateway
+  amount               Int
+  bankCode             String?
+  content              String?
+  rawPayload           String?
+  reconciliationStatus String?       @default("MATCHED") // MATCHED, UNDERPAID, OVERPAID, MISMATCH_MEMO, EXPIRED_PAYMENT, MANUAL_RESOLVED, UNMATCHED_ORDER
+  reconciliationNote   String?
+  resolvedAt           DateTime?
+  resolvedBy           String?       // "OWNER"
+  createdAt            DateTime      @default(now())
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  action      String   // RECONCILE_MATCH, RECONCILE_REFUND, RECONCILE_DISMISS, OVERRIDE_FULFILLMENT
+  entityType  String   // ORDER, TRANSACTION, PAYMENT_INTENT
+  entityId    String
+  details     String?  // JSON string of changes / notes
+  performedBy String   @default("OWNER")
+  createdAt   DateTime @default(now())
 }
 
 model DepositOrder {
