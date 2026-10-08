@@ -31,6 +31,28 @@ export async function POST(request: Request, { params }: RouteParams) {
       );
     }
 
+    const url = new URL(request.url);
+    const token =
+      url.searchParams.get("token") ||
+      request.headers.get("x-order-token") ||
+      undefined;
+
+    const isGuest = !order.userId;
+    const isTokenExpired =
+      Date.now() - new Date(order.createdAt).getTime() >
+      30 * 24 * 60 * 60 * 1000;
+
+    if (isGuest && (!token || token !== order.accessToken || isTokenExpired)) {
+      return NextResponse.json(
+        {
+          error: isTokenExpired
+            ? "Mã xác thực đơn hàng đã hết hạn (quá 30 ngày)."
+            : "Yêu cầu mã xác thực đơn hàng hợp lệ để gửi yêu cầu hoàn tiền.",
+        },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json().catch(() => null);
     if (!body || typeof body !== "object") {
       return NextResponse.json(
@@ -105,6 +127,9 @@ export async function GET(_request: Request, { params }: RouteParams) {
       select: {
         id: true,
         orderCode: true,
+        accessToken: true,
+        userId: true,
+        createdAt: true,
         refundInfo: true,
       },
     });
@@ -113,6 +138,28 @@ export async function GET(_request: Request, { params }: RouteParams) {
       return NextResponse.json(
         { error: "Không tìm thấy thông tin đơn hàng." },
         { status: 404 }
+      );
+    }
+
+    const url = new URL(_request.url);
+    const token =
+      url.searchParams.get("token") ||
+      _request.headers.get("x-order-token") ||
+      undefined;
+
+    const isGuest = !order.userId;
+    const isTokenExpired =
+      Date.now() - new Date(order.createdAt).getTime() >
+      30 * 24 * 60 * 60 * 1000;
+
+    if (isGuest && (!token || token !== order.accessToken || isTokenExpired)) {
+      return NextResponse.json(
+        {
+          error: isTokenExpired
+            ? "Mã xác thực đơn hàng đã hết hạn (quá 30 ngày)."
+            : "Yêu cầu mã xác thực đơn hàng hợp lệ để xem thông tin hoàn tiền.",
+        },
+        { status: 403 }
       );
     }
 

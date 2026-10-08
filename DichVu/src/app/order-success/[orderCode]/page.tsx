@@ -65,6 +65,32 @@ export default async function OrderSuccessPage({
   // Guest order token protection: prevent ORDxxxxxx enumeration attacks
   const isGuestOrder = !order.userId && !order.customerEmail;
   const token = searchParams?.token;
+  const isTokenExpired =
+    Date.now() - new Date(order.createdAt).getTime() >
+    30 * 24 * 60 * 60 * 1000;
+
+  if (isGuestOrder && isTokenExpired) {
+    return (
+      <div className="mx-auto max-w-lg px-4 py-20 text-center">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 mb-4">
+          <AlertCircle className="h-8 w-8" />
+        </div>
+        <h1 className="text-xl font-bold text-white mb-2">
+          Liên kết đơn hàng đã hết hạn
+        </h1>
+        <p className="text-xs sm:text-sm text-slate-400 mb-6">
+          Đơn hàng <strong>#{orderCode}</strong> đã được tạo hơn 30 ngày. Vì lý do an toàn bảo mật, liên kết truy cập mã đã hết hiệu lực.
+        </p>
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-xs font-bold text-white transition-all shadow-md shadow-blue-600/30"
+        >
+          <span>Quay lại trang chủ</span>
+        </Link>
+      </div>
+    );
+  }
+
   if (isGuestOrder && order.accessToken && token !== order.accessToken) {
     return (
       <div className="mx-auto max-w-lg px-4 py-20 text-center">

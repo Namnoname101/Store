@@ -30,17 +30,33 @@ export async function GET(
       );
     }
 
+    const url = new URL(_request.url);
+    const token =
+      url.searchParams.get("token") ||
+      _request.headers.get("x-order-token") ||
+      undefined;
+
+    const isGuest = !order.userId;
+    const isTokenExpired =
+      Date.now() - new Date(order.createdAt).getTime() >
+      30 * 24 * 60 * 60 * 1000;
+
+    const isTokenValid =
+      !isGuest ||
+      (Boolean(token) && token === order.accessToken && !isTokenExpired);
+
     return NextResponse.json({
       status: order.status,
       upstreamStatus: order.upstreamStatus,
       reconciliationStatus: order.reconciliationStatus,
       reconciliationNote: order.reconciliationNote,
       totalAmount: order.totalAmount,
-      refundInfo: order.refundInfo ? JSON.parse(order.refundInfo) : null,
+      refundInfo: isTokenValid && order.refundInfo ? JSON.parse(order.refundInfo) : null,
       paidAt: order.paidAt ?? null,
-      deliveredItems: order.deliveredItems ?? [],
+      deliveredItems: isTokenValid ? (order.deliveredItems ?? []) : [],
       vietQrUrl: order.vietQrUrl,
       expiresAt: order.expiresAt,
+      tokenExpired: isTokenExpired && token === order.accessToken,
     });
   } catch (error: any) {
     return NextResponse.json(
