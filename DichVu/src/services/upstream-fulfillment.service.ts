@@ -77,21 +77,44 @@ export async function fulfillOrderViaUpstream(
     };
   }
 
-  // Set status to PENDING_UPSTREAM while processing
-  await prisma.order.update({
-    where: { id: order.id },
+  // Concurrency lock: atomically transition to PENDING_UPSTREAM only if not already PENDING_UPSTREAM or COMPLETED
+  const lockAcquired = await prisma.order.updateMany({
+    where: {
+      id: order.id,
+      upstreamStatus: {
+        notIn: [UpstreamStatus.PENDING_UPSTREAM, UpstreamStatus.COMPLETED],
+      },
+    },
     data: {
       upstreamStatus: UpstreamStatus.PENDING_UPSTREAM,
     },
   });
 
+  if (lockAcquired.count === 0) {
+    // Another worker is running or it was already completed
+    const current = await prisma.order.findUnique({
+      where: { id: order.id },
+      select: { upstreamStatus: true, upstreamOrderId: true },
+    });
+    return {
+      success: current?.upstreamStatus === UpstreamStatus.COMPLETED,
+      status: current?.upstreamStatus || UpstreamStatus.PENDING_UPSTREAM,
+      upstreamOrderId: current?.upstreamOrderId,
+      error:
+        current?.upstreamStatus === UpstreamStatus.PENDING_UPSTREAM
+          ? "Đang có tiến trình giao hàng tự động khác xử lý đơn này."
+          : undefined,
+    };
+  }
+
   let lastUpstreamOrderId: string | null = order.upstreamOrderId || null;
   let totalKeysDelivered = 0;
+  const MAX_RETRIES = 3;
 
   for (const item of dropshipItems) {
     const mapping = item.product?.supplierMapping;
     if (!mapping || !mapping.supplier || !mapping.supplier.isActive) {
-      const errorMsg = "Supplier mapping missing or inactive";
+      const errorMsg = "Cần Chủ sở hữu xử lý: Cấu hình nhà cung cấp chưa khả dụng.";
       await prisma.order.update({
         where: { id: order.id },
         data: {
@@ -120,60 +143,47 @@ export async function fulfillOrderViaUpstream(
       continue;
     }
 
-    try {
-      const adapter = getSupplierAdapter(mapping.supplier.type);
-      const purchaseResult = await adapter.buyProduct(
-        {
-          baseUrl: mapping.supplier.baseUrl,
-          apiKey: mapping.supplier.apiKey,
-          apiSecret: mapping.supplier.apiSecret,
-        },
-        mapping.supplierProductCode,
-        quantityNeeded,
-        order.orderCode,
-        {
-          link: order.customerNote || undefined,
-          customerNote: order.customerNote || undefined,
-        }
-      );
+    // Extract item-specific targetLink, or customerNote, or order customerNote
+    const targetLink =
+      (item as any).targetLink ||
+      (item as any).customerNote ||
+      order.customerNote ||
+      undefined;
 
-      if (!purchaseResult.success) {
-        const errorMsg = purchaseResult.error || "Upstream purchase failed";
-        await prisma.order.update({
-          where: { id: order.id },
-          data: {
-            upstreamStatus: UpstreamStatus.FAILED,
-            upstreamError: errorMsg,
+    let purchaseResult: any = null;
+    let lastError: string | null = null;
+    const adapter = getSupplierAdapter(mapping.supplier.type);
+
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        purchaseResult = await adapter.buyProduct(
+          {
+            baseUrl: mapping.supplier.baseUrl,
+            apiKey: mapping.supplier.apiKey,
+            apiSecret: mapping.supplier.apiSecret,
           },
-        });
+          mapping.supplierProductCode,
+          quantityNeeded,
+          `${order.orderCode}_${item.id.slice(-4)}_${attempt}`,
+          {
+            link: targetLink,
+            customerNote: (item as any).customerNote || order.customerNote || undefined,
+          }
+        );
 
-        return {
-          success: false,
-          status: UpstreamStatus.FAILED,
-          error: errorMsg,
-        };
-      }
+        if (purchaseResult && purchaseResult.success) {
+          lastError = null;
+          break;
+        }
 
-      if (purchaseResult.upstreamOrderId) {
-        lastUpstreamOrderId = purchaseResult.upstreamOrderId;
+        lastError = purchaseResult?.error || "Giao dịch không thành công";
+      } catch (err: any) {
+        lastError = err?.message || "Lỗi kết nối máy chủ cấp phát";
       }
+    }
 
-      if (
-        purchaseResult.deliveredKeys &&
-        purchaseResult.deliveredKeys.length > 0
-      ) {
-        await prisma.productItem.createMany({
-          data: purchaseResult.deliveredKeys.map((key) => ({
-            productId: item.productId,
-            secretContent: key,
-            status: ItemStatus.SOLD,
-            orderId: order.id,
-          })),
-        });
-        totalKeysDelivered += purchaseResult.deliveredKeys.length;
-      }
-    } catch (err: any) {
-      const errorMsg = err?.message || "Upstream purchase failed";
+    if (!purchaseResult || !purchaseResult.success) {
+      const errorMsg = `Cần Chủ sở hữu xử lý: ${lastError || "Lỗi cấp phát tự động"}`;
       await prisma.order.update({
         where: { id: order.id },
         data: {
@@ -187,6 +197,25 @@ export async function fulfillOrderViaUpstream(
         status: UpstreamStatus.FAILED,
         error: errorMsg,
       };
+    }
+
+    if (purchaseResult.upstreamOrderId) {
+      lastUpstreamOrderId = purchaseResult.upstreamOrderId;
+    }
+
+    if (
+      purchaseResult.deliveredKeys &&
+      purchaseResult.deliveredKeys.length > 0
+    ) {
+      await prisma.productItem.createMany({
+        data: purchaseResult.deliveredKeys.map((key: string) => ({
+          productId: item.productId,
+          secretContent: key,
+          status: ItemStatus.SOLD,
+          orderId: order.id,
+        })),
+      });
+      totalKeysDelivered += purchaseResult.deliveredKeys.length;
     }
   }
 

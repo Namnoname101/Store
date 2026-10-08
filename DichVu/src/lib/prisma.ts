@@ -35,6 +35,7 @@ export const FulfillmentType = {
 export type FulfillmentType = (typeof FulfillmentType)[keyof typeof FulfillmentType];
 
 export const SupplierType = {
+  MOCK: "MOCK",
   TAPHOAMMO: "TAPHOAMMO",
   TRUMTHE: "TRUMTHE",
   LOCKET_VN: "LOCKET_VN",
