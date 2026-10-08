@@ -18,6 +18,9 @@ interface OrderSuccessPageProps {
   params: {
     orderCode: string;
   };
+  searchParams?: {
+    token?: string;
+  };
 }
 
 export async function generateMetadata({
@@ -32,6 +35,7 @@ export async function generateMetadata({
 
 export default async function OrderSuccessPage({
   params,
+  searchParams,
 }: OrderSuccessPageProps) {
   const { orderCode } = await Promise.resolve(params);
   const order = await getOrderDetails(orderCode);
@@ -58,9 +62,35 @@ export default async function OrderSuccessPage({
     );
   }
 
+  // Guest order token protection: prevent ORDxxxxxx enumeration attacks
+  const isGuestOrder = !order.userId && !order.customerEmail;
+  const token = searchParams?.token;
+  if (isGuestOrder && order.accessToken && token !== order.accessToken) {
+    return (
+      <div className="mx-auto max-w-lg px-4 py-20 text-center">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 mb-4">
+          <AlertCircle className="h-8 w-8" />
+        </div>
+        <h1 className="text-xl font-bold text-white mb-2">
+          Yêu cầu mã xác thực truy cập
+        </h1>
+        <p className="text-xs sm:text-sm text-slate-400 mb-6">
+          Đơn hàng <strong>#{orderCode}</strong> là đơn mua của khách vãng lai. Để bảo mật mã bàn giao, vui lòng sử dụng liên kết chính xác có chứa mã bảo mật truy cập.
+        </p>
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-xs font-bold text-white transition-all shadow-md shadow-blue-600/30"
+        >
+          <span>Quay lại trang chủ</span>
+        </Link>
+      </div>
+    );
+  }
+
   // If order is not paid yet, redirect back to checkout
   if (order.status !== "PAID") {
-    redirect(`/checkout/${orderCode}`);
+    const tokenQuery = order.accessToken ? `?token=${order.accessToken}` : "";
+    redirect(`/checkout/${orderCode}${tokenQuery}`);
   }
 
   const paidFormattedDate = order.paidAt

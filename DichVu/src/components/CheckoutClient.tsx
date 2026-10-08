@@ -67,6 +67,23 @@ export default function CheckoutClient({
     return null;
   });
 
+  const [currentVietQrUrl, setCurrentVietQrUrl] = useState<string | undefined>(
+    order.vietQrUrl
+  );
+  const [currentTotal, setCurrentTotal] = useState<number>(order.totalAmount);
+  const [currentExpiresAt, setCurrentExpiresAt] = useState<Date | string>(
+    order.expiresAt
+  );
+  const [reconciliationStatus, setReconciliationStatus] = useState<string | null | undefined>(
+    order.reconciliationStatus
+  );
+  const [reconciliationNote, setReconciliationNote] = useState<string | null | undefined>(
+    order.reconciliationNote
+  );
+  const [isRegeneratingQR, setIsRegeneratingQR] = useState<boolean>(false);
+  const [regenerateError, setRegenerateError] = useState<string | null>(null);
+  const [priceChangedNotice, setPriceChangedNotice] = useState<string | null>(null);
+
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [verificationNotice, setVerificationNotice] = useState<string | null>(null);
@@ -94,13 +111,13 @@ export default function CheckoutClient({
       .then((data) => {
         if (data?.authenticated && data?.user) {
           setCurrentUser(data.user);
-          if (data.user.balance >= order.totalAmount) {
+          if (data.user.balance >= currentTotal) {
             setSelectedMethod("WALLET");
           }
         }
       })
       .catch(() => {});
-  }, [order.totalAmount]);
+  }, [currentTotal]);
 
   const handleWalletPayment = async () => {
     setWalletPayError(null);
@@ -118,10 +135,44 @@ export default function CheckoutClient({
 
       playSuccessChime();
       setStatus("PAID");
-      router.push(`/order-success/${order.orderCode}`);
+      const tokenParam = order.accessToken ? `?token=${order.accessToken}` : "";
+      router.push(`/order-success/${order.orderCode}${tokenParam}`);
     } catch {
       setWalletPayError("Lỗi kết nối máy chủ. Vui lòng thử lại.");
       setIsPayingWallet(false);
+    }
+  };
+
+  const handleRegenerateQR = async () => {
+    setIsRegeneratingQR(true);
+    setRegenerateError(null);
+    setPriceChangedNotice(null);
+    try {
+      const res = await fetch(`/api/orders/${order.orderCode}/regenerate-qr`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accessToken: order.accessToken }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setRegenerateError(data.error || "Không thể tạo lại mã QR.");
+        setIsRegeneratingQR(false);
+        return;
+      }
+
+      if (data.paymentIntent) {
+        setCurrentVietQrUrl(data.paymentIntent.qrUrl);
+        setCurrentExpiresAt(data.paymentIntent.expiresAt);
+        setCurrentTotal(data.paymentIntent.amount);
+        setStatus("PENDING");
+        if (data.priceChanged && data.message) {
+          setPriceChangedNotice(data.message);
+        }
+      }
+    } catch {
+      setRegenerateError("Lỗi kết nối máy chủ. Vui lòng thử lại.");
+    } finally {
+      setIsRegeneratingQR(false);
     }
   };
 
@@ -132,13 +183,14 @@ export default function CheckoutClient({
       "Sản phẩm số";
     saveRecentOrder({
       orderCode: order.orderCode,
-      totalAmount: order.totalAmount,
+      accessToken: order.accessToken,
+      totalAmount: currentTotal,
       customerEmail: order.customerEmail,
       createdAt: order.createdAt ? String(order.createdAt) : new Date().toISOString(),
       itemsSummary,
       status: order.status,
     });
-  }, [order]);
+  }, [order, currentTotal]);
 
   // If already paid and completed, navigate immediately
   useEffect(() => {
@@ -148,10 +200,11 @@ export default function CheckoutClient({
         !upstreamStatus ||
         upstreamStatus === "NOT_APPLICABLE"
       ) {
-        router.push(`/order-success/${order.orderCode}`);
+        const tokenParam = order.accessToken ? `?token=${order.accessToken}` : "";
+        router.push(`/order-success/${order.orderCode}${tokenParam}`);
       }
     }
-  }, [status, upstreamStatus, order.orderCode, router]);
+  }, [status, upstreamStatus, order.orderCode, order.accessToken, router]);
 
   // Polling while PENDING or while PAID with PENDING_UPSTREAM
   useEffect(() => {
@@ -179,6 +232,15 @@ export default function CheckoutClient({
         ) {
           setUpstreamStatus(data.upstreamStatus);
         }
+        if (data.reconciliationStatus !== undefined) {
+          setReconciliationStatus(data.reconciliationStatus);
+        }
+        if (data.reconciliationNote !== undefined) {
+          setReconciliationNote(data.reconciliationNote);
+        }
+        if (data.totalAmount !== undefined && data.totalAmount !== currentTotal) {
+          setCurrentTotal(data.totalAmount);
+        }
         if (data.refundInfo && !refundInfo) {
           setRefundInfo(data.refundInfo);
         }
@@ -190,7 +252,8 @@ export default function CheckoutClient({
             "Sản phẩm số";
           saveRecentOrder({
             orderCode: order.orderCode,
-            totalAmount: order.totalAmount,
+            accessToken: order.accessToken,
+            totalAmount: currentTotal,
             customerEmail: order.customerEmail,
             createdAt: order.createdAt ? String(order.createdAt) : new Date().toISOString(),
             itemsSummary,
@@ -201,7 +264,8 @@ export default function CheckoutClient({
             !data.upstreamStatus ||
             data.upstreamStatus === "NOT_APPLICABLE"
           ) {
-            router.push(`/order-success/${order.orderCode}`);
+            const tokenParam = order.accessToken ? `?token=${order.accessToken}` : "";
+            router.push(`/order-success/${order.orderCode}${tokenParam}`);
           }
         }
       } catch {
@@ -214,7 +278,7 @@ export default function CheckoutClient({
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
     };
-  }, [status, upstreamStatus, refundInfo, order, router]);
+  }, [status, upstreamStatus, refundInfo, order, currentTotal, router]);
 
   const handleCopy = async (field: string, text: string) => {
     try {
@@ -352,16 +416,16 @@ export default function CheckoutClient({
         </Link>
 
         <div className="flex items-center gap-3">
-          {status === "PENDING" && (
+          {status === "PENDING" && !isExpired && (
             <CountdownTimer
-              expiresAt={order.expiresAt}
+              expiresAt={currentExpiresAt}
               onExpire={handleTimerExpire}
             />
           )}
 
           {isExpired ? (
             <span className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-xs font-bold text-rose-400">
-              Đơn hàng hết hạn
+              Đơn hàng hết hạn (10 phút)
             </span>
           ) : isPaidPendingFulfillment ? (
             <span className="flex items-center gap-2 rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-xs font-bold text-indigo-400">
@@ -385,6 +449,107 @@ export default function CheckoutClient({
           )}
         </div>
       </div>
+
+      {/* 4-Stage Progress Indicator */}
+      <div className="mb-6 rounded-2xl border border-slate-800 bg-slate-900/60 p-4 backdrop-blur-md">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+          <div
+            className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all ${
+              status === "PENDING" && !isExpired
+                ? "border-blue-500/50 bg-blue-500/10 text-blue-400 font-bold"
+                : "border-slate-800 text-slate-400"
+            }`}
+          >
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600/20 text-[10px] font-bold">
+              1
+            </span>
+            <span>1. Chờ thanh toán</span>
+          </div>
+
+          <div
+            className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all ${
+              isVerifying || reconciliationStatus === "UNDERPAID" || reconciliationStatus === "EXPIRED_PAYMENT"
+                ? "border-amber-500/50 bg-amber-500/10 text-amber-400 font-bold"
+                : "border-slate-800 text-slate-400"
+            }`}
+          >
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-600/20 text-[10px] font-bold">
+              2
+            </span>
+            <span>2. Đang xác minh</span>
+          </div>
+
+          <div
+            className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all ${
+              isPaidPendingFulfillment
+                ? "border-indigo-500/50 bg-indigo-500/10 text-indigo-400 font-bold"
+                : "border-slate-800 text-slate-400"
+            }`}
+          >
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600/20 text-[10px] font-bold">
+              3
+            </span>
+            <span>3. Đang xử lý</span>
+          </div>
+
+          <div
+            className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all ${
+              status === "PAID" && !isPaidPendingFulfillment && !isPaidFulfillmentFailed
+                ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-400 font-bold"
+                : "border-slate-800 text-slate-400"
+            }`}
+          >
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600/20 text-[10px] font-bold">
+              4
+            </span>
+            <span>4. Hoàn thành</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Price Changed Alert Banner */}
+      {priceChangedNotice && (
+        <div className="mb-6 rounded-2xl border border-sky-500/40 bg-sky-500/10 p-4 text-xs text-sky-300 font-medium flex items-center gap-2.5">
+          <Sparkles className="h-4 w-4 text-sky-400 shrink-0" />
+          <span>{priceChangedNotice}</span>
+        </div>
+      )}
+
+      {/* Underpaid Reconciliation Banner */}
+      {reconciliationStatus === "UNDERPAID" && (
+        <div className="mb-6 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-5 backdrop-blur-md">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
+            <div>
+              <h3 className="text-sm font-bold text-amber-300">
+                Đã ghi nhận thanh toán một phần — Chờ đối soát
+              </h3>
+              <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                {reconciliationNote ||
+                  "Hệ thống đã nhận được tiền chuyển khoản nhưng chưa đủ tổng giá trị đơn hàng. Giao dịch đang chờ Chủ sở hữu kiểm tra đối soát."}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Expired Payment Reconciliation Banner */}
+      {reconciliationStatus === "EXPIRED_PAYMENT" && (
+        <div className="mb-6 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-5 backdrop-blur-md">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
+            <div>
+              <h3 className="text-sm font-bold text-amber-300">
+                Thanh toán sau khi hết hạn 10 phút — Chờ Chủ sở hữu xử lý
+              </h3>
+              <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                {reconciliationNote ||
+                  "Giao dịch chuyển khoản được ghi nhận sau khi mã QR hết hiệu lực. Chúng tôi đã chuyển thông tin cho Chủ sở hữu để kiểm tra và cấp hàng thủ công cho bạn."}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* CASE 1: PENDING_UPSTREAM Banner */}
       {isPaidPendingFulfillment && (
@@ -712,32 +877,46 @@ export default function CheckoutClient({
         </div>
       )}
 
-      {/* Expired Notification Notice */}
+      {/* Expired Notification Notice with 1-Click QR Regeneration */}
       {isExpired && (
         <div className="mb-8 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-6 text-center backdrop-blur-md">
           <AlertCircle className="mx-auto h-10 w-10 text-rose-400 mb-3" />
           <h2 className="text-lg font-bold text-white mb-2">
-            Đơn hàng #{order.orderCode} đã hết hạn
+            Mã QR đơn hàng #{order.orderCode} đã hết hạn (10 phút)
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto mb-5 leading-relaxed">
-            Thời gian tạm giữ 15 phút đã kết thúc. Sản phẩm đã được hoàn trả lại hệ thống
-            tự động để tránh tồn đọng. Nếu bạn đã chuyển khoản, vui lòng liên hệ bộ phận hỗ trợ kỹ thuật để được hỗ trợ kiểm tra đối soát thủ công.
+            Thời gian thanh toán 10 phút đã kết thúc. Bạn có thể bấm tạo lại mã QR bên dưới để kiểm tra lại tồn kho, giá sản phẩm và tiếp tục thanh toán an toàn.
           </p>
+          {regenerateError && (
+            <div className="mb-4 max-w-md mx-auto p-3 rounded-xl border border-rose-500/40 bg-rose-500/20 text-xs text-rose-300 font-medium">
+              {regenerateError}
+            </div>
+          )}
           <div className="flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={handleRegenerateQR}
+              disabled={isRegeneratingQR}
+              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-6 py-2.5 text-xs font-bold text-white transition-all shadow-lg shadow-blue-600/30 disabled:opacity-50 cursor-pointer"
+            >
+              {isRegeneratingQR ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Đang kiểm tra và tạo lại mã QR...</span>
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="h-4 w-4" />
+                  <span>Tạo lại mã QR thanh toán (10 phút mới)</span>
+                </>
+              )}
+            </button>
             <Link
               href="/"
-              className="rounded-xl bg-indigo-600 hover:bg-indigo-500 px-5 py-2.5 text-xs font-bold text-white transition-all shadow-md shadow-indigo-600/30"
+              className="rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-750 px-5 py-2.5 text-xs font-semibold text-slate-200 transition-all"
             >
               Chọn mua sản phẩm khác
             </Link>
-            <a
-              href="https://zalo.me/0987654321"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-750 px-5 py-2.5 text-xs font-semibold text-slate-200 transition-all"
-            >
-              Hỗ trợ đối soát (Zalo)
-            </a>
           </div>
         </div>
       )}
@@ -926,9 +1105,35 @@ export default function CheckoutClient({
 
               {/* QR Image Frame */}
               <div className="relative mx-auto inline-block rounded-2xl bg-white p-3.5 shadow-2xl ring-4 ring-indigo-500/20">
-                {order.vietQrUrl ? (
+                {isExpired ? (
+                  <div className="flex h-64 w-64 flex-col items-center justify-center rounded-lg bg-slate-900/95 p-4 text-center">
+                    <AlertCircle className="h-10 w-10 text-rose-400 mb-2" />
+                    <span className="text-xs font-bold text-white mb-1">Mã QR đã hết hạn</span>
+                    <span className="text-[11px] text-slate-400 mb-4">
+                      Thời gian hiệu lực 10 phút đã kết thúc
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleRegenerateQR}
+                      disabled={isRegeneratingQR}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-bold text-white transition-all shadow-md shadow-blue-600/30 disabled:opacity-50 cursor-pointer"
+                    >
+                      {isRegeneratingQR ? (
+                        <>
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          <span>Đang tạo lại...</span>
+                        </>
+                      ) : (
+                        <>
+                          <RefreshCw className="h-3.5 w-3.5" />
+                          <span>Tạo lại mã QR</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                ) : currentVietQrUrl ? (
                   <img
-                    src={order.vietQrUrl}
+                    src={currentVietQrUrl}
                     alt={`VietQR thanh toán đơn hàng ${order.orderCode}`}
                     className="mx-auto aspect-square w-64 max-w-full rounded-lg object-contain"
                   />
@@ -1100,7 +1305,7 @@ export default function CheckoutClient({
                         <span>Số tiền chính xác</span>
                       </div>
                       <div className="text-xl font-black text-indigo-400">
-                        {formatVND(order.totalAmount)}
+                        {formatVND(currentTotal)}
                       </div>
                       {order.discountAmount && order.discountAmount > 0 ? (
                         <div className="text-[11px] text-emerald-400 font-medium mt-0.5">
@@ -1111,7 +1316,7 @@ export default function CheckoutClient({
 
                     <button
                       type="button"
-                      onClick={() => handleCopy("amount", order.totalAmount.toString())}
+                      onClick={() => handleCopy("amount", currentTotal.toString())}
                       className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-medium transition-all ${
                         copiedField === "amount"
                           ? "bg-emerald-500/20 text-emerald-300"

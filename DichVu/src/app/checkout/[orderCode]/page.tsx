@@ -55,7 +55,8 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
     order.upstreamStatus !== "PENDING_UPSTREAM" &&
     order.upstreamStatus !== "FAILED"
   ) {
-    redirect(`/order-success/${orderCode}`);
+    const tokenQuery = order.accessToken ? `?token=${order.accessToken}` : "";
+    redirect(`/order-success/${orderCode}${tokenQuery}`);
   }
 
   const bankId = process.env.BANK_ID || "MB";

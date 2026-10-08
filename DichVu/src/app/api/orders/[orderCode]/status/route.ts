@@ -33,6 +33,9 @@ export async function GET(
     return NextResponse.json({
       status: order.status,
       upstreamStatus: order.upstreamStatus,
+      reconciliationStatus: order.reconciliationStatus,
+      reconciliationNote: order.reconciliationNote,
+      totalAmount: order.totalAmount,
       refundInfo: order.refundInfo ? JSON.parse(order.refundInfo) : null,
       paidAt: order.paidAt ?? null,
       deliveredItems: order.deliveredItems ?? [],
