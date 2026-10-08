@@ -385,7 +385,7 @@ export class LocketPartnerClient {
 
       const durationMs = Date.now() - startTime;
 
-      if (response.status === 200) {
+      if (response.status >= 200 && response.status < 300) {
         const jobId = payload?.data?.job?.job_id || payload?.data?.job_id || payload?.job?.job_id || payload?.job_id;
         return {
           ok: true,
@@ -428,11 +428,34 @@ export class LocketPartnerClient {
         }
       }
 
+      const messageStr = (payload?.message || "").toLowerCase();
+
+      // Kiểm tra nếu thông báo cho biết đã đưa vào hàng chờ xử lý -> Xem là THÀNH CÔNG
+      const isQueued =
+        messageStr.includes("hàng chờ") ||
+        messageStr.includes("hàng đợi") ||
+        messageStr.includes("đưa vào") ||
+        messageStr.includes("tiếp nhận") ||
+        messageStr.includes("queue") ||
+        messageStr.includes("đang xử lý");
+
+      if (isQueued) {
+        const jobId = payload?.data?.job?.job_id || payload?.data?.job_id || payload?.job?.job_id || payload?.job_id;
+        return {
+          ok: true,
+          status: "SUCCESS",
+          jobId,
+          message: payload?.message || "Yêu cầu đã được đưa vào hàng chờ xử lý thành công",
+          durationMs,
+          rawPayload: payload,
+        };
+      }
+
       if (response.status === 400 || response.status === 429) {
-        const messageStr = (payload?.message || "").toLowerCase();
         const hasCooldown =
           messageStr.includes("cooldown") ||
           messageStr.includes("chờ") ||
+          messageStr.includes("đợi") ||
           payload?.cooldown_remaining != null ||
           payload?.data?.cooldown_remaining != null;
 

@@ -295,6 +295,33 @@ describe("LocketPartnerClient", () => {
       expect(res.message).toContain("cooldown");
     });
 
+    it("should treat queued message as SUCCESS even if status is 400", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        json: async () => ({
+          message: "GoldPass đã được đưa vào hàng chờ xử lý",
+          data: {
+            job: {
+              job_id: "JOB-QUEUED-123",
+            },
+          },
+        }),
+      } as any);
+
+      const res = await LocketPartnerClient.triggerUsePass({
+        passId: "PASS1",
+        linkVersion: 1,
+        signature: "SIG1",
+        cookie: "cookie_val",
+      });
+
+      expect(res.ok).toBe(true);
+      expect(res.status).toBe("SUCCESS");
+      expect(res.jobId).toBe("JOB-QUEUED-123");
+      expect(res.message).toContain("hàng chờ");
+    });
+
     it("should handle 400 or 429 general failure when no cooldown indicator", async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: false,

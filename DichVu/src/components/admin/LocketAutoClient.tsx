@@ -212,16 +212,26 @@ export default function LocketAutoClient() {
       });
 
       const data = await res.json();
-      if (!res.ok || !data.ok) {
+      if (!res.ok) {
         throw new Error(data.message || data.error || "Kích hoạt thất bại");
       }
 
-      setBannerMessage({
-        type: "success",
-        text: `Kích hoạt thành công! Kết quả: ${data.message} (Job: ${
-          data.jobId || "N/A"
-        }, thời gian: ${data.durationMs}ms)`,
-      });
+      if (data.status === "SUCCESS" || data.ok) {
+        setBannerMessage({
+          type: "success",
+          text: `Thành công! ${data.message} ${data.jobId ? `(Job: ${data.jobId})` : ""}`,
+        });
+      } else if (data.status === "COOLDOWN") {
+        setBannerMessage({
+          type: "info",
+          text: `Hàng chờ / Cooldown: ${data.message}`,
+        });
+      } else {
+        setBannerMessage({
+          type: "error",
+          text: data.message || "Kích hoạt không thành công",
+        });
+      }
       fetchData();
     } catch (err: any) {
       setBannerMessage({
@@ -280,7 +290,7 @@ export default function LocketAutoClient() {
       case "COOLDOWN":
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 text-xs font-semibold text-amber-400">
-            <Clock className="h-3 w-3" /> Cooldown
+            <Clock className="h-3 w-3" /> Hàng chờ / Cooldown
           </span>
         );
       case "SESSION_EXPIRED":
