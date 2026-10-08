@@ -17,6 +17,7 @@ import {
   Ticket,
   Users,
   Zap,
+  Scale,
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -71,6 +72,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       href: "/admin/orders",
       icon: ShoppingCart,
       current: pathname.startsWith("/admin/orders"),
+    },
+    {
+      name: "Đối soát ngân hàng",
+      href: "/admin/reconciliation",
+      icon: Scale,
+      current: pathname.startsWith("/admin/reconciliation"),
     },
     {
       name: "Mã giảm giá",
