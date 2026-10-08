@@ -17,7 +17,27 @@ interface CatalogExplorerProps {
 
 const PRESET_TABS = [
   { id: "all", label: "Tất cả" },
-  { id: "ai-api", label: "AI & API", keywords: ["ai", "gpt", "chatgpt", "claude", "gemini", "api", "copilot"] },
+  {
+    id: "ai-api",
+    label: "AI & API",
+    keywords: [
+      "ai",
+      "api",
+      "cursor",
+      "claude",
+      "gemini",
+      "gpt",
+      "chatgpt",
+      "deepseek",
+      "grok",
+      "kimi",
+      "zhipu",
+      "glm",
+      "codex",
+      "kiro",
+      "copilot",
+    ],
+  },
   { id: "cloud", label: "Cloud", keywords: ["cloud", "vps", "server", "aws", "azure", "drive", "onedrive"] },
   { id: "tiktok", label: "TikTok", keywords: ["tiktok", "douyin"] },
   { id: "facebook", label: "Facebook", keywords: ["facebook", "fb"] },
@@ -45,7 +65,7 @@ export default function CatalogExplorer({
   useEffect(() => {
     const urlCategory = searchParams.get("category");
     const urlSearch = searchParams.get("search");
-    if (urlCategory) setSelectedTab(urlCategory);
+    if (urlCategory) setSelectedTab(urlCategory === "ai-api-keys" ? "ai-api" : urlCategory);
     if (urlSearch !== null && urlSearch !== undefined) setSearchQuery(urlSearch);
   }, [searchParams]);
 
@@ -80,7 +100,8 @@ export default function CatalogExplorer({
 
       // 1. Tab filter
       if (selectedTab && selectedTab !== "all") {
-        const preset = PRESET_TABS.find((t) => t.id === selectedTab);
+        const normalizedTab = selectedTab === "ai-api-keys" ? "ai-api" : selectedTab;
+        const preset = PRESET_TABS.find((t) => t.id === selectedTab || t.id === normalizedTab);
         if (preset && preset.keywords) {
           const matchesKeyword = preset.keywords.some(
             (kw) =>
@@ -92,7 +113,7 @@ export default function CatalogExplorer({
           if (!matchesKeyword) return false;
         } else {
           // Direct DB category slug match
-          if (catSlug !== selectedTab.toLowerCase()) {
+          if (catSlug !== selectedTab.toLowerCase() && catSlug !== normalizedTab.toLowerCase()) {
             return false;
           }
         }

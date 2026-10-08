@@ -31,8 +31,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const categorySlug = searchParams?.category;
   const search = searchParams?.search;
 
-  // Retrieve categories with products and live stock count
-  const categories = await getCategoriesWithProducts(categorySlug, search);
+  // Retrieve categories with products and live stock count (pass full catalog to CatalogExplorer)
+  const categories = await getCategoriesWithProducts(undefined, search);
   const allCategories = await getAllCategories();
 
   return (

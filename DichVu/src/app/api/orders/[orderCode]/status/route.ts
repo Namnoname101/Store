@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getOrderDetails } from "@/services/order.service";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limiter";
 
 interface RouteParams {
   params: {
@@ -12,6 +13,27 @@ export async function GET(
   { params }: RouteParams
 ) {
   try {
+    const clientIp = getClientIp(_request);
+    const rateCheck = checkRateLimit(`order-status:${clientIp}`, {
+      limit: 120, // 120 status checks per minute per IP
+      windowMs: 60 * 1000,
+    });
+
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        { error: "Quá nhiều yêu cầu tra cứu đơn hàng. Vui lòng thử lại sau giây lát." },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": "30",
+            "X-RateLimit-Limit": String(rateCheck.limit),
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": String(rateCheck.reset),
+          },
+        }
+      );
+    }
+
     const { orderCode } = await Promise.resolve(params);
 
     if (!orderCode) {

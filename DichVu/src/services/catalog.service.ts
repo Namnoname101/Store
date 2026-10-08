@@ -37,7 +37,11 @@ export async function getCategoriesWithProducts(
 
   const categoryWhere: any = {};
   if (categorySlug && categorySlug !== "all") {
-    categoryWhere.slug = categorySlug;
+    if (categorySlug === "ai-api" || categorySlug === "ai-api-keys") {
+      categoryWhere.slug = { in: ["ai-api", "ai-api-keys"] };
+    } else {
+      categoryWhere.slug = categorySlug;
+    }
   }
 
   const categories = await prisma.category.findMany({

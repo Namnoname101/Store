@@ -88,7 +88,16 @@ export async function POST(request: Request) {
     );
   }
 
-  console.log("[Webhook Received Body]:", JSON.stringify(body));
+  // 3. Sanitize logging (avoid printing raw auth secrets/passwords)
+  const safeLog = body && typeof body === "object"
+    ? {
+        transactionId: (body as any).transactionId || (body as any).id || (body as any).trans_id || "[MASKED]",
+        amount: (body as any).amount,
+        content: (body as any).content || (body as any).description,
+        bankCode: (body as any).bankCode || (body as any).gateway,
+      }
+    : "[NON-OBJECT]";
+  console.log("[Webhook Received]:", JSON.stringify(safeLog));
 
   // 3. Normalization & validation
   const normalizedPayload = normalizeTransactionPayload(body);
