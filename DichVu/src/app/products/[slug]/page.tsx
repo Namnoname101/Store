@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { getProductBySlug } from "@/services/catalog.service";
 import ProductPurchaseBox from "@/components/ProductPurchaseBox";
-import { getProductTypeInfo, formatVND } from "@/components/ProductCard";
+import { getProductTypeInfo, formatVND } from "@/lib/product-types";
 
 interface ProductPageProps {
   params: {
@@ -208,6 +208,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               price={product.price}
               stockCount={product.stockCount}
               productTitle={product.title}
+              slug={product.slug}
+              thumbnailUrl={product.thumbnailUrl}
+              fulfillmentType={product.type}
+              categorySlug={product.category.slug}
               requiresLink={isSMM}
               isCustomQuantity={isSMM}
               minQuantity={product.minQuantity || (isSMM ? 50 : 1)}

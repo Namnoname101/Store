@@ -18,9 +18,11 @@ import {
   ShieldCheck,
   Clock,
   CheckCircle2,
+  ShoppingBag,
 } from "lucide-react";
 import type { ProductCardProps } from "@/components/ProductCard";
 import { formatVND, getProductTypeInfo } from "@/components/ProductCard";
+import { useCart } from "@/contexts/CartContext";
 
 interface QuickViewModalProps {
   product: ProductCardProps["product"] | null;
@@ -36,6 +38,7 @@ export default function QuickViewModal({
   isAdminPreview = false,
 }: QuickViewModalProps) {
   const router = useRouter();
+  const { addToCart } = useCart();
 
   // Determine if product is SMM based on category or title
   const isSMM =
@@ -162,6 +165,47 @@ export default function QuickViewModal({
     });
   };
 
+  const handleAddToCart = () => {
+    if (isAdminPreview) {
+      setErrorMessage("Chế độ xem trước: Không thể thêm vào giỏ hàng.");
+      return;
+    }
+
+    if (isSMM && !targetLink.trim()) {
+      setErrorMessage("Vui lòng nhập link bài viết / video / kênh.");
+      return;
+    }
+
+    if (!quantity || quantity < effectiveMin) {
+      setErrorMessage(`Số lượng đặt tối thiểu là ${effectiveMin} ${unitLabel}.`);
+      return;
+    }
+
+    if (!isSMM && (!inStock || product.stockCount < quantity)) {
+      setErrorMessage("Số lượng sản phẩm trong kho không đủ.");
+      return;
+    }
+
+    addToCart({
+      productId: product.id,
+      title: product.title,
+      slug: product.slug,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      thumbnailUrl: product.thumbnailUrl,
+      quantity,
+      minQuantity: effectiveMin,
+      maxQuantity: effectiveMax,
+      stockCount: product.stockCount,
+      fulfillmentType: product.type,
+      categorySlug: product.category?.slug,
+      requiresLink: isSMM,
+      targetLink: isSMM ? targetLink.trim() : undefined,
+    });
+
+    onClose();
+  };
+
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isAdminPreview) {
@@ -170,8 +214,8 @@ export default function QuickViewModal({
     }
 
     setErrorMessage(null);
-    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      setErrorMessage("Vui lòng nhập địa chỉ email hợp lệ để nhận mã.");
+    if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setErrorMessage("Vui lòng nhập địa chỉ email hợp lệ hoặc để trống.");
       return;
     }
 
@@ -197,7 +241,7 @@ export default function QuickViewModal({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customerEmail: email.trim(),
+          customerEmail: email.trim() || null,
           customerNote: isSMM ? targetLink.trim() : undefined,
           couponCode: appliedCoupon?.code || undefined,
           items: [
@@ -449,14 +493,16 @@ export default function QuickViewModal({
 
             {/* Email input */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
-                Email nhận hàng <span className="text-rose-500">*</span>
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  Email nhận hàng
+                </label>
+                <span className="text-[10px] text-slate-400 font-medium">Tùy chọn</span>
+              </div>
               <div className="relative">
                 <input
                   type="email"
-                  required
-                  placeholder="tenban@gmail.com"
+                  placeholder="tenban@gmail.com (Không bắt buộc)"
                   value={email}
                   disabled={isLoading || !inStock}
                   onChange={(e) => setEmail(e.target.value)}
@@ -464,6 +510,9 @@ export default function QuickViewModal({
                 />
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
               </div>
+              <p className="mt-1 text-[11px] text-slate-400">
+                Để trống nếu bạn muốn nhận mã trực tiếp trên màn hình sau thanh toán.
+              </p>
             </div>
 
             {/* Coupon input */}
@@ -542,23 +591,35 @@ export default function QuickViewModal({
             {/* Submit CTA */}
             <div className="pt-2">
               {inStock ? (
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 px-4 text-sm font-bold text-white hover:bg-blue-700 shadow-md shadow-blue-600/25 disabled:opacity-60 transition-all"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Đang tạo đơn hàng...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Zap className="h-4 w-4 fill-white" />
-                      <span>Xác nhận mua ngay - {formatVND(netTotal)}</span>
-                    </>
-                  )}
-                </button>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    disabled={isLoading}
+                    className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-all active:scale-[0.99]"
+                  >
+                    <ShoppingBag className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    <span>Thêm vào giỏ</span>
+                  </button>
+
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 px-4 text-xs sm:text-sm font-bold text-white hover:bg-blue-700 shadow-md shadow-blue-600/25 disabled:opacity-60 transition-all active:scale-[0.99]"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>Đang tạo đơn...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="h-4 w-4 fill-white" />
+                        <span>Mua ngay - {formatVND(netTotal)}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               ) : (
                 <button
                   type="button"

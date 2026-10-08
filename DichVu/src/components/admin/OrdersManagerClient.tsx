@@ -186,7 +186,7 @@ export default function OrdersManagerClient({
     return orders.filter((order) => {
       const matchesSearch =
         order.orderCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        order.customerEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (order.customerEmail && order.customerEmail.toLowerCase().includes(searchQuery.toLowerCase())) ||
         order.transactions?.some((t) =>
           t.transactionId.toLowerCase().includes(searchQuery.toLowerCase())
         );
@@ -299,7 +299,7 @@ export default function OrdersManagerClient({
                           {order.orderCode}
                         </td>
                         <td className="px-5 py-4 text-slate-300">
-                          {order.customerEmail}
+                          {order.customerEmail || <span className="text-slate-500 italic">Khách vãng lai</span>}
                         </td>
                         <td className="px-5 py-4 text-slate-300">
                           {order.orderItems?.length > 0

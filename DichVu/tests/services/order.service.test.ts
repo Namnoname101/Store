@@ -223,6 +223,17 @@ describe("Order Creation & Checkout Service", () => {
       ).rejects.toThrow(/email/i);
     });
 
+    it("allows guest checkout when customerEmail is omitted", async () => {
+      await seedStock(testProduct1Id, ["WIN-GUEST-001"]);
+      const order = await createOrder({
+        items: [{ productId: testProduct1Id, quantity: 1 }],
+      });
+      expect(order).toBeDefined();
+      expect(order.customerEmail).toBeNull();
+      expect(order.totalAmount).toBe(100000);
+      expect(order.status).toBe("PENDING");
+    });
+
     it("rejects empty or invalid items list", async () => {
       await expect(
         createOrder({

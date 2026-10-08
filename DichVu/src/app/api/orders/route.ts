@@ -5,9 +5,13 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { customerEmail, items, userId, customerNote, couponCode } = body || {};
+    const sanitizedEmail =
+      typeof customerEmail === "string" && customerEmail.trim()
+        ? customerEmail.trim()
+        : null;
 
     const order = await createOrder({
-      customerEmail,
+      customerEmail: sanitizedEmail,
       items,
       userId,
       customerNote,

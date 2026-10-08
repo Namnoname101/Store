@@ -74,7 +74,7 @@ model ProductItem {
 model Order {
   id             String               @id @default(uuid())
   orderCode      String               @unique // e.g. ORD849201
-  customerEmail  String
+  customerEmail  String?
   customerNote   String?              // e.g. Link video/profile for SMM services
   userId         String?
   user           User?                @relation(fields: [userId], references: [id])

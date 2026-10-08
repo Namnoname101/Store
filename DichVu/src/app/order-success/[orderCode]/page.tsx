@@ -121,7 +121,7 @@ export default async function OrderSuccessPage({
                 <span>Email nhận hóa đơn</span>
               </div>
               <div className="text-sm font-semibold text-slate-200 truncate">
-                {order.customerEmail}
+                {order.customerEmail || "Không có (Khách vãng lai)"}
               </div>
             </div>
 
@@ -152,7 +152,12 @@ export default async function OrderSuccessPage({
       {/* Return Home Navigation */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
         <div className="text-xs text-slate-400 text-center sm:text-left">
-          Đơn hàng đã được lưu trữ trong hệ thống. Một bản sao đã được gửi tới email <strong>{order.customerEmail}</strong>.
+          Đơn hàng đã được lưu trữ trong hệ thống.
+          {order.customerEmail ? (
+            <span> Một bản sao đã được gửi tới email <strong>{order.customerEmail}</strong>.</span>
+          ) : (
+            <span> Quý khách vui lòng lưu lại mã đơn hàng <strong>#{order.orderCode}</strong> để tra cứu khi cần.</span>
+          )}
         </div>
 
         <Link

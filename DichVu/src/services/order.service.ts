@@ -13,7 +13,7 @@ export interface OrderItemInput {
 }
 
 export interface CreateOrderInput {
-  customerEmail: string;
+  customerEmail?: string | null;
   items: OrderItemInput[];
   userId?: string;
   customerNote?: string;
@@ -23,7 +23,7 @@ export interface CreateOrderInput {
 export interface OrderDetailsResponse {
   id: string;
   orderCode: string;
-  customerEmail: string;
+  customerEmail?: string | null;
   customerNote?: string | null;
   userId?: string | null;
   totalAmount: number;
@@ -66,8 +66,11 @@ function validateEmail(email: string): boolean {
  * Creates a new order with reserved inventory and VietQR checkout link.
  */
 export async function createOrder(data: CreateOrderInput) {
-  if (!validateEmail(data.customerEmail)) {
-    throw new Error("Invalid customer email address");
+  // Validate email if provided; allow omitted/null for guest checkout
+  if (data.customerEmail !== undefined && data.customerEmail !== null) {
+    if (!validateEmail(data.customerEmail)) {
+      throw new Error("Invalid customer email address");
+    }
   }
 
   if (!data.items || !Array.isArray(data.items) || data.items.length === 0) {
@@ -152,7 +155,7 @@ export async function createOrder(data: CreateOrderInput) {
       const createdOrder = await tx.order.create({
         data: {
           orderCode,
-          customerEmail: data.customerEmail.trim(),
+          customerEmail: data.customerEmail?.trim() || null,
           customerNote: data.customerNote ? data.customerNote.trim() : null,
           userId: data.userId || null,
           totalAmount,
@@ -374,7 +377,7 @@ export async function getOrderDetails(
 
 export interface LookupOrderSummary {
   orderCode: string;
-  customerEmail: string;
+  customerEmail?: string | null;
   totalAmount: number;
   status: string;
   createdAt: Date;

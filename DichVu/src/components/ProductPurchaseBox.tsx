@@ -16,14 +16,20 @@ import {
   Ticket,
   Tag,
   X as CloseIcon,
+  ShoppingBag,
 } from "lucide-react";
 import { formatVND } from "@/components/ProductCard";
+import { useCart } from "@/contexts/CartContext";
 
 interface ProductPurchaseBoxProps {
   productId: string;
   price: number;
   stockCount: number;
   productTitle: string;
+  slug?: string;
+  thumbnailUrl?: string | null;
+  fulfillmentType?: string;
+  categorySlug?: string;
   requiresLink?: boolean;
   isCustomQuantity?: boolean;
   minQuantity?: number;
@@ -36,6 +42,10 @@ export default function ProductPurchaseBox({
   price,
   stockCount,
   productTitle,
+  slug,
+  thumbnailUrl,
+  fulfillmentType,
+  categorySlug,
   requiresLink = false,
   isCustomQuantity = false,
   minQuantity = 1,
@@ -43,6 +53,7 @@ export default function ProductPurchaseBox({
   unitLabel = "lượt",
 }: ProductPurchaseBoxProps) {
   const router = useRouter();
+  const { addToCart } = useCart();
   const effectiveMin = Math.max(1, minQuantity);
   const effectiveMax = maxQuantity ? Math.max(effectiveMin, maxQuantity) : stockCount;
 
@@ -132,12 +143,51 @@ export default function ProductPurchaseBox({
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
   };
 
+  const handleAddToCart = () => {
+    setErrorMessage(null);
+    if (requiresLink && !targetLink.trim()) {
+      setErrorMessage("Vui lòng nhập link bài viết / video / kênh cần tăng tương tác.");
+      return;
+    }
+
+    if (!quantity || quantity < effectiveMin) {
+      setErrorMessage(`Số lượng đặt tối thiểu là ${effectiveMin.toLocaleString("vi-VN")} ${unitLabel}.`);
+      return;
+    }
+
+    if (maxQuantity && quantity > maxQuantity) {
+      setErrorMessage(`Số lượng đặt tối đa là ${maxQuantity.toLocaleString("vi-VN")} ${unitLabel}.`);
+      return;
+    }
+
+    if (!isCustomQuantity && (!inStock || stockCount < quantity)) {
+      setErrorMessage("Số lượng sản phẩm trong kho không đủ để đáp ứng yêu cầu.");
+      return;
+    }
+
+    addToCart({
+      productId,
+      title: productTitle,
+      slug: slug || "",
+      price,
+      thumbnailUrl,
+      quantity,
+      minQuantity: effectiveMin,
+      maxQuantity: maxQuantity || null,
+      stockCount,
+      fulfillmentType: fulfillmentType || "LOCAL_STOCK",
+      categorySlug,
+      requiresLink,
+      targetLink: requiresLink ? targetLink.trim() : undefined,
+    });
+  };
+
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
-    if (!email.trim() || !validateEmail(email)) {
-      setErrorMessage("Vui lòng nhập địa chỉ email hợp lệ để nhận thông báo / mã đơn hàng.");
+    if (email.trim() && !validateEmail(email)) {
+      setErrorMessage("Vui lòng nhập địa chỉ email hợp lệ hoặc để trống.");
       return;
     }
 
@@ -170,7 +220,7 @@ export default function ProductPurchaseBox({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          customerEmail: email.trim(),
+          customerEmail: email.trim() || null,
           customerNote: requiresLink ? targetLink.trim() : undefined,
           couponCode: appliedCoupon?.code || undefined,
           items: [
@@ -413,18 +463,20 @@ export default function ProductPurchaseBox({
 
         {/* Customer Email Input */}
         <div>
-          <label
-            htmlFor="customerEmail"
-            className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
-          >
-            Email nhận hàng <span className="text-rose-500">*</span>
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label
+              htmlFor="customerEmail"
+              className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+            >
+              Email nhận hàng
+            </label>
+            <span className="text-[10px] text-slate-400 font-medium">Tùy chọn</span>
+          </div>
           <div className="relative">
             <input
               id="customerEmail"
               type="email"
-              required
-              placeholder="tenban@gmail.com"
+              placeholder="tenban@gmail.com (Không bắt buộc)"
               value={email}
               disabled={isLoading || !inStock}
               onChange={(e) => setEmail(e.target.value)}
@@ -433,7 +485,7 @@ export default function ProductPurchaseBox({
             <Mail className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
           </div>
           <p className="mt-1 text-[11px] text-slate-500">
-            Hệ thống sẽ gửi mã kích hoạt và hóa đơn vào email này ngay sau khi thanh toán.
+            Khách vãng lai có thể để trống. Bạn vẫn nhận được mã kích hoạt ngay sau khi thanh toán VietQR.
           </p>
         </div>
 
@@ -514,29 +566,38 @@ export default function ProductPurchaseBox({
           </div>
         )}
 
-        {/* Buy Now CTA Button */}
+        {/* Action Buttons: Add to cart + Buy Now */}
         <div>
           {inStock ? (
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 px-6 text-sm font-bold text-white shadow-md shadow-blue-600/25 hover:bg-blue-700 disabled:opacity-60 transition-all active:scale-[0.99]"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Đang khởi tạo đơn hàng VietQR...</span>
-                </>
-              ) : (
-                <>
-                  <Zap className="h-4 w-4 fill-white" />
-                  <span>
-                    MUA NGAY - {formatVND(netTotal)}
-                    {appliedCoupon ? ` (Tiết kiệm ${formatVND(appliedCoupon.discountAmount)})` : ""}
-                  </span>
-                </>
-              )}
-            </button>
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                disabled={isLoading}
+                className="flex-1 flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-sm font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-all active:scale-[0.99] shadow-xs"
+              >
+                <ShoppingBag className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <span>Thêm vào giỏ</span>
+              </button>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="flex-1 flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 px-5 text-sm font-bold text-white shadow-md shadow-blue-600/25 hover:bg-blue-700 disabled:opacity-60 transition-all active:scale-[0.99]"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Đang tạo đơn...</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="h-4 w-4 fill-white" />
+                    <span>MUA NGAY</span>
+                  </>
+                )}
+              </button>
+            </div>
           ) : (
             <button
               type="button"

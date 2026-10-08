@@ -17,8 +17,10 @@ import {
   Layers,
   Store,
   ChevronRight,
+  ShoppingBag,
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
+import { useCart } from "@/contexts/CartContext";
 
 export const STORE_CATEGORIES = [
   { name: "Tất cả", slug: "all" },
@@ -38,6 +40,7 @@ export default function Navbar() {
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
+  const { openCart, itemCount } = useCart();
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -115,6 +118,21 @@ export default function Navbar() {
             <span>Tra cứu đơn</span>
           </Link>
 
+          {/* Cart Drawer Trigger - Desktop */}
+          <button
+            onClick={openCart}
+            aria-label="Mở giỏ hàng"
+            className="relative flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 px-3 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-white transition-all shadow-sm"
+          >
+            <ShoppingBag className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <span>Giỏ hàng</span>
+            {itemCount > 0 && (
+              <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-blue-600 px-1 text-[11px] font-bold text-white shadow-sm">
+                {itemCount > 99 ? "99+" : itemCount}
+              </span>
+            )}
+          </button>
+
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
@@ -173,8 +191,22 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile controls (Theme toggle + hamburger) */}
+        {/* Mobile controls (Cart + Theme toggle + hamburger) */}
         <div className="flex md:hidden items-center gap-2">
+          {/* Cart Icon Mobile */}
+          <Link
+            href="/cart"
+            aria-label="Giỏ hàng"
+            className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200"
+          >
+            <ShoppingBag className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            {itemCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-blue-600 px-1 text-[10px] font-bold text-white shadow-sm">
+                {itemCount > 99 ? "99+" : itemCount}
+              </span>
+            )}
+          </Link>
+
           <button
             onClick={toggleTheme}
             aria-label="Đổi giao diện sáng/tối"
@@ -284,6 +316,25 @@ export default function Navbar() {
                 <span>Tra cứu đơn hàng</span>
               </div>
               <ChevronRight className="h-4 w-4 text-slate-400" />
+            </Link>
+
+            <Link
+              href="/cart"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center justify-between text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white px-2 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
+            >
+              <div className="flex items-center gap-2">
+                <ShoppingBag className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <span>Giỏ hàng</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                {itemCount > 0 && (
+                  <span className="rounded-full bg-blue-600 px-2 py-0.5 text-[11px] font-bold text-white">
+                    {itemCount}
+                  </span>
+                )}
+                <ChevronRight className="h-4 w-4 text-slate-400" />
+              </div>
             </Link>
 
             {/* Mobile User / Auth */}

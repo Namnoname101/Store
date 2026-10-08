@@ -486,7 +486,7 @@ export default function CheckoutClient({
               <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
                 <span className="text-slate-400">Email nhận thông báo:</span>
                 <span className="font-mono font-medium text-indigo-300 truncate max-w-[200px]">
-                  {order.customerEmail}
+                  {order.customerEmail || "Không có (Khách vãng lai)"}
                 </span>
               </div>
             </div>
@@ -995,7 +995,7 @@ export default function CheckoutClient({
                 <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
                   <span className="text-slate-400">Email nhận hàng:</span>
                   <span className="font-mono font-medium text-indigo-300 truncate max-w-[200px]">
-                    {order.customerEmail}
+                    {order.customerEmail || "Không có (Khách vãng lai)"}
                   </span>
                 </div>
               </div>
