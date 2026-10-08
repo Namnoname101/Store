@@ -293,8 +293,8 @@ describe("Phase 3B: Comprehensive 10-Scenario End-to-End Integration Suite", () 
     expect(soldKey).toBeNull();
   });
 
-  // Scenario 6: Webhook OVERPAID -> PAID -> Records overpayment note
-  it("Scenario 6: Webhook OVERPAID completes order and records surplus amount for Owner refund", async () => {
+  // Scenario 6: Webhook OVERPAID -> Holds in PENDING, blocks auto-delivery, records surplus note
+  it("Scenario 6: Webhook OVERPAID holds order in PENDING and records surplus amount for Owner review", async () => {
     const order = await createOrder({
       customerEmail: "scenario6@test.com",
       items: [{ productId: localProdId, quantity: 1 }], // 30,000 VND
@@ -307,14 +307,22 @@ describe("Phase 3B: Comprehensive 10-Scenario End-to-End Integration Suite", () 
     });
 
     expect(result.reconciliationStatus).toBe(ReconciliationStatus.OVERPAID);
-    expect(result.status).toBe(OrderStatus.PAID);
+    expect(result.status).toBe(OrderStatus.PENDING);
+    expect(result.success).toBe(false);
 
-    const paidOrder = await prisma.order.findUnique({
+    const pendingOrder = await prisma.order.findUnique({
       where: { id: order.id },
     });
-    expect(paidOrder?.status).toBe(OrderStatus.PAID);
-    expect(paidOrder?.reconciliationStatus).toBe(ReconciliationStatus.OVERPAID);
-    expect(paidOrder?.reconciliationNote).toContain("20.000");
+    expect(pendingOrder?.status).toBe(OrderStatus.PENDING);
+    expect(pendingOrder?.paidAt).toBeNull();
+    expect(pendingOrder?.reconciliationStatus).toBe(ReconciliationStatus.OVERPAID);
+    expect(pendingOrder?.reconciliationNote).toContain("20.000");
+
+    // Reserved stock must NOT be committed to SOLD
+    const soldKey = await prisma.productItem.findFirst({
+      where: { orderId: order.id, status: ItemStatus.SOLD },
+    });
+    expect(soldKey).toBeNull();
   });
 
   // Scenario 7: Webhook EXPIRED_PAYMENT -> Blocks auto-delivery of released stock

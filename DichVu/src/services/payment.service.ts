@@ -424,14 +424,48 @@ export async function handleIncomingTransaction(
     };
   }
 
-  // 7. State Transition for PENDING Orders (Exact MATCHED or OVERPAID)
-  if (order.status === OrderStatus.PENDING) {
-    const isOverpaid = payload.amount > order.totalAmount;
-    const reconStatus = isOverpaid ? ReconciliationStatus.OVERPAID : ReconciliationStatus.MATCHED;
+  // 7. Overpaid Guard (Hold for Owner manual review, DO NOT auto-fulfill)
+  if (payload.amount > order.totalAmount) {
     const diff = Math.round(payload.amount) - order.totalAmount;
-    const reconNote = isOverpaid
-      ? `Chuyển thừa ${diff.toLocaleString("vi-VN")}đ (Đã nhận: ${Math.round(payload.amount).toLocaleString("vi-VN")}đ, Cần thanh toán: ${order.totalAmount.toLocaleString("vi-VN")}đ)`
-      : "Khớp chính xác số tiền";
+    const note = `Chuyển thừa ${diff.toLocaleString("vi-VN")}đ (Đã nhận: ${Math.round(payload.amount).toLocaleString("vi-VN")}đ, Cần thanh toán: ${order.totalAmount.toLocaleString("vi-VN")}đ). Chờ Chủ sở hữu đối soát thủ công.`;
+
+    await prisma.$transaction(async (tx) => {
+      await tx.paymentTransaction.create({
+        data: {
+          transactionId: payload.transactionId,
+          amount: Math.round(payload.amount),
+          bankCode: payload.bankCode || null,
+          content: payload.content || null,
+          rawPayload: payload.rawPayload ? JSON.stringify(payload.rawPayload) : null,
+          orderId: order.id,
+          reconciliationStatus: ReconciliationStatus.OVERPAID,
+          reconciliationNote: note,
+        },
+      });
+
+      await tx.order.update({
+        where: { id: order.id },
+        data: {
+          status: OrderStatus.PENDING,
+          reconciliationStatus: ReconciliationStatus.OVERPAID,
+          reconciliationNote: note,
+        },
+      });
+    });
+
+    return {
+      success: false,
+      orderCode: order.orderCode,
+      status: OrderStatus.PENDING,
+      reconciliationStatus: ReconciliationStatus.OVERPAID,
+      error: `Chuyển thừa tiền (overpaid): nhận ${Math.round(payload.amount).toLocaleString("vi-VN")}đ, cần ${order.totalAmount.toLocaleString("vi-VN")}đ. Đơn hàng đang được giữ chờ Chủ sở hữu đối soát thủ công.`,
+    };
+  }
+
+  // 8. Exact MATCHED State Transition for PENDING Orders
+  if (order.status === OrderStatus.PENDING) {
+    const reconStatus = ReconciliationStatus.MATCHED;
+    const reconNote = "Khớp chính xác số tiền";
 
     await prisma.$transaction(
       async (tx) => {
@@ -495,7 +529,7 @@ export async function handleIncomingTransaction(
       orderCode: order.orderCode,
       status: OrderStatus.PAID,
       reconciliationStatus: reconStatus,
-      message: isOverpaid ? reconNote : undefined,
+      message: reconNote,
     };
   }
 

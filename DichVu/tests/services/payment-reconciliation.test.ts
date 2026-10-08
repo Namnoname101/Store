@@ -179,7 +179,7 @@ describe("Bank Webhook & Multi-tier Payment Reconciliation Engine", () => {
     expect(txRecord?.reconciliationStatus).toBe(ReconciliationStatus.UNDERPAID);
   });
 
-  it("Scenario 3: OVERPAID payment -> fulfills order, flags OVERPAID with excess amount note", async () => {
+  it("Scenario 3: OVERPAID payment -> does NOT fulfill order, keeps PENDING, flags OVERPAID for Owner review", async () => {
     const order = await createOrder({
       customerEmail: "over@test.com",
       items: [{ productId: prodId, quantity: 1 }],
@@ -193,15 +193,23 @@ describe("Bank Webhook & Multi-tier Payment Reconciliation Engine", () => {
       bankCode: "MB",
     });
 
-    expect(result.success).toBe(true);
-    expect(result.status).toBe(OrderStatus.PAID);
+    expect(result.success).toBe(false);
+    expect(result.status).toBe(OrderStatus.PENDING);
+    expect(result.reconciliationStatus).toBe(ReconciliationStatus.OVERPAID);
 
     const dbOrder = await prisma.order.findUnique({
       where: { id: order.id },
     });
-    expect(dbOrder?.status).toBe(OrderStatus.PAID);
+    expect(dbOrder?.status).toBe(OrderStatus.PENDING);
+    expect(dbOrder?.paidAt).toBeNull();
     expect(dbOrder?.reconciliationStatus).toBe(ReconciliationStatus.OVERPAID);
     expect(dbOrder?.reconciliationNote).toContain("10.000");
+
+    // Stock must NOT be sold!
+    const soldItems = await prisma.productItem.findMany({
+      where: { orderId: order.id, status: ItemStatus.SOLD },
+    });
+    expect(soldItems.length).toBe(0);
 
     const txRecord = await prisma.paymentTransaction.findUnique({
       where: { transactionId: txId },
