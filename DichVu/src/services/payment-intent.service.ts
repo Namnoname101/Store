@@ -287,3 +287,38 @@ export async function regeneratePaymentIntent(
       : undefined,
   };
 }
+
+/**
+ * Sweeps all expired PaymentIntents and orders, releasing unconfirmed inventory reservations.
+ * Can be called by background crons or periodic checks.
+ */
+export async function sweepExpiredPaymentIntents(): Promise<number> {
+  const now = new Date();
+
+  // 1. Mark expired active payment intents
+  const expiredIntents = await prisma.paymentIntent.updateMany({
+    where: {
+      status: PaymentIntentStatus.ACTIVE,
+      expiresAt: { lt: now },
+    },
+    data: {
+      status: PaymentIntentStatus.EXPIRED,
+    },
+  });
+
+  // 2. Mark pending orders past expiration as EXPIRED
+  await prisma.order.updateMany({
+    where: {
+      status: OrderStatus.PENDING,
+      expiresAt: { lt: now },
+    },
+    data: {
+      status: OrderStatus.EXPIRED,
+    },
+  });
+
+  // 3. Release unconfirmed inventory reservations
+  await releaseExpiredReservations();
+
+  return expiredIntents.count;
+}
