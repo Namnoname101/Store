@@ -72,11 +72,11 @@ export class LocketAutoWorker {
     try {
       const config = await LocketAutoService.getConfig();
 
-      if (!config || !config.passId || !config.signature || !config.sessionCookie) {
+      if (!config || !config.passId || !config.signature) {
         return {
           ok: false,
           status: "FAILED",
-          message: "Cấu hình Locket Gold chưa đầy đủ (thiếu passId/signature/cookie)",
+          message: "Cấu hình Locket Gold chưa đầy đủ (thiếu passId hoặc signature trong link)",
           durationMs: 0,
         };
       }
@@ -87,7 +87,7 @@ export class LocketAutoWorker {
         passId: config.passId,
         linkVersion: config.linkVersion,
         signature: config.signature,
-        cookie: config.sessionCookie,
+        cookie: config.sessionCookie || undefined,
         csrfToken: config.csrfToken || undefined,
       });
 

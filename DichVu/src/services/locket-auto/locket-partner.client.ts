@@ -12,6 +12,7 @@ export interface TestAccessResult {
   statusLabel?: string;
   cooldownRemaining?: number;
   csrfToken?: string;
+  cookie?: string;
   error?: string;
   rawPayload?: any;
 }
@@ -97,57 +98,64 @@ export class LocketPartnerClient {
   }
 
   /**
-   * Lấy thông tin phiên đối tác (username & csrf_token).
+   * Lấy thông tin phiên đối tác (username, cookie & csrf_token).
    * Hỗ trợ cả tài khoản thành viên (/api/v1/auth/me) lẫn tài khoản khách (/api/v1/guest/overview).
    */
   static async fetchSessionInfo(params: {
-    cookie: string;
+    cookie?: string;
     baseUrl?: string;
   }): Promise<{
     ok: boolean;
     username?: string;
     csrfToken?: string;
+    cookie?: string;
     error?: string;
     rawPayload?: any;
   }> {
-    const { cookie, baseUrl = DEFAULT_BASE_URL } = params;
+    const { cookie = "", baseUrl = DEFAULT_BASE_URL } = params;
     const cleanBaseUrl = baseUrl.replace(/\/+$/, "");
 
     try {
-      const headers = this.getBrowserHeaders({
-        baseUrl: cleanBaseUrl,
-        cookie,
-      });
+      // 1. Nếu có cookie, thử lấy thông tin tài khoản thành viên qua /api/v1/auth/me
+      if (cookie && cookie.trim() !== "") {
+        try {
+          const authHeaders = this.getBrowserHeaders({
+            baseUrl: cleanBaseUrl,
+            cookie,
+          });
+          const authUrl = `${cleanBaseUrl}/api/v1/auth/me`;
+          const authResponse = await fetch(authUrl, {
+            method: "GET",
+            headers: authHeaders,
+            signal: AbortSignal.timeout(8000),
+          });
 
-      // 1. Thử lấy thông tin tài khoản thành viên qua /api/v1/auth/me
-      try {
-        const authUrl = `${cleanBaseUrl}/api/v1/auth/me`;
-        const authResponse = await fetch(authUrl, {
-          method: "GET",
-          headers,
-          signal: AbortSignal.timeout(8000),
-        });
-
-        if (authResponse.status === 200) {
-          const authPayload = await authResponse.json().catch(() => null);
-          if (authPayload?.ok && authPayload?.data?.csrf_token) {
-            return {
-              ok: true,
-              username: authPayload?.data?.username,
-              csrfToken: authPayload?.data?.csrf_token,
-              rawPayload: authPayload,
-            };
+          if (authResponse.status === 200) {
+            const authPayload = await authResponse.json().catch(() => null);
+            if (authPayload?.ok && authPayload?.data?.csrf_token) {
+              return {
+                ok: true,
+                username: authPayload?.data?.username,
+                csrfToken: authPayload?.data?.csrf_token,
+                cookie,
+                rawPayload: authPayload,
+              };
+            }
           }
+        } catch {
+          // Fallback sang guest/overview
         }
-      } catch {
-        // Fallback sang guest/overview
       }
 
-      // 2. Fallback sang phiên khách /api/v1/guest/overview (dành cho cookie khách __Host-yui_guest hoặc phiên chưa đăng nhập)
+      // 2. Fallback sang phiên khách /api/v1/guest/overview (tự động tạo hoặc tái sử dụng cookie khách)
+      const guestHeaders = this.getBrowserHeaders({
+        baseUrl: cleanBaseUrl,
+        cookie: cookie || undefined,
+      });
       const guestUrl = `${cleanBaseUrl}/api/v1/guest/overview`;
       const guestResponse = await fetch(guestUrl, {
         method: "GET",
-        headers,
+        headers: guestHeaders,
         signal: AbortSignal.timeout(8000),
       });
 
@@ -158,11 +166,22 @@ export class LocketPartnerClient {
         guestPayload = null;
       }
 
+      let guestCookie = cookie;
+      try {
+        const setCookieHeader = guestResponse.headers?.get?.("set-cookie");
+        if (setCookieHeader) {
+          guestCookie = setCookieHeader.split(";")[0];
+        }
+      } catch {
+        // Ignore header reading errors in test mocks
+      }
+
       if (guestResponse.status === 200 && guestPayload?.ok && guestPayload?.data?.csrf_token) {
         return {
           ok: true,
-          username: "Khách (Guest)",
+          username: "Khách (Tự động)",
           csrfToken: guestPayload.data.csrf_token,
+          cookie: guestCookie || undefined,
           rawPayload: guestPayload,
         };
       }
@@ -187,7 +206,7 @@ export class LocketPartnerClient {
     passId: string;
     linkVersion: number;
     signature: string;
-    cookie: string;
+    cookie?: string;
     baseUrl?: string;
   }): Promise<TestAccessResult> {
     const { passId, linkVersion, signature, cookie, baseUrl = DEFAULT_BASE_URL } = params;
@@ -197,12 +216,23 @@ export class LocketPartnerClient {
     )}&v=${encodeURIComponent(linkVersion)}&t=${encodeURIComponent(signature)}`;
 
     try {
+      let activeCookie = cookie;
+      let csrfToken: string | undefined;
+
+      const session = await this.fetchSessionInfo({ cookie: activeCookie || "", baseUrl: cleanBaseUrl });
+      if (session.ok) {
+        csrfToken = session.csrfToken;
+        if (!activeCookie && session.cookie) {
+          activeCookie = session.cookie;
+        }
+      }
+
       const headers = this.getBrowserHeaders({
         baseUrl: cleanBaseUrl,
         passId,
         linkVersion,
         signature,
-        cookie,
+        cookie: activeCookie,
       });
 
       const response = await fetch(url, {
@@ -228,15 +258,8 @@ export class LocketPartnerClient {
         const statusLabel = payload?.status_label || data?.status_label || data?.subscription?.status_label;
         const cooldownRemaining = data?.subscription?.cooldown_remaining ?? payload?.subscription?.cooldown_remaining ?? 0;
 
-        let csrfToken: string | undefined;
-        if (cookie) {
-          const session = await this.fetchSessionInfo({ cookie, baseUrl: cleanBaseUrl });
-          if (session.ok) {
-            csrfToken = session.csrfToken;
-            if (!targetUsername && session.username) {
-              targetUsername = session.username;
-            }
-          }
+        if (!targetUsername && session.ok && session.username) {
+          targetUsername = session.username;
         }
 
         return {
@@ -245,6 +268,7 @@ export class LocketPartnerClient {
           statusLabel,
           cooldownRemaining,
           csrfToken,
+          cookie: activeCookie,
           rawPayload: payload,
         };
       }
@@ -285,7 +309,7 @@ export class LocketPartnerClient {
     passId: string;
     linkVersion: number;
     signature: string;
-    cookie: string;
+    cookie?: string;
     csrfToken?: string;
     baseUrl?: string;
   }): Promise<TriggerPassResult> {
@@ -296,20 +320,27 @@ export class LocketPartnerClient {
 
     try {
       let activeCsrfToken = csrfToken;
-      if (!activeCsrfToken && cookie) {
-        const session = await this.fetchSessionInfo({ cookie, baseUrl: cleanBaseUrl });
-        if (session.ok && session.csrfToken) {
-          activeCsrfToken = session.csrfToken;
+      let activeCookie = cookie;
+
+      if (!activeCsrfToken || !activeCookie) {
+        const session = await this.fetchSessionInfo({ cookie: activeCookie || "", baseUrl: cleanBaseUrl });
+        if (session.ok) {
+          if (!activeCsrfToken && session.csrfToken) {
+            activeCsrfToken = session.csrfToken;
+          }
+          if (!activeCookie && session.cookie) {
+            activeCookie = session.cookie;
+          }
         }
       }
 
-      const makeRequest = async (token?: string) => {
+      const makeRequest = async (token?: string, c?: string) => {
         const headers = this.getBrowserHeaders({
           baseUrl: cleanBaseUrl,
           passId,
           linkVersion,
           signature,
-          cookie,
+          cookie: c,
           csrfToken: token,
         });
         headers["Content-Type"] = "application/json";
@@ -329,7 +360,7 @@ export class LocketPartnerClient {
         });
       };
 
-      let response = await makeRequest(activeCsrfToken);
+      let response = await makeRequest(activeCsrfToken, activeCookie);
       let payload: any = null;
       try {
         payload = await response.json();
@@ -337,12 +368,13 @@ export class LocketPartnerClient {
         payload = null;
       }
 
-      // Nếu lỗi csrf_failed, thử làm mới csrfToken một lần và thử lại
-      if (response.status === 403 && payload?.code === "csrf_failed" && cookie) {
-        const refreshed = await this.fetchSessionInfo({ cookie, baseUrl: cleanBaseUrl });
-        if (refreshed.ok && refreshed.csrfToken && refreshed.csrfToken !== activeCsrfToken) {
+      // Nếu lỗi csrf_failed hoặc 401, tự động tạo mới guest session và thử lại
+      if ((response.status === 403 && payload?.code === "csrf_failed") || response.status === 401) {
+        const refreshed = await this.fetchSessionInfo({ cookie: "", baseUrl: cleanBaseUrl });
+        if (refreshed.ok && refreshed.csrfToken) {
           activeCsrfToken = refreshed.csrfToken;
-          response = await makeRequest(activeCsrfToken);
+          activeCookie = refreshed.cookie;
+          response = await makeRequest(activeCsrfToken, activeCookie);
           try {
             payload = await response.json();
           } catch {

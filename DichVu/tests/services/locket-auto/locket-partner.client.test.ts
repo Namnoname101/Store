@@ -511,9 +511,32 @@ describe("LocketPartnerClient", () => {
       });
 
       expect(res.ok).toBe(true);
-      expect(res.username).toBe("Khách (Guest)");
+      expect(res.username).toBe("Khách (Tự động)");
       expect(res.csrfToken).toBe("guest_csrf_token_xyz");
       expect(global.fetch).toHaveBeenCalledTimes(2);
+    });
+
+    it("should auto-generate guest session and succeed when no cookie is provided", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: {
+          get: (name: string) => (name.toLowerCase() === "set-cookie" ? "__Host-yui_guest=auto_guest_cookie; Path=/" : null),
+        },
+        json: async () => ({
+          ok: true,
+          data: {
+            csrf_token: "auto_csrf_token_123",
+          },
+        }),
+      } as any);
+
+      const res = await LocketPartnerClient.fetchSessionInfo({});
+
+      expect(res.ok).toBe(true);
+      expect(res.username).toBe("Khách (Tự động)");
+      expect(res.csrfToken).toBe("auto_csrf_token_123");
+      expect(res.cookie).toBe("__Host-yui_guest=auto_guest_cookie");
     });
 
     it("should handle error when both auth/me and guest/overview fail", async () => {

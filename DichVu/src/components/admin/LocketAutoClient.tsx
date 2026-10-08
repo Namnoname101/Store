@@ -196,7 +196,7 @@ export default function LocketAutoClient() {
     } catch (err: any) {
       setBannerMessage({
         type: "error",
-        text: err?.message || "Kết nối thất bại. Vui lòng kiểm tra Cookie và Link.",
+        text: err?.message || "Kết nối thất bại. Vui lòng kiểm tra lại Link GoldPass.",
       });
     } finally {
       setIsTesting(false);
@@ -489,18 +489,23 @@ export default function LocketAutoClient() {
 
             {/* Session Cookie Input */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Session Cookie (Tài khoản Yuicsa)
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold text-slate-300">
+                  Session Cookie (Tùy chọn)
+                </label>
+                <span className="text-[11px] font-medium text-emerald-400">
+                  Tự động tạo phiên nếu để trống
+                </span>
+              </div>
               <textarea
-                rows={3}
+                rows={2}
                 value={sessionCookie}
                 onChange={(e) => setSessionCookie(e.target.value)}
-                placeholder="session=eyJyYW5kb20iOiJ... hoặc chuỗi cookie từ trình duyệt"
+                placeholder="Để trống nếu muốn tự động tạo phiên khách, hoặc dán cookie nếu muốn dùng tài khoản riêng"
                 className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2 text-xs text-slate-200 placeholder-slate-600 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono resize-none"
               />
               <p className="mt-1 text-[11px] text-slate-500">
-                Copy Cookie từ DevTools (F12 -&gt; Network hoặc Application -&gt; Cookies). Khi hết hạn, hệ thống sẽ tự dừng và báo Cookie hết hạn.
+                Không bắt buộc nhập cookie. Bạn chỉ cần dán đúng Link GoldPass ở trên là hệ thống tự khởi tạo phiên và kích hoạt bình thường.
               </p>
             </div>
 

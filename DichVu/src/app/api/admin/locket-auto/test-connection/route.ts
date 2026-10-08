@@ -37,11 +37,11 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    if (!passId || !signature || !cookie) {
+    if (!passId || !signature) {
       return NextResponse.json(
         {
           ok: false,
-          error: "Vui lòng cung cấp link GoldPass và Session Cookie để kiểm tra kết nối.",
+          error: "Vui lòng cung cấp link GoldPass hợp lệ để kiểm tra kết nối.",
         },
         { status: 400 }
       );
@@ -55,9 +55,10 @@ export async function POST(req: NextRequest) {
     });
 
     if (result.ok) {
-      const updateData: { targetUsername?: string; csrfToken?: string } = {};
+      const updateData: { targetUsername?: string; csrfToken?: string; sessionCookie?: string } = {};
       if (result.targetUsername) updateData.targetUsername = result.targetUsername;
       if (result.csrfToken) updateData.csrfToken = result.csrfToken;
+      if (result.cookie && !cookie) updateData.sessionCookie = result.cookie;
       if (Object.keys(updateData).length > 0) {
         await LocketAutoService.saveConfig(updateData);
       }
