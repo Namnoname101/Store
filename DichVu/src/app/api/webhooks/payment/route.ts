@@ -1,8 +1,16 @@
 import { NextResponse } from "next/server";
+import crypto from "crypto";
 import {
   handleIncomingTransaction,
   normalizeTransactionPayload,
 } from "@/services/payment.service";
+
+function timingSafeEqualStr(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
+}
 
 export async function GET() {
   return NextResponse.json(
@@ -19,6 +27,14 @@ export async function POST(request: Request) {
     webhookSecret.trim() !== "" &&
     webhookSecret !== "secret_token_here" &&
     webhookSecret !== "your_secret_token_here";
+
+  if (process.env.NODE_ENV === "production" && !isSecretConfigured) {
+    console.error("[CRITICAL SECURITY] PAYMENT_WEBHOOK_SECRET is missing or default in production!");
+    return NextResponse.json(
+      { error: "Server security misconfiguration: Webhook secret required in production" },
+      { status: 500 }
+    );
+  }
 
   if (isSecretConfigured) {
     const url = new URL(request.url);
@@ -43,7 +59,7 @@ export async function POST(request: Request) {
 
     const providedSecret = headerSecret || authSecret || querySecret;
 
-    if (!providedSecret || providedSecret !== webhookSecret) {
+    if (!providedSecret || !timingSafeEqualStr(providedSecret, webhookSecret)) {
       return NextResponse.json(
         { error: "Unauthorized: Invalid webhook secret" },
         { status: 401 }
