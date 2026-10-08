@@ -22,6 +22,13 @@ export class MockSupplierAdapter implements ISupplierAdapter {
   private balance: number = 1000000;
   private products: Map<string, MockProductData> = new Map();
   private simulatedError: MockSimulatedError = null;
+  private purchaseLog: Array<{
+    creds: SupplierCredentials;
+    productCode: string;
+    quantity: number;
+    orderCode: string;
+    options?: any;
+  }> = [];
 
   public setBalance(balance: number): void {
     this.balance = balance;
@@ -29,6 +36,14 @@ export class MockSupplierAdapter implements ISupplierAdapter {
 
   public getBalance(): number {
     return this.balance;
+  }
+
+  public getPurchaseLog() {
+    return this.purchaseLog;
+  }
+
+  public clearPurchaseLog(): void {
+    this.purchaseLog = [];
   }
 
   public setProduct(code: string, product: MockProductData): void {
@@ -80,11 +95,20 @@ export class MockSupplierAdapter implements ISupplierAdapter {
   }
 
   public async buyProduct(
-    _creds: SupplierCredentials,
+    creds: SupplierCredentials,
     supplierProductCode: string,
     quantity: number,
-    orderCode: string
+    orderCode: string,
+    options?: any
   ): Promise<SupplierOrderResult> {
+    this.purchaseLog.push({
+      creds,
+      productCode: supplierProductCode,
+      quantity,
+      orderCode,
+      options,
+    });
+
     if (this.simulatedError) {
       return {
         success: false,
