@@ -484,8 +484,8 @@ export async function handleIncomingTransaction(
           },
         });
 
-        await tx.order.update({
-          where: { id: order.id },
+        const updateResult = await tx.order.updateMany({
+          where: { id: order.id, status: OrderStatus.PENDING },
           data: {
             status: OrderStatus.PAID,
             paidAt: new Date(),
@@ -500,7 +500,10 @@ export async function handleIncomingTransaction(
           data: { status: PaymentIntentStatus.PAID },
         });
 
-        await commitReservedItemsToSold(order.id, tx);
+        // Only commit stock if THIS transaction transitioned the order from PENDING to PAID
+        if (updateResult.count > 0) {
+          await commitReservedItemsToSold(order.id, tx);
+        }
       },
       {
         maxWait: 5000,

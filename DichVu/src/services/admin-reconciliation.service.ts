@@ -102,12 +102,37 @@ export async function resolveReconciliation(
       throw new Error("Không tìm thấy đơn hàng để khớp và giao hàng.");
     }
 
+    // Check if transaction has already been resolved
+    if (
+      tx.reconciliationStatus === ReconciliationStatus.MANUAL_RESOLVED ||
+      tx.reconciliationStatus === "REFUNDED" ||
+      tx.reconciliationStatus === "DISMISSED"
+    ) {
+      throw new Error(
+        `Giao dịch này đã được xử lý trước đó (${tx.reconciliationStatus}). Không thể xử lý lại.`
+      );
+    }
+
+    // Check if order is already marked PAID
+    if (order.status === OrderStatus.PAID) {
+      throw new Error(
+        `Đơn hàng #${order.orderCode} đã ở trạng thái PAID trước đó. Không thể khớp và giao hàng lần 2.`
+      );
+    }
+
+    // Check if bank transaction is already linked to a different order
+    if (tx.orderId && tx.orderId !== order.id) {
+      throw new Error(
+        "Giao dịch ngân hàng này đã được liên kết với một đơn hàng khác."
+      );
+    }
+
     const note = options.note || "Khớp thủ công bởi Chủ sở hữu";
 
     await prisma.$transaction(async (db) => {
-      // 1. Update order
-      await db.order.update({
-        where: { id: order!.id },
+      // 1. Atomic update order with status precondition
+      const updateResult = await db.order.updateMany({
+        where: { id: order!.id, status: { not: OrderStatus.PAID } },
         data: {
           status: OrderStatus.PAID,
           paidAt: new Date(),
@@ -117,6 +142,12 @@ export async function resolveReconciliation(
           reconciledBy: actor,
         },
       });
+
+      if (updateResult.count === 0) {
+        throw new Error(
+          `Đơn hàng #${order!.orderCode} đã được thanh toán bởi một tiến trình khác.`
+        );
+      }
 
       // 2. Update transaction
       await db.paymentTransaction.update({
