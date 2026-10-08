@@ -18,6 +18,7 @@ import {
   Trash2,
 } from "lucide-react";
 import type { AdminProductItem } from "@/services/admin.service";
+import AdminProductMobileCards from "@/components/admin/AdminProductMobileCards";
 import type { Category } from "@prisma/client";
 
 interface ProductManagerClientProps {
@@ -109,7 +110,14 @@ export default function ProductManagerClient({
         throw new Error(data.error || "Không thể xóa sản phẩm");
       }
 
-      setProducts((prev) => prev.filter((p) => p.id !== productId));
+      // DELETE may soft-disable products that have order history: do not remove them from the admin list.
+      if (data.product) {
+        setProducts((prev) => prev.map((p) =>
+          p.id === productId ? { ...p, isActive: false } : p
+        ));
+      } else {
+        setProducts((prev) => prev.filter((p) => p.id !== productId));
+      }
       setAlert({
         type: "success",
         message: data.message || `Đã xóa sản phẩm "${productTitle}" thành công!`,
@@ -285,8 +293,11 @@ export default function ProductManagerClient({
         </div>
       </div>
 
+      {/* Responsive mobile cards; table remains available on desktop. */}
+      <AdminProductMobileCards products={filteredProducts} onDelete={handleDeleteProduct} />
+
       {/* Product Table */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/40 backdrop-blur-md overflow-hidden">
+      <div className="hidden md:block rounded-2xl border border-slate-800 bg-slate-900/40 backdrop-blur-md overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-slate-800 bg-slate-950/60 text-xs uppercase text-slate-400">
@@ -372,13 +383,14 @@ export default function ProductManagerClient({
                           </Link>
                         )}
 
-                        <button
-                          onClick={() => handleOpenEdit(p)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all"
-                          title="Chỉnh sửa chi tiết, mô tả & giá"
+                        <Link
+                          href={`/admin/products/${p.id}`}
+                          className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all"
+                          title="Mở trang chỉnh sửa sản phẩm"
+                          aria-label={`Chỉnh sửa ${p.title}`}
                         >
                           <Edit className="h-4 w-4" />
-                        </button>
+                        </Link>
 
                         <button
                           onClick={() => handleDeleteProduct(p.id, p.title)}
