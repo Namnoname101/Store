@@ -65,7 +65,7 @@ export default function ProductPurchaseBox({
     message: string;
   } | null>(null);
 
-  const inStock = stockCount > 0;
+  const inStock = isCustomQuantity || stockCount > 0;
   const totalPrice = price * (quantity || 0);
   const netTotal = appliedCoupon
     ? Math.max(1000, totalPrice - appliedCoupon.discountAmount)
@@ -99,13 +99,13 @@ export default function ProductPurchaseBox({
         setAppliedCoupon(null);
         setCouponFeedback({
           type: "error",
-          message: data.message || "Mã không hợp lệ",
+          message: data.message || "Mã giảm giá không hợp lệ",
         });
       }
     } catch {
       setCouponFeedback({
         type: "error",
-        message: "Không thể kiểm tra mã giảm giá lúc này",
+        message: "Không thể kiểm tra mã lúc này",
       });
     } finally {
       setIsValidatingCoupon(false);
@@ -207,17 +207,17 @@ export default function ProductPurchaseBox({
       : [100, 500, 1000, 2000, 5000];
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 backdrop-blur-md shadow-xl">
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xl">
       {/* Price summary */}
-      <div className="mb-6 pb-6 border-b border-slate-800/80">
-        <div className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">
+      <div className="mb-6 pb-6 border-b border-slate-100 dark:border-slate-800">
+        <div className="text-xs uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-1">
           {isCustomQuantity ? "Đơn giá theo lượt" : "Đơn giá sản phẩm"}
         </div>
         <div className="flex items-baseline gap-2">
-          <span className="text-3xl font-extrabold text-white tracking-tight">
+          <span className="text-3xl font-extrabold text-blue-600 dark:text-blue-400 tracking-tight">
             {formatVND(price)}
           </span>
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-slate-500">
             {isCustomQuantity ? `/ 1 ${unitLabel}` : "/ 1 sản phẩm"}
           </span>
         </div>
@@ -226,38 +226,38 @@ export default function ProductPurchaseBox({
       {/* Stock status banner */}
       <div className="mb-6">
         {isCustomQuantity ? (
-          <div className="flex items-center gap-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 px-3.5 py-2.5 text-xs font-medium text-cyan-400">
-            <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
+          <div className="flex items-center gap-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/30 px-3.5 py-2.5 text-xs font-semibold text-emerald-800 dark:text-emerald-300">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>Hệ thống tự động 24/7 (Khởi chạy ngay khi thanh toán)</span>
           </div>
         ) : inStock ? (
-          <div className="flex items-center gap-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-2.5 text-xs font-medium text-emerald-400">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="flex items-center gap-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-500/30 px-3.5 py-2.5 text-xs font-semibold text-blue-800 dark:text-blue-300">
+            <span className="h-2 w-2 rounded-full bg-blue-500" />
             <span>
               Sẵn sàng giao hàng ngay (Còn <strong>{stockCount}</strong> sản phẩm khả dụng)
             </span>
           </div>
         ) : (
-          <div className="flex items-center gap-2 rounded-xl bg-rose-500/10 border border-rose-500/20 px-3.5 py-2.5 text-xs font-medium text-rose-400">
-            <span className="h-2 w-2 rounded-full bg-rose-400" />
+          <div className="flex items-center gap-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-500/20 px-3.5 py-2.5 text-xs font-semibold text-rose-700 dark:text-rose-400">
+            <span className="h-2 w-2 rounded-full bg-rose-500" />
             <span>Sản phẩm hiện đang tạm hết hàng trong kho.</span>
           </div>
         )}
       </div>
 
       {/* Form */}
-      <form onSubmit={handleCheckout} className="space-y-5">
+      <form onSubmit={handleCheckout} className="space-y-4 sm:space-y-5">
         {/* Quantity Selector */}
         {isCustomQuantity ? (
           <div>
             <div className="flex items-center justify-between mb-2">
               <label
                 htmlFor="customQuantity"
-                className="text-xs font-semibold uppercase tracking-wider text-slate-300"
+                className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
               >
-                Số lượng đặt ({unitLabel}) <span className="text-rose-400">*</span>
+                Số lượng đặt ({unitLabel}) <span className="text-rose-500">*</span>
               </label>
-              <span className="text-[11px] text-slate-400">
+              <span className="text-[11px] text-slate-500">
                 Min: {effectiveMin.toLocaleString("vi-VN")}
                 {maxQuantity ? ` - Max: ${maxQuantity.toLocaleString("vi-VN")}` : ""}
               </span>
@@ -278,7 +278,7 @@ export default function ProductPurchaseBox({
                     const val = parseInt(e.target.value, 10);
                     setQuantity(isNaN(val) ? 0 : val);
                   }}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-800/90 py-2.5 px-4 text-base font-bold text-white focus:border-indigo-500 focus:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all"
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2.5 px-4 text-base font-bold text-slate-900 dark:text-white focus:border-blue-600 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                   placeholder={`Tối thiểu ${effectiveMin}`}
                 />
               </div>
@@ -287,7 +287,7 @@ export default function ProductPurchaseBox({
                 type="button"
                 disabled={isLoading || quantity <= effectiveMin}
                 onClick={() => handleQuantityChange(-100)}
-                className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white disabled:opacity-40 transition-colors"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-750 disabled:opacity-40 transition-colors"
                 title="Giảm 100"
               >
                 <Minus className="h-4 w-4" />
@@ -297,7 +297,7 @@ export default function ProductPurchaseBox({
                 type="button"
                 disabled={isLoading || (maxQuantity !== null && quantity >= maxQuantity)}
                 onClick={() => handleQuantityChange(100)}
-                className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white disabled:opacity-40 transition-colors"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-750 disabled:opacity-40 transition-colors"
                 title="Tăng 100"
               >
                 <Plus className="h-4 w-4" />
@@ -319,7 +319,7 @@ export default function ProductPurchaseBox({
                       return next;
                     })
                   }
-                  className="rounded-lg border border-slate-700 bg-slate-800/70 px-2 py-1 text-[11px] font-medium text-slate-300 hover:border-indigo-500 hover:bg-indigo-600/20 hover:text-white transition-all"
+                  className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 transition-all"
                 >
                   +{chip.toLocaleString("vi-VN")}
                 </button>
@@ -328,40 +328,40 @@ export default function ProductPurchaseBox({
                 type="button"
                 disabled={isLoading}
                 onClick={() => setQuantity(effectiveMin)}
-                className="rounded-lg border border-slate-800 bg-slate-850 px-2 py-1 text-[11px] font-medium text-slate-400 hover:text-slate-200 transition-colors"
+                className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-850 px-2 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-colors"
               >
                 Min
               </button>
             </div>
 
             {/* Live calculation banner */}
-            <div className="mt-3 flex items-center justify-between rounded-xl bg-indigo-950/40 border border-indigo-500/25 p-3 text-xs">
-              <span className="text-slate-300">
+            <div className="mt-3 flex items-center justify-between rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-500/20 p-3 text-xs">
+              <span className="text-slate-700 dark:text-slate-300">
                 Thành tiền ({quantity.toLocaleString("vi-VN")} × {formatVND(price)}):
               </span>
-              <span className="text-sm font-bold text-indigo-300">
+              <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
                 {formatVND(totalPrice)}
               </span>
             </div>
           </div>
         ) : (
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
               Số lượng mua
             </label>
             <div className="flex items-center gap-3">
-              <div className="flex items-center rounded-xl border border-slate-700 bg-slate-850 p-1">
+              <div className="flex items-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-1">
                 <button
                   type="button"
                   disabled={!inStock || quantity <= 1 || isLoading}
                   onClick={() => handleQuantityChange(-1)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-750 hover:text-white disabled:opacity-40 disabled:hover:bg-transparent"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-40"
                   aria-label="Giảm số lượng"
                 >
                   <Minus className="h-4 w-4" />
                 </button>
 
-                <span className="w-12 text-center text-sm font-bold text-white">
+                <span className="w-12 text-center text-sm font-bold text-slate-900 dark:text-white">
                   {quantity}
                 </span>
 
@@ -369,15 +369,15 @@ export default function ProductPurchaseBox({
                   type="button"
                   disabled={!inStock || quantity >= stockCount || isLoading}
                   onClick={() => handleQuantityChange(1)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-750 hover:text-white disabled:opacity-40 disabled:hover:bg-transparent"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-40"
                   aria-label="Tăng số lượng"
                 >
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
 
-              <div className="text-xs text-slate-400">
-                Tổng tiền: <strong className="text-white text-sm">{formatVND(totalPrice)}</strong>
+              <div className="text-xs text-slate-500 dark:text-slate-400">
+                Tổng tiền: <strong className="text-slate-900 dark:text-white text-sm">{formatVND(totalPrice)}</strong>
               </div>
             </div>
           </div>
@@ -388,24 +388,24 @@ export default function ProductPurchaseBox({
           <div>
             <label
               htmlFor="targetLink"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2"
+              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
             >
-              Link video / bài viết / kênh <span className="text-rose-400">*</span>
+              Link video / bài viết / kênh <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
               <input
                 id="targetLink"
                 type="url"
                 required
-                placeholder="https://www.tiktok.com/@... hoặc https://facebook.com/..."
+                placeholder="https://www.tiktok.com/@... hoặc link bài viết FB"
                 value={targetLink}
                 disabled={isLoading || !inStock}
                 onChange={(e) => setTargetLink(e.target.value)}
-                className="w-full rounded-xl border border-slate-700 bg-slate-800/90 py-3 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:border-indigo-500 focus:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 disabled:opacity-50 transition-all"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2.5 pl-10 pr-4 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
               />
-              <Globe className="absolute left-3.5 top-3.5 h-4 w-4 text-indigo-400" />
+              <Globe className="absolute left-3.5 top-3 h-4 w-4 text-blue-600 dark:text-blue-400" />
             </div>
-            <p className="mt-1.5 text-[11px] text-slate-400">
+            <p className="mt-1 text-[11px] text-slate-500">
               Dán chính xác link video TikTok hoặc bài viết/fanpage Facebook cần tăng.
             </p>
           </div>
@@ -415,9 +415,9 @@ export default function ProductPurchaseBox({
         <div>
           <label
             htmlFor="customerEmail"
-            className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2"
+            className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
           >
-            Email nhận hàng <span className="text-rose-400">*</span>
+            Email nhận hàng <span className="text-rose-500">*</span>
           </label>
           <div className="relative">
             <input
@@ -428,11 +428,11 @@ export default function ProductPurchaseBox({
               value={email}
               disabled={isLoading || !inStock}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-800/90 py-3 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:border-indigo-500 focus:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 disabled:opacity-50 transition-all"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2.5 pl-10 pr-4 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
             />
-            <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+            <Mail className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
           </div>
-          <p className="mt-1.5 text-[11px] text-slate-400">
+          <p className="mt-1 text-[11px] text-slate-500">
             Hệ thống sẽ gửi mã kích hoạt và hóa đơn vào email này ngay sau khi thanh toán.
           </p>
         </div>
@@ -441,7 +441,7 @@ export default function ProductPurchaseBox({
         <div>
           <label
             htmlFor="couponCode"
-            className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2"
+            className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
           >
             Mã giảm giá (Nếu có)
           </label>
@@ -454,18 +454,18 @@ export default function ProductPurchaseBox({
                 value={couponCode}
                 disabled={isLoading || !inStock || appliedCoupon !== null}
                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                className="w-full rounded-xl border border-slate-700 bg-slate-800/90 py-2.5 pl-10 pr-3 text-sm text-white placeholder-slate-500 uppercase focus:border-indigo-500 focus:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 disabled:opacity-50 transition-all font-mono"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2 pl-9 pr-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 uppercase focus:border-blue-600 focus:outline-none font-mono"
               />
-              <Ticket className="absolute left-3.5 top-3 h-4 w-4 text-indigo-400" />
+              <Ticket className="absolute left-3 top-2.5 h-4 w-4 text-blue-600 dark:text-blue-400" />
             </div>
 
             {appliedCoupon ? (
               <button
                 type="button"
                 onClick={handleRemoveCoupon}
-                className="px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-750 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1 transition-all"
+                className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center gap-1 transition-all"
               >
-                <CloseIcon className="h-3.5 w-3.5 text-rose-400" />
+                <CloseIcon className="h-3.5 w-3.5 text-rose-500" />
                 <span>Hủy</span>
               </button>
             ) : (
@@ -473,7 +473,7 @@ export default function ProductPurchaseBox({
                 type="button"
                 onClick={handleApplyCoupon}
                 disabled={isValidatingCoupon || !couponCode.trim() || !inStock}
-                className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-indigo-600/20"
+                className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
               >
                 {isValidatingCoupon ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -487,20 +487,19 @@ export default function ProductPurchaseBox({
 
           {/* Coupon Feedback */}
           {couponFeedback && (
-            <div
-              className={`mt-2 text-xs flex items-center gap-1.5 ${
+            <p
+              className={`mt-1 text-xs ${
                 couponFeedback.type === "success"
-                  ? "text-emerald-400 font-medium"
-                  : "text-rose-400"
+                  ? "text-emerald-600 dark:text-emerald-400 font-medium"
+                  : "text-rose-500"
               }`}
             >
-              <span>{couponFeedback.type === "success" ? "✓" : "⚠️"}</span>
-              <span>{couponFeedback.message}</span>
-            </div>
+              {couponFeedback.message}
+            </p>
           )}
 
           {appliedCoupon && (
-            <div className="mt-2 inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs">
+            <div className="mt-2 inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs">
               <span className="font-mono font-bold">{appliedCoupon.code}</span>
               <span>giảm -{formatVND(appliedCoupon.discountAmount)}</span>
             </div>
@@ -509,8 +508,8 @@ export default function ProductPurchaseBox({
 
         {/* Error notification banner */}
         {errorMessage && (
-          <div className="flex items-start gap-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
-            <AlertCircle className="h-4 w-4 shrink-0 text-rose-400 mt-0.5" />
+          <div className="flex items-start gap-2.5 rounded-xl border border-rose-500/20 bg-rose-50 dark:bg-rose-950/30 p-3 text-xs text-rose-600 dark:text-rose-400">
+            <AlertCircle className="h-4 w-4 shrink-0 text-rose-500 mt-0.5" />
             <span>{errorMessage}</span>
           </div>
         )}
@@ -521,7 +520,7 @@ export default function ProductPurchaseBox({
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-indigo-600 py-3.5 px-6 text-sm font-bold text-white shadow-xl shadow-indigo-600/30 hover:from-indigo-500 hover:to-indigo-500 disabled:opacity-60 transition-all hover:scale-[1.01]"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 px-6 text-sm font-bold text-white shadow-md shadow-blue-600/25 hover:bg-blue-700 disabled:opacity-60 transition-all active:scale-[0.99]"
             >
               {isLoading ? (
                 <>
@@ -542,7 +541,7 @@ export default function ProductPurchaseBox({
             <button
               type="button"
               disabled
-              className="w-full rounded-xl bg-slate-800 py-3.5 px-6 text-sm font-bold text-slate-500 cursor-not-allowed"
+              className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 py-3.5 px-6 text-sm font-semibold text-slate-400 dark:text-slate-500 cursor-not-allowed"
             >
               Hết Hàng Tạm Thời
             </button>
@@ -550,18 +549,18 @@ export default function ProductPurchaseBox({
         </div>
       </form>
 
-      {/* Guarantees & security info */}
-      <div className="mt-6 pt-6 border-t border-slate-800/80 space-y-2.5 text-xs text-slate-400">
+      {/* Guarantees info */}
+      <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 space-y-2 text-xs text-slate-500 dark:text-slate-400">
         <div className="flex items-center gap-2">
-          <Clock className="h-4 w-4 text-indigo-400 shrink-0" />
+          <Clock className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
           <span>Giao hàng tức thì qua VietQR NAPAS 24/7 (30s)</span>
         </div>
         <div className="flex items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
+          <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" />
           <span>Bảo hành 1-đổi-1 hoặc hoàn tiền nếu sản phẩm có lỗi</span>
         </div>
         <div className="flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4 text-cyan-400 shrink-0" />
+          <CheckCircle2 className="h-4 w-4 text-blue-500 shrink-0" />
           <span>Tạm giữ kho chống bán trùng tự động 15 phút</span>
         </div>
       </div>

@@ -25,7 +25,7 @@ export async function generateMetadata({
 }: OrderSuccessPageProps): Promise<Metadata> {
   const { orderCode } = await Promise.resolve(params);
   return {
-    title: `Đơn hàng hoàn tất #${orderCode} - DigiStore.vn`,
+    title: `Đơn hàng hoàn tất #${orderCode} - Daitruong Store`,
     description: `Thanh toán thành công đơn hàng #${orderCode}. Nhận mã bản quyền / tài khoản tự động tức thì.`,
   };
 }
@@ -50,7 +50,7 @@ export default async function OrderSuccessPage({
         </p>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 px-5 py-2.5 text-xs font-bold text-white transition-all shadow-md shadow-indigo-600/30"
+          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-xs font-bold text-white transition-all shadow-md shadow-blue-600/30"
         >
           <span>Về trang chủ</span>
         </Link>
@@ -157,7 +157,7 @@ export default async function OrderSuccessPage({
 
         <Link
           href="/"
-          className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 px-5 py-2.5 text-xs font-bold text-white transition-all shadow-md shadow-indigo-600/30 hover:scale-[1.02] shrink-0"
+          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-xs font-bold text-white transition-all shadow-md shadow-blue-600/30 hover:scale-[1.02] shrink-0"
         >
           <span>Khám phá thêm sản phẩm khác</span>
           <ArrowRight className="h-4 w-4" />

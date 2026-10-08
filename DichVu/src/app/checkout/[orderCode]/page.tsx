@@ -17,7 +17,7 @@ export async function generateMetadata({
 }: CheckoutPageProps): Promise<Metadata> {
   const { orderCode } = await Promise.resolve(params);
   return {
-    title: `Thanh toán đơn hàng #${orderCode} - DigiStore.vn`,
+    title: `Thanh toán đơn hàng #${orderCode} - Daitruong Store`,
     description: `Quét mã VietQR chuyển khoản tự động cho đơn hàng #${orderCode}. Bàn giao mã kích hoạt tức thì.`,
   };
 }
@@ -40,7 +40,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
         </p>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 px-5 py-2.5 text-xs font-bold text-white transition-all shadow-md shadow-indigo-600/30"
+          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-xs font-bold text-white transition-all shadow-md shadow-blue-600/30"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Quay lại trang chủ mua sắm</span>
