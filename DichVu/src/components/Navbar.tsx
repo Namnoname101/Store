@@ -69,18 +69,18 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800/80 bg-white/95 dark:bg-[#0b0f19]/90 backdrop-blur-md transition-colors duration-150 shadow-sm">
       {/* Main Top Header */}
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 gap-4">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8 gap-2 sm:gap-4">
         {/* Brand Logo */}
-        <div className="flex items-center gap-3 shrink-0">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/25 group-hover:bg-blue-700 transition-all">
-              <Store className="h-5 w-5 transition-transform group-hover:scale-105" />
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group">
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/25 group-hover:bg-blue-700 transition-all">
+              <Store className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:scale-105" />
             </div>
             <div className="flex flex-col">
-              <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">
+              <span className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">
                 Daitruong<span className="text-blue-600">Store</span>
               </span>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <span className="hidden sm:block text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Dịch Vụ Số & Tự Động 24/7
               </span>
             </div>
@@ -108,7 +108,7 @@ export default function Navbar() {
         </div>
 
         {/* Action Controls - Desktop */}
-        <div className="hidden md:flex items-center gap-2.5 shrink-0">
+        <div className="hidden lg:flex items-center gap-2.5 shrink-0">
           {/* Order lookup */}
           <Link
             href="/lookup"
@@ -192,7 +192,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile controls (Cart + Theme toggle + hamburger) */}
-        <div className="flex md:hidden items-center gap-2">
+        <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
           {/* Cart Icon Mobile */}
           <Link
             href="/cart"
@@ -234,7 +234,7 @@ export default function Navbar() {
       </div>
 
       {/* Category Navigation Bar (Subnav on Desktop) */}
-      <div className="hidden md:block border-t border-slate-100 dark:border-slate-850/60 bg-slate-50/70 dark:bg-slate-900/40">
+      <div className="hidden lg:block border-t border-slate-100 dark:border-slate-850/60 bg-slate-50/70 dark:bg-slate-900/40">
         <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <nav className="flex items-center space-x-1 lg:space-x-2 text-xs font-medium">
             {STORE_CATEGORIES.map((cat) => (

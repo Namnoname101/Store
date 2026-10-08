@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" suppressHydrationWarning>
+    <html lang="vi" suppressHydrationWarning className="overflow-x-hidden">
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -36,7 +36,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${ibmPlexSans.variable} font-sans min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 antialiased flex flex-col selection:bg-blue-600 selection:text-white transition-colors duration-150`}
+        className={`${ibmPlexSans.variable} font-sans min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 antialiased flex flex-col selection:bg-blue-600 selection:text-white transition-colors duration-150 overflow-x-hidden w-full max-w-full`}
       >
         <ThemeProvider>
           <CartProvider>
