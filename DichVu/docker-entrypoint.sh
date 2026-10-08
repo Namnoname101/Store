@@ -22,5 +22,8 @@ node prisma/seed-hacktim.js || true
 echo "Seeding Telegram Bot supplier..."
 node prisma/seed-telegram.js || true
 
+echo "Seeding GenzShop supplier..."
+node prisma/seed-genzshop.js || true
+
 echo "Starting Next.js Server..."
 exec node server.js

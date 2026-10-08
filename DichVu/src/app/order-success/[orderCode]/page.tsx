@@ -65,9 +65,11 @@ export default async function OrderSuccessPage({
   // Guest order token protection: prevent ORDxxxxxx enumeration attacks
   const isGuestOrder = !order.userId && !order.customerEmail;
   const token = searchParams?.token;
-  const isTokenExpired =
-    Date.now() - new Date(order.createdAt).getTime() >
-    30 * 24 * 60 * 60 * 1000;
+  const isTokenExpired = Boolean(
+    order.createdAt &&
+      Date.now() - new Date(order.createdAt).getTime() >
+        30 * 24 * 60 * 60 * 1000
+  );
 
   if (isGuestOrder && isTokenExpired) {
     return (

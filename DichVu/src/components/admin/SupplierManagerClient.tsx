@@ -1062,9 +1062,29 @@ export default function SupplierManagerClient({
                   <label className="block text-slate-400 mb-1 font-medium">Loại sàn tích hợp *</label>
                   <select
                     value={supplierFormData.type}
-                    onChange={(e) => setSupplierFormData({ ...supplierFormData, type: e.target.value })}
+                    onChange={(e) => {
+                      const newType = e.target.value;
+                      let newBaseUrl = supplierFormData.baseUrl;
+                      if (!editingSupplier) {
+                        if (newType === SupplierType.GENZSHOP) {
+                          newBaseUrl = "https://genzshop.vn/api/partner/v1";
+                        } else if (newType === SupplierType.TAPHOAMMO) {
+                          newBaseUrl = "https://api.taphoammo.net";
+                        } else if (newType === SupplierType.TRUMTHE) {
+                          newBaseUrl = "https://trumthe.vn";
+                        } else if (newType === SupplierType.LOCKET_VN) {
+                          newBaseUrl = "https://api.locket.com.vn";
+                        }
+                      }
+                      setSupplierFormData({
+                        ...supplierFormData,
+                        type: newType,
+                        baseUrl: newBaseUrl,
+                      });
+                    }}
                     className="w-full rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none"
                   >
+                    <option value={SupplierType.GENZSHOP}>GENZSHOP (GenzShop Partner API v1)</option>
                     <option value={SupplierType.TAPHOAMMO}>TAPHOAMMO (Tạp Hóa MMO)</option>
                     <option value={SupplierType.TRUMTHE}>TRUMTHE (Trùm Thẻ)</option>
                     <option value={SupplierType.LOCKET_VN}>LOCKET_VN (Locket.com.vn Reseller v1)</option>

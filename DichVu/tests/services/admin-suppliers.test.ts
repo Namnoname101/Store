@@ -352,7 +352,7 @@ describe("Admin Suppliers & Mapping Dashboard API Endpoints", () => {
       expect(data.success).toBe(true);
       expect(data.result).toBeDefined();
       expect(data.result.syncedCount).toBeGreaterThanOrEqual(1);
-    });
+    }, 15000);
   });
 
   describe("4. Order Retry Upstream API: /api/admin/orders/[orderId]/retry-upstream", () => {

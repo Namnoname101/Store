@@ -11,6 +11,7 @@ describe("Dropshipping Customer Flow & White-Label Refund Request", () => {
   const TEST_NONEXISTENT_CODE = "ORD_NONEXISTENT_999";
 
   let testOrderId: string;
+  let testAccessToken: string;
 
   beforeAll(async () => {
     // Cleanup prior test records if any
@@ -31,6 +32,7 @@ describe("Dropshipping Customer Flow & White-Label Refund Request", () => {
       },
     });
     testOrderId = order.id;
+    testAccessToken = order.accessToken;
   });
 
   afterAll(async () => {
@@ -60,7 +62,7 @@ describe("Dropshipping Customer Flow & White-Label Refund Request", () => {
         note: "Mong shop hoàn tiền sớm giúp mình",
       };
 
-      const request = new Request("http://localhost/api/orders/ORD_TEST_REFUND_01/refund-request", {
+      const request = new Request(`http://localhost/api/orders/ORD_TEST_REFUND_01/refund-request?token=${testAccessToken}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -90,7 +92,7 @@ describe("Dropshipping Customer Flow & White-Label Refund Request", () => {
 
     it("POST: returns 400 if required bank fields are missing or empty", async () => {
       // Missing bankName
-      const req1 = new Request("http://localhost/api/orders/ORD_TEST_REFUND_01/refund-request", {
+      const req1 = new Request(`http://localhost/api/orders/ORD_TEST_REFUND_01/refund-request?token=${testAccessToken}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -103,7 +105,7 @@ describe("Dropshipping Customer Flow & White-Label Refund Request", () => {
       expect(res1.status).toBe(400);
 
       // Missing accountNumber
-      const req2 = new Request("http://localhost/api/orders/ORD_TEST_REFUND_01/refund-request", {
+      const req2 = new Request(`http://localhost/api/orders/ORD_TEST_REFUND_01/refund-request?token=${testAccessToken}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -116,7 +118,7 @@ describe("Dropshipping Customer Flow & White-Label Refund Request", () => {
       expect(res2.status).toBe(400);
 
       // Missing accountName
-      const req3 = new Request("http://localhost/api/orders/ORD_TEST_REFUND_01/refund-request", {
+      const req3 = new Request(`http://localhost/api/orders/ORD_TEST_REFUND_01/refund-request?token=${testAccessToken}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -146,7 +148,7 @@ describe("Dropshipping Customer Flow & White-Label Refund Request", () => {
     });
 
     it("GET: returns hasRefundRequest=false when no refund request exists", async () => {
-      const request = new Request("http://localhost/api/orders/ORD_TEST_REFUND_01/refund-request");
+      const request = new Request(`http://localhost/api/orders/ORD_TEST_REFUND_01/refund-request?token=${testAccessToken}`);
       const response = await GET(request, { params: { orderCode: TEST_ORDER_CODE } });
 
       expect(response.status).toBe(200);
@@ -169,7 +171,7 @@ describe("Dropshipping Customer Flow & White-Label Refund Request", () => {
         data: { refundInfo: JSON.stringify(refundData) },
       });
 
-      const request = new Request("http://localhost/api/orders/ORD_TEST_REFUND_01/refund-request");
+      const request = new Request(`http://localhost/api/orders/ORD_TEST_REFUND_01/refund-request?token=${testAccessToken}`);
       const response = await GET(request, { params: { orderCode: TEST_ORDER_CODE } });
 
       expect(response.status).toBe(200);

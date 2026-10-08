@@ -609,7 +609,7 @@ describe("Order Creation & Checkout Service", () => {
         });
 
         const req = new Request(
-          `http://localhost:3000/api/orders/${order.orderCode}/status`
+          `http://localhost:3000/api/orders/${order.orderCode}/status?token=${order.accessToken}`
         );
         const res = await getOrderStatusRoute(req, {
           params: { orderCode: order.orderCode },
