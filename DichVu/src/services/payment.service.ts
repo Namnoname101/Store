@@ -1,4 +1,12 @@
-import { prisma, OrderStatus, FulfillmentType, DepositStatus, WalletTransactionType } from "@/lib/prisma";
+import {
+  prisma,
+  OrderStatus,
+  FulfillmentType,
+  DepositStatus,
+  WalletTransactionType,
+  ReconciliationStatus,
+  PaymentIntentStatus,
+} from "@/lib/prisma";
 import { commitReservedItemsToSold, releaseExpiredReservations } from "@/services/inventory.service";
 import { parseOrderCodeFromMemo, parseDepositCodeFromMemo } from "@/lib/vietqr";
 import { fulfillOrderViaUpstream } from "@/services/upstream-fulfillment.service";
@@ -16,6 +24,7 @@ export interface PaymentProcessResult {
   orderCode?: string;
   depositCode?: string;
   status?: string;
+  reconciliationStatus?: string;
   isDuplicate?: boolean;
   message?: string;
   error?: string;
@@ -279,11 +288,14 @@ export async function handleIncomingTransaction(
         content: payload.content || null,
         rawPayload: payload.rawPayload ? JSON.stringify(payload.rawPayload) : null,
         orderId: null,
+        reconciliationStatus: ReconciliationStatus.UNMATCHED_ORDER,
+        reconciliationNote: "Nội dung chuyển khoản không chứa mã đơn hợp lệ (ORDxxxxxx)",
       },
     });
 
     return {
       success: false,
+      reconciliationStatus: ReconciliationStatus.UNMATCHED_ORDER,
       error: "Order code not found in payment content",
     };
   }
@@ -314,48 +326,113 @@ export async function handleIncomingTransaction(
         content: payload.content || null,
         rawPayload: payload.rawPayload ? JSON.stringify(payload.rawPayload) : null,
         orderId: null,
+        reconciliationStatus: ReconciliationStatus.UNMATCHED_ORDER,
+        reconciliationNote: `Không tìm thấy đơn hàng #${orderCode} trong hệ thống`,
       },
     });
 
     return {
       success: false,
       orderCode,
+      reconciliationStatus: ReconciliationStatus.UNMATCHED_ORDER,
       error: `Order ${orderCode} not found`,
     };
   }
 
-  // 4. Amount Verification
+  // 5. Expiration Guard (late payment after 10m window)
+  const isExpired =
+    order.status === OrderStatus.EXPIRED ||
+    (order.status === OrderStatus.PENDING && new Date() > order.expiresAt);
+
+  if (isExpired) {
+    const note = `Thanh toán sau khi hết hạn 10 phút. Đã nhận: ${Math.round(payload.amount).toLocaleString("vi-VN")}đ. Chờ Chủ sở hữu đối soát và xử lý.`;
+
+    await prisma.$transaction(async (tx) => {
+      await tx.order.update({
+        where: { id: order.id },
+        data: {
+          status: OrderStatus.EXPIRED,
+          reconciliationStatus: ReconciliationStatus.EXPIRED_PAYMENT,
+          reconciliationNote: note,
+        },
+      });
+
+      await tx.paymentIntent.updateMany({
+        where: { orderId: order.id, status: PaymentIntentStatus.ACTIVE },
+        data: { status: PaymentIntentStatus.EXPIRED },
+      });
+
+      await tx.paymentTransaction.create({
+        data: {
+          transactionId: payload.transactionId,
+          amount: Math.round(payload.amount),
+          bankCode: payload.bankCode || null,
+          content: payload.content || null,
+          rawPayload: payload.rawPayload ? JSON.stringify(payload.rawPayload) : null,
+          orderId: order.id,
+          reconciliationStatus: ReconciliationStatus.EXPIRED_PAYMENT,
+          reconciliationNote: note,
+        },
+      });
+    });
+
+    await releaseExpiredReservations();
+
+    return {
+      success: false,
+      orderCode: order.orderCode,
+      status: OrderStatus.EXPIRED,
+      reconciliationStatus: ReconciliationStatus.EXPIRED_PAYMENT,
+      error: "Order is expired. Manual resolution required.",
+    };
+  }
+
+  // 6. Underpaid Guard
   if (payload.amount < order.totalAmount) {
-    await prisma.paymentTransaction.create({
-      data: {
-        transactionId: payload.transactionId,
-        amount: Math.round(payload.amount),
-        bankCode: payload.bankCode || null,
-        content: payload.content || null,
-        rawPayload: payload.rawPayload ? JSON.stringify(payload.rawPayload) : null,
-        orderId: order.id,
-      },
+    const diff = order.totalAmount - Math.round(payload.amount);
+    const note = `Chuyển thiếu ${diff.toLocaleString("vi-VN")}đ (Đã nhận: ${Math.round(payload.amount).toLocaleString("vi-VN")}đ, Cần thanh toán: ${order.totalAmount.toLocaleString("vi-VN")}đ)`;
+
+    await prisma.$transaction(async (tx) => {
+      await tx.paymentTransaction.create({
+        data: {
+          transactionId: payload.transactionId,
+          amount: Math.round(payload.amount),
+          bankCode: payload.bankCode || null,
+          content: payload.content || null,
+          rawPayload: payload.rawPayload ? JSON.stringify(payload.rawPayload) : null,
+          orderId: order.id,
+          reconciliationStatus: ReconciliationStatus.UNDERPAID,
+          reconciliationNote: note,
+        },
+      });
+
+      await tx.order.update({
+        where: { id: order.id },
+        data: {
+          reconciliationStatus: ReconciliationStatus.UNDERPAID,
+          reconciliationNote: note,
+        },
+      });
     });
 
     return {
       success: false,
       orderCode: order.orderCode,
-      error: `Underpaid transaction: received ${payload.amount}, expected ${order.totalAmount}`,
+      status: order.status,
+      reconciliationStatus: ReconciliationStatus.UNDERPAID,
+      error: `Chuyển thiếu tiền: nhận ${Math.round(payload.amount).toLocaleString("vi-VN")}đ, cần ${order.totalAmount.toLocaleString("vi-VN")}đ`,
     };
   }
 
-  // 5. Expiration Guard for PENDING orders
-  if (order.status === OrderStatus.PENDING && new Date() > order.expiresAt) {
-    await prisma.order.update({
-      where: { id: order.id },
-      data: { status: OrderStatus.EXPIRED },
-    });
-    await releaseExpiredReservations();
-    order.status = OrderStatus.EXPIRED;
-  }
-
-  // 6. State Transition (Atomic Transaction for PENDING orders)
+  // 7. State Transition for PENDING Orders (Exact MATCHED or OVERPAID)
   if (order.status === OrderStatus.PENDING) {
+    const isOverpaid = payload.amount > order.totalAmount;
+    const reconStatus = isOverpaid ? ReconciliationStatus.OVERPAID : ReconciliationStatus.MATCHED;
+    const diff = Math.round(payload.amount) - order.totalAmount;
+    const reconNote = isOverpaid
+      ? `Chuyển thừa ${diff.toLocaleString("vi-VN")}đ (Đã nhận: ${Math.round(payload.amount).toLocaleString("vi-VN")}đ, Cần thanh toán: ${order.totalAmount.toLocaleString("vi-VN")}đ)`
+      : "Khớp chính xác số tiền";
+
     await prisma.$transaction(
       async (tx) => {
         await tx.paymentTransaction.create({
@@ -368,6 +445,8 @@ export async function handleIncomingTransaction(
               ? JSON.stringify(payload.rawPayload)
               : null,
             orderId: order.id,
+            reconciliationStatus: reconStatus,
+            reconciliationNote: reconNote,
           },
         });
 
@@ -376,7 +455,15 @@ export async function handleIncomingTransaction(
           data: {
             status: OrderStatus.PAID,
             paidAt: new Date(),
+            reconciliationStatus: reconStatus,
+            reconciliationNote: reconNote,
           },
+        });
+
+        // Mark active PaymentIntent as PAID
+        await tx.paymentIntent.updateMany({
+          where: { orderId: order.id, status: PaymentIntentStatus.ACTIVE },
+          data: { status: PaymentIntentStatus.PAID },
         });
 
         await commitReservedItemsToSold(order.id, tx);
@@ -407,10 +494,16 @@ export async function handleIncomingTransaction(
       success: true,
       orderCode: order.orderCode,
       status: OrderStatus.PAID,
+      reconciliationStatus: reconStatus,
+      message: isOverpaid ? reconNote : undefined,
     };
   }
 
+  // 8. Order Already Paid
   if (order.status === OrderStatus.PAID) {
+    const diff = Math.round(payload.amount);
+    const reconNote = `Đơn đã thanh toán trước đó. Giao dịch nhận thêm: ${diff.toLocaleString("vi-VN")}đ.`;
+
     await prisma.paymentTransaction.create({
       data: {
         transactionId: payload.transactionId,
@@ -421,6 +514,8 @@ export async function handleIncomingTransaction(
           ? JSON.stringify(payload.rawPayload)
           : null,
         orderId: order.id,
+        reconciliationStatus: ReconciliationStatus.OVERPAID,
+        reconciliationNote: reconNote,
       },
     });
 
@@ -428,33 +523,12 @@ export async function handleIncomingTransaction(
       success: true,
       orderCode: order.orderCode,
       status: OrderStatus.PAID,
+      reconciliationStatus: ReconciliationStatus.OVERPAID,
       message: "Order is already paid",
     };
   }
 
-  if (order.status === OrderStatus.EXPIRED) {
-    await prisma.paymentTransaction.create({
-      data: {
-        transactionId: payload.transactionId,
-        amount: Math.round(payload.amount),
-        bankCode: payload.bankCode || null,
-        content: payload.content || null,
-        rawPayload: payload.rawPayload
-          ? JSON.stringify(payload.rawPayload)
-          : null,
-        orderId: order.id,
-      },
-    });
-
-    return {
-      success: false,
-      orderCode: order.orderCode,
-      status: OrderStatus.EXPIRED,
-      error: "Order has expired. Payment logged for manual review.",
-    };
-  }
-
-  // Other statuses (e.g. CANCELLED)
+  // 9. Other statuses (e.g. CANCELLED)
   await prisma.paymentTransaction.create({
     data: {
       transactionId: payload.transactionId,
@@ -465,6 +539,8 @@ export async function handleIncomingTransaction(
         ? JSON.stringify(payload.rawPayload)
         : null,
       orderId: order.id,
+      reconciliationStatus: ReconciliationStatus.UNMATCHED_ORDER,
+      reconciliationNote: `Đơn có trạng thái ${order.status}. Chờ Chủ sở hữu xử lý.`,
     },
   });
 
@@ -472,6 +548,7 @@ export async function handleIncomingTransaction(
     success: false,
     orderCode: order.orderCode,
     status: order.status,
+    reconciliationStatus: ReconciliationStatus.UNMATCHED_ORDER,
     error: `Order has status ${order.status}. Payment logged for manual review.`,
   };
 }
