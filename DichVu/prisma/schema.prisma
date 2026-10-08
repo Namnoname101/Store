@@ -95,6 +95,9 @@ model Order {
   upstreamOrderId     String?
   upstreamError       String?
   refundInfo          String?              // Bank account info for refunds
+  refundStatus        String?              // REFUND_REQUESTED, REFUND_PENDING, REFUNDED
+  refundProof         String?              // Bank transfer reference/txId or proof note
+  refundedAt          DateTime?
   expiresAt           DateTime
   paidAt              DateTime?
   orderItems          OrderItem[]
@@ -191,6 +194,9 @@ model PaymentTransaction {
   rawPayload           String?
   reconciliationStatus String?       @default("MATCHED") // MATCHED, UNDERPAID, OVERPAID, MISMATCH_MEMO, EXPIRED_PAYMENT, MANUAL_RESOLVED, UNMATCHED_ORDER
   reconciliationNote   String?
+  refundStatus         String?       // REFUND_PENDING, REFUNDED
+  refundProof          String?       // Mã giao dịch ngân hàng hoàn tiền
+  refundedAt           DateTime?
   resolvedAt           DateTime?
   resolvedBy           String?       // "OWNER"
   createdAt            DateTime      @default(now())

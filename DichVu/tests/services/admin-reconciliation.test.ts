@@ -171,7 +171,24 @@ describe("Admin Owner Manual Reconciliation & Audit Logging Service", () => {
     expect(auditLogs[0].performedBy).toBe("OWNER");
   });
 
-  it("resolveReconciliation: MARK_REFUNDED marks transaction refunded and logs AuditLog", async () => {
+  it("resolveReconciliation: MARK_REFUNDED rejects when refundProof is missing", async () => {
+    const tx = await prisma.paymentTransaction.create({
+      data: {
+        transactionId: `TX_REFUND_FAIL_${Date.now()}`,
+        amount: 50000,
+        content: "Hoan tien thieu bang chung ADMIN_RECON",
+        reconciliationStatus: ReconciliationStatus.UNDERPAID,
+      },
+    });
+
+    await expect(
+      resolveReconciliation(tx.id, "MARK_REFUNDED", {
+        note: "Chua co ma giao dich",
+      })
+    ).rejects.toThrow(/mã giao dịch ngân hàng/i);
+  });
+
+  it("resolveReconciliation: MARK_REFUNDED marks transaction refunded with refundProof and logs AuditLog", async () => {
     const tx = await prisma.paymentTransaction.create({
       data: {
         transactionId: `TX_REFUND_${Date.now()}`,
@@ -182,6 +199,8 @@ describe("Admin Owner Manual Reconciliation & Audit Logging Service", () => {
     });
 
     const result = await resolveReconciliation(tx.id, "MARK_REFUNDED", {
+      refundProof: "FT24012399999",
+      refundStatus: "REFUNDED",
       note: "Đã chuyển hoàn 50.000đ qua Techcombank ADMIN_RECON",
       performedBy: "OWNER",
     });
@@ -192,6 +211,9 @@ describe("Admin Owner Manual Reconciliation & Audit Logging Service", () => {
       where: { id: tx.id },
     });
     expect(updatedTx?.reconciliationStatus).toBe("REFUNDED");
+    expect(updatedTx?.refundStatus).toBe("REFUNDED");
+    expect(updatedTx?.refundProof).toBe("FT24012399999");
+    expect(updatedTx?.refundedAt).not.toBeNull();
     expect(updatedTx?.resolvedBy).toBe("OWNER");
 
     const auditLogs = await prisma.auditLog.findMany({
@@ -199,6 +221,8 @@ describe("Admin Owner Manual Reconciliation & Audit Logging Service", () => {
     });
     expect(auditLogs.length).toBeGreaterThanOrEqual(1);
     expect(auditLogs[0].action).toBe(AuditAction.RECONCILE_REFUND);
+    expect(auditLogs[0].details).toContain("FT24012399999");
+    expect(auditLogs[0].details).toContain("isManualBankTransfer");
   });
 
   it("resolveReconciliation: DISMISS marks transaction dismissed and logs AuditLog", async () => {

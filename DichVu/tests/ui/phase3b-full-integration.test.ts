@@ -430,6 +430,7 @@ describe("Phase 3B: Comprehensive 10-Scenario End-to-End Integration Suite", () 
     });
 
     const resB = await resolveReconciliation(txB.id, "MARK_REFUNDED", {
+      refundProof: "FT_E2E_P3B_999",
       note: "Đã hoàn qua Vietcombank E2E_P3B",
       performedBy: "OWNER",
     });

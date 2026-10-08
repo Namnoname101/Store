@@ -68,6 +68,8 @@ export interface ResolveReconciliationOptions {
   orderCode?: string;
   note?: string;
   performedBy?: string;
+  refundProof?: string;
+  refundStatus?: "REFUND_PENDING" | "REFUNDED";
 }
 
 /**
@@ -180,13 +182,27 @@ export async function resolveReconciliation(
   }
 
   if (action === "MARK_REFUNDED") {
-    const note = options.note || "Đã hoàn tiền cho khách hàng";
+    if (!options.refundProof || !options.refundProof.trim()) {
+      throw new Error("Vui lòng cung cấp mã giao dịch ngân hàng hoặc bằng chứng chuyển khoản hoàn tiền thực tế.");
+    }
+
+    const refundProof = options.refundProof.trim();
+    const refundStatus = options.refundStatus || "REFUNDED";
+    const refundedAt = refundStatus === "REFUNDED" ? new Date() : null;
+    const note =
+      options.note ||
+      (refundStatus === "REFUNDED"
+        ? "Đã chuyển hoàn tiền cho khách qua ngân hàng"
+        : "Đang xử lý chuyển tiền hoàn");
 
     await prisma.$transaction(async (db) => {
       await db.paymentTransaction.update({
         where: { id: tx.id },
         data: {
-          reconciliationStatus: "REFUNDED",
+          reconciliationStatus: refundStatus,
+          refundStatus,
+          refundProof,
+          refundedAt,
           reconciliationNote: note,
           resolvedAt: new Date(),
           resolvedBy: actor,
@@ -197,7 +213,10 @@ export async function resolveReconciliation(
         await db.order.update({
           where: { id: tx.orderId },
           data: {
-            reconciliationStatus: "REFUNDED",
+            reconciliationStatus: refundStatus,
+            refundStatus,
+            refundProof,
+            refundedAt,
             reconciliationNote: note,
             reconciledAt: new Date(),
             reconciledBy: actor,
@@ -214,13 +233,16 @@ export async function resolveReconciliation(
           details: JSON.stringify({
             transactionId: tx.transactionId,
             amount: tx.amount,
+            refundProof,
+            refundStatus,
             note,
+            isManualBankTransfer: true,
           }),
         },
       });
     });
 
-    return { success: true, action };
+    return { success: true, action, refundStatus, refundProof };
   }
 
   if (action === "DISMISS") {

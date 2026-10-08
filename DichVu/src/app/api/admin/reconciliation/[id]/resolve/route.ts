@@ -8,7 +8,7 @@ export async function POST(
   try {
     const { id } = params;
     const body = await req.json().catch(() => ({}));
-    const { action, orderCode, note } = body;
+    const { action, orderCode, note, refundProof, refundStatus } = body;
 
     if (!action || !["MATCH_AND_FULFILL", "MARK_REFUNDED", "DISMISS"].includes(action)) {
       return NextResponse.json(
@@ -20,6 +20,8 @@ export async function POST(
     const result = await resolveReconciliation(id, action, {
       orderCode,
       note,
+      refundProof,
+      refundStatus,
       performedBy: "OWNER",
     });
 

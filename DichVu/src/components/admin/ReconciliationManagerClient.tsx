@@ -72,6 +72,8 @@ export default function ReconciliationManagerClient({
   const [activeModalTx, setActiveModalTx] = useState<ReconciliationTransaction | null>(null);
   const [modalAction, setModalAction] = useState<"MATCH_AND_FULFILL" | "MARK_REFUNDED" | "DISMISS" | null>(null);
   const [orderCodeInput, setOrderCodeInput] = useState("");
+  const [refundProofInput, setRefundProofInput] = useState("");
+  const [refundStatusInput, setRefundStatusInput] = useState<"REFUND_PENDING" | "REFUNDED">("REFUNDED");
   const [noteInput, setNoteInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -124,12 +126,14 @@ export default function ReconciliationManagerClient({
     setActiveModalTx(tx);
     setModalAction(action);
     setOrderCodeInput(tx.order?.orderCode || "");
+    setRefundProofInput("");
+    setRefundStatusInput("REFUNDED");
     setActionError(null);
 
     if (action === "MATCH_AND_FULFILL") {
       setNoteInput("Chủ sở hữu xác nhận hợp lệ & tiến hành giao hàng");
     } else if (action === "MARK_REFUNDED") {
-      setNoteInput("Đã hoàn tiền cho khách qua ngân hàng");
+      setNoteInput("Đã hoàn tiền cho khách qua chuyển khoản ngân hàng");
     } else {
       setNoteInput("Giao dịch rác / hủy bỏ đối soát");
     }
@@ -139,6 +143,8 @@ export default function ReconciliationManagerClient({
     setActiveModalTx(null);
     setModalAction(null);
     setOrderCodeInput("");
+    setRefundProofInput("");
+    setRefundStatusInput("REFUNDED");
     setNoteInput("");
     setActionError(null);
   };
@@ -148,6 +154,11 @@ export default function ReconciliationManagerClient({
 
     if (modalAction === "MATCH_AND_FULFILL" && !activeModalTx.order && !orderCodeInput.trim()) {
       setActionError("Vui lòng nhập mã đơn hàng (ORD...) để khớp và cấp hàng");
+      return;
+    }
+
+    if (modalAction === "MARK_REFUNDED" && !refundProofInput.trim()) {
+      setActionError("Vui lòng cung cấp mã giao dịch ngân hàng hoặc bằng chứng chuyển khoản hoàn tiền thực tế");
       return;
     }
 
@@ -162,6 +173,8 @@ export default function ReconciliationManagerClient({
           action: modalAction,
           orderCode: orderCodeInput.trim() || undefined,
           note: noteInput.trim() || undefined,
+          refundProof: refundProofInput.trim() || undefined,
+          refundStatus: refundStatusInput,
         }),
       });
 
@@ -174,7 +187,7 @@ export default function ReconciliationManagerClient({
         modalAction === "MATCH_AND_FULFILL"
           ? `Đã khớp và cấp đơn thành công cho đơn ${data.orderCode || activeModalTx.order?.orderCode || ""}`
           : modalAction === "MARK_REFUNDED"
-          ? `Đã đánh dấu hoàn tiền thành công`
+          ? `Đã lưu bằng chứng và cập nhật trạng thái hoàn tiền (${data.refundStatus || "REFUNDED"})`
           : `Đã hủy bỏ đối soát giao dịch`
       );
 
@@ -631,6 +644,64 @@ export default function ReconciliationManagerClient({
                   onChange={(e) => setOrderCodeInput(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-blue-500 uppercase font-mono"
                 />
+              </div>
+            )}
+
+            {modalAction === "MARK_REFUNDED" && (
+              <div className="space-y-3">
+                <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-300 space-y-1">
+                  <div className="font-bold flex items-center gap-1.5">
+                    <Info className="h-4 w-4" /> Quy trình hoàn tiền thủ công
+                  </div>
+                  <p className="text-[11px] text-slate-300">
+                    Chủ sở hữu thực hiện chuyển khoản từ ngân hàng của bạn về tài khoản của khách, sau đó nhập mã giao dịch ngân hàng vào đây để lưu vết đối soát.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    Giai đoạn hoàn tiền: <span className="text-red-400">*</span>
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setRefundStatusInput("REFUNDED")}
+                      className={`p-2.5 rounded-xl border text-xs font-medium text-left transition-all ${
+                        refundStatusInput === "REFUNDED"
+                          ? "border-blue-500 bg-blue-500/20 text-white"
+                          : "border-slate-800 bg-slate-950 text-slate-400"
+                      }`}
+                    >
+                      <div className="font-bold">Đã hoàn tiền thực tế</div>
+                      <div className="text-[10px] text-slate-400">Đã chuyển trả xong</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRefundStatusInput("REFUND_PENDING")}
+                      className={`p-2.5 rounded-xl border text-xs font-medium text-left transition-all ${
+                        refundStatusInput === "REFUND_PENDING"
+                          ? "border-amber-500 bg-amber-500/20 text-white"
+                          : "border-slate-800 bg-slate-950 text-slate-400"
+                      }`}
+                    >
+                      <div className="font-bold">Đang xử lý hoàn tiền</div>
+                      <div className="text-[10px] text-slate-400">Đang chờ lệnh chuyển</div>
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    Mã giao dịch / Bằng chứng chuyển khoản ngân hàng: <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ví dụ: FT24012345678, TxID hoặc link chứng từ..."
+                    value={refundProofInput}
+                    onChange={(e) => setRefundProofInput(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-blue-500 font-mono"
+                  />
+                </div>
               </div>
             )}
 

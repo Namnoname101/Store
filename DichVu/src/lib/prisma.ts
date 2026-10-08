@@ -114,6 +114,13 @@ export const AuditAction = {
 } as const;
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction];
 
+export const RefundStatus = {
+  REFUND_REQUESTED: "REFUND_REQUESTED",
+  REFUND_PENDING: "REFUND_PENDING",
+  REFUNDED: "REFUNDED",
+} as const;
+export type RefundStatus = (typeof RefundStatus)[keyof typeof RefundStatus];
+
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
