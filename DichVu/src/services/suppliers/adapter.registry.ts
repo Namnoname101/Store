@@ -5,6 +5,7 @@ import { TrumtheAdapter } from "./adapters/trumthe.adapter";
 import { LocketAdapter } from "./adapters/locket.adapter";
 import { HackTimAdapter } from "./adapters/hacktim.adapter";
 import { TelegramBotAdapter } from "./adapters/telegram-bot.adapter";
+import { GenzShopAdapter } from "./adapters/genzshop.adapter";
 
 const adapterRegistry = new Map<string, ISupplierAdapter>();
 
@@ -15,11 +16,13 @@ function initDefaultAdapters(): void {
   const locket = new LocketAdapter();
   const hacktim = new HackTimAdapter();
   const telegramBot = new TelegramBotAdapter();
+  const genzshop = new GenzShopAdapter();
 
   adapterRegistry.set(SupplierType.TAPHOAMMO, taphoa);
   adapterRegistry.set(SupplierType.TRUMTHE, trumthe);
   adapterRegistry.set(SupplierType.LOCKET_VN, locket);
   adapterRegistry.set(SupplierType.HACKTIM, hacktim);
+  adapterRegistry.set(SupplierType.GENZSHOP, genzshop);
   adapterRegistry.set(SupplierType.CUSTOM_REST, taphoa);
   adapterRegistry.set(SupplierType.TELEGRAM_BOT, telegramBot);
 }

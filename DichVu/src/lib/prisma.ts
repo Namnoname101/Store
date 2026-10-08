@@ -40,6 +40,7 @@ export const SupplierType = {
   TRUMTHE: "TRUMTHE",
   LOCKET_VN: "LOCKET_VN",
   HACKTIM: "HACKTIM",
+  GENZSHOP: "GENZSHOP",
   CUSTOM_REST: "CUSTOM_REST",
   TELEGRAM_BOT: "TELEGRAM_BOT",
 } as const;

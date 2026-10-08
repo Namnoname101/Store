@@ -420,7 +420,7 @@ export async function handleIncomingTransaction(
       orderCode: order.orderCode,
       status: order.status,
       reconciliationStatus: ReconciliationStatus.UNDERPAID,
-      error: `Chuyển thiếu tiền: nhận ${Math.round(payload.amount).toLocaleString("vi-VN")}đ, cần ${order.totalAmount.toLocaleString("vi-VN")}đ`,
+      error: `Chuyển thiếu tiền (underpaid): nhận ${Math.round(payload.amount).toLocaleString("vi-VN")}đ, cần ${order.totalAmount.toLocaleString("vi-VN")}đ`,
     };
   }
 

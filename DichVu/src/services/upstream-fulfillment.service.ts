@@ -114,7 +114,7 @@ export async function fulfillOrderViaUpstream(
   for (const item of dropshipItems) {
     const mapping = item.product?.supplierMapping;
     if (!mapping || !mapping.supplier || !mapping.supplier.isActive) {
-      const errorMsg = "Cần Chủ sở hữu xử lý: Cấu hình nhà cung cấp chưa khả dụng.";
+      const errorMsg = "Cần Chủ sở hữu xử lý: Cấu hình nhà cung cấp chưa khả dụng (supplier mapping missing or inactive).";
       await prisma.order.update({
         where: { id: order.id },
         data: {
