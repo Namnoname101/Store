@@ -74,7 +74,7 @@ model ProductItem {
 model Order {
   id                  String               @id @default(uuid())
   orderCode           String               @unique // e.g. ORD849201
-  accessToken         String               @unique @default(uuid()) // Secure access token for guest order lookup
+  accessToken         String?              @unique @default(uuid()) // Secure access token for guest order lookup
   idempotencyKey      String?              @unique // Prevent duplicate order creations
   customerEmail       String?
   customerNote        String?              // e.g. Link video/profile for SMM services
