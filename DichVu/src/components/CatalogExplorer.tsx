@@ -465,8 +465,13 @@ export default function CatalogExplorer({
                     style={{ height: "40px" }}
                     title={sec.title}
                   >
-                    {/* Hidden label that slides out to the left on hover */}
-                    <div className="max-w-0 opacity-0 group-hover:max-w-[240px] group-hover:opacity-100 group-hover:pl-3.5 group-hover:pr-1 transition-all duration-300 ease-out whitespace-nowrap overflow-hidden flex items-center gap-2 text-xs font-semibold">
+                    {/* Icon container - on the left edge so it slides outward into the page on hover */}
+                    <div className="w-10 h-10 flex items-center justify-center shrink-0">
+                      <SecIcon className="h-4.5 w-4.5 transition-transform duration-300 group-hover:scale-110" />
+                    </div>
+
+                    {/* Label that expands to the right of the icon */}
+                    <div className="max-w-0 opacity-0 group-hover:max-w-[240px] group-hover:opacity-100 group-hover:pr-3.5 transition-all duration-300 ease-out whitespace-nowrap overflow-hidden flex items-center gap-2 text-xs font-semibold">
                       <span>{sec.shortLabel}</span>
                       <span
                         className={`rounded-full px-1.5 py-0.2 text-[10px] ${
@@ -477,11 +482,6 @@ export default function CatalogExplorer({
                       >
                         {sec.products.length}
                       </span>
-                    </div>
-
-                    {/* Icon container always visible at the right edge */}
-                    <div className="w-10 h-10 flex items-center justify-center shrink-0">
-                      <SecIcon className="h-4.5 w-4.5" />
                     </div>
                   </button>
                 );
