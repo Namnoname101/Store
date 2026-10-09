@@ -11,6 +11,7 @@ primary_region = "sin"
   BANK_ID = "TPB"
   BANK_ACCOUNT_NO = "93320022006"
   BANK_ACCOUNT_NAME = "TRUONG CONG QUANG DAI"
+  PRISMA_AUTO_MIGRATE = "true"
 
 [http_service]
   internal_port = 3000
