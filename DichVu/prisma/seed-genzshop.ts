@@ -133,8 +133,18 @@ async function main() {
 
     for (const item of prodJson.products) {
       const code = item.product_id;
-      const title = item.name || `Sản phẩm ${code}`;
-      const description = item.description || `Key/Tài khoản ${title} cấp tự động 24/7.`;
+      const baseName = item.name || `Sản phẩm ${code}`;
+      const description = item.description || `Key/Tài khoản ${baseName} cấp tự động 24/7.`;
+
+      // Extract clean package badge (e.g., 700 Request, 10$ Credit)
+      let badge = item.description || "";
+      if (badge.includes("=")) {
+        badge = badge.split("=").pop()?.trim() || badge;
+      }
+      const title = badge && !baseName.toLowerCase().includes(badge.toLowerCase())
+        ? `${baseName} (${badge})`
+        : baseName;
+
       const costPrice = Number(item.walletPricing || 100000);
       const stock = Number(item.available || 0);
 

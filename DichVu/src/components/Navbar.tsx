@@ -81,7 +81,7 @@ export default function Navbar() {
                 Daitruong<span className="text-blue-600">Store</span>
               </span>
               <span className="hidden sm:block text-[10px] font-medium text-slate-500 dark:text-slate-400">
-                Cửa hàng dịch vụ số
+                Nguồn tài nguyên phong phú
               </span>
             </div>
           </Link>
@@ -249,7 +249,7 @@ export default function Navbar() {
           </nav>
           <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            <span>Thanh toán VietQR tự động</span>
+            <span>Thanh toán QR tự động</span>
           </div>
         </div>
       </div>

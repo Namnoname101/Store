@@ -17,16 +17,16 @@ export default function Footer() {
               </span>
             </Link>
             <p className="mt-3 text-xs sm:text-sm text-slate-500 max-w-sm leading-relaxed">
-              Cung cấp tài khoản bản quyền, công cụ AI và dịch vụ số. Nhận thông tin tự động ngay sau khi thanh toán.
+              Nơi cung cấp tài khoản giá rẻ.Uy tín, thanh toán nhanh gọn.
             </p>
             <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5 text-xs text-slate-500">
               <div className="flex items-center gap-1.5">
                 <Mail className="h-3.5 w-3.5 text-slate-400" />
-                <span>support@daitruongstore.vn</span>
+                <span>Dai99133@gmail.com</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Phone className="h-3.5 w-3.5 text-slate-400" />
-                <span>Hotline: 1900 8888</span>
+                <span>Hotline: 0774483215</span>
               </div>
             </div>
           </div>
@@ -85,7 +85,7 @@ export default function Footer() {
 
         <div className="mt-8 border-t border-slate-100 dark:border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400">
           <p>© {new Date().getFullYear()} Daitruong Store. All rights reserved.</p>
-          <p className="mt-2 sm:mt-0">Hỗ trợ thanh toán VietQR chuyển khoản 24/7</p>
+          <p className="mt-2 sm:mt-0">Thanh toán nhanh gọn 24/7 </p>
         </div>
       </div>
     </footer>

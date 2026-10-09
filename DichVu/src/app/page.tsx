@@ -27,12 +27,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
             {/* Headline */}
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-              Tài Khoản & Dịch Vụ Số Bản Quyền
+              Tài khoản & Nguồn tài nguyên giá rẻ
             </h1>
 
             {/* Subtitle */}
             <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl">
-              Cung cấp tài khoản AI, phần mềm bản quyền và dịch vụ mạng xã hội. Nhận thông tin tự động ngay sau khi thanh toán.
+              Cung cấp tài khoản AI, API AI, dịch vụ mạng xã hội . . . . Thanh toán tự động nhanh chóng Uy Tín 24/7.
             </p>
 
             {/* Search Input Box */}
@@ -134,7 +134,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             <div className="flex flex-col items-center text-center p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs">
               <span className="mb-2 text-sm font-bold text-blue-600 dark:text-blue-400">Bước 2</span>
               <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-                Quét mã VietQR
+                Quét mã QR
               </h3>
               <p className="mt-1 text-xs text-slate-500">
                 Mở app ngân hàng quét mã QR có sẵn số tiền và nội dung chuyển khoản chính xác.

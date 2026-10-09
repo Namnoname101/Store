@@ -8,9 +8,9 @@ import CartDrawer from "@/components/CartDrawer";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Daitruong Store - Hệ Thống Dịch Vụ Số & Bản Quyền Tự Động 24/7",
+  title: "Daitruong Store - Hệ Thống cung cấp tài khoản giá rẻ.Uy tín, thanh toán nhanh gọn 24/7.",
   description:
-    "Cung cấp key bản quyền phần mềm, tài khoản AI, Cloud, dịch vụ mạng xã hội và giải trí số. Thanh toán VietQR NAPAS 24/7 nhận hàng tức thì.",
+    "Cung cấp tài khoản AI, API AI, dịch vụ mạng xã hội . . . . Thanh toán tự động nhanh chóng Uy Tín 24/7.",
 };
 
 export default function RootLayout({

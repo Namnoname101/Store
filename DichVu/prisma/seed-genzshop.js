@@ -114,8 +114,13 @@ async function main() {
     console.log(`Found ${prodJson.products.length} products on GenzShop`);
     for (const item of prodJson.products) {
       const code = item.product_id;
-      const title = item.name || `S\u1EA3n ph\u1EA9m ${code}`;
-      const description = item.description || `Key/T\xE0i kho\u1EA3n ${title} c\u1EA5p t\u1EF1 \u0111\u1ED9ng 24/7.`;
+      const baseName = item.name || `S\u1EA3n ph\u1EA9m ${code}`;
+      const description = item.description || `Key/T\xE0i kho\u1EA3n ${baseName} c\u1EA5p t\u1EF1 \u0111\u1ED9ng 24/7.`;
+      let badge = item.description || "";
+      if (badge.includes("=")) {
+        badge = badge.split("=").pop()?.trim() || badge;
+      }
+      const title = badge && !baseName.toLowerCase().includes(badge.toLowerCase()) ? `${baseName} (${badge})` : baseName;
       const costPrice = Number(item.walletPricing || 1e5);
       const stock = Number(item.available || 0);
       const matched = partnerThumbnails.find(

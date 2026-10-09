@@ -63,7 +63,13 @@ else
   echo "[Entrypoint] Warning: scripts/payment-sweep-daemon.js not found. Skipping daemon startup."
 fi
 
-# 4. Start Next.js Standalone Server
+# 4. Sync GenzShop Catalog
+if [ -f prisma/seed-genzshop.js ]; then
+  echo "[Entrypoint] Syncing GenzShop products & thumbnails..."
+  node prisma/seed-genzshop.js || true
+fi
+
+# 5. Start Next.js Standalone Server
 echo "[Entrypoint] Starting Next.js Production Server on port $PORT..."
 node server.js &
 NEXT_PID=$!
