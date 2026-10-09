@@ -2,4 +2,13 @@ node_modules
 .next
 .git
 *.log
-.env.local
+.env*
+backups
+.superpowers
+tests
+docs
+*.db
+*.db*
+*.png
+*.jpg
+*.md
