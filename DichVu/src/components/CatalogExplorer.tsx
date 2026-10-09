@@ -165,25 +165,24 @@ export default function CatalogExplorer({
   return (
     <div id="catalog" className="scroll-mt-24">
       {/* Header with Search and Category Count */}
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-1">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>Kho Dịch Vụ Số & Bản Quyền</span>
-          </div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
-            Khám Phá Dịch Vụ
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Danh mục sản phẩm
           </h2>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Chọn dịch vụ bên dưới hoặc tìm theo từ khóa
+          </p>
         </div>
 
         {/* Live Filter Search Input */}
         <div className="relative w-full sm:w-72 md:w-80">
           <input
             type="text"
-            placeholder="Lọc nhanh trong danh mục..."
+            placeholder="Lọc sản phẩm..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-2.5 pl-10 pr-9 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm"
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-2.5 pl-10 pr-9 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all shadow-xs"
           />
           <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
           {searchQuery && (

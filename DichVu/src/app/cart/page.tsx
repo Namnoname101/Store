@@ -244,10 +244,10 @@ export default function CartPage() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
             <ShoppingBag className="h-7 w-7 text-blue-600 dark:text-blue-400" />
-            <span>Giỏ hàng của bạn</span>
+            <span>Giỏ hàng</span>
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            Kiểm tra các sản phẩm được chọn, cấu hình thông tin và tiến hành thanh toán tự động VietQR.
+            Xem lại các sản phẩm đã chọn và tiến hành thanh toán.
           </p>
         </div>
 
@@ -273,17 +273,17 @@ export default function CartPage() {
             <PackageX className="h-10 w-10" />
           </div>
           <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">
-            Giỏ hàng của bạn đang trống
+            Giỏ hàng trống
           </h2>
           <p className="mx-auto mt-2 max-w-sm text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            Bạn chưa thêm dịch vụ nào vào giỏ. Hãy khám phá kho tài khoản AI, Cloud và tương tác mạng xã hội của chúng tôi.
+            Bạn chưa thêm sản phẩm nào vào giỏ hàng.
           </p>
           <div className="mt-6">
             <Link
               href="/#catalog"
               className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-xs sm:text-sm font-bold text-white hover:bg-blue-700 shadow-md shadow-blue-600/25 transition-all"
             >
-              <span>Xem danh mục dịch vụ</span>
+              <span>Xem danh mục sản phẩm</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -481,7 +481,7 @@ export default function CartPage() {
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <label className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                      Email nhận mã
+                      Email nhận thông tin
                     </label>
                     <span className="text-[10px] text-slate-400 font-medium">Tùy chọn</span>
                   </div>
@@ -497,7 +497,7 @@ export default function CartPage() {
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                   </div>
                   <p className="mt-1 text-[11px] text-slate-400">
-                    Khách vãng lai có thể để trống. Bạn vẫn nhận được mã ngay trên màn hình sau khi quét VietQR.
+                    Không bắt buộc. Bạn vẫn nhận được thông tin trên màn hình sau khi thanh toán.
                   </p>
                 </div>
 
@@ -511,7 +511,7 @@ export default function CartPage() {
                   <div className="relative">
                     <input
                       type="text"
-                      placeholder="Lời nhắn cho nhân viên hoặc cấu hình thêm..."
+                      placeholder="Ghi chú thêm nếu có..."
                       value={customerNote}
                       disabled={isSubmitting}
                       onChange={(e) => setCustomerNote(e.target.value)}
@@ -613,7 +613,7 @@ export default function CartPage() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Đang xác thực và tạo đơn VietQR...</span>
+                    <span>Đang tạo đơn hàng...</span>
                   </>
                 ) : (
                   <>
@@ -623,16 +623,9 @@ export default function CartPage() {
                 )}
               </button>
 
-              {/* Safety Badges */}
-              <div className="pt-2 text-[11px] text-slate-400 space-y-1.5">
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                  <span>Giá và tồn kho xác thực lại tự động 100% phía máy chủ</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5 text-blue-500 shrink-0" />
-                  <span>Khóa tạm giữ kho an toàn trong 15 phút sau khi tạo đơn</span>
-                </div>
+              {/* Order note */}
+              <div className="pt-2 text-[11px] text-slate-400 text-center">
+                <span>Đơn hàng được giữ trong 15 phút để bạn hoàn tất thanh toán.</span>
               </div>
             </form>
           </div>

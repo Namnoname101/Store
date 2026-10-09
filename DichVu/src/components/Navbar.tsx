@@ -80,8 +80,8 @@ export default function Navbar() {
               <span className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">
                 Daitruong<span className="text-blue-600">Store</span>
               </span>
-              <span className="hidden sm:block text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Dịch Vụ Số & Tự Động 24/7
+              <span className="hidden sm:block text-[10px] font-medium text-slate-500 dark:text-slate-400">
+                Cửa hàng dịch vụ số
               </span>
             </div>
           </Link>
@@ -92,7 +92,7 @@ export default function Navbar() {
           <form onSubmit={handleSearch} className="relative w-full">
             <input
               type="text"
-              placeholder="Tìm kiếm dịch vụ AI, Cloud, TikTok, Facebook, YouTube..."
+              placeholder="Tìm kiếm dịch vụ, tài khoản, key bản quyền..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/90 py-2.5 pl-10 pr-20 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 dark:focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all shadow-inner"
@@ -100,7 +100,7 @@ export default function Navbar() {
             <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
             <button
               type="submit"
-              className="absolute right-1.5 top-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors shadow-sm"
+              className="absolute right-1.5 top-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors shadow-xs"
             >
               Tìm kiếm
             </button>
@@ -248,8 +248,8 @@ export default function Navbar() {
             ))}
           </nav>
           <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Hệ thống tự động kích hoạt 24/7 qua VietQR</span>
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            <span>Thanh toán VietQR tự động</span>
           </div>
         </div>
       </div>

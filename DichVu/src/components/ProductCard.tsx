@@ -112,12 +112,12 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
             )}
           </div>
 
-          {/* Real Stock Status (No Fake Data) */}
+          {/* Real Stock Status */}
           <div className="shrink-0">
             {isSMM || stockCount >= 99999 ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Tự động 24/7
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                Có sẵn
               </span>
             ) : inStock ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-blue-500/30 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-blue-700 dark:text-blue-300">

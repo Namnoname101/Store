@@ -230,16 +230,16 @@ export default function CartDrawer() {
                 <PackageX className="h-8 w-8" />
               </div>
               <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                Giỏ hàng của bạn đang trống
+                Giỏ hàng trống
               </h3>
               <p className="mt-1 text-xs text-slate-500 max-w-xs">
-                Hãy lựa chọn các dịch vụ AI, Cloud, tương tác MXH để thêm vào giỏ.
+                Chưa có sản phẩm nào trong giỏ hàng.
               </p>
               <button
                 onClick={closeCart}
                 className="mt-4 rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
               >
-                Khám phá dịch vụ ngay
+                Xem sản phẩm
               </button>
             </div>
           )}
@@ -249,7 +249,7 @@ export default function CartDrawer() {
         {items.length > 0 && (
           <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/60 p-5 space-y-3 shrink-0">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-500">Tạm tính ({selectedCount} mục được chọn):</span>
+              <span className="text-slate-500">Tạm tính ({selectedCount} mục):</span>
               <span className="text-base font-extrabold text-blue-600 dark:text-blue-400">
                 {formatVND(selectedSubtotal)}
               </span>
@@ -261,7 +261,7 @@ export default function CartDrawer() {
                 onClick={closeCart}
                 className="flex h-10 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-750 transition-colors"
               >
-                Xem chi tiết giỏ
+                Xem giỏ hàng
               </Link>
 
               <button
@@ -274,9 +274,8 @@ export default function CartDrawer() {
               </button>
             </div>
 
-            <div className="text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-              <span>Giá và tồn kho được kiểm tra lại chính xác phía máy chủ</span>
+            <div className="text-[11px] text-slate-400 text-center">
+              <span>Đơn hàng được giữ trong 15 phút sau khi tạo đơn</span>
             </div>
           </div>
         )}

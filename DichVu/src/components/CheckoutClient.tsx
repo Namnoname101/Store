@@ -522,11 +522,11 @@ export default function CheckoutClient({
             <AlertCircle className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
             <div>
               <h3 className="text-sm font-bold text-amber-300">
-                Đã ghi nhận thanh toán một phần — Chờ đối soát
+                Thanh toán thiếu số tiền — Chờ đối soát
               </h3>
               <p className="text-xs text-slate-300 mt-1 leading-relaxed">
                 {reconciliationNote ||
-                  "Hệ thống đã nhận được tiền chuyển khoản nhưng chưa đủ tổng giá trị đơn hàng. Giao dịch đang chờ Chủ sở hữu kiểm tra đối soát."}
+                  "Đã nhận được tiền chuyển khoản nhưng chưa đủ số tiền đơn hàng. Vui lòng liên hệ hỗ trợ để được kiểm tra và xử lý."}
               </p>
             </div>
           </div>
@@ -540,11 +540,11 @@ export default function CheckoutClient({
             <AlertCircle className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
             <div>
               <h3 className="text-sm font-bold text-amber-300">
-                Thanh toán sau khi hết hạn 10 phút — Chờ Chủ sở hữu xử lý
+                Thanh toán ngoài thời gian hiệu lực
               </h3>
               <p className="text-xs text-slate-300 mt-1 leading-relaxed">
                 {reconciliationNote ||
-                  "Giao dịch chuyển khoản được ghi nhận sau khi mã QR hết hiệu lực. Chúng tôi đã chuyển thông tin cho Chủ sở hữu để kiểm tra và cấp hàng thủ công cho bạn."}
+                  "Giao dịch chuyển khoản được ghi nhận sau khi mã hết hạn. Đội ngũ hỗ trợ sẽ kiểm tra và cấp hàng thủ công cho bạn."}
               </p>
             </div>
           </div>
@@ -564,15 +564,15 @@ export default function CheckoutClient({
 
               <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 px-3.5 py-1 text-xs font-bold text-indigo-300 mb-3">
                 <Sparkles className="h-3.5 w-3.5" />
-                <span>Đã ghi nhận thanh toán thành công</span>
+                <span>Đã ghi nhận thanh toán</span>
               </div>
 
               <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mb-3">
-                Hệ Thống Đang Cấp Phát Sản Phẩm Tự Động
+                Đang Khởi Tạo Dịch Vụ
               </h2>
 
               <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed mb-6 font-medium">
-                Hệ thống đang cấp phát mã bản quyền / tài khoản tự động cho bạn, vui lòng đợi trong giây lát (khoảng 5-15 giây)...
+                Đơn hàng đã được thanh toán thành công. Hệ thống đang tiến hành xử lý, vui lòng đợi trong giây lát...
               </p>
 
               {/* Animated Progress Bar */}
@@ -673,10 +673,10 @@ export default function CheckoutClient({
                   <span>Thông báo cấp phát sản phẩm</span>
                 </div>
                 <h2 className="text-lg sm:text-xl font-bold text-white mb-2">
-                  Đơn hàng #{order.orderCode} - Đang xử lý hỗ trợ
+                  Đơn hàng #{order.orderCode} - Đang hỗ trợ xử lý
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                  Máy chủ cấp phát mã đang bị quá tải hoặc tạm thời gián đoạn. Chúng tôi cam kết xử lý hoàn tiền tự động hoặc gửi mã qua email cho bạn trong vòng 5-15 phút.
+                  Quá trình cấp phát tự động tạm thời gián đoạn. Bạn có thể gửi thông tin nhận hoàn tiền bên dưới hoặc liên hệ đội ngũ hỗ trợ để được giải quyết nhanh nhất.
                 </p>
               </div>
             </div>
@@ -695,7 +695,7 @@ export default function CheckoutClient({
                   </h3>
                   <p className="text-xs text-emerald-400">
                     {refundSuccessMsg ||
-                      "Yêu cầu hoàn tiền của bạn đã được ghi nhận. Nhân viên CSKH sẽ chuyển khoản lại theo thông tin đã cung cấp."}
+                      "Yêu cầu hoàn tiền của bạn đã được ghi nhận. Đội ngũ hỗ trợ sẽ chuyển khoản lại theo thông tin đã cung cấp."}
                   </p>
                 </div>
               </div>
@@ -728,21 +728,20 @@ export default function CheckoutClient({
               </div>
 
               <p className="mt-4 text-xs text-slate-400 leading-relaxed">
-                Đội ngũ kỹ thuật và CSKH sẽ kiểm tra đối soát và hoàn tiền vào tài khoản trên trong vòng <strong>5-15 phút</strong>. Cảm ơn sự thông cảm của bạn!
+                Đội ngũ hỗ trợ sẽ kiểm tra đối soát và hoàn tiền vào tài khoản trên trong thời gian sớm nhất. Cảm ơn sự thông cảm của bạn!
               </p>
             </div>
           ) : (
             <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-6 sm:p-8 backdrop-blur-md shadow-2xl">
               <div className="mb-6">
                 <h3 className="text-base sm:text-lg font-bold text-white mb-1">
-                  Yêu Cầu Hoàn Tiền Tự Động (100% Số Tiền)
+                  Yêu cầu hoàn tiền
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Vui lòng cung cấp số tài khoản ngân hàng để hệ thống hoàn lại{" "}
+                  Vui lòng cung cấp số tài khoản ngân hàng để nhận lại số tiền{" "}
                   <strong className="text-indigo-400">
                     {formatVND(order.totalAmount)}
-                  </strong>{" "}
-                  ngay lập tức:
+                  </strong>:
                 </p>
               </div>
 

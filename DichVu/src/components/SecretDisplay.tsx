@@ -30,44 +30,40 @@ export function getProductInstructions(type: string): InstructionGuide {
   switch (type) {
     case "LICENSE_KEY":
       return {
-        title: "Hướng dẫn kích hoạt Key Bản Quyền",
+        title: "Hướng dẫn kích hoạt Key bản quyền",
         steps: [
           "Mở ứng dụng hoặc phần Cài đặt (Settings > System > Activation trên Windows / Office).",
-          "Chọn 'Change product key' hoặc 'Nhập khóa sản phẩm'.",
-          "Dán mã kích hoạt đã sao chép ở trên vào ô và chọn 'Next' > 'Activate Online'.",
-          "Khởi động lại máy hoặc ứng dụng nếu có thông báo hoàn tất kích hoạt.",
+          "Chọn 'Nhập khóa sản phẩm' (Change product key).",
+          "Dán mã kích hoạt được cung cấp ở trên để hoàn tất.",
         ],
-        note: "Key bản quyền chỉ dùng kích hoạt cho đúng số lượng thiết bị đăng ký. Không chia sẻ mã công khai.",
+        note: "Mã bản quyền chỉ sử dụng cho số lượng thiết bị theo gói đã mua.",
       };
     case "ACCOUNT":
       return {
-        title: "Hướng dẫn đăng nhập & sử dụng Tài khoản",
+        title: "Hướng dẫn đăng nhập Tài khoản",
         steps: [
-          "Truy cập vào trang chủ hoặc ứng dụng chính thức của dịch vụ.",
-          "Nhập chính xác Email/Tên đăng nhập và Mật khẩu được cấp ở phía trên.",
-          "Nếu có hồ sơ (Profile), vui lòng chọn đúng Profile được phân bổ theo tên hoặc số thứ tự.",
-          "Tận hưởng dịch vụ đã được kích hoạt gói bản quyền sẵn.",
+          "Truy cập ứng dụng hoặc trang chủ của dịch vụ.",
+          "Đăng nhập bằng tài khoản và mật khẩu được cung cấp ở trên.",
+          "Nếu có chỉ định Profile, vui lòng chọn đúng Profile được bàn giao.",
         ],
-        note: "Vui lòng tuyệt đối không tự ý đổi mật khẩu, email khôi phục hoặc phương thức thanh toán để tránh bị khóa tài khoản và mất quyền bảo hành.",
+        note: "Không tự ý thay đổi thông tin tài khoản để đảm bảo quyền lợi bảo hành.",
       };
     case "COURSE_LINK":
       return {
-        title: "Hướng dẫn truy cập Khóa học & Tài liệu số",
+        title: "Thông tin liên kết dịch vụ & Khóa học",
         steps: [
-          "Bấm vào liên kết khóa học hoặc sao chép và dán vào trình duyệt web.",
-          "Đăng nhập tài khoản bằng email bạn đã dùng để đặt mua đơn hàng này.",
-          "Hệ thống khóa học sẽ tự động cấp quyền truy cập vào nội dung video và tài liệu.",
-          "Tải tài nguyên bổ trợ đính kèm để bắt đầu học tập.",
+          "Bấm vào liên kết được cấp ở trên hoặc dán vào trình duyệt web.",
+          "Hệ thống sẽ tự động kích hoạt dịch vụ hoặc điều hướng đến tài nguyên của bạn.",
         ],
-        note: "Liên kết khóa học dành riêng cho bạn, vui lòng không chia sẻ ra bên ngoài để tránh hệ thống tự động khóa truy cập.",
+        note: "Nếu gặp sự cố về liên kết, vui lòng liên hệ đội ngũ hỗ trợ.",
       };
     default:
       return {
-        title: "Hướng dẫn sử dụng & nhận sản phẩm",
+        title: "Hướng dẫn sử dụng",
         steps: [
-          "Sao chép thông tin mã sản phẩm hoặc tài khoản được cấp ở phía trên.",
-          "Làm theo hướng dẫn kèm theo sản phẩm để kích hoạt hoặc đăng nhập.",
-          "Liên hệ đội ngũ hỗ trợ nếu gặp khó khăn trong quá trình sử dụng.",
+          "Sao chép thông tin sản phẩm được cấp ở trên.",
+          "Làm theo hướng dẫn kích hoạt hoặc đăng nhập.",
+          "Liên hệ hỗ trợ nếu cần trợ giúp thêm.",
         ],
       };
   }

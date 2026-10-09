@@ -116,17 +116,12 @@ export default function OrderLookupPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3.5 py-1.5 text-xs font-semibold text-indigo-400 mb-4">
-          <ReceiptText className="h-4 w-4" />
-          <span>Tra Cứu Nhanh 24/7 - Không Cần Đăng Nhập</span>
-        </div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-          Tra Cứu Đơn Hàng & Lấy Lại Key
+      <div className="text-center mb-8">
+        <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          Tra cứu đơn hàng
         </h1>
-        <p className="mt-3 text-sm text-slate-400 max-w-xl mx-auto leading-relaxed">
-          Nhập <strong>Email</strong> hoặc <strong>Mã đơn hàng (ORD...)</strong> để xem lại
-          thông tin bản quyền, tài khoản hoặc link dịch vụ bạn đã mua.
+        <p className="mt-2 text-sm text-slate-400 max-w-lg mx-auto">
+          Nhập <strong>email</strong> hoặc <strong>mã đơn hàng (ORD...)</strong> để kiểm tra trạng thái và xem lại thông tin sản phẩm.
         </p>
       </div>
 
@@ -158,7 +153,7 @@ export default function OrderLookupPage() {
             ) : (
               <>
                 <Search className="h-4 w-4" />
-                <span>Tra cứu ngay</span>
+                <span>Tra cứu</span>
               </>
             )}
           </button>

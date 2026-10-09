@@ -274,23 +274,23 @@ export default function ProductPurchaseBox({
       </div>
 
       {/* Stock status banner */}
-      <div className="mb-6">
+      <div className="mb-5">
         {isCustomQuantity ? (
-          <div className="flex items-center gap-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/30 px-3.5 py-2.5 text-xs font-semibold text-emerald-800 dark:text-emerald-300">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Hệ thống tự động 24/7 (Khởi chạy ngay khi thanh toán)</span>
+          <div className="flex items-center gap-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/30 px-3 py-2 text-xs font-medium text-emerald-800 dark:text-emerald-300">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <span>Dịch vụ tự động — Khởi tạo sau khi thanh toán</span>
           </div>
         ) : inStock ? (
-          <div className="flex items-center gap-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-500/30 px-3.5 py-2.5 text-xs font-semibold text-blue-800 dark:text-blue-300">
+          <div className="flex items-center gap-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-500/30 px-3 py-2 text-xs font-medium text-blue-800 dark:text-blue-300">
             <span className="h-2 w-2 rounded-full bg-blue-500" />
             <span>
-              Sẵn sàng giao hàng ngay (Còn <strong>{stockCount}</strong> sản phẩm khả dụng)
+              Còn <strong>{stockCount}</strong> sản phẩm trong kho
             </span>
           </div>
         ) : (
-          <div className="flex items-center gap-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-500/20 px-3.5 py-2.5 text-xs font-semibold text-rose-700 dark:text-rose-400">
+          <div className="flex items-center gap-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-500/20 px-3 py-2 text-xs font-medium text-rose-700 dark:text-rose-400">
             <span className="h-2 w-2 rounded-full bg-rose-500" />
-            <span>Sản phẩm hiện đang tạm hết hàng trong kho.</span>
+            <span>Tạm hết hàng</span>
           </div>
         )}
       </div>
@@ -456,7 +456,7 @@ export default function ProductPurchaseBox({
               <Globe className="absolute left-3.5 top-3 h-4 w-4 text-blue-600 dark:text-blue-400" />
             </div>
             <p className="mt-1 text-[11px] text-slate-500">
-              Dán chính xác link video TikTok hoặc bài viết/fanpage Facebook cần tăng.
+              Nhập chính xác link cần thực hiện dịch vụ.
             </p>
           </div>
         )}
@@ -468,7 +468,7 @@ export default function ProductPurchaseBox({
               htmlFor="customerEmail"
               className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
             >
-              Email nhận hàng
+              Email nhận thông tin
             </label>
             <span className="text-[10px] text-slate-400 font-medium">Tùy chọn</span>
           </div>
@@ -485,7 +485,7 @@ export default function ProductPurchaseBox({
             <Mail className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
           </div>
           <p className="mt-1 text-[11px] text-slate-500">
-            Khách vãng lai có thể để trống. Bạn vẫn nhận được mã kích hoạt ngay sau khi thanh toán VietQR.
+            Không bắt buộc. Bạn vẫn nhận được thông tin trên màn hình sau khi thanh toán.
           </p>
         </div>
 
@@ -495,14 +495,14 @@ export default function ProductPurchaseBox({
             htmlFor="couponCode"
             className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
           >
-            Mã giảm giá (Nếu có)
+            Mã giảm giá
           </label>
           <div className="flex gap-2">
             <div className="relative flex-1">
               <input
                 id="couponCode"
                 type="text"
-                placeholder="Nhập mã ưu đãi..."
+                placeholder="Nhập mã giảm giá..."
                 value={couponCode}
                 disabled={isLoading || !inStock || appliedCoupon !== null}
                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
@@ -574,7 +574,7 @@ export default function ProductPurchaseBox({
                 type="button"
                 onClick={handleAddToCart}
                 disabled={isLoading}
-                className="flex-1 flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-sm font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-all active:scale-[0.99] shadow-xs"
+                className="flex-1 flex min-h-[46px] items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 px-4 text-sm font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-all active:scale-[0.99] shadow-2xs"
               >
                 <ShoppingBag className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 <span>Thêm vào giỏ</span>
@@ -583,7 +583,7 @@ export default function ProductPurchaseBox({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 px-5 text-sm font-bold text-white shadow-md shadow-blue-600/25 hover:bg-blue-700 disabled:opacity-60 transition-all active:scale-[0.99]"
+                className="flex-1 flex min-h-[46px] items-center justify-center gap-2 rounded-xl bg-blue-600 py-2.5 px-5 text-sm font-bold text-white shadow-md shadow-blue-600/20 hover:bg-blue-700 disabled:opacity-60 transition-all active:scale-[0.99]"
               >
                 {isLoading ? (
                   <>
@@ -591,10 +591,7 @@ export default function ProductPurchaseBox({
                     <span>Đang tạo đơn...</span>
                   </>
                 ) : (
-                  <>
-                    <Zap className="h-4 w-4 fill-white" />
-                    <span>MUA NGAY</span>
-                  </>
+                  <span>Mua ngay</span>
                 )}
               </button>
             </div>
@@ -602,27 +599,23 @@ export default function ProductPurchaseBox({
             <button
               type="button"
               disabled
-              className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 py-3.5 px-6 text-sm font-semibold text-slate-400 dark:text-slate-500 cursor-not-allowed"
+              className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 py-3 px-6 text-sm font-semibold text-slate-400 dark:text-slate-500 cursor-not-allowed"
             >
-              Hết Hàng Tạm Thời
+              Tạm hết hàng
             </button>
           )}
         </div>
       </form>
 
-      {/* Guarantees info */}
-      <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 space-y-2 text-xs text-slate-500 dark:text-slate-400">
+      {/* Basic product notes */}
+      <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-1.5 text-xs text-slate-500 dark:text-slate-400">
         <div className="flex items-center gap-2">
-          <Clock className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
-          <span>Giao hàng tức thì qua VietQR NAPAS 24/7 (30s)</span>
+          <Clock className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+          <span>Thanh toán quét mã VietQR nhận thông tin tự động</span>
         </div>
         <div className="flex items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" />
-          <span>Bảo hành 1-đổi-1 hoặc hoàn tiền nếu sản phẩm có lỗi</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4 text-blue-500 shrink-0" />
-          <span>Tạm giữ kho chống bán trùng tự động 15 phút</span>
+          <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+          <span>Hỗ trợ kỹ thuật và bảo hành theo thời hạn gói</span>
         </div>
       </div>
     </div>

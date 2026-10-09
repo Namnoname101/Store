@@ -354,22 +354,22 @@ export default function QuickViewModal({
                 )}
               </div>
 
-              {/* Real stock indicator */}
+              {/* Stock indicator */}
               <div className="mt-2">
                 {isSMM || product.stockCount >= 99999 ? (
                   <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    Tự động 24/7 (Sẵn sàng khởi chạy)
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    Có sẵn
                   </span>
                 ) : inStock ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    Còn {product.stockCount} sản phẩm khả dụng
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 dark:text-blue-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                    Còn {product.stockCount} sản phẩm
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1.5 text-xs font-medium text-rose-600 dark:text-rose-400">
                     <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
-                    Tạm hết hàng trong kho
+                    Tạm hết hàng
                   </span>
                 )}
               </div>
@@ -480,7 +480,7 @@ export default function QuickViewModal({
                   <input
                     type="url"
                     required
-                    placeholder="https://www.tiktok.com/@... hoặc link bài viết FB"
+                    placeholder="Nhập link video hoặc bài viết..."
                     value={targetLink}
                     disabled={isLoading || !inStock}
                     onChange={(e) => setTargetLink(e.target.value)}
@@ -495,7 +495,7 @@ export default function QuickViewModal({
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                  Email nhận hàng
+                  Email nhận thông tin
                 </label>
                 <span className="text-[10px] text-slate-400 font-medium">Tùy chọn</span>
               </div>
@@ -511,7 +511,7 @@ export default function QuickViewModal({
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
               </div>
               <p className="mt-1 text-[11px] text-slate-400">
-                Để trống nếu bạn muốn nhận mã trực tiếp trên màn hình sau thanh toán.
+                Không bắt buộc. Bạn vẫn nhận được thông tin trên màn hình sau khi thanh toán.
               </p>
             </div>
 
@@ -605,7 +605,7 @@ export default function QuickViewModal({
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 px-4 text-xs sm:text-sm font-bold text-white hover:bg-blue-700 shadow-md shadow-blue-600/25 disabled:opacity-60 transition-all active:scale-[0.99]"
+                    className="flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 px-4 text-xs sm:text-sm font-bold text-white hover:bg-blue-700 shadow-md shadow-blue-600/20 disabled:opacity-60 transition-all active:scale-[0.99]"
                   >
                     {isLoading ? (
                       <>
@@ -613,10 +613,7 @@ export default function QuickViewModal({
                         <span>Đang tạo đơn...</span>
                       </>
                     ) : (
-                      <>
-                        <Zap className="h-4 w-4 fill-white" />
-                        <span>Mua ngay - {formatVND(netTotal)}</span>
-                      </>
+                      <span>Mua ngay ({formatVND(netTotal)})</span>
                     )}
                   </button>
                 </div>
