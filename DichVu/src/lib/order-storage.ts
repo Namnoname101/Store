@@ -1,6 +1,6 @@
 export interface SavedOrder {
   orderCode: string;
-  accessToken?: string;
+  accessToken?: string | null;
   totalAmount: number;
   customerEmail?: string | null;
   createdAt: string;

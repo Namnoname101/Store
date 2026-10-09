@@ -58,7 +58,7 @@ describe("Phase 3B Schema Extension Verification", () => {
     });
 
     expect(order.accessToken).toBeDefined();
-    expect(order.accessToken.length).toBeGreaterThan(10);
+    expect(order.accessToken!.length).toBeGreaterThan(10);
     expect(order.reconciliationStatus).toBe("MATCHED");
     expect(order.orderItems[0].targetLink).toBe("https://tiktok.com/@testuser");
     expect(order.orderItems[0].customerNote).toBe("Cần tăng view nhanh");

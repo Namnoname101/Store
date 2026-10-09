@@ -32,7 +32,7 @@ describe("Dropshipping Customer Flow & White-Label Refund Request", () => {
       },
     });
     testOrderId = order.id;
-    testAccessToken = order.accessToken;
+    testAccessToken = order.accessToken!;
   });
 
   afterAll(async () => {

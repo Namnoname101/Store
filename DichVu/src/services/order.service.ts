@@ -36,7 +36,7 @@ export interface CreateOrderInput {
 export interface OrderDetailsResponse {
   id: string;
   orderCode: string;
-  accessToken?: string;
+  accessToken?: string | null;
   customerEmail?: string | null;
   customerNote?: string | null;
   userId?: string | null;

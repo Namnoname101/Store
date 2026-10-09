@@ -111,7 +111,7 @@ describe("Task 6: Database Migration & Schema Verification Suite", () => {
       expect(order.totalAmount).toBeGreaterThan(0);
       expect(["PENDING", "PAID", "CANCELLED", "EXPIRED"]).toContain(order.status);
       expect(order.accessToken).toBeDefined();
-      expect(order.accessToken.length).toBeGreaterThan(10);
+      expect(order.accessToken!.length).toBeGreaterThan(10);
     }
 
     if (tempOrderId) {
