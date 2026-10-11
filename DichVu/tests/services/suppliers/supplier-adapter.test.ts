@@ -531,5 +531,26 @@ describe("Supplier Adapter Engine", () => {
       expect(info.price).toBe(14567);
       expect(info.inStock).toBeGreaterThan(0);
     });
+
+    it("fetchProductInfo returns correct product structure for shopxoainon_bot", async () => {
+      const adapter = getSupplierAdapter(SupplierType.TELEGRAM_BOT);
+      const infoGemini = await adapter.fetchProductInfo(
+        { baseUrl: "@shopxoainon_bot", apiKey: "test" },
+        "51"
+      );
+      expect(infoGemini.supplierProductCode).toBe("51");
+      expect(infoGemini.name).toContain("Gemini Pro");
+      expect(infoGemini.price).toBe(13800);
+      expect(infoGemini.inStock).toBe(68);
+
+      const infoDuo = await adapter.fetchProductInfo(
+        { baseUrl: "shopxoainon_bot", apiKey: "test" },
+        "60"
+      );
+      expect(infoDuo.supplierProductCode).toBe("60");
+      expect(infoDuo.name).toContain("Duolingo Super");
+      expect(infoDuo.price).toBe(19800);
+      expect(infoDuo.inStock).toBe(2);
+    });
   });
 });

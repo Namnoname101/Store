@@ -150,35 +150,100 @@ export async function fulfillOrderViaUpstream(
       order.customerNote ||
       undefined;
 
+    // 1. Gather all candidate suppliers for this product
+    interface CandidateSupplier {
+      supplier: {
+        id: string;
+        name: string;
+        code: string;
+        type: string;
+        baseUrl: string;
+        apiKey: string;
+        apiSecret: string | null;
+        isActive: boolean;
+      };
+      supplierProductCode: string;
+      supplierPrice: number;
+    }
+
+    const candidates: CandidateSupplier[] = [];
+
+    // Primary mapping supplier
+    candidates.push({
+      supplier: mapping.supplier,
+      supplierProductCode: mapping.supplierProductCode,
+      supplierPrice: mapping.supplierPrice,
+    });
+
+    // Check customConfig for alternative suppliers
+    if (mapping.customConfig) {
+      try {
+        const parsed = JSON.parse(mapping.customConfig);
+        if (Array.isArray(parsed.alternativeSuppliers)) {
+          for (const alt of parsed.alternativeSuppliers) {
+            const altSupplier = await prisma.supplier.findFirst({
+              where: {
+                OR: [
+                  { code: alt.supplierCode },
+                  { id: alt.supplierId },
+                ],
+                isActive: true,
+              },
+            });
+            if (altSupplier) {
+              candidates.push({
+                supplier: altSupplier,
+                supplierProductCode: alt.supplierProductCode,
+                supplierPrice: alt.supplierPrice || alt.lastPrice || 999999999,
+              });
+            }
+          }
+        }
+      } catch (e) {
+        // Ignore customConfig parse errors
+      }
+    }
+
+    // 2. Sort candidates by supplierPrice ascending (Best-Price Routing: cheapest first)
+    candidates.sort((a, b) => a.supplierPrice - b.supplierPrice);
+
     let purchaseResult: any = null;
     let lastError: string | null = null;
-    const adapter = getSupplierAdapter(mapping.supplier.type);
 
-    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-      try {
-        purchaseResult = await adapter.buyProduct(
-          {
-            baseUrl: mapping.supplier.baseUrl,
-            apiKey: mapping.supplier.apiKey,
-            apiSecret: mapping.supplier.apiSecret,
-          },
-          mapping.supplierProductCode,
-          quantityNeeded,
-          `${order.orderCode}_${item.id.slice(-4)}_${attempt}`,
-          {
-            link: targetLink,
-            customerNote: (item as any).customerNote || order.customerNote || undefined,
+    // 3. Try candidates in order from cheapest to most expensive
+    for (const candidate of candidates) {
+      const adapter = getSupplierAdapter(candidate.supplier.type);
+
+      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+          purchaseResult = await adapter.buyProduct(
+            {
+              baseUrl: candidate.supplier.baseUrl,
+              apiKey: candidate.supplier.apiKey,
+              apiSecret: candidate.supplier.apiSecret,
+            },
+            candidate.supplierProductCode,
+            quantityNeeded,
+            `${order.orderCode}_${item.id.slice(-4)}_${attempt}`,
+            {
+              link: targetLink,
+              customerNote: (item as any).customerNote || order.customerNote || undefined,
+            }
+          );
+
+          if (purchaseResult && purchaseResult.success) {
+            lastError = null;
+            break;
           }
-        );
 
-        if (purchaseResult && purchaseResult.success) {
-          lastError = null;
-          break;
+          lastError = purchaseResult?.error || "Giao dịch không thành công";
+        } catch (err: any) {
+          lastError = err?.message || "Lỗi kết nối máy chủ cấp phát";
         }
+      }
 
-        lastError = purchaseResult?.error || "Giao dịch không thành công";
-      } catch (err: any) {
-        lastError = err?.message || "Lỗi kết nối máy chủ cấp phát";
+      if (purchaseResult && purchaseResult.success) {
+        break;
       }
     }
 

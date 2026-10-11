@@ -1,35 +1,43 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function main() {
   const orders = await prisma.order.findMany({
     take: 5,
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
     include: {
       orderItems: {
-        include: { product: true }
+        include: { product: true },
       },
-      deliveredItems: true
-    }
+      deliveredItems: true,
+    },
   });
 
-  console.log("=== RECENT ORDERS ===");
-  for (const o of orders) {
-    console.log(`Order: ${o.orderCode} | Status: ${o.status} | UpstreamStatus: ${o.upstreamStatus} | Total: ${o.totalAmount} | UpstreamError: ${o.upstreamError}`);
-    console.log(`CustomerNote: ${o.customerNote}`);
-    for (const item of o.orderItems) {
-      console.log(`  Item: ${item.product.title} (x${item.quantity}) - Price: ${item.price}`);
-    }
-  }
-
-  const deposits = await prisma.deposit.findMany({
-    take: 5,
-    orderBy: { createdAt: 'desc' }
-  });
-  console.log("=== RECENT DEPOSITS ===");
-  for (const d of deposits) {
-    console.log(`Deposit: ${d.depositCode} | Status: ${d.status} | Amount: ${d.amount}`);
-  }
+  console.log(
+    JSON.stringify(
+      orders.map((o) => ({
+        orderCode: o.orderCode,
+        status: o.status,
+        upstreamStatus: o.upstreamStatus,
+        upstreamOrderId: o.upstreamOrderId,
+        upstreamError: o.upstreamError,
+        createdAt: o.createdAt,
+        items: o.orderItems.map((i) => ({
+          title: i.product?.title,
+          slug: i.product?.slug,
+          qty: i.quantity,
+        })),
+        delivered: o.deliveredItems.map((pi) => ({
+          secretContent: pi.secretContent,
+          status: pi.status,
+        })),
+      })),
+      null,
+      2
+    )
+  );
 }
 
-main().catch(console.error).finally(() => prisma.$disconnect());
+main()
+  .catch(console.error)
+  .finally(() => prisma.$disconnect());

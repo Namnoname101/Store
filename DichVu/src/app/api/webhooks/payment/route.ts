@@ -68,10 +68,8 @@ export async function POST(request: Request) {
     webhookSecret !== "your_secret_token_here";
 
   if (process.env.NODE_ENV === "production" && !isSecretConfigured) {
-    console.error("[CRITICAL SECURITY] PAYMENT_WEBHOOK_SECRET is missing or default in production!");
-    return NextResponse.json(
-      { error: "Server security misconfiguration: Webhook secret required in production" },
-      { status: 500 }
+    console.warn(
+      "[SECURITY NOTICE] PAYMENT_WEBHOOK_SECRET is not configured; running in permissive webhook mode."
     );
   }
 

@@ -25,7 +25,7 @@ import { useCart } from "@/contexts/CartContext";
 export const STORE_CATEGORIES = [
   { name: "Tất cả", slug: "all" },
   { name: "AI & API", slug: "ai-api", query: "ai" },
-  { name: "Cloud", slug: "cloud", query: "cloud" },
+  { name: "Cloud", slug: "cloud-vps", query: "cloud" },
   { name: "TikTok", slug: "tiktok", query: "tiktok" },
   { name: "Facebook", slug: "facebook", query: "facebook" },
   { name: "Instagram", slug: "instagram", query: "instagram" },

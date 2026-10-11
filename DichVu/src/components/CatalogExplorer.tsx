@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import ProductCard, { ProductCardProps } from "@/components/ProductCard";
 import GroupedProductCard from "@/components/GroupedProductCard";
-import { processSectionProducts } from "@/lib/catalog-grouping";
+import { processSectionProducts, isApiProduct } from "@/lib/catalog-grouping";
 import QuickViewModal from "@/components/QuickViewModal";
 import type { CategoryWithProducts } from "@/services/catalog.service";
 import type { Category } from "@prisma/client";
@@ -43,8 +43,8 @@ interface SectionDefinition {
 const SECTION_DEFINITIONS: SectionDefinition[] = [
   {
     id: "ai-api",
-    title: "Công cụ & API Trí Tuệ Nhân Tạo",
-    shortLabel: "AI & API",
+    title: "Key & API Trí Tuệ Nhân Tạo (Cursor, Claude, Gemini, DeepSeek...)",
+    shortLabel: "API AI",
     icon: Sparkles,
     iconBg: "bg-pink-50 dark:bg-pink-950/40 border border-pink-200/70 dark:border-pink-900/50",
     iconColor: "text-pink-600 dark:text-pink-400",
@@ -52,33 +52,110 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     categorySlugs: [
       "ai-api",
       "ai-api-keys",
+    ],
+    keywords: [
+      "api cursor",
+      "api claude",
+      "api gemini",
+      "api deepseek",
+      "api grok",
+      "api kimi",
+      "api codex",
+      "api glm",
+      "api zhipu",
+      "api kiro",
+    ],
+  },
+  {
+    id: "tai-khoan-ai",
+    title: "Tài Khoản AI & Trí Tuệ Nhân Tạo (ChatGPT, Gemini Pro...)",
+    shortLabel: "Tài khoản AI",
+    icon: Sparkles,
+    iconBg: "bg-purple-50 dark:bg-purple-950/40 border border-purple-200/70 dark:border-purple-900/50",
+    iconColor: "text-purple-600 dark:text-purple-400",
+    activeRing: "ring-purple-500/30",
+    categorySlugs: [
       "ai-tool",
       "ai-cong-nghe",
       "tai-khoan-ai",
     ],
     keywords: [
-      "cursor",
-      "claude",
-      "gemini",
-      "gpt",
       "chatgpt",
-      "deepseek",
-      "grok",
-      "kimi",
-      "zhipu",
-      "glm",
-      "codex",
-      "kiro",
-      "copilot",
+      "gpt-4",
+      "gemini pro",
+      "gemini advanced",
+      "claude pro",
       "midjourney",
       "poe",
       "suno",
       "runway",
+      "copilot pro",
+    ],
+  },
+  {
+    id: "ban-quyen",
+    title: "Phần Mềm & Bản Quyền Ứng Dụng (CapCut, Canva, Office...)",
+    shortLabel: "Bản quyền",
+    icon: KeyRound,
+    iconBg: "bg-amber-50 dark:bg-amber-950/40 border border-amber-200/70 dark:border-amber-900/50",
+    iconColor: "text-amber-600 dark:text-amber-400",
+    activeRing: "ring-amber-500/30",
+    categorySlugs: [
+      "software",
+      "hoc-tap-phan-mem",
+      "phan-mem-ban-quyen",
+      "giai-tri",
+      "ban-quyen",
+    ],
+    keywords: [
+      "capcut",
+      "canva",
+      "office",
+      "windows",
+      "adobe",
+      "duolingo",
+      "vpn",
+      "nordvpn",
+      "netflix",
+      "spotify",
+      "youtube",
+      "elsa",
+      "khóa học",
+    ],
+  },
+  {
+    id: "mxh",
+    title: "Dịch Vụ Tương Tác Mạng Xã Hội (TikTok, Facebook...)",
+    shortLabel: "Mạng xã hội",
+    icon: Share2,
+    iconBg: "bg-blue-50 dark:bg-blue-950/40 border border-blue-200/70 dark:border-blue-900/50",
+    iconColor: "text-blue-600 dark:text-blue-400",
+    activeRing: "ring-blue-500/30",
+    categorySlugs: [
+      "dich-vu-mxh",
+      "mang-xa-hoi",
+      "mxh",
+    ],
+    keywords: [
+      "tiktok",
+      "douyin",
+      "facebook",
+      "fb",
+      "instagram",
+      "ig",
+      "youtube",
+      "follower",
+      "follow",
+      "tăng tim",
+      "like",
+      "view",
+      "buff",
+      "sub",
     ],
   },
   {
     id: "cloud-vps",
-    title: "Hạ tầng Cloud & VPS",
+    title: "Hạ Tầng Cloud & VPS",
     shortLabel: "Cloud VPS",
     icon: Cloud,
     iconBg: "bg-sky-50 dark:bg-sky-950/40 border border-sky-200/70 dark:border-sky-900/50",
@@ -102,74 +179,9 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     ],
   },
   {
-    id: "mxh",
-    title: "Dịch vụ Tương tác Mạng Xã Hội",
-    shortLabel: "Mạng xã hội",
-    icon: Share2,
-    iconBg: "bg-blue-50 dark:bg-blue-950/40 border border-blue-200/70 dark:border-blue-900/50",
-    iconColor: "text-blue-600 dark:text-blue-400",
-    activeRing: "ring-blue-500/30",
-    categorySlugs: [
-      "dich-vu-mxh",
-      "mang-xa-hoi",
-      "mxh",
-    ],
-    keywords: [
-      "tiktok",
-      "douyin",
-      "facebook",
-      "fb",
-      "instagram",
-      "ig",
-      "youtube",
-      "yt",
-      "follower",
-      "follow",
-      "tăng tim",
-      "like",
-      "view",
-      "buff",
-      "sub",
-      "telegram",
-      "twitter",
-    ],
-  },
-  {
-    id: "ban-quyen",
-    title: "Tài khoản & Key Bản Quyền",
-    shortLabel: "Bản quyền",
-    icon: KeyRound,
-    iconBg: "bg-amber-50 dark:bg-amber-950/40 border border-amber-200/70 dark:border-amber-900/50",
-    iconColor: "text-amber-600 dark:text-amber-400",
-    activeRing: "ring-amber-500/30",
-    categorySlugs: [
-      "hoc-tap-phan-mem",
-      "phan-mem-ban-quyen",
-      "giai-tri",
-      "ban-quyen",
-    ],
-    keywords: [
-      "office",
-      "windows",
-      "key",
-      "vpn",
-      "canva",
-      "netflix",
-      "adobe",
-      "spotify",
-      "youtube premium",
-      "elsa",
-      "duolingo",
-      "bản quyền",
-      "ban quyen",
-      "khóa học",
-      "course",
-    ],
-  },
-  {
     id: "khac",
-    title: "Dịch vụ & Tiện ích Khác",
-    shortLabel: "Dịch vụ khác",
+    title: "Dịch Vụ & Tiện Ích Khác",
+    shortLabel: "Khác",
     icon: Layers,
     iconBg: "bg-slate-100 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700/50",
     iconColor: "text-slate-600 dark:text-slate-400",
@@ -290,6 +302,17 @@ export default function CatalogExplorer({
       // 3. Special fallback: if product type is LICENSE_KEY, group into ban-quyen if not already classified
       if (assignedSectionId === "khac" && product.type === "LICENSE_KEY") {
         assignedSectionId = "ban-quyen";
+      }
+
+      // 4. Strict safety overrides:
+      // A. CapCut is video editing software, always place in ban-quyen
+      if (titleLower.includes("capcut")) {
+        assignedSectionId = "ban-quyen";
+      }
+
+      // B. If a product ended up in ai-api but is not an API product (e.g. Gemini 18 Tháng, ChatGPT Plus account), route to tai-khoan-ai
+      if (assignedSectionId === "ai-api" && !isApiProduct(product)) {
+        assignedSectionId = "tai-khoan-ai";
       }
 
       map.get(assignedSectionId)?.push(product);

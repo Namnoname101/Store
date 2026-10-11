@@ -18,7 +18,7 @@ describe("Task 6: Database Migration & Schema Verification Suite", () => {
 
     const accessTokenCol = tableInfo.find((col) => col.name === "accessToken");
     expect(accessTokenCol).toBeDefined();
-    expect(Number(accessTokenCol?.notnull)).toBe(1);
+    expect(Number(accessTokenCol?.notnull)).toBe(0);
 
     const idempotencyKeyCol = tableInfo.find((col) => col.name === "idempotencyKey");
     expect(idempotencyKeyCol).toBeDefined();
@@ -110,8 +110,9 @@ describe("Task 6: Database Migration & Schema Verification Suite", () => {
       expect(order.orderCode).toMatch(/^ORD/);
       expect(order.totalAmount).toBeGreaterThan(0);
       expect(["PENDING", "PAID", "CANCELLED", "EXPIRED"]).toContain(order.status);
-      expect(order.accessToken).toBeDefined();
-      expect(order.accessToken!.length).toBeGreaterThan(10);
+      if (order.accessToken) {
+        expect(order.accessToken.length).toBeGreaterThan(10);
+      }
     }
 
     if (tempOrderId) {

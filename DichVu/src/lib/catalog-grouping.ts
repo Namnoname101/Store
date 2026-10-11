@@ -26,6 +26,58 @@ export const BRAND_DEFINITIONS: BrandDef[] = [
   { key: "facebook", name: "Facebook", keywords: ["facebook", "fb"] },
 ];
 
+export function isApiProduct(product: any): boolean {
+  const title = (product.title || "").toLowerCase();
+  const desc = (product.description || "").toLowerCase();
+  const catSlug = (product.category?.slug || "").toLowerCase();
+
+  // If product is in a dedicated account/software category
+  if (
+    catSlug === "ai-tool" ||
+    catSlug === "software" ||
+    catSlug === "hoc-tap-phan-mem" ||
+    catSlug === "dich-vu-mxh"
+  ) {
+    if (!title.startsWith("api ") && !title.includes("key api")) {
+      return false;
+    }
+  }
+
+  // Common duration and personal account phrases
+  const hasAccountMarker =
+    title.includes("18 tháng") ||
+    title.includes("2 năm") ||
+    title.includes("1 năm") ||
+    title.includes("k12") ||
+    title.includes("chính chủ") ||
+    title.includes("full date") ||
+    (title.includes("tài khoản") && !title.includes("api"));
+
+  if (hasAccountMarker) {
+    if (title.startsWith("api cursor") || title.includes("cursor ai api")) {
+      return true;
+    }
+    return false;
+  }
+
+  if (
+    title.startsWith("api ") ||
+    title.includes("api ") ||
+    title.includes("key api") ||
+    title.includes("credit") ||
+    title.includes("request") ||
+    desc.includes("credit")
+  ) {
+    return true;
+  }
+
+  if (catSlug === "ai-api" || catSlug === "ai-api-keys") {
+    return true;
+  }
+
+  return false;
+}
+
 export function extractVariantLabel(title: string, description: string = ""): string {
   const combined = `${title} ${description}`;
 
@@ -102,8 +154,17 @@ export function processSectionProducts(
     }
   });
 
-  // 1. Tag each product with brand
+  // 1. Tag each product with brand ONLY if it is an actual API product
   const tagged = uniqueProducts.map((p) => {
+    const isApi = isApiProduct(p);
+    if (!isApi) {
+      return {
+        product: p,
+        brand: null,
+        variantLabel: extractVariantLabel(p.title, p.description),
+      };
+    }
+
     const titleLower = p.title.toLowerCase();
     const descLower = (p.description || "").toLowerCase();
     const slugLower = p.slug.toLowerCase();
