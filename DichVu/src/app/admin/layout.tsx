@@ -106,7 +106,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   ];
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-[#0b0f19] text-slate-100 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[#0b0f19] text-slate-100 flex flex-col md:flex-row">
       {/* Mobile Bar */}
       <div className="md:hidden flex items-center justify-between border-b border-slate-800 bg-slate-900/90 px-4 py-3">
         <div className="flex items-center gap-2">

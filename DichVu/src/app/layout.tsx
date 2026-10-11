@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import FloatingSupport from "@/components/FloatingSupport";
+import StorefrontShell from "@/components/StorefrontShell";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { CartProvider } from "@/contexts/CartContext";
-import CartDrawer from "@/components/CartDrawer";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -32,11 +29,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <CartProvider>
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <CartDrawer />
-            <FloatingSupport />
+            <StorefrontShell>{children}</StorefrontShell>
           </CartProvider>
         </ThemeProvider>
       </body>
