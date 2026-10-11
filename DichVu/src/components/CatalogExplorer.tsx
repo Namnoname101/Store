@@ -15,6 +15,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import ProductCard, { ProductCardProps } from "@/components/ProductCard";
+import GroupedProductCard from "@/components/GroupedProductCard";
+import { processSectionProducts } from "@/lib/catalog-grouping";
 import QuickViewModal from "@/components/QuickViewModal";
 import type { CategoryWithProducts } from "@/services/catalog.service";
 import type { Category } from "@prisma/client";
@@ -34,6 +36,7 @@ interface SectionDefinition {
   iconBg: string;
   iconColor: string;
   activeRing: string;
+  categorySlugs: string[];
   keywords: string[];
 }
 
@@ -46,9 +49,14 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     iconBg: "bg-pink-50 dark:bg-pink-950/40 border border-pink-200/70 dark:border-pink-900/50",
     iconColor: "text-pink-600 dark:text-pink-400",
     activeRing: "ring-pink-500/30",
+    categorySlugs: [
+      "ai-api",
+      "ai-api-keys",
+      "ai-tool",
+      "ai-cong-nghe",
+      "tai-khoan-ai",
+    ],
     keywords: [
-      "ai",
-      "api",
       "cursor",
       "claude",
       "gemini",
@@ -76,13 +84,17 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     iconBg: "bg-sky-50 dark:bg-sky-950/40 border border-sky-200/70 dark:border-sky-900/50",
     iconColor: "text-sky-600 dark:text-sky-400",
     activeRing: "ring-sky-500/30",
-    keywords: [
+    categorySlugs: [
+      "cloud-vps",
+      "may-chu",
+      "hosting",
       "cloud",
+    ],
+    keywords: [
       "vps",
       "server",
       "aws",
       "azure",
-      "drive",
       "onedrive",
       "hosting",
       "domain",
@@ -97,6 +109,11 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     iconBg: "bg-blue-50 dark:bg-blue-950/40 border border-blue-200/70 dark:border-blue-900/50",
     iconColor: "text-blue-600 dark:text-blue-400",
     activeRing: "ring-blue-500/30",
+    categorySlugs: [
+      "dich-vu-mxh",
+      "mang-xa-hoi",
+      "mxh",
+    ],
     keywords: [
       "tiktok",
       "douyin",
@@ -106,14 +123,14 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
       "ig",
       "youtube",
       "yt",
+      "follower",
       "follow",
+      "tăng tim",
       "like",
       "view",
       "buff",
       "sub",
-      "mxh",
       "telegram",
-      "x.com",
       "twitter",
     ],
   },
@@ -125,6 +142,12 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     iconBg: "bg-amber-50 dark:bg-amber-950/40 border border-amber-200/70 dark:border-amber-900/50",
     iconColor: "text-amber-600 dark:text-amber-400",
     activeRing: "ring-amber-500/30",
+    categorySlugs: [
+      "hoc-tap-phan-mem",
+      "phan-mem-ban-quyen",
+      "giai-tri",
+      "ban-quyen",
+    ],
     keywords: [
       "office",
       "windows",
@@ -151,6 +174,7 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     iconBg: "bg-slate-100 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700/50",
     iconColor: "text-slate-600 dark:text-slate-400",
     activeRing: "ring-slate-500/30",
+    categorySlugs: [],
     keywords: [],
   },
 ];
@@ -169,6 +193,7 @@ export default function CatalogExplorer({
   const [activeSectionId, setActiveSectionId] = useState<string>(SECTION_DEFINITIONS[0].id);
   const [quickViewProduct, setQuickViewProduct] = useState<ProductCardProps["product"] | null>(null);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState<boolean>(false);
+  const [selectedSubBrands, setSelectedSubBrands] = useState<Record<string, string>>({});
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -180,9 +205,13 @@ export default function CatalogExplorer({
 
     const urlCategory = searchParams.get("category");
     if (urlCategory) {
+      const target = urlCategory.toLowerCase();
       // Find matching section and scroll to it
       const matched = SECTION_DEFINITIONS.find(
-        (s) => s.id === urlCategory || s.keywords.includes(urlCategory.toLowerCase())
+        (s) =>
+          s.id === target ||
+          s.categorySlugs.includes(target) ||
+          s.keywords.some((kw) => kw === target || target.includes(kw) || kw.includes(target))
       );
       if (matched) {
         setTimeout(() => {
@@ -228,28 +257,37 @@ export default function CatalogExplorer({
 
     filtered.forEach((product) => {
       const titleLower = product.title.toLowerCase();
-      const descLower = product.description.toLowerCase();
       const catSlug = product.category?.slug.toLowerCase() || "";
       const catName = product.category?.name.toLowerCase() || "";
 
       let assignedSectionId = "khac";
 
+      // 1. Primary: match by product category slug from DB
       for (const section of SECTION_DEFINITIONS) {
         if (section.id === "khac") continue;
-        const matches = section.keywords.some(
-          (kw) =>
-            titleLower.includes(kw) ||
-            descLower.includes(kw) ||
-            catSlug.includes(kw) ||
-            catName.includes(kw)
-        );
-        if (matches) {
+        if (section.categorySlugs.includes(catSlug)) {
           assignedSectionId = section.id;
           break;
         }
       }
 
-      // Special fallback: if product type is LICENSE_KEY, group into ban-quyen if not already classified
+      // 2. Secondary fallback: match keywords in title or category name if not classified by slug
+      if (assignedSectionId === "khac") {
+        for (const section of SECTION_DEFINITIONS) {
+          if (section.id === "khac") continue;
+          const matches = section.keywords.some(
+            (kw) =>
+              titleLower.includes(kw) ||
+              catName.includes(kw)
+          );
+          if (matches) {
+            assignedSectionId = section.id;
+            break;
+          }
+        }
+      }
+
+      // 3. Special fallback: if product type is LICENSE_KEY, group into ban-quyen if not already classified
       if (assignedSectionId === "khac" && product.type === "LICENSE_KEY") {
         assignedSectionId = "ban-quyen";
       }
@@ -392,55 +430,124 @@ export default function CatalogExplorer({
         <div className="relative w-full">
           {/* Category Sections */}
           <div className="w-full space-y-10 sm:space-y-14">
-            {populatedSections.map((sec) => (
-              <section
-                key={sec.id}
-                id={`section-${sec.id}`}
-                className="scroll-mt-24"
-              >
-                {/* Modern Section Header */}
-                <div className="mb-4 pb-2.5 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5 sm:gap-3">
-                    <div
-                      className={`flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl shadow-2xs ${sec.iconBg} ${sec.iconColor}`}
-                    >
-                      <sec.icon className="h-4 w-4 sm:h-5 sm:w-5" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 sm:gap-2.5">
-                        <h3 className="text-base sm:text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">
-                          {sec.title}
-                        </h3>
-                        <span className="rounded-full bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400 whitespace-nowrap shrink-0">
-                          {sec.products.length} dịch vụ
-                        </span>
+            {populatedSections.map((sec) => {
+              const currentSubBrand = selectedSubBrands[sec.id] || "all";
+              const { items, availableBrands } = processSectionProducts(
+                sec.products,
+                currentSubBrand
+              );
+
+              return (
+                <section
+                  key={sec.id}
+                  id={`section-${sec.id}`}
+                  className="scroll-mt-24"
+                >
+                  {/* Modern Section Header */}
+                  <div className="mb-4 pb-2.5 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5 sm:gap-3">
+                      <div
+                        className={`flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl shadow-2xs ${sec.iconBg} ${sec.iconColor}`}
+                      >
+                        <sec.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 sm:gap-2.5">
+                          <h3 className="text-base sm:text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">
+                            {sec.title}
+                          </h3>
+                          <span className="rounded-full bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400 whitespace-nowrap shrink-0">
+                            {sec.products.length} dịch vụ
+                          </span>
+                        </div>
                       </div>
                     </div>
+
+                    <button
+                      type="button"
+                      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                      className="hidden sm:inline-flex items-center gap-1 text-xs text-slate-400 hover:text-blue-600 transition-colors"
+                      title="Lên đầu trang"
+                    >
+                      <span>Lên đầu</span>
+                      <ArrowUp className="h-3 w-3" />
+                    </button>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                    className="hidden sm:inline-flex items-center gap-1 text-xs text-slate-400 hover:text-blue-600 transition-colors"
-                    title="Lên đầu trang"
-                  >
-                    <span>Lên đầu</span>
-                    <ArrowUp className="h-3 w-3" />
-                  </button>
-                </div>
+                  {/* Sub-Brand Filter Tabs (e.g. Claude, Cursor, DeepSeek, Gemini...) */}
+                  {availableBrands.length > 1 && (
+                    <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-2 mb-3.5">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSelectedSubBrands((prev) => ({ ...prev, [sec.id]: "all" }))
+                        }
+                        className={`rounded-xl px-3 py-1.5 text-xs font-semibold shrink-0 transition-all ${
+                          currentSubBrand === "all"
+                            ? "bg-blue-600 text-white shadow-xs ring-1 ring-blue-500"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700"
+                        }`}
+                      >
+                        Tất cả ({sec.products.length})
+                      </button>
+                      {availableBrands.map((b) => {
+                        const isSelected = currentSubBrand === b.key;
+                        return (
+                          <button
+                            key={b.key}
+                            type="button"
+                            onClick={() =>
+                              setSelectedSubBrands((prev) => ({
+                                ...prev,
+                                [sec.id]: b.key,
+                              }))
+                            }
+                            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold shrink-0 transition-all ${
+                              isSelected
+                                ? "bg-blue-600 text-white shadow-xs ring-1 ring-blue-500"
+                                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700"
+                            }`}
+                          >
+                            <span>{b.name}</span>
+                            <span
+                              className={`rounded-full px-1.5 py-0.2 text-[10px] ${
+                                isSelected
+                                  ? "bg-blue-700 text-white"
+                                  : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                              }`}
+                            >
+                              {b.count}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
 
-                {/* Dense Product Grid: 2 cols on mobile, up to 5 cols on large desktop */}
-                <div className="grid grid-cols-2 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3.5">
-                  {sec.products.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onQuickView={handleOpenQuickView}
-                    />
-                  ))}
-                </div>
-              </section>
-            ))}
+                  {/* Dense Product Grid: Grouped Service Cards or Single Products */}
+                  <div className="grid grid-cols-2 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3.5">
+                    {items.map((item, idx) => {
+                      if (item.type === "grouped" && item.groupedData) {
+                        return (
+                          <GroupedProductCard
+                            key={`group-${item.groupKey}-${idx}`}
+                            {...item.groupedData}
+                            onQuickView={handleOpenQuickView}
+                          />
+                        );
+                      }
+                      return (
+                        <ProductCard
+                          key={item.singleProduct.id}
+                          product={item.singleProduct}
+                          onQuickView={handleOpenQuickView}
+                        />
+                      );
+                    })}
+                  </div>
+                </section>
+              );
+            })}
           </div>
 
           {/* Floating Right Edge Drawer Pills (Desktop: lg:flex) */}

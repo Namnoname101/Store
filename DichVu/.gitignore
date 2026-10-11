@@ -26,3 +26,9 @@ Thumbs.db
 
 # Telegram session & state
 tele-*.json
+
+# Backups & QA
+*.backup
+*.phase4_backup
+.superpowers/qa-screenshots/
+RELEASE_CANDIDATE_REPORT.md

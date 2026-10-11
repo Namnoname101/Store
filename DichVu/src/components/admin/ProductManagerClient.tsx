@@ -563,6 +563,7 @@ export default function ProductManagerClient({
                   onChange={(e) => setThumbnailUrl(e.target.value)}
                   className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:border-indigo-500 focus:outline-none"
                 />
+                <p className="mt-1 text-xs text-slate-400">Dán link ảnh công khai trực tiếp (jpg, png, webp, svg). Tránh dùng link Google Drive/Docs vì có quyền riêng tư.</p>
               </div>
 
               <div>

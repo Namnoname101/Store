@@ -201,7 +201,11 @@ export default function AdminProductEditor({ initialProduct, categories }: Props
           <div><label htmlFor="productTitle" className={label}>Tên sản phẩm</label><input id="productTitle" className={field} value={form.title} onChange={(e) => patch("title", e.target.value)} /></div>
           <div><label htmlFor="productSlug" className={label}>Đường dẫn (slug)</label><input id="productSlug" className={field} value={form.slug} onChange={(e) => patch("slug", e.target.value)} /><p className="mt-1 text-xs text-slate-400">Đổi slug sẽ thay đổi đường dẫn sản phẩm đang bán.</p></div>
           <div><label htmlFor="productCategory" className={label}>Danh mục</label><select id="productCategory" className={field} value={form.categoryId} onChange={(e) => patch("categoryId", e.target.value)}>{categories.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></div>
-          <div><label htmlFor="productPhoto" className={label}>URL ảnh sản phẩm</label><input id="productPhoto" className={field} value={form.thumbnailUrl} onChange={(e) => patch("thumbnailUrl", e.target.value)} placeholder="https://..." /></div>
+          <div>
+            <label htmlFor="productPhoto" className={label}>URL ảnh sản phẩm</label>
+            <input id="productPhoto" className={field} value={form.thumbnailUrl} onChange={(e) => patch("thumbnailUrl", e.target.value)} placeholder="https://..." />
+            <p className="mt-1 text-xs text-slate-400">Dán link ảnh công khai trực tiếp (jpg, png, webp, svg). Không dùng link riêng tư của Google Docs/Drive vì sẽ bị chặn.</p>
+          </div>
           <div><label htmlFor="productDescription" className={label}>Mô tả sản phẩm</label><textarea id="productDescription" rows={6} className={field} value={form.description} onChange={(e) => patch("description", e.target.value)} /></div>
         </>}
         {tab === "pricing" && <>

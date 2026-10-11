@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { KeyRound, UserCheck, GraduationCap, ArrowRight, Eye } from "lucide-react";
 import type { Product } from "@prisma/client";
@@ -20,6 +21,7 @@ export { formatVND, getProductTypeInfo };
 
 export default function ProductCard({ product, onQuickView }: ProductCardProps) {
   const { title, slug, price, originalPrice, type, stockCount, thumbnailUrl } = product;
+  const [imgError, setImgError] = useState(false);
   const typeInfo = getProductTypeInfo(type);
   const TypeIcon = typeInfo.icon;
 
@@ -43,10 +45,11 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
       <div>
         {/* Compact 16:10 Aspect Ratio Product Image */}
         <div className="relative mb-2 flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-850">
-          {thumbnailUrl ? (
+          {thumbnailUrl && !imgError ? (
             <img
               src={thumbnailUrl}
               alt={title}
+              onError={() => setImgError(true)}
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
           ) : (

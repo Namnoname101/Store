@@ -80,6 +80,8 @@ export default function QuickViewModal({
     message: string;
   } | null>(null);
 
+  const [imgError, setImgError] = useState(false);
+
   // Reset state on product change or modal open
   useEffect(() => {
     if (product) {
@@ -90,6 +92,7 @@ export default function QuickViewModal({
       setAppliedCoupon(null);
       setCouponCode("");
       setCouponFeedback(null);
+      setImgError(false);
     }
   }, [product, isOpen, isSMM, effectiveMin]);
 
@@ -312,10 +315,11 @@ export default function QuickViewModal({
           <div className="flex flex-col sm:flex-row gap-4 items-start">
             {/* 4:3 image container */}
             <div className="relative aspect-[4/3] w-full sm:w-44 shrink-0 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-850 flex items-center justify-center">
-              {product.thumbnailUrl ? (
+              {product.thumbnailUrl && !imgError ? (
                 <img
                   src={product.thumbnailUrl}
                   alt={product.title}
+                  onError={() => setImgError(true)}
                   className="h-full w-full object-cover"
                 />
               ) : (
