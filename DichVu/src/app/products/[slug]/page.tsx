@@ -1,7 +1,14 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ChevronRight, BookOpen } from "lucide-react";
+import {
+  ChevronRight,
+  BookOpen,
+  ShieldCheck,
+  Clock,
+  Headphones,
+  Send,
+} from "lucide-react";
 import { getProductBySlug } from "@/services/catalog.service";
 import ProductPurchaseBox from "@/components/ProductPurchaseBox";
 import { getProductTypeInfo, formatVND } from "@/lib/product-types";
@@ -37,7 +44,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  const typeInfo = getProductTypeInfo(product.type);
+  const typeInfo = getProductTypeInfo(product.type, {
+    categorySlug: product.category?.slug,
+    title: product.title,
+  });
   const TypeIcon = typeInfo.icon;
 
   const discountPercent =
@@ -54,6 +64,34 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     product.title.toLowerCase().includes("tim") ||
     product.title.toLowerCase().includes("like") ||
     product.title.toLowerCase().includes("follow");
+
+  const titleLower = product.title.toLowerCase();
+
+  const deliveryFormat = isSMM
+    ? "Hệ thống tự động khởi tạo theo link mục tiêu"
+    : product.type === "LICENSE_KEY"
+    ? "Mã bản quyền / API Key cấp tức thì sau thanh toán"
+    : product.type === "ACCOUNT"
+    ? "Tài khoản riêng tư / Link kích hoạt chính chủ"
+    : "Bàn giao tự động qua hệ thống 24/7";
+
+  const durationLabel = isSMM
+    ? "Hoàn thành theo số lượng đặt mua"
+    : titleLower.includes("18 tháng")
+    ? "18 tháng đầy đủ (Full date)"
+    : titleLower.includes("12 tháng") || titleLower.includes("1 năm")
+    ? "12 tháng (1 năm) bản quyền"
+    : titleLower.includes("30 ngày") || titleLower.includes("1 tháng")
+    ? "30 ngày đầy đủ"
+    : titleLower.includes("3 tháng")
+    ? "90 ngày (3 tháng)"
+    : "Theo gói dịch vụ đã chọn";
+
+  const warrantyLabel = isSMM
+    ? "Bảo hành duy trì số lượng trong 30 ngày"
+    : titleLower.includes("gemini") || titleLower.includes("duolingo")
+    ? "1 đổi 1 trong 24h kích hoạt & hỗ trợ suốt 18 tháng"
+    : "Bảo hành 1 đổi 1 trong suốt thời hạn sử dụng gói";
 
   const unitLabel = product.title.toLowerCase().includes("follow")
     ? "follow"
@@ -153,6 +191,49 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Standardized Product Specification Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 sm:p-5 shadow-xs">
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800/80">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 shrink-0">
+                <Send className="h-4 w-4" />
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Hình thức nhận hàng</span>
+                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">{deliveryFormat}</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800/80">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 shrink-0">
+                <Clock className="h-4 w-4" />
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Thời hạn sử dụng</span>
+                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">{durationLabel}</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800/80">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 shrink-0">
+                <ShieldCheck className="h-4 w-4" />
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Chính sách bảo hành</span>
+                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">{warrantyLabel}</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800/80">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 shrink-0">
+                <Headphones className="h-4 w-4" />
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Hỗ trợ kỹ thuật</span>
+                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">Đồng hành 24/7 qua Zalo & Telegram</p>
+              </div>
+            </div>
           </div>
 
           {/* Product Description */}

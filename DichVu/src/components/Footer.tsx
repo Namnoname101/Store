@@ -17,7 +17,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="mt-3 text-xs sm:text-sm text-slate-500 max-w-sm leading-relaxed">
-              Nơi cung cấp tài khoản giá rẻ.Uy tín, thanh toán nhanh gọn.
+              Nơi cung cấp tài khoản và dịch vụ số giá tốt, uy tín, tự động cấp phát 24/7.
             </p>
             <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5 text-xs text-slate-500">
               <div className="flex items-center gap-1.5">
@@ -42,18 +42,18 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/?category=cloud#catalog" className="hover:text-blue-600 transition-colors">
-                  Cloud VPS
+                <Link href="/?category=tai-khoan-ai#catalog" className="hover:text-blue-600 transition-colors">
+                  Tài khoản AI
                 </Link>
               </li>
               <li>
-                <Link href="/?category=tiktok#catalog" className="hover:text-blue-600 transition-colors">
-                  Dịch vụ TikTok & Facebook
+                <Link href="/?category=ban-quyen#catalog" className="hover:text-blue-600 transition-colors">
+                  Phần mềm & Bản quyền
                 </Link>
               </li>
               <li>
-                <Link href="/?category=khac#catalog" className="hover:text-blue-600 transition-colors">
-                  Phần mềm & Khác
+                <Link href="/?category=mxh#catalog" className="hover:text-blue-600 transition-colors">
+                  Dịch vụ MXH (TikTok, FB)
                 </Link>
               </li>
             </ul>
@@ -61,7 +61,7 @@ export default function Footer() {
 
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">
-              Hỗ trợ
+              Hỗ trợ & Chính sách
             </h3>
             <ul className="mt-3 space-y-2 text-xs sm:text-sm">
               <li>
@@ -79,13 +79,18 @@ export default function Footer() {
                   Nạp tiền vào tài khoản
                 </Link>
               </li>
+              <li>
+                <Link href="/#how-it-works" className="hover:text-blue-600 transition-colors">
+                  Chính sách bảo hành 1 đổi 1
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
 
         <div className="mt-8 border-t border-slate-100 dark:border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400">
           <p>© {new Date().getFullYear()} Daitruong Store. All rights reserved.</p>
-          <p className="mt-2 sm:mt-0">Thanh toán nhanh gọn 24/7 </p>
+          <p className="mt-2 sm:mt-0">Cấp phát tự động 24/7 qua VietQR — Hỗ trợ Zalo & Telegram</p>
         </div>
       </div>
     </footer>

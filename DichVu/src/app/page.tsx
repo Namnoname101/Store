@@ -32,7 +32,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
             {/* Subtitle */}
             <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl">
-              Cung cấp tài khoản AI, API AI, dịch vụ mạng xã hội . . . . Thanh toán tự động nhanh chóng Uy Tín 24/7.
+              Cung cấp tài khoản AI, API AI, phần mềm bản quyền và dịch vụ mạng xã hội. Tự động cấp phát tức thì qua VietQR 24/7.
             </p>
 
             {/* Search Input Box */}
@@ -67,28 +67,40 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 AI & API
               </a>
               <a
-                href="/?category=cloud#catalog"
+                href="/?category=tai-khoan-ai#catalog"
                 className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-900 px-2.5 py-1 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 transition-colors"
               >
-                Cloud VPS
+                Tài khoản AI
               </a>
               <a
-                href="/?category=tiktok#catalog"
+                href="/?category=ban-quyen#catalog"
                 className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-900 px-2.5 py-1 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 transition-colors"
               >
-                TikTok
+                Phần mềm & Bản quyền
               </a>
               <a
-                href="/?category=facebook#catalog"
+                href="/?category=mxh#catalog"
                 className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-900 px-2.5 py-1 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 transition-colors"
               >
-                Facebook
+                Dịch vụ MXH
               </a>
               <a
-                href="/?category=youtube#catalog"
+                href="/?search=capcut#catalog"
                 className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-900 px-2.5 py-1 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 transition-colors"
               >
-                YouTube
+                CapCut Pro
+              </a>
+              <a
+                href="/?search=gemini#catalog"
+                className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-900 px-2.5 py-1 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 transition-colors"
+              >
+                Gemini Pro
+              </a>
+              <a
+                href="/?search=claude#catalog"
+                className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-900 px-2.5 py-1 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 transition-colors"
+              >
+                Claude API
               </a>
             </div>
           </div>

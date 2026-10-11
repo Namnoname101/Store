@@ -91,7 +91,11 @@ export function extractVariantLabel(title: string, description: string = ""): st
   const dollarMatch = combined.match(/(\d+)\s*\$|\$\s*(\d+)/i);
   if (dollarMatch) {
     const val = dollarMatch[1] || dollarMatch[2];
-    return `$${val}`;
+    const isNight =
+      combined.toLowerCase().includes("21h") ||
+      combined.toLowerCase().includes("đêm") ||
+      combined.toLowerCase().includes("night");
+    return isNight ? `Đêm $${val}` : `$${val}`;
   }
 
   // Match duration e.g. 1 Ngày, 30 Ngày, 1 Tuần, 1 Tháng, 1 Năm

@@ -129,6 +129,66 @@ export default function ProductPurchaseBox({
     setCouponFeedback(null);
   };
 
+  const isTikTok =
+    productTitle.toLowerCase().includes("tiktok") ||
+    categorySlug?.toLowerCase() === "tiktok";
+  const isFacebook =
+    productTitle.toLowerCase().includes("facebook") ||
+    categorySlug?.toLowerCase() === "facebook";
+  const isFollower =
+    productTitle.toLowerCase().includes("follow") ||
+    productTitle.toLowerCase().includes("kênh") ||
+    productTitle.toLowerCase().includes("trang") ||
+    productTitle.toLowerCase().includes("page");
+
+  const targetLinkLabel = isTikTok
+    ? isFollower
+      ? "Link kênh TikTok cần tăng Follower"
+      : "Link video TikTok cần tăng Tim / View"
+    : isFacebook
+    ? isFollower
+      ? "Link trang cá nhân / Fanpage Facebook cần tăng Follow"
+      : "Link bài viết Facebook cần tăng Like"
+    : "Link mục tiêu cần thực hiện dịch vụ";
+
+  const targetLinkPlaceholder = isTikTok
+    ? isFollower
+      ? "https://www.tiktok.com/@username"
+      : "https://www.tiktok.com/@username/video/..."
+    : isFacebook
+    ? isFollower
+      ? "https://www.facebook.com/username"
+      : "https://www.facebook.com/username/posts/..."
+    : "https://...";
+
+  const targetLinkHelper = isTikTok
+    ? isFollower
+      ? "Mở ứng dụng TikTok -> Hồ sơ -> Chia sẻ hồ sơ -> Sao chép liên kết."
+      : "Mở video TikTok -> Chia sẻ -> Sao chép liên kết."
+    : isFacebook
+    ? "Đảm bảo bài viết hoặc trang Facebook được đặt ở chế độ Công khai."
+    : "Nhập chính xác liên kết công khai cần thực hiện dịch vụ.";
+
+  const validateTargetLink = (link: string): string | null => {
+    const trimmed = link.trim();
+    if (!trimmed) return "Vui lòng nhập đường link mục tiêu.";
+    if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) {
+      return "Đường link phải bắt đầu bằng https:// hoặc http://";
+    }
+    if (isTikTok && !trimmed.toLowerCase().includes("tiktok.com")) {
+      return "Vui lòng nhập đúng đường link TikTok (chứa tiktok.com).";
+    }
+    if (
+      isFacebook &&
+      !trimmed.toLowerCase().includes("facebook.com") &&
+      !trimmed.toLowerCase().includes("fb.watch") &&
+      !trimmed.toLowerCase().includes("fb.com")
+    ) {
+      return "Vui lòng nhập đúng đường link Facebook (chứa facebook.com).";
+    }
+    return null;
+  };
+
   const handleQuantityChange = (delta: number) => {
     setQuantity((prev) => {
       const current = typeof prev === "number" && !isNaN(prev) ? prev : effectiveMin;
@@ -145,9 +205,12 @@ export default function ProductPurchaseBox({
 
   const handleAddToCart = () => {
     setErrorMessage(null);
-    if (requiresLink && !targetLink.trim()) {
-      setErrorMessage("Vui lòng nhập link bài viết / video / kênh cần tăng tương tác.");
-      return;
+    if (requiresLink) {
+      const linkErr = validateTargetLink(targetLink);
+      if (linkErr) {
+        setErrorMessage(linkErr);
+        return;
+      }
     }
 
     if (!quantity || quantity < effectiveMin) {
@@ -191,9 +254,12 @@ export default function ProductPurchaseBox({
       return;
     }
 
-    if (requiresLink && !targetLink.trim()) {
-      setErrorMessage("Vui lòng nhập link bài viết / video / kênh cần tăng tương tác.");
-      return;
+    if (requiresLink) {
+      const linkErr = validateTargetLink(targetLink);
+      if (linkErr) {
+        setErrorMessage(linkErr);
+        return;
+      }
     }
 
     if (!quantity || quantity < effectiveMin) {
@@ -440,14 +506,14 @@ export default function ProductPurchaseBox({
               htmlFor="targetLink"
               className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
             >
-              Link video / bài viết / kênh <span className="text-rose-500">*</span>
+              {targetLinkLabel} <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
               <input
                 id="targetLink"
                 type="url"
                 required
-                placeholder="https://www.tiktok.com/@... hoặc link bài viết FB"
+                placeholder={targetLinkPlaceholder}
                 value={targetLink}
                 disabled={isLoading || !inStock}
                 onChange={(e) => setTargetLink(e.target.value)}
@@ -456,7 +522,7 @@ export default function ProductPurchaseBox({
               <Globe className="absolute left-3.5 top-3 h-4 w-4 text-blue-600 dark:text-blue-400" />
             </div>
             <p className="mt-1 text-[11px] text-slate-500">
-              Nhập chính xác link cần thực hiện dịch vụ.
+              {targetLinkHelper}
             </p>
           </div>
         )}

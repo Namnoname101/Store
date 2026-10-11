@@ -33,12 +33,12 @@ export default function TopupClient() {
         if (data?.authenticated && data?.user) {
           setUser(data.user);
         } else {
-          router.push("/login?callbackUrl=/topup");
+          setUser(null);
         }
       })
-      .catch(() => router.push("/login?callbackUrl=/topup"))
+      .catch(() => setUser(null))
       .finally(() => setLoadingUser(false));
-  }, [router]);
+  }, []);
 
   const handleSelectPreset = (amount: number) => {
     setSelectedAmount(amount);
@@ -98,6 +98,54 @@ export default function TopupClient() {
     );
   }
 
+  if (!user) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-12">
+        <div className="relative overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 sm:p-10 shadow-2xl text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 mb-5 border border-indigo-200/50 dark:border-indigo-900">
+            <Wallet className="h-8 w-8" />
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Nạp tiền vào tài khoản
+          </h1>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+            Hệ thống nạp tiền tự động qua VietQR 24/7, cộng số dư ví Daitruong Store tức thì trong 3-5 giây để thanh toán 1 chạm.
+          </p>
+
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/login?callbackUrl=/topup"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white hover:bg-blue-700 transition-colors shadow-md shadow-blue-600/20"
+            >
+              <span>Đăng nhập để nạp tiền</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href="/register?callbackUrl=/topup"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-6 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-750 transition-colors"
+            >
+              <span>Đăng ký tài khoản</span>
+            </Link>
+          </div>
+
+          {/* Guest Direct Buy Notice */}
+          <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500">
+            <p>
+              💡 <strong>Lưu ý:</strong> Bạn không bắt buộc phải tạo tài khoản ví để mua hàng. Bạn có thể chọn sản phẩm và thanh toán trực tiếp qua mã VietQR tại trang chủ.
+            </p>
+            <Link
+              href="/#catalog"
+              className="inline-block mt-3 text-blue-600 dark:text-blue-400 font-semibold hover:underline"
+            >
+              Xem danh mục sản phẩm & mua ngay →
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       {/* Balance Banner */}
@@ -107,7 +155,7 @@ export default function TopupClient() {
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-1">
               <Sparkles className="h-3.5 w-3.5" />
-              <span>Ví Thành Viên DigiStore</span>
+              <span>Ví Thành Viên Daitruong Store</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-white">
               Xin chào, <span className="text-indigo-400">{user?.username}</span>

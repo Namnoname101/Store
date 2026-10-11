@@ -109,13 +109,68 @@ export default function QuickViewModal({
 
   if (!isOpen || !product) return null;
 
-  const typeInfo = getProductTypeInfo(product.type);
+  const typeInfo = getProductTypeInfo(product.type, {
+    categorySlug: product.category?.slug,
+    title: product.title,
+  });
   const TypeIcon = typeInfo.icon;
   const inStock = isSMM || product.stockCount > 0;
   const totalPrice = product.price * (quantity || 0);
   const netTotal = appliedCoupon
     ? Math.max(1000, totalPrice - appliedCoupon.discountAmount)
     : totalPrice;
+
+  const isTikTok =
+    product.title.toLowerCase().includes("tiktok") ||
+    product.category?.slug?.toLowerCase() === "tiktok";
+  const isFacebook =
+    product.title.toLowerCase().includes("facebook") ||
+    product.category?.slug?.toLowerCase() === "facebook";
+  const isFollower =
+    product.title.toLowerCase().includes("follow") ||
+    product.title.toLowerCase().includes("kênh") ||
+    product.title.toLowerCase().includes("trang") ||
+    product.title.toLowerCase().includes("page");
+
+  const targetLinkLabel = isTikTok
+    ? isFollower
+      ? "Link kênh TikTok cần tăng Follower"
+      : "Link video TikTok cần tăng Tim / View"
+    : isFacebook
+    ? isFollower
+      ? "Link trang cá nhân / Fanpage Facebook cần tăng Follow"
+      : "Link bài viết Facebook cần tăng Like"
+    : "Link mục tiêu cần thực hiện dịch vụ";
+
+  const targetLinkPlaceholder = isTikTok
+    ? isFollower
+      ? "https://www.tiktok.com/@username"
+      : "https://www.tiktok.com/@username/video/..."
+    : isFacebook
+    ? isFollower
+      ? "https://www.facebook.com/username"
+      : "https://www.facebook.com/username/posts/..."
+    : "https://...";
+
+  const validateTargetLink = (link: string): string | null => {
+    const trimmed = link.trim();
+    if (!trimmed) return "Vui lòng nhập đường link mục tiêu.";
+    if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) {
+      return "Đường link phải bắt đầu bằng https:// hoặc http://";
+    }
+    if (isTikTok && !trimmed.toLowerCase().includes("tiktok.com")) {
+      return "Vui lòng nhập đúng đường link TikTok (chứa tiktok.com).";
+    }
+    if (
+      isFacebook &&
+      !trimmed.toLowerCase().includes("facebook.com") &&
+      !trimmed.toLowerCase().includes("fb.watch") &&
+      !trimmed.toLowerCase().includes("fb.com")
+    ) {
+      return "Vui lòng nhập đúng đường link Facebook (chứa facebook.com).";
+    }
+    return null;
+  };
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
@@ -174,9 +229,12 @@ export default function QuickViewModal({
       return;
     }
 
-    if (isSMM && !targetLink.trim()) {
-      setErrorMessage("Vui lòng nhập link bài viết / video / kênh.");
-      return;
+    if (isSMM) {
+      const linkErr = validateTargetLink(targetLink);
+      if (linkErr) {
+        setErrorMessage(linkErr);
+        return;
+      }
     }
 
     if (!quantity || quantity < effectiveMin) {
@@ -222,9 +280,12 @@ export default function QuickViewModal({
       return;
     }
 
-    if (isSMM && !targetLink.trim()) {
-      setErrorMessage("Vui lòng nhập link bài viết / video / kênh.");
-      return;
+    if (isSMM) {
+      const linkErr = validateTargetLink(targetLink);
+      if (linkErr) {
+        setErrorMessage(linkErr);
+        return;
+      }
     }
 
     if (!quantity || quantity < effectiveMin) {
@@ -478,13 +539,13 @@ export default function QuickViewModal({
             {isSMM && (
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
-                  Link video / bài viết / kênh <span className="text-rose-500">*</span>
+                  {targetLinkLabel} <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
                   <input
                     type="url"
                     required
-                    placeholder="Nhập link video hoặc bài viết..."
+                    placeholder={targetLinkPlaceholder}
                     value={targetLink}
                     disabled={isLoading || !inStock}
                     onChange={(e) => setTargetLink(e.target.value)}

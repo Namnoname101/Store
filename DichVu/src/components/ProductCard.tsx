@@ -22,7 +22,10 @@ export { formatVND, getProductTypeInfo };
 export default function ProductCard({ product, onQuickView }: ProductCardProps) {
   const { title, slug, price, originalPrice, type, stockCount, thumbnailUrl } = product;
   const [imgError, setImgError] = useState(false);
-  const typeInfo = getProductTypeInfo(type);
+  const typeInfo = getProductTypeInfo(type, {
+    categorySlug: product.category?.slug,
+    title,
+  });
   const TypeIcon = typeInfo.icon;
 
   const isSMM =

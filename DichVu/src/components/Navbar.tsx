@@ -33,6 +33,17 @@ export const STORE_CATEGORIES = [
   { name: "Khác", slug: "khac", query: "khac" },
 ];
 
+export const getCategoryHref = (cat: { slug: string; name: string; query?: string }) => {
+  if (cat.slug === "all") return "/#catalog";
+  if (cat.slug === "ai-api") return "/?category=ai-api#catalog";
+  if (cat.slug === "cloud-vps") return "/?category=cloud-vps#catalog";
+  if (cat.slug === "tiktok") return "/?category=mxh&search=tiktok#catalog";
+  if (cat.slug === "facebook") return "/?category=mxh&search=facebook#catalog";
+  if (cat.slug === "instagram") return "/?category=mxh&search=instagram#catalog";
+  if (cat.slug === "youtube") return "/?category=mxh&search=youtube#catalog";
+  return `/?category=${encodeURIComponent(cat.slug)}#catalog`;
+};
+
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -240,7 +251,7 @@ export default function Navbar() {
             {STORE_CATEGORIES.map((cat) => (
               <Link
                 key={cat.slug}
-                href={cat.slug === "all" ? "/#catalog" : `/?search=${encodeURIComponent(cat.query || cat.name)}#catalog`}
+                href={getCategoryHref(cat)}
                 className="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800/80 transition-colors"
               >
                 {cat.name}
@@ -278,7 +289,7 @@ export default function Navbar() {
               {STORE_CATEGORIES.map((cat) => (
                 <Link
                   key={cat.slug}
-                  href={cat.slug === "all" ? "/#catalog" : `/?search=${encodeURIComponent(cat.query || cat.name)}#catalog`}
+                  href={getCategoryHref(cat)}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 transition-colors"
                 >
