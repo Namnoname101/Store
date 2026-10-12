@@ -10,6 +10,7 @@ import {
 import { commitReservedItemsToSold, releaseExpiredReservations } from "@/services/inventory.service";
 import { parseOrderCodeFromMemo, parseDepositCodeFromMemo } from "@/lib/vietqr";
 import { fulfillOrderViaUpstream } from "@/services/upstream-fulfillment.service";
+import { fulfillCodexCreditOrder } from "@/services/codex-fulfillment.service";
 
 export interface BankTransactionPayload {
   transactionId: string;
@@ -314,6 +315,7 @@ export async function handleIncomingTransaction(
           },
         },
       },
+      creditTopupOrder: true,
     },
   });
 
@@ -523,6 +525,18 @@ export async function handleIncomingTransaction(
         console.error(
           `Failed to automatically fulfill dropship order ${order.id} via upstream:`,
           upstreamErr
+        );
+      }
+    }
+
+    // Fulfill Codex Credit order if present
+    if (order.creditTopupOrder) {
+      try {
+        await fulfillCodexCreditOrder(order.id);
+      } catch (codexErr) {
+        console.error(
+          `Failed to automatically fulfill codex credit order ${order.id}:`,
+          codexErr
         );
       }
     }
