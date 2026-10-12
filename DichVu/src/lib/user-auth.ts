@@ -202,13 +202,20 @@ export async function verifyUserSessionToken(token: string): Promise<UserSession
   }
 }
 
-// Get User Session from Cookie (supports both Server Components and Route Handlers)
-export async function getUserSession(req?: { cookies: { get: (name: string) => { value: string } | undefined } }): Promise<UserSessionPayload | null> {
+// Get User Session from Cookie (supports Server Components, NextRequest, and standard Request)
+export async function getUserSession(req?: any): Promise<UserSessionPayload | null> {
   try {
     let token: string | undefined;
-    if (req) {
+    if (req?.cookies?.get) {
       token = req.cookies.get(USER_COOKIE_NAME)?.value;
+    } else if (req?.headers?.get) {
+      const cookieHeader = req.headers.get("cookie");
+      if (cookieHeader) {
+        const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${USER_COOKIE_NAME}=([^;]+)`));
+        if (match) token = match[1];
+      }
     }
+
     if (!token) {
       try {
         const cookieStore = cookies();
@@ -224,6 +231,13 @@ export async function getUserSession(req?: { cookies: { get: (name: string) => {
   }
 }
 
+/**
+ * Alias for getUserSession to provide a standard getAuthenticatedUser API.
+ */
+export async function getAuthenticatedUser(req?: any): Promise<UserSessionPayload | null> {
+  return getUserSession(req);
+}
+
 export function getUserCookieOptions() {
   return {
     name: USER_COOKIE_NAME,
@@ -234,3 +248,4 @@ export function getUserCookieOptions() {
     maxAge: Math.floor(SESSION_DURATION_MS / 1000),
   };
 }
+
