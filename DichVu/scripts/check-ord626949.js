@@ -3,10 +3,10 @@ const prisma = new PrismaClient();
 
 async function main() {
   const o = await prisma.order.findFirst({
-    where: { orderCode: 'ORD626949' },
+    where: { orderCode: 'ORD853118' },
     include: { deliveredItems: true }
   });
-  console.log('Order ORD626949:', {
+  console.log('Order ORD853118:', {
     orderCode: o.orderCode,
     status: o.status,
     upstreamStatus: o.upstreamStatus,

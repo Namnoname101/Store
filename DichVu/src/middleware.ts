@@ -17,6 +17,13 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // Allow internal daemon / cron workers with secret header
+  const internalSecret = req.headers.get("x-internal-secret") || req.headers.get("x-cron-secret");
+  const expectedSecret = process.env.CRON_SECRET || "internal_sync_secret_token";
+  if (internalSecret && internalSecret === expectedSecret) {
+    return NextResponse.next();
+  }
+
   const token = req.cookies.get(ADMIN_COOKIE_NAME)?.value;
   const isValid = token ? await verifyAdminSessionToken(token) : false;
 

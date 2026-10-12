@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 const SWEEP_INTERVAL_SECONDS = parseInt(process.env.SWEEP_INTERVAL_SECONDS || "60", 10);
 const SUPPLIER_SYNC_INTERVAL_SECONDS = parseInt(
-  process.env.SUPPLIER_SYNC_INTERVAL_SECONDS || "120",
+  process.env.SUPPLIER_SYNC_INTERVAL_SECONDS || "3600",
   10
 );
 const CRON_SECRET = process.env.CRON_SECRET || "internal_sync_secret_token";
@@ -80,6 +80,34 @@ async function runSweepCycle() {
         reservedUntil: null,
       },
     });
+
+    // 4. Auto-retry dropship orders that failed temporarily due to provider cooldown
+    const failedDropshipOrders = await prisma.order.findMany({
+      where: {
+        status: "PAID",
+        upstreamStatus: "FAILED",
+        createdAt: { gte: new Date(Date.now() - 2 * 60 * 60 * 1000) }
+      },
+      take: 2
+    });
+
+    for (const failedOrder of failedDropshipOrders) {
+      try {
+        const retryUrl = `http://127.0.0.1:${APP_PORT}/api/admin/orders/${failedOrder.id}/retry-upstream`;
+        const res = await fetch(retryUrl, {
+          method: "POST",
+          headers: {
+            "x-internal-secret": CRON_SECRET,
+            "Content-Type": "application/json"
+          }
+        });
+        if (res.ok) {
+          console.log(`[PaymentSweepDaemon] Auto-retry succeeded for order ${failedOrder.orderCode}`);
+        }
+      } catch (err) {
+        console.warn(`[PaymentSweepDaemon] Auto-retry error for ${failedOrder.orderCode}:`, err.message);
+      }
+    }
 
     const durationMs = Date.now() - startTime;
     if (expiredIntents.count > 0 || expiredOrders.count > 0 || releasedStock.count > 0) {

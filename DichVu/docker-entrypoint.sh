@@ -65,9 +65,9 @@ else
   echo "[Entrypoint] Warning: scripts/payment-sweep-daemon.js not found. Skipping daemon startup."
 fi
 
-# 4. Sync GenzShop Catalog
-if [ -f prisma/seed-genzshop.js ]; then
-  echo "[Entrypoint] Syncing GenzShop products & thumbnails..."
+# 4. Sync GenzShop Catalog (only if explicitly enabled to prevent rate-limit spam)
+if [ "$SYNC_ON_BOOT" = "true" ] && [ -f prisma/seed-genzshop.js ]; then
+  echo "[Entrypoint] SYNC_ON_BOOT=true: Syncing GenzShop products & thumbnails..."
   node prisma/seed-genzshop.js || true
 fi
 

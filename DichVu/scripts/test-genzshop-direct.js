@@ -7,7 +7,7 @@ async function main() {
   });
 
   const order = await prisma.order.findFirst({
-    where: { orderCode: 'ORD626949' },
+    where: { orderCode: 'ORD853118' },
     include: {
       orderItems: {
         include: {
@@ -52,7 +52,12 @@ async function main() {
       const rawAccounts = json.deliveredAccounts ?? json.data ?? json.keys ?? [];
       const keys = Array.isArray(rawAccounts) ? rawAccounts : [rawAccounts];
       
-      const deliveredContent = keys.map(k => typeof k === 'string' ? k : JSON.stringify(k)).join('\n');
+      const cleanKeys = keys.map(k => {
+        if (typeof k === 'object' && k !== null) {
+          return k.password || k.key || JSON.stringify(k);
+        }
+        return String(k);
+      });
       
       // Update order to COMPLETED
       await prisma.order.update({
@@ -61,13 +66,11 @@ async function main() {
           upstreamStatus: 'COMPLETED',
           upstreamOrderId: String(json.order_id || json.orderId || order.orderCode),
           upstreamError: null,
-          deliveredContent: deliveredContent
         }
       });
 
       // Also create productItems with status SOLD
-      for (const k of keys) {
-        const secret = typeof k === 'string' ? k : JSON.stringify(k);
+      for (const secret of cleanKeys) {
         await prisma.productItem.create({
           data: {
             productId: order.orderItems[0].productId,
@@ -78,7 +81,7 @@ async function main() {
         });
       }
 
-      console.log('Order ORD626949 marked COMPLETED and keys saved successfully!');
+      console.log('Order ORD853118 marked COMPLETED and keys saved successfully!');
     }
   } catch (err) {
     console.error('Parse error:', err);
