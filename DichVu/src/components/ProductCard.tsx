@@ -16,8 +16,8 @@ export interface ProductCardProps {
   onQuickView?: (product: ProductCardProps["product"]) => void;
 }
 
-import { formatVND, getProductTypeInfo } from "@/lib/product-types";
-export { formatVND, getProductTypeInfo };
+import { formatVND, getProductTypeInfo, getProductBadgeLabel } from "@/lib/product-types";
+export { formatVND, getProductTypeInfo, getProductBadgeLabel };
 
 export default function ProductCard({ product, onQuickView }: ProductCardProps) {
   const { title, slug, price, originalPrice, type, stockCount, thumbnailUrl } = product;
@@ -84,12 +84,10 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
           )}
         </div>
 
-        {/* Category Name */}
-        {product.category && (
-          <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 truncate">
-            {product.category.name}
-          </p>
-        )}
+        {/* Category / Badge Name */}
+        <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 truncate">
+          {getProductBadgeLabel(product)}
+        </p>
 
         {/* Product Title */}
         <Link href={`/products/${slug}`} className="block">

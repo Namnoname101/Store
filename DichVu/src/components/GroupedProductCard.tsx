@@ -42,17 +42,19 @@ export default function GroupedProductCard({
   const sortedVariants = [...variants].sort((a, b) => a.price - b.price);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [showAllVariants, setShowAllVariants] = useState(false);
 
   const activeVariant = sortedVariants[selectedIndex] || sortedVariants[0];
   const inStock = activeVariant.stockCount > 0;
 
-  // Show up to 5 pills by default
-  const MAX_VISIBLE_PILLS = 5;
-  const hasMore = sortedVariants.length > MAX_VISIBLE_PILLS;
-  const visibleVariants = showAllVariants
-    ? sortedVariants
-    : sortedVariants.slice(0, MAX_VISIBLE_PILLS);
+  // Check if any variant indicates high speed
+  const hasFastSpeed = sortedVariants.some(
+    (v) =>
+      (v.title + (v.description || "")).toLowerCase().includes("tốc độ") ||
+      (v.title + (v.description || "")).toLowerCase().includes("nhanh")
+  );
+
+  const cleanBrand = brandName.replace(/AI$/i, "").trim().toUpperCase();
+  const badgeLabel = `API ${cleanBrand}${hasFastSpeed ? " • TỐC ĐỘ CAO" : ""}`;
 
   const discountPercent =
     activeVariant.originalPrice && activeVariant.originalPrice > activeVariant.price
@@ -71,7 +73,7 @@ export default function GroupedProductCard({
           {thumbnailUrl ? (
             <img
               src={thumbnailUrl}
-              alt={title}
+              alt={activeVariant.title || title}
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
@@ -99,45 +101,29 @@ export default function GroupedProductCard({
           </div>
         </div>
 
-        {/* Category Label */}
-        {category && (
-          <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 truncate">
-            {category.name}
-          </p>
-        )}
+        {/* Category / Speed Badge Label */}
+        <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 truncate">
+          {badgeLabel}
+        </p>
 
-        {/* Title */}
+        {/* Title synced with active variant */}
         <Link href={`/products/${activeVariant.slug}`} className="block">
           <h3 className="line-clamp-2 text-xs sm:text-[13px] font-semibold text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug min-h-[2.1rem]">
-            {title}
+            {activeVariant.title || title}
           </h3>
         </Link>
 
-        {/* Interactive Credit / Variant Selector Pills */}
+        {/* Interactive Credit / Variant Selector Pills - All shown openly */}
         <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
-          <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center justify-between mb-1.5">
             <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
-              Chọn mệnh giá / gói:
+              Chọn mức giá / gói credit:
             </span>
-            {hasMore && (
-              <button
-                type="button"
-                onClick={() => setShowAllVariants(!showAllVariants)}
-                className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
-              >
-                <span>{showAllVariants ? "Thu gọn" : `+${sortedVariants.length - MAX_VISIBLE_PILLS} gói`}</span>
-                <ChevronDown
-                  className={`h-2.5 w-2.5 transition-transform ${
-                    showAllVariants ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-            )}
           </div>
 
-          {/* Variant Pills Grid / Wrap */}
-          <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto no-scrollbar">
-            {visibleVariants.map((variant, index) => {
+          {/* Variant Pills Grid - Show all without truncation */}
+          <div className="flex flex-wrap gap-1.5">
+            {sortedVariants.map((variant, index) => {
               const isSelected = selectedIndex === index;
               return (
                 <button
@@ -163,8 +149,13 @@ export default function GroupedProductCard({
         {/* Price & Stock Row */}
         <div className="flex items-center justify-between gap-1 mb-2">
           <div className="min-w-0">
-            <div className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight truncate">
-              {formatVND(activeVariant.price)}
+            <div className="flex items-baseline gap-1.5 flex-wrap">
+              <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
+                {formatVND(activeVariant.price)}
+              </span>
+              <span className="text-[10px] font-medium text-blue-600 dark:text-blue-400">
+                (Gói {activeVariant.variantLabel})
+              </span>
             </div>
             {activeVariant.originalPrice &&
               activeVariant.originalPrice > activeVariant.price && (

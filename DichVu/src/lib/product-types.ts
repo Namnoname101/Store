@@ -77,3 +77,66 @@ export function getProductTypeInfo(
   }
 }
 
+export function getProductBadgeLabel(
+  product: {
+    title?: string;
+    description?: string | null;
+    category?: { name?: string; slug?: string } | null;
+  },
+  brandName?: string
+): string {
+  const title = (product.title || "").toLowerCase();
+  const desc = (product.description || "").toLowerCase();
+  const catSlug = (product.category?.slug || "").toLowerCase();
+  const catName = product.category?.name || "";
+
+  // Check if it's an API product
+  const isApi =
+    catSlug === "ai-api" ||
+    catSlug === "ai-api-keys" ||
+    title.startsWith("api ") ||
+    title.includes("api ") ||
+    title.includes("key api");
+
+  if (isApi) {
+    let cleanBrand = "";
+    if (brandName) {
+      cleanBrand = brandName.replace(/AI$/i, "").trim().toUpperCase();
+    } else {
+      if (title.includes("codex")) cleanBrand = "CODEX";
+      else if (title.includes("claude")) cleanBrand = "CLAUDE";
+      else if (title.includes("deepseek")) cleanBrand = "DEEPSEEK";
+      else if (title.includes("cursor")) cleanBrand = "CURSOR";
+      else if (title.includes("gemini")) cleanBrand = "GEMINI";
+      else if (title.includes("grok")) cleanBrand = "GROK";
+      else if (title.includes("glm") || title.includes("zhipu")) cleanBrand = "GLM";
+      else if (title.includes("kimi")) cleanBrand = "KIMI";
+      else cleanBrand = "AI";
+    }
+
+    const hasFastSpeed =
+      title.includes("tốc độ") ||
+      title.includes("nhanh") ||
+      desc.includes("tốc độ") ||
+      desc.includes("nhanh");
+
+    if (hasFastSpeed) {
+      return `API ${cleanBrand} • TỐC ĐỘ CAO`;
+    }
+
+    const isMax = title.includes("max") || desc.includes("max");
+    if (isMax) {
+      return `API ${cleanBrand} • MAX TỐC ĐỘ`;
+    }
+
+    return `API ${cleanBrand}`;
+  }
+
+  // Non-API products: clean up category name if it contains parentheses
+  if (catName.includes("(")) {
+    return catName.split("(")[0].trim().toUpperCase();
+  }
+
+  return catName.toUpperCase() || "DỊCH VỤ SỐ";
+}
+
