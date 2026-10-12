@@ -2,24 +2,12 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Renaming categories to clean, concise names...');
-  
-  await prisma.category.updateMany({
-    where: { slug: 'ai-api' },
+  console.log('Updating category name by id...');
+  const res = await prisma.category.update({
+    where: { id: '2c69d4c5-b493-40c5-bb3e-019c9f8599dd' },
     data: { name: 'API & Key AI' }
   });
-
-  await prisma.category.updateMany({
-    where: { slug: 'dich-vu-mxh' },
-    data: { name: 'Dịch Vụ MXH' }
-  });
-
-  await prisma.category.updateMany({
-    where: { slug: 'ai-tool' },
-    data: { name: 'Tài Khoản AI' }
-  });
-
-  console.log('Categories renamed successfully.');
+  console.log('Result:', res);
 }
 
 main().finally(() => prisma.$disconnect());
