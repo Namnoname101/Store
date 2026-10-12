@@ -120,6 +120,15 @@ export default function Navbar() {
 
         {/* Action Controls - Desktop */}
         <div className="hidden lg:flex items-center gap-2.5 shrink-0">
+          {/* Codex Credit Platform */}
+          <Link
+            href="/codex"
+            className="flex items-center gap-1.5 rounded-lg border border-purple-500/30 bg-purple-50/70 dark:bg-purple-950/30 px-3 py-2 text-xs font-semibold text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/50 hover:border-purple-500/50 transition-all shadow-sm group"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400 group-hover:rotate-12 transition-transform" />
+            <span>Nạp API Credit</span>
+          </Link>
+
           {/* Order lookup */}
           <Link
             href="/lookup"
@@ -258,9 +267,18 @@ export default function Navbar() {
               </Link>
             ))}
           </nav>
-          <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            <span>Thanh toán QR tự động</span>
+          <div className="flex items-center gap-4 text-[11px]">
+            <Link
+              href="/developer/usage"
+              className="text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1 font-semibold"
+            >
+              <Sparkles className="h-3 w-3" />
+              <span>Developer Dashboard</span>
+            </Link>
+            <div className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <span>Thanh toán QR tự động</span>
+            </div>
           </div>
         </div>
       </div>
@@ -325,6 +343,30 @@ export default function Navbar() {
               <div className="flex items-center gap-2">
                 <ReceiptText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 <span>Tra cứu đơn hàng</span>
+              </div>
+              <ChevronRight className="h-4 w-4 text-slate-400" />
+            </Link>
+
+            <Link
+              href="/codex"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center justify-between text-sm font-medium text-purple-700 dark:text-purple-300 hover:text-purple-800 dark:hover:text-white px-2 py-2 rounded-lg bg-purple-50/50 dark:bg-purple-950/20"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                <span>Nạp Codex API Credit</span>
+              </div>
+              <ChevronRight className="h-4 w-4 text-purple-400" />
+            </Link>
+
+            <Link
+              href="/developer/usage"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center justify-between text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white px-2 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
+            >
+              <div className="flex items-center gap-2">
+                <Layers className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                <span>Developer API Usage</span>
               </div>
               <ChevronRight className="h-4 w-4 text-slate-400" />
             </Link>
