@@ -215,6 +215,10 @@ export async function fulfillOrderViaUpstream(
       const adapter = getSupplierAdapter(candidate.supplier.type);
 
       for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        if (attempt > 1 && process.env.NODE_ENV !== "test") {
+          // Backoff delay to allow provider cooldown / rate-limit window to reset
+          await new Promise((resolve) => setTimeout(resolve, attempt * 2000));
+        }
         try {
           purchaseResult = await adapter.buyProduct(
             {

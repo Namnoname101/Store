@@ -118,7 +118,23 @@ export class GenzShopAdapter implements ISupplierAdapter {
 
       // Successful response extraction
       const rawAccounts = json?.deliveredAccounts ?? json?.data ?? json?.keys ?? [];
-      const deliveredKeys = sanitizeDeliveredKeys(rawAccounts);
+      const normalizedAccounts = Array.isArray(rawAccounts)
+        ? rawAccounts.map((acc: any) => {
+            if (typeof acc === "object" && acc !== null) {
+              if (acc.password && !acc.user) {
+                return String(acc.password).trim();
+              }
+              if (acc.user && acc.password) {
+                return `${String(acc.user).trim()}|${String(acc.password).trim()}`;
+              }
+              if (acc.key || acc.apiKey || acc.token) {
+                return String(acc.key || acc.apiKey || acc.token).trim();
+              }
+            }
+            return acc;
+          })
+        : rawAccounts;
+      const deliveredKeys = sanitizeDeliveredKeys(normalizedAccounts);
 
       const upstreamOrderId =
         json.order_id ??

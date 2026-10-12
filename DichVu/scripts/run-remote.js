@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { spawnSync } = require('child_process');
 
-const remoteScript = fs.readFileSync('scripts/rename-category.js', 'utf8');
+const remoteScript = fs.readFileSync('scripts/check-ord626949.js', 'utf8');
 const b64 = Buffer.from(remoteScript).toString('base64');
 const cmd = `sh -c "echo ${b64} | base64 -d | node"`;
 
