@@ -91,5 +91,48 @@ Kết quả: **1/1 link LIVE** ✅
     expect(res.type).toBe("link");
     expect(res.content).toContain("serviceactivation-google.co");
   });
+
+  it("should correctly parse Shop Xoai Non Office 365 account credentials with inline Password and ignore Loại tài khoản", () => {
+    const raw = `
+✅ **ĐƠN HÀNG THÀNH CÔNG**
+━━━━━━━━━━━━━━━━
+🧾 Mã đơn: \`KOQICV0XHN\`
+🛒 Sản phẩm: 🛍️ **Microsoft Office 365 Plus 1 năm riêng tư**
+📊 Số lượng: **1**
+💵 Thanh toán: **16.800đ**
+💰 Số dư còn lại: **3.223đ**
+━━━━━━━━━━━━━━━━
+📝 **Mô tả lúc bán:**
+Gói tài khoản Microsoft Office 365 Plus sử dụng riêng tư
+✨ Bao gồm các ứng dụng:
+• 📄 Microsoft Word
+• 📊 Microsoft Excel
+• 📽️ Microsoft PowerPoint
+• 📓 Microsoft OneNote
+• 📝 Microsoft Forms
+
+📌 Chi tiết sản phẩm & Quyền lợi:
+• 🔒 Loại tài khoản: Tài khoản riêng tư 100% (dùng riêng cá nhân, đổi mật khẩu thoải mái)
+• 🛡️ Bảo hành: Bảo hành 1 tháng (lỗi 1 đổi 1 nhanh chóng)
+• ⏳ Thời hạn: 12 Tháng
+• 💻 Thiết bị hỗ trợ: Kích hoạt tối đa 5 thiết bị
+• ⚡ Giao hàng: Hệ thống tự động gửi tài khoản ngay sau khi thanh toán
+
+📬 Định dạng bàn giao:
+Sau khi thanh toán thành công, bạn sẽ nhận được thông tin theo dạng:
+Email : Mật khẩu
+━━━━━━━━━━━━━━━━
+🔐 **THÔNG TIN TÀI KHOẢN**
+1)
+\`ji36586@mic-365.com  Password:  F)130046045785af\`
+━━━━━━━━━━━━━━━━
+⚠️ Vui lòng lưu lại thông tin.
+💚 Cảm ơn bạn đã mua hàng tại shop!
+    `;
+
+    const res = extractDeliveredSecret(raw);
+    expect(res.type).toBe("credentials");
+    expect(res.content).toBe("ji36586@mic-365.com|F)130046045785af");
+  });
 });
 

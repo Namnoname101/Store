@@ -156,9 +156,15 @@ async function main() {
         title: "Microsoft Office 365 Plus 1 Năm Riêng Tư",
         description: "Bản quyền Microsoft 365 (Word, Excel, PowerPoint, OneDrive) 1 năm sử dụng ổn định.",
         price: 35000,
+        type: "ACCOUNT",
         fulfillmentType: "API_DROPSHIP",
         categoryId: catSoftware.id,
       },
+    });
+  } else if (office.type !== "ACCOUNT") {
+    office = await prisma.product.update({
+      where: { id: office.id },
+      data: { type: "ACCOUNT" },
     });
   }
   await prisma.supplierProductMapping.upsert({

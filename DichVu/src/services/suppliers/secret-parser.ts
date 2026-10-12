@@ -36,7 +36,20 @@ export function extractDeliveredSecret(rawText: string): ParsedSecret {
     }
   }
 
-  // 2. Check for pipe-separated credentials: email@domain.com|password or user|password
+  // 2. Check for email + Password label on same line (e.g. `user@domain.com  Password:  pass123`)
+  const emailPasswordMatch = text.match(
+    /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\s+(?:Password|Pass|Mật\s*khẩu):\s*`?([^\s\n\r`]+)`?/i
+  );
+  if (emailPasswordMatch) {
+    return {
+      type: "credentials",
+      content: `${emailPasswordMatch[1].trim()}|${emailPasswordMatch[2].trim()}`,
+      instructions: text,
+      rawText: text,
+    };
+  }
+
+  // 3. Check for pipe-separated credentials: email@domain.com|password or user|password
   const pipeMatch = text.match(
     /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\s*\|\s*[^\s\n\r]+)/
   );
@@ -50,19 +63,23 @@ export function extractDeliveredSecret(rawText: string): ParsedSecret {
     };
   }
 
-  // 3. Check for labeled credentials: "Tài khoản: ... \nMật khẩu: ..."
+  // 4. Check for labeled credentials: "Tài khoản: ... \nMật khẩu: ..."
+  // Exclude descriptive labels like "Loại tài khoản:", "Tên tài khoản:"
   const labeledMatch = text.match(
-    /(?:Tài\s*khoản|Email|Username|User):\s*`?([^\n\r`]+)`?[\s\S]*?(?:Mật\s*khẩu|Pass|Password):\s*`?([^\n\r`]+)`?/i
+    /(?:(?<!(?:Loại|Tên|Dạng)\s*)(?:Tài\s*khoản|Email|Username|User)):\s*`?([^\n\r`]+)`?[\s\S]*?(?:Mật\s*khẩu|Pass|Password):\s*`?([^\n\r`]+)`?/i
   );
   if (labeledMatch && labeledMatch[1] && labeledMatch[2]) {
     const u = labeledMatch[1].trim();
     const p = labeledMatch[2].trim();
-    return {
-      type: "credentials",
-      content: `${u}|${p}`,
-      instructions: text,
-      rawText: text,
-    };
+    // Guard against descriptions being mistaken for usernames
+    if (!u.toLowerCase().includes("riêng tư") && !u.toLowerCase().includes("cá nhân")) {
+      return {
+        type: "credentials",
+        content: `${u}|${p}`,
+        instructions: text,
+        rawText: text,
+      };
+    }
   }
 
   // 4. Check for License Key: e.g. "Key: XXXXX-XXXXX" or "Mã kích hoạt: XXXXX"
