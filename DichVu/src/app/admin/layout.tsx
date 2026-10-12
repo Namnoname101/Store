@@ -18,6 +18,7 @@ import {
   Users,
   Zap,
   Scale,
+  Sparkles,
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -102,6 +103,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       href: "/admin/locket-auto",
       icon: Zap,
       current: pathname.startsWith("/admin/locket-auto"),
+    },
+    {
+      name: "Codex & ModelAPI",
+      href: "/admin/codex",
+      icon: Sparkles,
+      current: pathname.startsWith("/admin/codex"),
     },
   ];
 
