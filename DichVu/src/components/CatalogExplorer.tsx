@@ -202,6 +202,9 @@ export default function CatalogExplorer({
   initialSearch = "",
 }: CatalogExplorerProps) {
   const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
+  const [selectedCategoryTab, setSelectedCategoryTab] = useState<string>(
+    initialCategory && initialCategory !== "all" ? initialCategory.toLowerCase() : "all"
+  );
   const [activeSectionId, setActiveSectionId] = useState<string>(SECTION_DEFINITIONS[0].id);
   const [quickViewProduct, setQuickViewProduct] = useState<ProductCardProps["product"] | null>(null);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState<boolean>(false);
@@ -210,26 +213,16 @@ export default function CatalogExplorer({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Sync state if searchParams change externally (e.g. from Navbar search)
+  // Sync state if searchParams change externally (e.g. from Navbar search or category links)
   useEffect(() => {
-    const urlSearch = searchParams.get("search");
-    if (urlSearch !== null && urlSearch !== undefined) setSearchQuery(urlSearch);
-
     const urlCategory = searchParams.get("category");
     if (urlCategory) {
-      const target = urlCategory.toLowerCase();
-      // Find matching section and scroll to it
-      const matched = SECTION_DEFINITIONS.find(
-        (s) =>
-          s.id === target ||
-          s.categorySlugs.includes(target) ||
-          s.keywords.some((kw) => kw === target || target.includes(kw) || kw.includes(target))
-      );
-      if (matched) {
-        setTimeout(() => {
-          scrollToSection(matched.id);
-        }, 150);
-      }
+      setSelectedCategoryTab(urlCategory.toLowerCase());
+    }
+
+    const urlSearch = searchParams.get("search");
+    if (urlSearch !== null && urlSearch !== undefined) {
+      setSearchQuery(urlSearch);
     }
   }, [searchParams]);
 
@@ -360,12 +353,43 @@ export default function CatalogExplorer({
     }
   };
 
+  const handleSelectCategoryTab = (tabId: string) => {
+    setSelectedCategoryTab(tabId);
+    if (tabId === "all") {
+      router.replace("/#catalog", { scroll: false });
+    } else {
+      router.replace(`/?category=${tabId}#catalog`, { scroll: false });
+    }
+  };
+
+  const sectionProductCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    populatedSections.forEach((s) => {
+      counts[s.id] = s.products.length;
+    });
+    return counts;
+  }, [populatedSections]);
+
+  const sectionsToDisplay = useMemo(() => {
+    if (selectedCategoryTab === "all") return populatedSections;
+    const target = selectedCategoryTab.toLowerCase();
+    const matchedDef = SECTION_DEFINITIONS.find(
+      (d) =>
+        d.id === target ||
+        d.categorySlugs.includes(target) ||
+        d.keywords.some((kw) => kw === target || target.includes(kw))
+    );
+    if (!matchedDef) return populatedSections;
+    return populatedSections.filter((s) => s.id === matchedDef.id);
+  }, [selectedCategoryTab, populatedSections]);
+
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
   };
 
   const clearFilters = () => {
     setSearchQuery("");
+    setSelectedCategoryTab("all");
     router.replace("/#catalog", { scroll: false });
   };
 
@@ -414,46 +438,65 @@ export default function CatalogExplorer({
         </div>
       </div>
 
-      {/* Mobile & Tablet Quick Jump Bar (lg:hidden) */}
-      {populatedSections.length > 1 && (
-        <div className="lg:hidden sticky top-14 z-20 -mx-4 px-4 sm:-mx-6 sm:px-6 mb-8 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-y border-slate-200 dark:border-slate-800 py-2.5 flex items-center gap-2 overflow-x-auto no-scrollbar shadow-xs">
-          {populatedSections.map((sec) => {
-            const isActive = activeSectionId === sec.id;
-            const SecIcon = sec.icon;
-            return (
-              <button
-                key={sec.id}
-                type="button"
-                onClick={() => scrollToSection(sec.id)}
-                className={`flex items-center gap-1.5 shrink-0 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all ${
-                  isActive
-                    ? "bg-blue-600 text-white shadow-xs ring-1 ring-blue-500"
-                    : "bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:text-slate-900 dark:hover:text-white"
-                }`}
-              >
-                <SecIcon className="h-3.5 w-3.5" />
-                <span>{sec.shortLabel}</span>
+      {/* Category Tabs Filter Bar (Universal across Mobile & Desktop) */}
+      <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar pb-3 mb-6 border-b border-slate-100 dark:border-slate-800">
+        <button
+          type="button"
+          onClick={() => handleSelectCategoryTab("all")}
+          className={`flex items-center gap-1.5 shrink-0 rounded-xl px-3 sm:px-3.5 py-2 text-xs font-semibold transition-all ${
+            selectedCategoryTab === "all"
+              ? "bg-blue-600 text-white shadow-xs ring-1 ring-blue-500"
+              : "bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:text-slate-900 dark:hover:text-white"
+          }`}
+        >
+          <Layers className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          <span>Tất cả</span>
+          <span className="ml-0.5 rounded-full bg-slate-200 dark:bg-slate-800 px-1.5 py-0.2 text-[10px] text-slate-600 dark:text-slate-300">
+            {allProducts.length}
+          </span>
+        </button>
+
+        {SECTION_DEFINITIONS.map((def) => {
+          const isSelected =
+            selectedCategoryTab === def.id ||
+            def.categorySlugs.includes(selectedCategoryTab);
+          const DefIcon = def.icon;
+          const count = sectionProductCounts[def.id] || 0;
+          return (
+            <button
+              key={def.id}
+              type="button"
+              onClick={() => handleSelectCategoryTab(def.id)}
+              className={`flex items-center gap-1.5 shrink-0 rounded-xl px-3 sm:px-3.5 py-2 text-xs font-semibold transition-all ${
+                isSelected
+                  ? "bg-blue-600 text-white shadow-xs ring-1 ring-blue-500"
+                  : "bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              <DefIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span>{def.shortLabel}</span>
+              {count > 0 && (
                 <span
                   className={`ml-0.5 rounded-full px-1.5 py-0.2 text-[10px] ${
-                    isActive
+                    isSelected
                       ? "bg-blue-700 text-white"
-                      : "bg-slate-200 dark:bg-slate-800 text-slate-500"
+                      : "bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
                   }`}
                 >
-                  {sec.products.length}
+                  {count}
                 </span>
-              </button>
-            );
-          })}
-        </div>
-      )}
+              )}
+            </button>
+          );
+        })}
+      </div>
 
       {/* Main Container: Category Sections spanning full width */}
-      {populatedSections.length > 0 ? (
+      {sectionsToDisplay.length > 0 ? (
         <div className="relative w-full">
           {/* Category Sections */}
           <div className="w-full space-y-10 sm:space-y-14">
-            {populatedSections.map((sec) => {
+            {sectionsToDisplay.map((sec) => {
               const currentSubBrand = selectedSubBrands[sec.id] || "all";
               const { items, availableBrands } = processSectionProducts(
                 sec.products,
@@ -629,7 +672,9 @@ export default function CatalogExplorer({
             Không tìm thấy sản phẩm phù hợp
           </h3>
           <p className="mt-1 max-w-sm text-xs text-slate-500">
-            Hiện không có sản phẩm nào khớp với từ khóa tìm kiếm.
+            {searchQuery
+              ? `Không tìm thấy sản phẩm nào khớp với từ khóa "${searchQuery}".`
+              : "Danh mục này hiện chưa có sản phẩm sẵn sàng. Đội ngũ kỹ thuật đang cập nhật thêm dịch vụ mới!"}
           </p>
           <button
             onClick={clearFilters}
