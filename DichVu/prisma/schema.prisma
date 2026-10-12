@@ -25,6 +25,7 @@ model User {
   orders             Order[]
   depositOrders      DepositOrder[]
   walletTransactions WalletTransaction[]
+  codexBindings      CustomerApiKeyBinding[]
 }
 
 model Category {
@@ -104,6 +105,7 @@ model Order {
   deliveredItems      ProductItem[]
   transactions        PaymentTransaction[]
   paymentIntents      PaymentIntent[]
+  creditTopupOrder    CreditTopupOrder?
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 }
@@ -274,5 +276,73 @@ model LocketAutoLog {
   createdAt   DateTime @default(now())
 
   @@index([createdAt])
+}
+
+model CustomerApiKeyBinding {
+  id               String            @id @default(uuid())
+  userId           String?           // Khách đăng nhập (User.id)
+  user             User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  guestEmail       String?           // Khách vãng lai
+  upstreamTokenId  Int               @unique // ID token trên modelapi.vn (Bắt buộc unique để 1 token chỉ thuộc 1 khách)
+  keyFingerprint   String            @unique // HMAC-SHA256 của chuỗi sk-... (dùng để tìm kiếm mà không lưu plain text key)
+  maskedKey        String            // sk-abc...xyz (dùng để hiển thị UI)
+  keyName          String?           // Tên gợi nhớ của key trên ModelAPI
+  status           String            @default("ACTIVE") // ACTIVE, DISABLED
+  totalCreditUsd   Float             @default(0) // Tổng USD đã nạp lũy kế qua DaiTruong
+  lastSyncedAt     DateTime?
+  topupOrders      CreditTopupOrder[]
+  ledgerEntries    CreditLedger[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@index([userId])
+  @@index([keyFingerprint])
+}
+
+model CreditTopupOrder {
+  id              String                @id @default(uuid())
+  orderId         String                @unique
+  order           Order                 @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  bindingId       String
+  binding         CustomerApiKeyBinding @relation(fields: [bindingId], references: [id], onDelete: Cascade)
+  creditUsd       Float                 // Gói credit khách mua (USD, ví dụ 10.0)
+  quotaUnits      Int                   // Quota tương ứng (ví dụ: 5.000.000)
+  status          String                @default("PENDING") // PENDING, PROCESSING, COMPLETED, RECONCILE_REQUIRED, FAILED
+  errorMessage    String?
+  retryCount      Int                   @default(0)
+  completedAt     DateTime?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  @@index([bindingId])
+  @@index([status])
+}
+
+model CreditLedger {
+  id                 String                @id @default(uuid())
+  bindingId          String
+  binding            CustomerApiKeyBinding @relation(fields: [bindingId], references: [id], onDelete: Cascade)
+  topupOrderId       String?
+  upstreamTokenId    Int
+  quotaBefore        Int                   // Quota đọc từ modelapi trước khi nạp
+  quotaAddedExpected Int                   // Quota dự kiến cộng thêm
+  quotaAfterReported Int                   // Quota đọc lại sau khi update
+  discrepancyDelta   Int                   @default(0) // Độ lệch nếu key tiêu thụ AI trong lúc nạp
+  performedBy        String                @default("SYSTEM") // SYSTEM, OWNER
+  note               String?
+  createdAt          DateTime              @default(now())
+
+  @@index([bindingId])
+  @@index([upstreamTokenId])
+}
+
+model ModelApiSyncSnapshot {
+  id               String   @id @default(uuid())
+  sourceQuotaTotal Int      // Quota tài khoản tổng modelapi.vn
+  sourceQuotaUsed  Int
+  sourceBalanceUsd Float
+  totalCustomerObligationQuota Int // Tổng quota còn lại của tất cả key cửa hàng cấp
+  status           String   @default("HEALTHY") // HEALTHY, WARNING_LOW_BALANCE, CRITICAL
+  createdAt        DateTime @default(now())
 }
 

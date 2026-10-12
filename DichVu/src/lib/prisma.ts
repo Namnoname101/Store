@@ -121,6 +121,28 @@ export const RefundStatus = {
 } as const;
 export type RefundStatus = (typeof RefundStatus)[keyof typeof RefundStatus];
 
+export const TopupStatus = {
+  PENDING: "PENDING",
+  PROCESSING: "PROCESSING",
+  COMPLETED: "COMPLETED",
+  RECONCILE_REQUIRED: "RECONCILE_REQUIRED",
+  FAILED: "FAILED",
+} as const;
+export type TopupStatus = (typeof TopupStatus)[keyof typeof TopupStatus];
+
+export const CodexBindingStatus = {
+  ACTIVE: "ACTIVE",
+  DISABLED: "DISABLED",
+} as const;
+export type CodexBindingStatus = (typeof CodexBindingStatus)[keyof typeof CodexBindingStatus];
+
+export const SyncSnapshotStatus = {
+  HEALTHY: "HEALTHY",
+  WARNING_LOW_BALANCE: "WARNING_LOW_BALANCE",
+  CRITICAL: "CRITICAL",
+} as const;
+export type SyncSnapshotStatus = (typeof SyncSnapshotStatus)[keyof typeof SyncSnapshotStatus];
+
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
