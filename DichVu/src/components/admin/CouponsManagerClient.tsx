@@ -15,7 +15,7 @@ import {
   Check,
   Tag,
 } from "lucide-react";
-import { formatVND } from "@/components/ProductCard";
+import { formatVND } from "@/lib/product-types";
 
 export interface CouponItem {
   id: string;

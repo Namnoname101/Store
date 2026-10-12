@@ -16,7 +16,7 @@ import {
   ShoppingBag,
   ArrowDownLeft,
 } from "lucide-react";
-import { formatVND } from "@/components/ProductCard";
+import { formatVND } from "@/lib/product-types";
 
 export interface AdminUserItem {
   id: string;

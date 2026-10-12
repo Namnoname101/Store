@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 const SWEEP_INTERVAL_SECONDS = parseInt(process.env.SWEEP_INTERVAL_SECONDS || "60", 10);
 const SUPPLIER_SYNC_INTERVAL_SECONDS = parseInt(
-  process.env.SUPPLIER_SYNC_INTERVAL_SECONDS || "3600",
+  process.env.SUPPLIER_SYNC_INTERVAL_SECONDS || "21600",
   10
 );
 const CRON_SECRET = process.env.CRON_SECRET || "internal_sync_secret_token";
@@ -132,10 +132,7 @@ async function main() {
   // Periodic sweep loop
   setInterval(runSweepCycle, SWEEP_INTERVAL_SECONDS * 1000);
 
-  // Initial supplier sync delayed by 10s to let Next.js boot
-  setTimeout(triggerSupplierSync, 10000);
-
-  // Periodic supplier sync loop
+  // Periodic supplier sync loop (throttled in background, no immediate boot trigger)
   setInterval(triggerSupplierSync, SUPPLIER_SYNC_INTERVAL_SECONDS * 1000);
 
   // Graceful shutdown

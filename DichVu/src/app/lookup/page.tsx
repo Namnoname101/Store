@@ -17,7 +17,7 @@ import {
   ShoppingBag,
   Activity,
 } from "lucide-react";
-import { formatVND } from "@/components/ProductCard";
+import { formatVND } from "@/lib/product-types";
 import { getRecentOrders, clearRecentOrders, type SavedOrder } from "@/lib/order-storage";
 
 interface LookupItem {

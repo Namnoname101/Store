@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import React from "react";
-import ProductCard, { formatVND, getProductTypeInfo } from "@/components/ProductCard";
+import ProductCard from "@/components/ProductCard";
+import { formatVND, getProductTypeInfo } from "@/lib/product-types";
 import { STORE_CATEGORIES } from "@/components/Navbar";
 import type { Product } from "@prisma/client";
 

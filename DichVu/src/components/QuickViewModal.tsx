@@ -21,7 +21,7 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import type { ProductCardProps } from "@/components/ProductCard";
-import { formatVND, getProductTypeInfo } from "@/components/ProductCard";
+import { formatVND, getProductTypeInfo } from "@/lib/product-types";
 import { useCart } from "@/contexts/CartContext";
 
 interface QuickViewModalProps {

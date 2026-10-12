@@ -184,6 +184,9 @@ export async function syncAllActiveSuppliers(): Promise<BulkSyncResult> {
         error: err?.message || String(err),
       });
     }
+
+    // Throttle supplier API requests to prevent supplier IP rate limiting
+    await new Promise((resolve) => setTimeout(resolve, 200));
   }
 
   return {

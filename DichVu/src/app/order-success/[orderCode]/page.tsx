@@ -11,7 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { getOrderDetails } from "@/services/order.service";
-import { formatVND } from "@/components/ProductCard";
+import { formatVND } from "@/lib/product-types";
 import SecretDisplay from "@/components/SecretDisplay";
 
 interface OrderSuccessPageProps {

@@ -25,7 +25,7 @@ import {
   PlusCircle,
 } from "lucide-react";
 import CountdownTimer from "@/components/CountdownTimer";
-import { formatVND } from "@/components/ProductCard";
+import { formatVND } from "@/lib/product-types";
 import type { OrderDetailsResponse } from "@/services/order.service";
 import { playSuccessChime } from "@/lib/sound";
 import { saveRecentOrder } from "@/lib/order-storage";

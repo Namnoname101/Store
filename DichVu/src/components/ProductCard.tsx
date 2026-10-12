@@ -17,7 +17,6 @@ export interface ProductCardProps {
 }
 
 import { formatVND, getProductTypeInfo, getProductBadgeLabel } from "@/lib/product-types";
-export { formatVND, getProductTypeInfo, getProductBadgeLabel };
 
 export default function ProductCard({ product, onQuickView }: ProductCardProps) {
   const { title, slug, price, originalPrice, type, stockCount, thumbnailUrl } = product;

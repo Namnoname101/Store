@@ -18,7 +18,7 @@ import {
   X as CloseIcon,
   ShoppingBag,
 } from "lucide-react";
-import { formatVND } from "@/components/ProductCard";
+import { formatVND } from "@/lib/product-types";
 import { useCart } from "@/contexts/CartContext";
 
 interface ProductPurchaseBoxProps {
