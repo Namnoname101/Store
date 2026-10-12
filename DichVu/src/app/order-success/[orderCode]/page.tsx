@@ -176,10 +176,10 @@ export default async function OrderSuccessPage({
             <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-3">
               <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase text-slate-400 mb-0.5">
                 <Mail className="h-3 w-3 text-indigo-400" />
-                <span>Email nhận hóa đơn</span>
+                <span>{order.customerEmail ? "Email nhận hóa đơn" : "Hình thức nhận hàng"}</span>
               </div>
               <div className="text-sm font-semibold text-slate-200 truncate">
-                {order.customerEmail || "Không có (Khách vãng lai)"}
+                {order.customerEmail || "Trực tiếp trên màn hình"}
               </div>
             </div>
 

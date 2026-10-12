@@ -6,7 +6,6 @@ import {
   Zap,
   ShieldCheck,
   Clock,
-  Mail,
   AlertCircle,
   Loader2,
   CheckCircle2,
@@ -58,7 +57,6 @@ export default function ProductPurchaseBox({
   const effectiveMax = maxQuantity ? Math.max(effectiveMin, maxQuantity) : stockCount;
 
   const [quantity, setQuantity] = useState<number>(isCustomQuantity ? effectiveMin : 1);
-  const [email, setEmail] = useState<string>("");
   const [targetLink, setTargetLink] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -249,11 +247,6 @@ export default function ProductPurchaseBox({
     e.preventDefault();
     setErrorMessage(null);
 
-    if (email.trim() && !validateEmail(email)) {
-      setErrorMessage("Vui lòng nhập địa chỉ email hợp lệ hoặc để trống.");
-      return;
-    }
-
     if (requiresLink) {
       const linkErr = validateTargetLink(targetLink);
       if (linkErr) {
@@ -286,7 +279,7 @@ export default function ProductPurchaseBox({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          customerEmail: email.trim() || null,
+          customerEmail: null,
           customerNote: requiresLink ? targetLink.trim() : undefined,
           couponCode: appliedCoupon?.code || undefined,
           items: [
@@ -526,34 +519,6 @@ export default function ProductPurchaseBox({
             </p>
           </div>
         )}
-
-        {/* Customer Email Input */}
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label
-              htmlFor="customerEmail"
-              className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
-            >
-              Email nhận thông tin
-            </label>
-            <span className="text-[10px] text-slate-400 font-medium">Tùy chọn</span>
-          </div>
-          <div className="relative">
-            <input
-              id="customerEmail"
-              type="email"
-              placeholder="tenban@gmail.com (Không bắt buộc)"
-              value={email}
-              disabled={isLoading || !inStock}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2.5 pl-10 pr-4 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
-            />
-            <Mail className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
-          </div>
-          <p className="mt-1 text-[11px] text-slate-500">
-            Không bắt buộc. Bạn vẫn nhận được thông tin trên màn hình sau khi thanh toán.
-          </p>
-        </div>
 
         {/* Coupon Code Input */}
         <div>

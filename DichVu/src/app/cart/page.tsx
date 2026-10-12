@@ -18,7 +18,6 @@ import {
   ShieldCheck,
   Tag,
   Loader2,
-  Mail,
   FileText,
   Clock,
   Sparkles,
@@ -43,7 +42,6 @@ export default function CartPage() {
   } = useCart();
 
   // Guest checkout form state
-  const [customerEmail, setCustomerEmail] = useState("");
   const [customerNote, setCustomerNote] = useState("");
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{
@@ -137,15 +135,6 @@ export default function CartPage() {
       return;
     }
 
-    // Email is optional, but if provided, validate format
-    if (customerEmail.trim()) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(customerEmail.trim())) {
-        setErrorMessage("Địa chỉ email không đúng định dạng. Bạn có thể để trống nếu không muốn nhận email.");
-        return;
-      }
-    }
-
     // Validate SMM items have required links
     for (const item of selectedItems) {
       if (item.requiresLink && (!item.targetLink || !item.targetLink.trim())) {
@@ -198,7 +187,7 @@ export default function CartPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customerEmail: customerEmail.trim() || null,
+          customerEmail: null,
           customerNote: combinedNote,
           couponCode: appliedCoupon?.code,
           items: selectedItems.map((i) => ({
@@ -478,29 +467,6 @@ export default function CartPage() {
 
               {/* Guest Checkout Fields */}
               <div className="space-y-3.5">
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                      Email nhận thông tin
-                    </label>
-                    <span className="text-[10px] text-slate-400 font-medium">Tùy chọn</span>
-                  </div>
-                  <div className="relative">
-                    <input
-                      type="email"
-                      placeholder="tenban@gmail.com (Không bắt buộc)"
-                      value={customerEmail}
-                      disabled={isSubmitting}
-                      onChange={(e) => setCustomerEmail(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2.5 pl-9 pr-3 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-blue-600 focus:outline-none"
-                    />
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                  </div>
-                  <p className="mt-1 text-[11px] text-slate-400">
-                    Không bắt buộc. Bạn vẫn nhận được thông tin trên màn hình sau khi thanh toán.
-                  </p>
-                </div>
-
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <label className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">

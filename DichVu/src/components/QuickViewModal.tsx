@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import {
   X,
   Zap,
-  Mail,
   Globe,
   Tag,
   Ticket,
@@ -62,7 +61,6 @@ export default function QuickViewModal({
   const effectiveMax = product?.maxQuantity || (isSMM ? 100000 : product?.stockCount || 1);
 
   const [quantity, setQuantity] = useState<number>(effectiveMin);
-  const [email, setEmail] = useState<string>("");
   const [targetLink, setTargetLink] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -86,7 +84,6 @@ export default function QuickViewModal({
   useEffect(() => {
     if (product) {
       setQuantity(isSMM ? effectiveMin : 1);
-      setEmail("");
       setTargetLink("");
       setErrorMessage(null);
       setAppliedCoupon(null);
@@ -275,10 +272,6 @@ export default function QuickViewModal({
     }
 
     setErrorMessage(null);
-    if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      setErrorMessage("Vui lòng nhập địa chỉ email hợp lệ hoặc để trống.");
-      return;
-    }
 
     if (isSMM) {
       const linkErr = validateTargetLink(targetLink);
@@ -305,7 +298,7 @@ export default function QuickViewModal({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customerEmail: email.trim() || null,
+          customerEmail: null,
           customerNote: isSMM ? targetLink.trim() : undefined,
           couponCode: appliedCoupon?.code || undefined,
           items: [
@@ -555,30 +548,6 @@ export default function QuickViewModal({
                 </div>
               </div>
             )}
-
-            {/* Email input */}
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                  Email nhận thông tin
-                </label>
-                <span className="text-[10px] text-slate-400 font-medium">Tùy chọn</span>
-              </div>
-              <div className="relative">
-                <input
-                  type="email"
-                  placeholder="tenban@gmail.com (Không bắt buộc)"
-                  value={email}
-                  disabled={isLoading || !inStock}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2.5 pl-9 pr-3 text-sm text-slate-900 dark:text-white focus:border-blue-600 focus:outline-none"
-                />
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-              </div>
-              <p className="mt-1 text-[11px] text-slate-400">
-                Không bắt buộc. Bạn vẫn nhận được thông tin trên màn hình sau khi thanh toán.
-              </p>
-            </div>
 
             {/* Coupon input */}
             <div>

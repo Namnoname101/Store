@@ -648,12 +648,14 @@ export default function CheckoutClient({
                   </span>
                 </div>
               ))}
-              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                <span className="text-slate-400">Email nhận thông báo:</span>
-                <span className="font-mono font-medium text-indigo-300 truncate max-w-[200px]">
-                  {order.customerEmail || "Không có (Khách vãng lai)"}
-                </span>
-              </div>
+              {order.customerEmail ? (
+                <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                  <span className="text-slate-400">Email nhận thông báo:</span>
+                  <span className="font-mono font-medium text-indigo-300 truncate max-w-[200px]">
+                    {order.customerEmail}
+                  </span>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
@@ -1196,12 +1198,14 @@ export default function CheckoutClient({
                   </div>
                 ) : null}
 
-                <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Email nhận hàng:</span>
-                  <span className="font-mono font-medium text-indigo-300 truncate max-w-[200px]">
-                    {order.customerEmail || "Không có (Khách vãng lai)"}
-                  </span>
-                </div>
+                {order.customerEmail ? (
+                  <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                    <span className="text-slate-400">Email nhận hàng:</span>
+                    <span className="font-mono font-medium text-indigo-300 truncate max-w-[200px]">
+                      {order.customerEmail}
+                    </span>
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>
