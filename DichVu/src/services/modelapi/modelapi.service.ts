@@ -298,8 +298,10 @@ export class ModelApiService {
 
       clearTimeout(timerBefore);
 
-      // Self-heal: if token not found by ID (e.g. legacy or placeholder ID), look up by keyName
-      if (!getBeforeRes.ok && params.bindingId) {
+      let beforeJson = await getBeforeRes.json().catch(() => null);
+
+      // Self-heal: if token not found by ID (e.g. HTTP error or record not found), look up by keyName
+      if ((!getBeforeRes.ok || !beforeJson?.success || !beforeJson?.data) && params.bindingId) {
         try {
           const binding = await prisma.customerApiKeyBinding.findUnique({
             where: { id: params.bindingId },
@@ -338,6 +340,9 @@ export class ModelApiService {
                     },
                   }
                 );
+                if (getBeforeRes.ok) {
+                  beforeJson = await getBeforeRes.json().catch(() => null);
+                }
               }
             }
           }
@@ -352,9 +357,8 @@ export class ModelApiService {
         );
       }
 
-      const beforeJson = await getBeforeRes.json();
       if (!beforeJson?.success || !beforeJson?.data) {
-        throw new Error("Invalid response format when reading quotaBefore");
+        throw new Error(`Invalid response format when reading quotaBefore: ${beforeJson?.message || "Unknown error"}`);
       }
 
       const tokenData = beforeJson.data;
