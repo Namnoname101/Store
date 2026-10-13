@@ -513,9 +513,12 @@ export async function handleIncomingTransaction(
       }
     );
 
-    // Fulfill dropship items via upstream if any
+    // Fulfill dropship items via upstream if any (exclude codex credit orders)
     const hasDropshipItems = order.orderItems.some(
-      (item) => item.product?.fulfillmentType === FulfillmentType.API_DROPSHIP
+      (item) =>
+        item.product?.fulfillmentType === FulfillmentType.API_DROPSHIP &&
+        item.product?.type !== "CODEX_CREDIT" &&
+        !order.creditTopupOrder
     );
 
     if (hasDropshipItems) {
