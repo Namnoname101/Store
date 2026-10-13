@@ -554,23 +554,9 @@ export default function SecretDisplay({
   return (
     <div className="space-y-6">
       <BuffProgressCard orderCode={orderCode} />
-      {/* Top action bar: count & Copy All button */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/80 px-5 py-4 backdrop-blur-md">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-            <ShieldCheck className="h-5 w-5" />
-          </div>
-          <div>
-            <h3 className="text-sm font-bold text-white">
-              Sản phẩm đã cấp phát thành công
-            </h3>
-            <p className="text-xs text-slate-400">
-              Tổng cộng <strong>{deliveredItems.length}</strong> sản phẩm kỹ thuật số sẵn sàng sử dụng
-            </p>
-          </div>
-        </div>
-
-        {deliveredItems.length > 1 && (
+      {/* Top action bar: Copy All button if multiple items */}
+      {deliveredItems.length > 1 && (
+        <div className="flex justify-end rounded-2xl border border-slate-800 bg-slate-900/80 px-5 py-4 backdrop-blur-md">
           <button
             type="button"
             onClick={handleCopyAll}
@@ -592,8 +578,8 @@ export default function SecretDisplay({
               </>
             )}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Delivered items list */}
       <div className="space-y-4">
