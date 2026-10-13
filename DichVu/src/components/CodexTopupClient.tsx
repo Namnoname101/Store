@@ -189,12 +189,7 @@ export default function CodexTopupClient() {
       if (!res.ok || !data.success) {
         setCheckoutError(data.error || "Không thể tạo đơn nạp credit");
       } else {
-        setOrderResult({
-          orderCode: data.orderCode,
-          totalAmount: data.totalAmount,
-          vietQrUrl: data.vietQrUrl,
-          expiresAt: data.expiresAt,
-        });
+        router.push(`/checkout/${data.orderCode}`);
       }
     } catch (err: any) {
       setCheckoutError(err.message || "Lỗi kết nối khi tạo đơn hàng");

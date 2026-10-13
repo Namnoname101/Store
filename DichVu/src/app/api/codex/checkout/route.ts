@@ -3,6 +3,7 @@ import prisma, { OrderStatus, TopupStatus } from "@/lib/prisma";
 import { getAuthenticatedUser } from "@/lib/key-security";
 import { generateOrderCode, generateVietQrUrl } from "@/lib/vietqr";
 import { validateCoupon } from "@/services/coupon.service";
+import { createPaymentIntentForOrder } from "@/services/payment-intent.service";
 
 import { CODEX_PACKAGES, CodexPackage } from "@/lib/codex.constants";
 
@@ -162,24 +163,30 @@ export async function POST(req: NextRequest) {
         });
       }
 
+      // Create active PaymentIntent for order so webhook and expiration tracking works
+      await createPaymentIntentForOrder(createdOrder.id, createdOrder.totalAmount, tx);
+
       return createdOrder;
     });
 
     // 8. Generate VietQR Link
     const bankId =
+      process.env.BANK_ID ||
       process.env.VIETQR_BANK_ID ||
       process.env.NEXT_PUBLIC_VIETQR_BANK_ID ||
-      "MB";
+      "TPB";
     const bankAccountNo =
+      process.env.BANK_ACCOUNT_NO ||
       process.env.VIETQR_ACCOUNT_NO ||
       process.env.NEXT_PUBLIC_VIETQR_ACCOUNT_NO ||
-      "0000000000";
+      "93320022006";
 
     const vietQrUrl = generateVietQrUrl(
       bankId,
       bankAccountNo,
       totalAmount,
-      order.orderCode
+      order.orderCode,
+      "compact2"
     );
 
     return NextResponse.json(
