@@ -186,54 +186,67 @@ export class ModelApiService {
       clearTimeout(timer1);
 
       if (!probeRes.ok) {
-        return { valid: false, error: "Invalid or inactive API Key" };
+        return { valid: false, error: "API Key không hợp lệ hoặc đã bị vô hiệu hóa trên upstream" };
       }
 
-      // Step 2: Query token details from upstream master account
-      const controller2 = new AbortController();
-      const timer2 = setTimeout(() => controller2.abort(), this.getTimeoutMs());
+      const probeJson = await probeRes.json();
+      const probeData = probeJson?.data;
+      const totalAvailable =
+        typeof probeData === "number"
+          ? probeData
+          : (probeData?.total_available ?? probeData?.quota ?? 0);
+      const tokenName = typeof probeData === "object" ? probeData?.name : undefined;
 
-      const searchRes = await fetch(
-        `${this.getBaseUrl()}/api/token/search?keyword=${encodeURIComponent(apiKey.trim())}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${this.getSystemToken()}`,
-          },
-          signal: controller2.signal,
+      let token: any = null;
+
+      // Step 2: Query token details from upstream master account if system token is configured
+      if (this.getSystemToken()) {
+        try {
+          const controller2 = new AbortController();
+          const timer2 = setTimeout(() => controller2.abort(), this.getTimeoutMs());
+
+          // Search by tokenName if available, else by key
+          const keyword = tokenName || apiKey.trim();
+          const searchRes = await fetch(
+            `${this.getBaseUrl()}/api/token/search?keyword=${encodeURIComponent(keyword)}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${this.getSystemToken()}`,
+              },
+              signal: controller2.signal,
+            }
+          );
+
+          clearTimeout(timer2);
+
+          if (searchRes.ok) {
+            const searchJson = await searchRes.json();
+            if (searchJson?.success && Array.isArray(searchJson?.data) && searchJson.data.length > 0) {
+              token =
+                searchJson.data.find(
+                  (t: any) => t.key === apiKey.trim() || (tokenName && t.name === tokenName)
+                ) || searchJson.data[0];
+            }
+          }
+        } catch {
+          // Non-blocking fallback to probe data
         }
-      );
-
-      clearTimeout(timer2);
-
-      if (!searchRes.ok) {
-        return { valid: false, error: "Failed to locate API token details in upstream system" };
-      }
-
-      const searchJson = await searchRes.json();
-      if (!searchJson?.success || !Array.isArray(searchJson?.data) || searchJson.data.length === 0) {
-        return { valid: false, error: "API Key not found in managed store tokens" };
-      }
-
-      // Match token by key value or take matching search hit
-      const token =
-        searchJson.data.find((t: any) => t.key === apiKey.trim()) || searchJson.data[0];
-
-      if (!token) {
-        return { valid: false, error: "API Key not found in store token list" };
       }
 
       // Status in New API: 1 = Active, 2 = Disabled
-      if (token.status !== 1) {
+      if (token && token.status !== 1) {
         return { valid: false, error: "API Key is disabled or inactive upstream" };
       }
 
       return {
         valid: true,
-        tokenId: token.id,
-        name: token.name,
-        remainQuota: token.remain_quota,
-        unlimitedQuota: Boolean(token.unlimited_quota),
+        tokenId: token?.id || undefined,
+        name: token?.name || tokenName || "API Key",
+        remainQuota: token?.remain_quota ?? totalAvailable,
+        unlimitedQuota: Boolean(
+          token?.unlimited_quota ?? (typeof probeData === "object" ? probeData?.unlimited_quota : false)
+        ),
       };
     } catch (err: any) {
       return { valid: false, error: err.message || "Failed to verify API Key" };
