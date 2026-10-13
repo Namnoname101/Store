@@ -86,6 +86,41 @@ describe("Developer Dashboard & Analytics API Tests", () => {
     expect(data.keyName).toBe("Dev Dashboard Key");
   });
 
+  it("should correctly parse real upstream New API token_usage format (total_available, total_used, total_granted)", async () => {
+    vi.spyOn(ModelApiService, "fetchTokenUsage").mockResolvedValue({
+      code: true,
+      data: {
+        total_available: 4931088,
+        total_granted: 5000000,
+        total_used: 68912,
+        name: "QUOCSCHOOL",
+        object: "token_usage",
+        unlimited_quota: false,
+      },
+    });
+
+    const req = new NextRequest("http://localhost:3000/api/developer/usage", {
+      method: "GET",
+      headers: {
+        "x-api-key": testApiKey,
+      },
+    });
+
+    const res = await usageHandler(req);
+    expect(res.status).toBe(200);
+    const data = await res.json();
+
+    expect(data.success).toBe(true);
+    expect(data.quota).toBe(4931088);
+    expect(data.usedQuota).toBe(68912);
+    expect(data.totalGrantedQuota).toBe(5000000);
+    expect(data.balanceUsd).toBeCloseTo(9.862, 2);
+    expect(data.usedUsd).toBeCloseTo(0.138, 2);
+    expect(data.totalGrantedUsd).toBe(10);
+    expect(data.consumptionRate).toBe(1.4);
+    expect(data.isLowCredit).toBe(false);
+  });
+
   it("should return paginated logs for valid store key", async () => {
     vi.spyOn(ModelApiService, "fetchTokenLogs").mockResolvedValue({
       success: true,

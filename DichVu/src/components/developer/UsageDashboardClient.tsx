@@ -23,8 +23,10 @@ import {
 interface UsageData {
   quota: number;
   usedQuota: number;
+  totalGrantedQuota?: number;
   balanceUsd: number;
   usedUsd: number;
+  totalGrantedUsd?: number;
   consumptionRate: number;
   maskedKey: string;
   keyName: string;
@@ -268,7 +270,7 @@ export default function UsageDashboardClient() {
                 ${usage.balanceUsd.toFixed(2)}
               </div>
               <div className="mt-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                +{usage.quota.toLocaleString("vi-VN")} Points
+                {usage.quota.toLocaleString("vi-VN")} Points còn lại
               </div>
             </div>
           </div>
@@ -288,7 +290,7 @@ export default function UsageDashboardClient() {
                 ${usage.usedUsd.toFixed(2)}
               </div>
               <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                {usage.usedQuota.toLocaleString("vi-VN")} Points
+                {usage.usedQuota.toLocaleString("vi-VN")} Points đã dùng
               </div>
             </div>
           </div>
@@ -306,6 +308,9 @@ export default function UsageDashboardClient() {
             <div className="mt-3">
               <div className="text-2xl font-extrabold text-slate-900 dark:text-white">
                 {usage.consumptionRate}%
+              </div>
+              <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                Tổng cấp: ${usage.totalGrantedUsd !== undefined ? usage.totalGrantedUsd.toFixed(2) : (usage.balanceUsd + usage.usedUsd).toFixed(2)}
               </div>
               <div className="mt-2 h-1.5 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                 <div
@@ -428,8 +433,8 @@ export default function UsageDashboardClient() {
                     <td className="px-4 py-3 text-right font-mono font-semibold text-slate-900 dark:text-white">
                       {log.total_tokens.toLocaleString("vi-VN")}
                     </td>
-                    <td className="px-4 py-3 text-right font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
-                      +{log.quota.toLocaleString("vi-VN")}
+                    <td className="px-4 py-3 text-right font-mono text-slate-700 dark:text-slate-300 font-medium">
+                      {log.quota.toLocaleString("vi-VN")}
                     </td>
                     <td className="px-4 py-3 text-right font-mono text-slate-600 dark:text-slate-300">
                       ${log.costUsd.toFixed(4)}

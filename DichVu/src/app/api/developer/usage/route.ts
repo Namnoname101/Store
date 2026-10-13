@@ -44,24 +44,68 @@ export async function GET(req: NextRequest) {
     }
 
     // 3. Query upstream usage
-    const upstreamRes = await ModelApiService.fetchTokenUsage(apiKey);
-    const rawData = upstreamRes?.data || {};
+    let upstreamRes: any = null;
+    try {
+      upstreamRes = await ModelApiService.fetchTokenUsage(apiKey);
+    } catch (err) {
+      console.warn("[GET /api/developer/usage] fetchTokenUsage failed, trying fallback:", err);
+    }
 
-    const quota = Number(rawData.quota || 0);
-    const usedQuota = Number(rawData.used_quota || 0);
-    const totalQuota = quota + usedQuota;
+    let rawData = upstreamRes?.data || {};
+
+    // Fallback: If rawData has no quota info and binding has upstreamTokenId, query master token endpoint
+    if (
+      rawData.total_available === undefined &&
+      rawData.remain_quota === undefined &&
+      rawData.quota === undefined &&
+      binding.upstreamTokenId
+    ) {
+      try {
+        const tokenRes = await fetch(
+          `${ModelApiService.getBaseUrl()}/api/token/${binding.upstreamTokenId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${ModelApiService.getSystemToken()}`,
+            },
+          }
+        );
+        if (tokenRes.ok) {
+          const tokenJson = await tokenRes.json();
+          if (tokenJson?.data) {
+            rawData = tokenJson.data;
+          }
+        }
+      } catch (err) {
+        console.warn("[GET /api/developer/usage] Token fallback failed:", err);
+      }
+    }
+
+    // New API token_usage returns: total_available, total_used, total_granted
+    // System token endpoint returns: remain_quota, used_quota
+    const quota = Number(
+      rawData.total_available ?? rawData.remain_quota ?? rawData.quota ?? 0
+    );
+    const usedQuota = Number(
+      rawData.total_used ?? rawData.used_quota ?? 0
+    );
+    const totalGrantedQuota = Number(
+      rawData.total_granted ?? (quota + usedQuota)
+    );
 
     const balanceUsd = ModelApiService.quotaToUsd(quota);
     const usedUsd = ModelApiService.quotaToUsd(usedQuota);
+    const totalGrantedUsd = ModelApiService.quotaToUsd(totalGrantedQuota);
     const consumptionRate =
-      totalQuota > 0 ? Number(((usedQuota / totalQuota) * 100).toFixed(1)) : 0;
+      totalGrantedQuota > 0 ? Number(((usedQuota / totalGrantedQuota) * 100).toFixed(1)) : 0;
 
     return NextResponse.json({
       success: true,
       quota,
       usedQuota,
+      totalGrantedQuota,
       balanceUsd,
       usedUsd,
+      totalGrantedUsd,
       consumptionRate,
       maskedKey: binding.maskedKey,
       keyName: binding.keyName || "API Key của bạn",
