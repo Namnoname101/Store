@@ -61,19 +61,9 @@ export async function GET(req: NextRequest) {
       binding.upstreamTokenId
     ) {
       try {
-        const tokenRes = await fetch(
-          `${ModelApiService.getBaseUrl()}/api/token/${binding.upstreamTokenId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${ModelApiService.getSystemToken()}`,
-            },
-          }
-        );
-        if (tokenRes.ok) {
-          const tokenJson = await tokenRes.json();
-          if (tokenJson?.data) {
-            rawData = tokenJson.data;
-          }
+        const tokenJson = await ModelApiService.fetchTokenById(binding.upstreamTokenId);
+        if (tokenJson?.data) {
+          rawData = tokenJson.data;
         }
       } catch (err) {
         console.warn("[GET /api/developer/usage] Token fallback failed:", err);

@@ -606,4 +606,30 @@ export class ModelApiService {
       throw err;
     }
   }
+
+  /**
+   * Fetches token details by token ID using master system token.
+   */
+  static async fetchTokenById(tokenId: number): Promise<any> {
+    if (!this.getSystemToken()) return null;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.getTimeoutMs());
+
+    try {
+      const res = await fetch(`${this.getBaseUrl()}/api/token/${tokenId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.getSystemToken()}`,
+        },
+        signal: controller.signal,
+      });
+
+      clearTimeout(timer);
+      if (!res.ok) return null;
+      return await res.json();
+    } catch (err) {
+      clearTimeout(timer);
+      return null;
+    }
+  }
 }
