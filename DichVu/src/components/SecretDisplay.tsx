@@ -19,54 +19,20 @@ import type { Product } from "@prisma/client";
 import { playSuccessChime } from "@/lib/sound";
 import { saveRecentOrder } from "@/lib/order-storage";
 import BuffProgressCard from "@/components/BuffProgressCard";
+import {
+  InstructionGuide,
+  resolveProductInstruction,
+} from "@/lib/product-guides";
 
-export interface InstructionGuide {
-  title: string;
-  steps: string[];
-  note?: string;
-}
+export type { InstructionGuide };
 
-export function getProductInstructions(type: string): InstructionGuide {
-  switch (type) {
-    case "LICENSE_KEY":
-      return {
-        title: "Hướng dẫn kích hoạt Key bản quyền",
-        steps: [
-          "Mở ứng dụng hoặc phần Cài đặt (Settings > System > Activation trên Windows / Office).",
-          "Chọn 'Nhập khóa sản phẩm' (Change product key).",
-          "Dán mã kích hoạt được cung cấp ở trên để hoàn tất.",
-        ],
-        note: "Mã bản quyền chỉ sử dụng cho số lượng thiết bị theo gói đã mua.",
-      };
-    case "ACCOUNT":
-      return {
-        title: "Hướng dẫn đăng nhập Tài khoản",
-        steps: [
-          "Truy cập ứng dụng hoặc trang chủ của dịch vụ.",
-          "Đăng nhập bằng tài khoản và mật khẩu được cung cấp ở trên.",
-          "Nếu có chỉ định Profile, vui lòng chọn đúng Profile được bàn giao.",
-        ],
-        note: "Không tự ý thay đổi thông tin tài khoản để đảm bảo quyền lợi bảo hành.",
-      };
-    case "COURSE_LINK":
-      return {
-        title: "Thông tin liên kết dịch vụ & Khóa học",
-        steps: [
-          "Bấm vào liên kết được cấp ở trên hoặc dán vào trình duyệt web.",
-          "Hệ thống sẽ tự động kích hoạt dịch vụ hoặc điều hướng đến tài nguyên của bạn.",
-        ],
-        note: "Nếu gặp sự cố về liên kết, vui lòng liên hệ đội ngũ hỗ trợ.",
-      };
-    default:
-      return {
-        title: "Hướng dẫn sử dụng",
-        steps: [
-          "Sao chép thông tin sản phẩm được cấp ở trên.",
-          "Làm theo hướng dẫn kích hoạt hoặc đăng nhập.",
-          "Liên hệ hỗ trợ nếu cần trợ giúp thêm.",
-        ],
-      };
-  }
+export function getProductInstructions(
+  type: string,
+  title?: string,
+  rawSecret?: string,
+  slug?: string
+): InstructionGuide {
+  return resolveProductInstruction({ slug, title, type, rawSecret });
 }
 
 export function parseSecretItem(
@@ -580,7 +546,10 @@ export default function SecretDisplay({
   // Determine dominant product type for instruction box
   const primaryProduct = productMap.get(deliveredItems[0].productId);
   const primaryType = primaryProduct?.type || "LICENSE_KEY";
-  const instructions = getProductInstructions(primaryType);
+  const primaryTitle = primaryProduct?.title || "";
+  const primarySlug = (primaryProduct as any)?.slug || "";
+  const firstSecret = deliveredItems[0]?.secretContent || "";
+  const instructions = getProductInstructions(primaryType, primaryTitle, firstSecret, primarySlug);
 
   return (
     <div className="space-y-6">
