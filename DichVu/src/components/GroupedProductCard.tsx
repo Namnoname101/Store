@@ -218,6 +218,18 @@ export default function GroupedProductCard({
             </button>
           )}
         </div>
+
+        {cleanBrand === "CODEX" && (
+          <div className="mt-2 pt-1.5 border-t border-slate-100 dark:border-slate-800/80 text-center">
+            <Link
+              href="/codex"
+              className="inline-flex items-center gap-1 text-[10px] font-medium text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              <span>Đã có Key? Nạp thêm Credit tại đây</span>
+              <ArrowRight className="h-2.5 w-2.5" />
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

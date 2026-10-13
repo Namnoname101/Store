@@ -8,6 +8,7 @@ import {
   Clock,
   Headphones,
   Send,
+  Sparkles,
 } from "lucide-react";
 import { getProductBySlug } from "@/services/catalog.service";
 import ProductPurchaseBox from "@/components/ProductPurchaseBox";
@@ -66,6 +67,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     product.title.toLowerCase().includes("follow");
 
   const titleLower = product.title.toLowerCase();
+  const isCodex =
+    product.slug.toLowerCase().includes("codex") ||
+    product.slug.toLowerCase().includes("cdx") ||
+    titleLower.includes("codex");
 
   const deliveryFormat = isSMM
     ? "Hệ thống tự động khởi tạo theo link mục tiêu"
@@ -166,6 +171,22 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
                 </span>
               )}
             </div>
+
+            {isCodex && (
+              <div className="mt-4 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/70 dark:bg-blue-950/30 p-3.5 flex items-start gap-2.5">
+                <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+                <div className="text-xs text-blue-900 dark:text-blue-200">
+                  <span className="font-semibold">Bạn đã có API Key từ trước?</span>
+                  <p className="mt-0.5 text-blue-700 dark:text-blue-300">
+                    Không cần mua key mới! Bạn có thể{" "}
+                    <Link href="/codex" className="font-bold underline hover:text-blue-900 dark:hover:text-white">
+                      vào đây để nạp thêm hạn mức thẳng vào key cũ của bạn
+                    </Link>
+                    .
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Product Media Card (4:3 or standard ratio, clean look) */}

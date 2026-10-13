@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Sparkles,
   Key,
@@ -17,6 +18,7 @@ import {
   CreditCard,
   RefreshCw,
   Info,
+  ShoppingBag,
 } from "lucide-react";
 import { CODEX_PACKAGES, CodexPackage } from "@/lib/codex.constants";
 
@@ -279,6 +281,13 @@ export default function CodexTopupClient() {
                       nhắn tin nhanh cho Admin qua kênh hỗ trợ để được cấp key trong 2 phút:
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
+                      <Link
+                        href="/#catalog"
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 transition"
+                      >
+                        <ShoppingBag className="h-3.5 w-3.5" />
+                        <span>Mua gói cấp Key mới tại Trang chủ</span>
+                      </Link>
                       <a
                         href="https://m.me/daitruongstore"
                         target="_blank"
