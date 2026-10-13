@@ -222,11 +222,18 @@ export class ModelApiService {
 
           if (searchRes.ok) {
             const searchJson = await searchRes.json();
-            if (searchJson?.success && Array.isArray(searchJson?.data) && searchJson.data.length > 0) {
+            const items = Array.isArray(searchJson?.data)
+              ? searchJson.data
+              : Array.isArray(searchJson?.data?.items)
+              ? searchJson.data.items
+              : [];
+            if (items.length > 0) {
               token =
-                searchJson.data.find(
-                  (t: any) => t.key === apiKey.trim() || (tokenName && t.name === tokenName)
-                ) || searchJson.data[0];
+                items.find(
+                  (t: any) =>
+                    (t.key && (apiKey.trim().includes(t.key.replace(/\*/g, "")) || t.key.includes(apiKey.trim().substring(0, 4)))) ||
+                    (tokenName && t.name === tokenName)
+                ) || items[0];
             }
           }
         } catch {
@@ -274,11 +281,12 @@ export class ModelApiService {
         .catch(() => {});
 
       // 2. Read snapshot quotaBefore from upstream GET /api/token/{id}
+      let resolvedTokenId = params.upstreamTokenId;
       const fetchBeforeController = new AbortController();
       const timerBefore = setTimeout(() => fetchBeforeController.abort(), this.getTimeoutMs());
 
-      const getBeforeRes = await fetch(
-        `${this.getBaseUrl()}/api/token/${params.upstreamTokenId}`,
+      let getBeforeRes = await fetch(
+        `${this.getBaseUrl()}/api/token/${resolvedTokenId}`,
         {
           method: "GET",
           headers: {
@@ -289,6 +297,54 @@ export class ModelApiService {
       );
 
       clearTimeout(timerBefore);
+
+      // Self-heal: if token not found by ID (e.g. legacy or placeholder ID), look up by keyName
+      if (!getBeforeRes.ok && params.bindingId) {
+        try {
+          const binding = await prisma.customerApiKeyBinding.findUnique({
+            where: { id: params.bindingId },
+          });
+          if (binding?.keyName) {
+            const searchRes = await fetch(
+              `${this.getBaseUrl()}/api/token/search?keyword=${encodeURIComponent(binding.keyName)}`,
+              {
+                method: "GET",
+                headers: {
+                  Authorization: `Bearer ${this.getSystemToken()}`,
+                },
+              }
+            );
+            if (searchRes.ok) {
+              const searchJson = await searchRes.json();
+              const items = Array.isArray(searchJson?.data)
+                ? searchJson.data
+                : Array.isArray(searchJson?.data?.items)
+                ? searchJson.data.items
+                : [];
+              const found = items.find((t: any) => t.name === binding.keyName) || items[0];
+              if (found?.id) {
+                resolvedTokenId = found.id;
+                await prisma.customerApiKeyBinding.update({
+                  where: { id: params.bindingId },
+                  data: { upstreamTokenId: found.id },
+                }).catch(() => {});
+
+                getBeforeRes = await fetch(
+                  `${this.getBaseUrl()}/api/token/${resolvedTokenId}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: `Bearer ${this.getSystemToken()}`,
+                    },
+                  }
+                );
+              }
+            }
+          }
+        } catch {
+          // Ignore lookup error, let following check handle failure
+        }
+      }
 
       if (!getBeforeRes.ok) {
         throw new Error(
@@ -319,7 +375,7 @@ export class ModelApiService {
         },
         body: JSON.stringify({
           ...tokenData,
-          id: params.upstreamTokenId,
+          id: resolvedTokenId,
           remain_quota: targetQuota,
         }),
         signal: putController.signal,
@@ -336,7 +392,7 @@ export class ModelApiService {
       const timerAfter = setTimeout(() => fetchAfterController.abort(), this.getTimeoutMs());
 
       const getAfterRes = await fetch(
-        `${this.getBaseUrl()}/api/token/${params.upstreamTokenId}`,
+        `${this.getBaseUrl()}/api/token/${resolvedTokenId}`,
         {
           method: "GET",
           headers: {

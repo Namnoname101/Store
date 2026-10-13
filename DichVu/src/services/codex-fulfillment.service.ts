@@ -16,11 +16,11 @@ export interface CodexFulfillmentResult {
 export async function fulfillCodexCreditOrder(
   orderId: string
 ): Promise<CodexFulfillmentResult> {
-  // 1. Atomic state transition: PENDING -> PROCESSING
+  // 1. Atomic state transition: PENDING or RECONCILE_REQUIRED -> PROCESSING
   const lockResult = await prisma.creditTopupOrder.updateMany({
     where: {
       orderId,
-      status: "PENDING",
+      status: { in: ["PENDING", "RECONCILE_REQUIRED"] },
     },
     data: {
       status: "PROCESSING",
