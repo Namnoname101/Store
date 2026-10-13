@@ -5,6 +5,7 @@ import {
   retryCodexCreditOrder,
 } from "@/services/codex-fulfillment.service";
 import { ModelApiService } from "@/services/modelapi/modelapi.service";
+import { getSupplierAdapter } from "@/services/suppliers/adapter.registry";
 
 describe("Codex Auto-Fulfillment Pipeline Tests", () => {
   let testCategoryId: string;
@@ -221,5 +222,55 @@ describe("Codex Auto-Fulfillment Pipeline Tests", () => {
     });
     expect(updatedTopup?.status).toBe("COMPLETED");
     expect(updatedTopup?.retryCount).toBe(1);
+  });
+
+  it("should buy product from GenzShop and redeem into ModelAPI master account if GenzShop is active", async () => {
+    // 1. Create active GenzShop supplier
+    const genzSupplier = await prisma.supplier.create({
+      data: {
+        code: `GENZSHOP_TEST_${Date.now()}`,
+        name: "Test GenzShop",
+        type: "GENZSHOP",
+        baseUrl: "https://genzshop.vn/api/partner/v1",
+        apiKey: "gzsk_test_mock_key_123",
+        isActive: true,
+      },
+    });
+
+    try {
+      const adapter = getSupplierAdapter("GENZSHOP");
+      const buySpy = vi.spyOn(adapter, "buyProduct").mockResolvedValue({
+        success: true,
+        deliveredKeys: ["CARD_GENZ_TOPUP_MOCK_XYZ"],
+      });
+
+      const redeemSpy = vi.spyOn(ModelApiService, "redeemMasterAccount").mockResolvedValue({
+        success: true,
+        message: "Nạp thành công",
+        quota: 10000000,
+      });
+
+      const topupSpy = vi.spyOn(ModelApiService, "applyQuotaTopup").mockResolvedValue({
+        success: true,
+        quotaBefore: 1000000,
+        quotaAdded: 5000000,
+        quotaAfter: 6000000,
+        discrepancyDelta: 0,
+      });
+
+      const result = await fulfillCodexCreditOrder(testOrderId);
+
+      expect(result.success).toBe(true);
+      expect(buySpy).toHaveBeenCalledWith(
+        expect.anything(),
+        "CDX-0055",
+        1,
+        expect.any(String)
+      );
+      expect(redeemSpy).toHaveBeenCalledWith("CARD_GENZ_TOPUP_MOCK_XYZ");
+      expect(topupSpy).toHaveBeenCalled();
+    } finally {
+      await prisma.supplier.delete({ where: { id: genzSupplier.id } }).catch(() => {});
+    }
   });
 });

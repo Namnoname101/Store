@@ -1,6 +1,8 @@
 import prisma from "@/lib/prisma";
-import { ItemStatus, UpstreamStatus } from "@/lib/prisma";
+import { ItemStatus, UpstreamStatus, SupplierType } from "@/lib/prisma";
 import { ModelApiService } from "@/services/modelapi/modelapi.service";
+import { GENZSHOP_CODEX_MAPPING } from "@/lib/codex.constants";
+import { getSupplierAdapter } from "@/services/suppliers/adapter.registry";
 
 export interface CodexFulfillmentResult {
   success: boolean;
@@ -78,7 +80,53 @@ export async function fulfillCodexCreditOrder(
     };
   }
 
-  // 3. Call ModelApiService.applyQuotaTopup
+  // 3. Purchase replenishment card from GenzShop and redeem into ModelAPI master account
+  const genzProductCode = GENZSHOP_CODEX_MAPPING[topupOrder.creditUsd];
+  let genzRedemptionCode: string | null = null;
+
+  if (genzProductCode) {
+    try {
+      const genzSupplier = await prisma.supplier.findFirst({
+        where: {
+          type: SupplierType.GENZSHOP,
+          isActive: true,
+        },
+      });
+
+      if (genzSupplier && genzSupplier.apiKey) {
+        const adapter = getSupplierAdapter(SupplierType.GENZSHOP);
+        const buyResult = await adapter.buyProduct(
+          {
+            baseUrl: genzSupplier.baseUrl,
+            apiKey: genzSupplier.apiKey,
+          },
+          genzProductCode,
+          1,
+          topupOrder.order?.orderCode || `CODEX_${orderId}`
+        );
+
+        if (buyResult.success && buyResult.deliveredKeys?.length > 0) {
+          genzRedemptionCode = buyResult.deliveredKeys[0];
+          const redeemRes = await ModelApiService.redeemMasterAccount(genzRedemptionCode);
+          if (!redeemRes.success) {
+            console.warn(
+              `[CodexFulfillment] Redeeming GenzShop card ${genzRedemptionCode} into ModelAPI master account returned:`,
+              redeemRes.message
+            );
+          }
+        } else {
+          console.warn(
+            `[CodexFulfillment] GenzShop purchase failed for ${genzProductCode}:`,
+            buyResult.error
+          );
+        }
+      }
+    } catch (genzErr: any) {
+      console.warn(`[CodexFulfillment] Error in GenzShop replenishment pipeline:`, genzErr.message);
+    }
+  }
+
+  // 4. Call ModelApiService.applyQuotaTopup to allocate quota to customer key
   try {
     const topupResult = await ModelApiService.applyQuotaTopup({
       bindingId: topupOrder.bindingId,

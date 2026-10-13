@@ -61,3 +61,11 @@ export const CODEX_PACKAGES: CodexPackage[] = [
     description: "250.000.000 Quota Points — Dành cho hệ thống Production tải cao, giá tốt nhất",
   },
 ];
+
+export const GENZSHOP_CODEX_MAPPING: Record<number, string> = {
+  10: "CDX-0055",
+  50: "CDX-0056",
+  100: "CDX-0057",
+  200: "CDX-0058",
+  500: "CDX-0060",
+};

@@ -163,6 +163,55 @@ export class ModelApiService {
   }
 
   /**
+   * Redeems a gift/redemption card code into the master account on ModelAPI to replenish master quota.
+   */
+  static async redeemMasterAccount(
+    redemptionCode: string
+  ): Promise<{ success: boolean; message?: string; quota?: number }> {
+    if (!redemptionCode || !redemptionCode.trim()) {
+      return { success: false, message: "Redemption code cannot be empty" };
+    }
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.getTimeoutMs());
+
+    try {
+      const res = await fetch(`${this.getBaseUrl()}/api/user/topup`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.getSystemToken()}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ key: redemptionCode.trim() }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timer);
+
+      const json = await res.json().catch(() => null);
+
+      if (!res.ok || !json?.success) {
+        return {
+          success: false,
+          message: json?.message || `Redeem failed: HTTP ${res.status}`,
+        };
+      }
+
+      return {
+        success: true,
+        message: json?.message || "Nạp thẻ thành công vào tài khoản tổng",
+        quota: json?.data?.quota,
+      };
+    } catch (err: any) {
+      clearTimeout(timer);
+      return {
+        success: false,
+        message: err.message || "Network error while redeeming code on ModelAPI",
+      };
+    }
+  }
+
+  /**
    * Verifies that customer API key exists, is active, and returns its metadata.
    */
   static async verifyCustomerKey(apiKey: string): Promise<VerifyCustomerKeyResult> {
