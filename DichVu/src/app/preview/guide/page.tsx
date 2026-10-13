@@ -215,18 +215,30 @@ export default function GuidePreviewPage() {
         <div className="rounded-2xl border border-indigo-500/30 bg-indigo-950/20 p-5 space-y-3">
           <div className="flex items-center gap-2 text-sm font-bold text-indigo-300">
             <FileText className="h-4 w-4" />
-            <span>Nơi chỉnh sửa hướng dẫn cho từng gói:</span>
+            <span>Nơi chỉnh sửa câu chữ & chèn hình ảnh:</span>
           </div>
           <p className="text-xs text-slate-300">
-            Toàn bộ hướng dẫn của từng loại gói (Telegram, Codex, Claude API, Windows...) được quản lý tập trung tại file:
+            Toàn bộ hướng dẫn của từng loại gói (Telegram, Codex, Claude API, Windows...) được quản lý tập trung tại:
           </p>
           <div className="rounded-xl bg-slate-900/90 border border-slate-800 p-3 font-mono text-xs text-emerald-400 flex items-center justify-between">
             <span>src/lib/product-guides.ts</span>
             <span className="text-slate-500 text-[11px]">Hot-reload tức thì</span>
           </div>
-          <p className="text-xs text-slate-400">
-            💡 Bạn mở file <code className="text-indigo-300 font-mono">src/lib/product-guides.ts</code>, sửa tiêu đề, thêm/bớt các bước trong mảng <code className="text-indigo-300 font-mono">steps: [...]</code> của từng gói rồi nhấn <strong>Ctrl + S</strong>. Trang web này và trang nhận đơn thật của khách sẽ tự động cập nhật ngay lập tức!
-          </p>
+          <div className="text-xs text-slate-400 space-y-2">
+            <p>
+              💡 <strong>Cách viết chữ bình thường:</strong> gõ dạng chuỗi chữ như cũ <code className="text-indigo-300 font-mono">&quot;Bước 1: Làm gì đó...&quot;</code>.
+            </p>
+            <p>
+              🖼️ <strong>Cách chèn hình ảnh minh họa cho bước:</strong> bạn chỉ cần truyền object có chứa <code className="text-emerald-400 font-mono">image</code> như sau:
+            </p>
+            <pre className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] font-mono text-slate-300 overflow-x-auto">
+{`{
+  text: "Dán mã và cấu hình trong cài đặt...",
+  image: "https://link-anh-cua-ban.png", // Hoặc ảnh tải vào thư mục /public/
+  caption: "Ảnh minh họa màn hình cài đặt",
+}`}
+            </pre>
+          </div>
         </div>
       </div>
     </div>

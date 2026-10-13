@@ -799,21 +799,95 @@ export default function SecretDisplay({
 
       {/* Instructions Guide Box */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
-        <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+        <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
           <HelpCircle className="h-4 w-4 text-indigo-400" />
           <span>{instructions.title}</span>
         </h4>
 
-        <ol className="space-y-2 text-xs text-slate-300 list-decimal list-inside leading-relaxed">
-          {instructions.steps.map((step, idx) => (
-            <li key={idx} className="pl-1">
-              <span className="text-slate-200">{step}</span>
-            </li>
-          ))}
-        </ol>
+        <div className="space-y-4">
+          {instructions.steps.map((stepItem, idx) => {
+            const isObj = typeof stepItem === "object" && stepItem !== null;
+            const text = isObj ? stepItem.text : String(stepItem);
+            const image = isObj ? stepItem.image : undefined;
+            const caption = isObj ? stepItem.caption : undefined;
+
+            return (
+              <div key={idx} className="space-y-2">
+                <div className="flex items-start gap-2.5">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-500/15 text-indigo-400 font-bold text-[11px] mt-0.5">
+                    {idx + 1}
+                  </span>
+                  <div className="text-xs sm:text-sm text-slate-200 leading-relaxed pt-0.5">
+                    {text}
+                  </div>
+                </div>
+
+                {image && (
+                  <div className="ml-7 sm:ml-8 mt-2">
+                    <a
+                      href={image}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group block overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/80 transition-all hover:border-indigo-500/60 max-w-xl"
+                      title="Bấm để xem ảnh kích thước lớn"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={image}
+                        alt={caption || `Minh họa bước ${idx + 1}`}
+                        className="max-h-72 sm:max-h-80 w-auto rounded-t-xl object-contain transition-transform duration-200 group-hover:scale-[1.01]"
+                        loading="lazy"
+                      />
+                      {caption && (
+                        <div className="px-3 py-2 text-[11px] text-slate-400 bg-slate-900/90 border-t border-slate-800 flex items-center justify-between">
+                          <span>📸 {caption}</span>
+                          <span className="text-[10px] text-indigo-400 font-medium group-hover:underline">
+                            Xem ảnh lớn ↗
+                          </span>
+                        </div>
+                      )}
+                    </a>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Optional general screenshots gallery if instructions.images provided */}
+        {instructions.images && instructions.images.length > 0 && (
+          <div className="mt-6 pt-5 border-t border-slate-800/80 space-y-3">
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
+              Hình ảnh chụp màn hình minh họa:
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {instructions.images.map((img, imgIdx) => (
+                <a
+                  key={imgIdx}
+                  href={img.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group block overflow-hidden rounded-xl border border-slate-800 bg-slate-950/80 transition-all hover:border-indigo-500/60"
+                >
+                  <img
+                    src={img.url}
+                    alt={img.title || `Hình minh họa ${imgIdx + 1}`}
+                    className="h-44 w-full object-cover transition-transform group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  {img.title && (
+                    <div className="p-2 text-[11px] text-slate-300 bg-slate-900/90">
+                      {img.title}
+                    </div>
+                  )}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         {instructions.note && (
-          <div className="mt-4 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-xs text-amber-300">
+          <div className="mt-5 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3.5 text-xs text-amber-300 leading-relaxed">
             ⚠️ <strong>Lưu ý:</strong> {instructions.note}
           </div>
         )}

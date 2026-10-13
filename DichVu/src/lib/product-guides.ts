@@ -1,9 +1,18 @@
+export type GuideStep =
+  | string
+  | {
+      text: string;
+      image?: string; // Link ảnh minh họa (link web hoặc /images/...)
+      caption?: string; // Chú thích ảnh
+    };
+
 export interface InstructionGuide {
   title: string;
-  steps: string[];
+  steps: GuideStep[];
   note?: string;
   codeSnippet?: string;
   docsUrl?: string;
+  images?: { url: string; title?: string }[];
 }
 
 /**
@@ -19,7 +28,11 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
     steps: [
       "Kiểm tra định dạng thông tin bàn giao ở trên (Link mời / Session / Tdata / Bot Token).",
       "Với link mời hoặc bot: Bấm vào link và bấm 'Start' hoặc 'Join Channel/Group'.",
-      "Với tài khoản Tdata: Tải Telegram Portable trên máy tính, giải nén và chép thư mục tdata vào thư mục Telegram.",
+      {
+        text: "Với tài khoản Tdata: Tải Telegram Portable trên máy tính, giải nén và chép thư mục tdata vào thư mục Telegram.",
+        image: "https://images.unsplash.com/photo-1618401471353-b98aedd04e11?auto=format&fit=crop&w=1200&q=80",
+        caption: "Minh họa: Mở thư mục Telegram Desktop và dán thư mục tdata",
+      },
       "Với tài khoản Session: Đăng nhập qua công cụ hoặc trình duyệt theo hướng dẫn riêng đính kèm.",
       "Nếu cần nhận mã OTP hoặc hỗ trợ kích hoạt, liên hệ hỗ trợ để được xử lý ngay trong 5 phút.",
     ],
@@ -34,7 +47,11 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
     steps: [
       "Sao chép API Key ở trên (bắt đầu bằng 'sk-...').",
       "Base URL chuẩn hệ thống: https://modelapi.vn/v1",
-      "Trong Cursor: Settings > Models > OpenAI API Key > Đổi Base URL thành https://modelapi.vn/v1 và dán API Key.",
+      {
+        text: "Trong Cursor: Settings > Models > OpenAI API Key > Đổi Base URL thành https://modelapi.vn/v1 và dán API Key.",
+        image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80",
+        caption: "Minh họa: Cài đặt Base URL và API Key trong Cursor Settings",
+      },
       "Trong VS Code / Cline / Roo Code: Chọn OpenAI Compatible > Điền Base URL và API Key.",
       "Kiểm tra hạn mức & lịch sử request thực tế tại: https://daitruong-store.fly.dev/developer/usage",
     ],
