@@ -39,12 +39,12 @@ describe("Codex Credit Storefront & Checkout API Tests", () => {
   it("should export 5 standard credit packages with correct USD and quota points", () => {
     expect(CODEX_PACKAGES.length).toBe(5);
     const amounts = CODEX_PACKAGES.map((p) => p.creditUsd);
-    expect(amounts).toEqual([5, 10, 20, 50, 100]);
+    expect(amounts).toEqual([10, 50, 100, 200, 500]);
 
     // Check 10 USD package: 5M quota
     const p10 = CODEX_PACKAGES.find((p) => p.creditUsd === 10);
     expect(p10?.quotaUnits).toBe(5000000);
-    expect(p10?.popular).toBe(true);
+    expect(p10?.priceVnd).toBe(12000);
   });
 
   it("should reject checkout if bindingId is missing or invalid", async () => {
@@ -98,7 +98,7 @@ describe("Codex Credit Storefront & Checkout API Tests", () => {
     expect(data.success).toBe(true);
     expect(data.orderCode).toMatch(/^ORD/);
     expect(data.vietQrUrl).toContain("https://img.vietqr.io");
-    expect(data.totalAmount).toBe(245000);
+    expect(data.totalAmount).toBe(12000);
     expect(data.creditUsd).toBe(10);
     expect(data.quotaUnits).toBe(5000000);
 

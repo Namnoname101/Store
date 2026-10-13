@@ -85,7 +85,7 @@ describe("E2E Integration: Codex Credit & API Usage Full Lifecycle Flow", () => 
 
     expect(checkoutData.success).toBe(true);
     expect(checkoutData.orderCode).toMatch(/^ORD/);
-    expect(checkoutData.totalAmount).toBe(245000);
+    expect(checkoutData.totalAmount).toBe(12000);
     expect(checkoutData.vietQrUrl).toContain("https://img.vietqr.io");
     createdOrderCode = checkoutData.orderCode;
 
@@ -112,7 +112,7 @@ describe("E2E Integration: Codex Credit & API Usage Full Lifecycle Flow", () => 
 
     const webhookPayload = {
       transactionId: `TX_E2E_${Date.now()}`,
-      amount: 245000,
+      amount: checkoutData.totalAmount,
       content: `Chuyen tien ${createdOrderCode}`,
       bankCode: "MB",
     };

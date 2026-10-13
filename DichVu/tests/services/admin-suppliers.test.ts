@@ -112,6 +112,7 @@ describe("Admin Suppliers & Mapping Dashboard API Endpoints", () => {
     registerSupplierAdapter(SupplierType.CUSTOM_REST, mockAdapter);
     registerSupplierAdapter(SupplierType.TAPHOAMMO, mockAdapter);
     registerSupplierAdapter(SupplierType.TRUMTHE, mockAdapter);
+    registerSupplierAdapter(SupplierType.GENZSHOP, mockAdapter);
   });
 
   afterAll(async () => {
