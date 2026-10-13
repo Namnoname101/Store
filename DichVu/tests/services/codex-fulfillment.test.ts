@@ -80,6 +80,18 @@ describe("Codex Auto-Fulfillment Pipeline Tests", () => {
       },
     });
     testTopupOrderId = topupOrder.id;
+
+    // 5. Mock GenzShop adapter and ModelApi redeemMasterAccount to avoid real external purchases during tests
+    const genzAdapter = getSupplierAdapter("GENZSHOP");
+    vi.spyOn(genzAdapter, "buyProduct").mockResolvedValue({
+      success: true,
+      deliveredKeys: ["MOCK_TEST_GENZ_KEY"],
+    });
+    vi.spyOn(ModelApiService, "redeemMasterAccount").mockResolvedValue({
+      success: true,
+      message: "Mock topup success",
+      quota: 5000000,
+    });
   });
 
   afterEach(async () => {
