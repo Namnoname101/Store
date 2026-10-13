@@ -310,6 +310,7 @@ export async function handleIncomingTransaction(
           product: {
             select: {
               id: true,
+              type: true,
               fulfillmentType: true,
             },
           },
