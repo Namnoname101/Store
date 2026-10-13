@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import prisma from "@/lib/prisma";
-import { POST as codexCheckoutHandler, CODEX_PACKAGES } from "@/app/api/codex/checkout/route";
+import { POST as codexCheckoutHandler } from "@/app/api/codex/checkout/route";
+import { CODEX_PACKAGES } from "@/lib/codex.constants";
 import { NextRequest } from "next/server";
 
 describe("Codex Credit Storefront & Checkout API Tests", () => {

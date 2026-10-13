@@ -18,7 +18,7 @@ import {
   RefreshCw,
   Info,
 } from "lucide-react";
-import { CODEX_PACKAGES, CodexPackage } from "@/app/api/codex/checkout/route";
+import { CODEX_PACKAGES, CodexPackage } from "@/lib/codex.constants";
 
 interface VerifiedKeyData {
   bindingId: string;
