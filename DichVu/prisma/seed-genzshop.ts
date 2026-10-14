@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { isDisallowedShortTermApiPackage } from "../src/lib/catalog-grouping";
 
 const prisma = new PrismaClient();
 
@@ -176,6 +177,15 @@ async function main() {
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, "")}`;
+
+      if (isDisallowedShortTermApiPackage({ title, description, slug })) {
+        console.log(`  - Skipping disallowed short-term package: [${code}] ${title}`);
+        await prisma.product.updateMany({
+          where: { slug },
+          data: { isActive: false },
+        });
+        continue;
+      }
 
       const product = await prisma.product.upsert({
         where: { slug },

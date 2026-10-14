@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getAvailableStockCount } from "@/services/inventory.service";
+import { isDisallowedShortTermApiPackage } from "@/lib/catalog-grouping";
 import type { Category, Product } from "@prisma/client";
 
 export interface ProductWithStock extends Product {
@@ -57,8 +58,11 @@ export async function getCategoriesWithProducts(
 
   const result: CategoryWithProducts[] = await Promise.all(
     categories.map(async (category) => {
+      const allowedCategoryProducts = category.products.filter(
+        (p) => !isDisallowedShortTermApiPackage(p)
+      );
       const productsWithStock = await Promise.all(
-        category.products.map(async (product) => {
+        allowedCategoryProducts.map(async (product) => {
           const stockCount = await getAvailableStockCount(product.id);
           return {
             ...product,
@@ -78,7 +82,7 @@ export async function getCategoriesWithProducts(
 
 /**
  * Retrieves a single active product by slug, including category and live stock count.
- * Returns null if product is not found or inactive.
+ * Returns null if product is not found, inactive, or disallowed short-term package.
  */
 export async function getProductBySlug(
   slug: string
@@ -92,7 +96,7 @@ export async function getProductBySlug(
     },
   });
 
-  if (!product || !product.isActive) {
+  if (!product || !product.isActive || isDisallowedShortTermApiPackage(product)) {
     return null;
   }
 

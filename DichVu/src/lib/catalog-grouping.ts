@@ -78,6 +78,60 @@ export function isApiProduct(product: any): boolean {
   return false;
 }
 
+export function isDisallowedShortTermApiPackage(product: {
+  title?: string | null;
+  description?: string | null;
+  slug?: string | null;
+}): boolean {
+  const title = (product.title || "").toLowerCase();
+  const desc = (product.description || "").toLowerCase();
+  const slug = (product.slug || "").toLowerCase();
+  const text = `${title} ${desc} ${slug}`;
+
+  // 1. Matches short day durations (1-29 days, specifically excluding 30 days)
+  if (
+    /\b([1-9]|[12][0-9])\s*(ngày|ngay)\b/i.test(text) &&
+    !/\b30\s*(ngày|ngay)\b/i.test(title)
+  ) {
+    return true;
+  }
+
+  // 2. Week durations (e.g. 1 tuần, 2 tuần)
+  if (/\b\d+\s*(tuần|tuan)\b/i.test(text)) {
+    return true;
+  }
+
+  // 3. Hourly limits, shifts or expiry (e.g. 12h, 24h, 19h - 23h, hạn 12h)
+  if (
+    /\bhạn\s*\d+h\b/i.test(text) ||
+    /\b\d+h\s*-\s*\d+h/i.test(text) ||
+    /\bhạn\s*\d+\s*(giờ|gio)\b/i.test(text)
+  ) {
+    return true;
+  }
+
+  // 4. Daily message limits & daily resets (e.g. 200 - 400 tin nhắn, reset 7h sáng/AM, credit/ngày)
+  if (
+    /reset\s*7h/i.test(text) ||
+    /tin\s*nhắn/i.test(text) ||
+    /tin\s*nhan/i.test(text) ||
+    /credit\s*\/\s*(1\s*)?ng[aà]y/i.test(text)
+  ) {
+    return true;
+  }
+
+  // 5. Used / random / contact seller (e.g. đã dùng được, random quota, ib tele, ib zalo)
+  if (
+    /\b(đã dùng|da dung)\b/i.test(text) ||
+    /\brandom\b/i.test(text) ||
+    /\bib\s*(tele|zalo)\b/i.test(text)
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 export function extractVariantLabel(title: string, description: string = ""): string {
   const combined = `${title} ${description}`;
 
@@ -136,10 +190,13 @@ export function processSectionProducts(
   items: ProcessedCatalogItem[];
   availableBrands: { key: string; name: string; count: number }[];
 } {
+  // Filter out any short-term, hourly, or daily reset API packages
+  const allowedProducts = products.filter((p) => !isDisallowedShortTermApiPackage(p));
+
   // Deduplicate products that share identical supplierProductCode or identical title & price
   const seenProducts = new Map<string, any>();
   const uniqueProducts: any[] = [];
-  products.forEach((p) => {
+  allowedProducts.forEach((p) => {
     const code = p.supplierMapping?.supplierProductCode;
     const key = code ? `code_${code}` : `title_${p.title}_price_${p.price}`;
     const existing = seenProducts.get(key);
@@ -252,12 +309,12 @@ export function processSectionProducts(
       );
       const lowestPriceVariant = sortedByPrice[0].product;
 
-      // Ensure variant pills are unique
+      // Ensure variant pills are unique by normalized variantLabel (keeping lowest price first)
       const variants: VariantProduct[] = [];
       const seenVariantKeys = new Set<string>();
 
       sortedByPrice.forEach((it) => {
-        const key = `${it.variantLabel}_${it.product.price}`;
+        const key = it.variantLabel.toLowerCase().trim();
         if (!seenVariantKeys.has(key)) {
           seenVariantKeys.add(key);
           variants.push({
@@ -267,19 +324,23 @@ export function processSectionProducts(
         }
       });
 
-      groupedItems.push({
-        type: "grouped",
-        groupKey: brandKey,
-        groupedData: {
+      if (variants.length === 1) {
+        groupedItems.push({ type: "single", singleProduct: variants[0] });
+      } else {
+        groupedItems.push({
+          type: "grouped",
           groupKey: brandKey,
-          brandName: brandDef.name,
-          title: `Gói API / Dịch Vụ ${brandDef.name}`,
-          description: lowestPriceVariant.description,
-          thumbnailUrl: lowestPriceVariant.thumbnailUrl,
-          category: lowestPriceVariant.category,
-          variants,
-        },
-      });
+          groupedData: {
+            groupKey: brandKey,
+            brandName: brandDef.name,
+            title: `Gói API / Dịch Vụ ${brandDef.name}`,
+            description: lowestPriceVariant.description,
+            thumbnailUrl: lowestPriceVariant.thumbnailUrl,
+            category: lowestPriceVariant.category,
+            variants,
+          },
+        });
+      }
     }
   });
 

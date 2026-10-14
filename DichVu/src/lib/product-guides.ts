@@ -46,7 +46,6 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
     title: "Hướng dẫn cấu hình Codex API (Gói 10$ - 5.000.000 Quota)",
     steps: [
       "Sao chép API Key ở trên (bắt đầu bằng 'sk-...').",
-      "Base URL chuẩn hệ thống: https://modelapi.vn/v1",
       {
         text: "Trong Cursor: Settings > Models > OpenAI API Key > Đổi Base URL thành https://modelapi.vn/v1 và dán API Key.",
         image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80",
@@ -61,7 +60,6 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
     title: "Hướng dẫn cấu hình Codex API (Gói 50$ - 25.000.000 Quota)",
     steps: [
       "Sao chép API Key ở trên (bắt đầu bằng 'sk-...').",
-      "Base URL chuẩn hệ thống: https://modelapi.vn/v1",
       "Trong Cursor: Settings > Models > OpenAI API Key > Đổi Base URL thành https://modelapi.vn/v1 và dán API Key.",
       "Trong VS Code / Cline / Roo Code: Chọn OpenAI Compatible > Điền Base URL và API Key.",
       "Kiểm tra hạn mức & lịch sử request thực tế tại: https://daitruong-store.fly.dev/developer/usage",
