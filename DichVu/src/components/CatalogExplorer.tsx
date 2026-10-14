@@ -52,6 +52,7 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     categorySlugs: [
       "ai-api",
       "ai-api-keys",
+      "codex-credit",
     ],
     keywords: [
       "api cursor",
@@ -61,6 +62,7 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
       "api grok",
       "api kimi",
       "api codex",
+      "codex",
       "api glm",
       "api zhipu",
       "api kiro",
