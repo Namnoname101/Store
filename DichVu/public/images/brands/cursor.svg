@@ -5,8 +5,8 @@
       <stop offset="100%" stop-color="#03070d" />
     </linearGradient>
     <radialGradient id="glow" cx="50%" cy="45%" r="45%">
-      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.25" />
-      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0" />
+      <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#00f2fe" stop-opacity="0" />
     </radialGradient>
     <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
       <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.03" />
@@ -22,15 +22,11 @@
   <g transform="translate(400, 210)">
     <!-- Ambient Ring -->
     <circle cx="0" cy="0" r="85" fill="#18181b" fill-opacity="0.7" stroke="#27272a" stroke-width="1.5" />
-    <circle cx="0" cy="0" r="75" fill="#09090b" fill-opacity="0.9" stroke="#06b6d4" stroke-width="1" stroke-opacity="0.4" />
+    <circle cx="0" cy="0" r="75" fill="#09090b" fill-opacity="0.9" stroke="#00f2fe" stroke-width="1" stroke-opacity="0.4" />
     
     <!-- Icon -->
     <g transform="translate(-40, -40) scale(3.33)">
-      <g stroke="#06b6d4" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
-      <polygon points="12 2 2 8 12 14 22 8 12 2" fill="#06b6d4" fill-opacity="0.25" />
-      <polyline points="2 8 2 16 12 22 22 16 22 8" />
-      <line x1="12" y1="14" x2="12" y2="22" />
-    </g>
+      <path d="M22.106 5.68L12.5.135a.998.998 0 00-.998 0L1.893 5.68a.84.84 0 00-.419.726v11.186c0 .3.16.577.42.727l9.607 5.547a.999.999 0 00.998 0l9.608-5.547a.84.84 0 00.42-.727V6.407a.84.84 0 00-.42-.726zm-.603 1.176L12.228 22.92c-.063.108-.228.064-.228-.061V12.34a.59.59 0 00-.295-.51l-9.11-5.26c-.107-.062-.063-.228.062-.228h18.55c.264 0 .428.286.296.514z" fill="#00f2fe" fill-rule="evenodd" />
     </g>
   </g>
 
@@ -41,7 +37,7 @@
     
     <!-- Subtitle Pill -->
     <g transform="translate(0, 32)">
-      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#06b6d4" letter-spacing="1.5">PRO & BUSINESS • AUTO-COMPLETE</text>
+      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#00f2fe" letter-spacing="1.5">PRO & BUSINESS • AUTO-COMPLETE</text>
     </g>
   </g>
 </svg>

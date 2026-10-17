@@ -68,49 +68,55 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             </form>
 
             {/* Quick Brand Badges */}
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-1.5 text-xs">
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-xs">
               <span className="text-zinc-400 text-xs mr-1 font-mono">Top tìm kiếm:</span>
               <a
                 href="/?search=claude#catalog"
-                className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100/60 dark:bg-zinc-900/80 px-2.5 py-1 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all shadow-2xs hover:-translate-y-0.5 active:scale-95"
               >
-                <BrandLogo brandName="claude" size={12} className="w-3 h-3 text-amber-600" />
-                Claude API
+                <BrandLogo brandName="claude" size={14} className="w-3.5 h-3.5 shrink-0" />
+                <span>Claude API</span>
               </a>
               <a
                 href="/?search=cursor#catalog"
-                className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100/60 dark:bg-zinc-900/80 px-2.5 py-1 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all shadow-2xs hover:-translate-y-0.5 active:scale-95"
               >
-                <BrandLogo brandName="cursor" size={12} className="w-3 h-3 text-cyan-500" />
-                Cursor AI
+                <BrandLogo brandName="cursor" size={14} className="w-3.5 h-3.5 shrink-0" />
+                <span>Cursor AI</span>
               </a>
               <a
                 href="/codex"
-                className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100/60 dark:bg-zinc-900/80 px-2.5 py-1 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all shadow-2xs hover:-translate-y-0.5 active:scale-95"
               >
-                <BrandLogo brandName="codex" size={12} className="w-3 h-3 text-emerald-500" />
-                Codex Topup
-              </a>
-              <a
-                href="/?search=capcut#catalog"
-                className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100/60 dark:bg-zinc-900/80 px-2.5 py-1 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
-              >
-                <BrandLogo brandName="capcut" size={12} className="w-3 h-3" />
-                CapCut Pro
+                <BrandLogo brandName="codex" size={14} className="w-3.5 h-3.5 shrink-0 text-emerald-500" />
+                <span>Codex Topup</span>
               </a>
               <a
                 href="/?search=deepseek#catalog"
-                className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100/60 dark:bg-zinc-900/80 px-2.5 py-1 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all shadow-2xs hover:-translate-y-0.5 active:scale-95"
               >
-                <BrandLogo brandName="deepseek" size={12} className="w-3 h-3 text-blue-500" />
-                DeepSeek
+                <BrandLogo brandName="deepseek" size={14} className="w-3.5 h-3.5 shrink-0" />
+                <span>DeepSeek</span>
               </a>
+              <a
+                href="/?search=capcut#catalog"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all shadow-2xs hover:-translate-y-0.5 active:scale-95"
+              >
+                <BrandLogo brandName="capcut" size={14} className="w-3.5 h-3.5 shrink-0" />
+                <span>CapCut Pro</span>
+              </a>
+            </div>
+
+            {/* Prominent Real-time Quota Dashboard Banner */}
+            <div className="mt-4">
               <Link
                 href="/developer/usage"
-                className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20 font-semibold transition-all active:scale-95"
+                className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 px-4 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400 transition-all shadow-2xs hover:-translate-y-0.5 active:scale-95 group"
               >
-                <Terminal className="w-3 h-3 text-emerald-500" />
-                Kiểm tra Quota & Logs API
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <Terminal className="h-3.5 w-3.5 text-emerald-500" />
+                <span>Đã có API Key? Tra cứu Quota & Request Logs thời gian thực</span>
+                <ArrowRight className="h-3 w-3 text-emerald-500 transition-transform group-hover:translate-x-0.5" />
               </Link>
             </div>
           </div>

@@ -5,8 +5,8 @@
       <stop offset="100%" stop-color="#05030d" />
     </linearGradient>
     <radialGradient id="glow" cx="50%" cy="45%" r="45%">
-      <stop offset="0%" stop-color="#a855f7" stop-opacity="0.25" />
-      <stop offset="100%" stop-color="#a855f7" stop-opacity="0" />
+      <stop offset="0%" stop-color="#3186FF" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#3186FF" stop-opacity="0" />
     </radialGradient>
     <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
       <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.03" />
@@ -22,12 +22,11 @@
   <g transform="translate(400, 210)">
     <!-- Ambient Ring -->
     <circle cx="0" cy="0" r="85" fill="#18181b" fill-opacity="0.7" stroke="#27272a" stroke-width="1.5" />
-    <circle cx="0" cy="0" r="75" fill="#09090b" fill-opacity="0.9" stroke="#a855f7" stroke-width="1" stroke-opacity="0.4" />
+    <circle cx="0" cy="0" r="75" fill="#09090b" fill-opacity="0.9" stroke="#3186FF" stroke-width="1" stroke-opacity="0.4" />
     
     <!-- Icon -->
     <g transform="translate(-40, -40) scale(3.33)">
-      <path d="M12 2c.2 4.6 2.6 7 7.2 7.2-4.6.2-7 2.6-7.2 7.2-.2-4.6-2.6-7-7.2-7.2 4.6-.2 7-2.6 7.2-7.2z" fill="#a855f7" />
-    <path d="M18.5 15.5c.1 2 .9 2.8 2.9 2.9-2 .1-2.8.9-2.9 2.9-.1-2-.9-2.8-2.9-2.9 2-.1 2.8-.9 2.9-2.9z" fill="#c084fc" />
+      <path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="#3186FF" />
     </g>
   </g>
 
@@ -38,7 +37,7 @@
     
     <!-- Subtitle Pill -->
     <g transform="translate(0, 32)">
-      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#a855f7" letter-spacing="1.5">GOOGLE 2.0 FLASH • 2M CONTEXT</text>
+      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#3186FF" letter-spacing="1.5">GOOGLE 2.0 FLASH • 2M CONTEXT</text>
     </g>
   </g>
 </svg>
