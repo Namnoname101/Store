@@ -13,12 +13,17 @@ import {
   Layers,
   Loader2,
   AlertCircle,
+  Terminal,
+  Laptop,
+  Code2,
+  ArrowRight,
   Sparkles,
 } from "lucide-react";
 import type { Product } from "@prisma/client";
 import { playSuccessChime } from "@/lib/sound";
 import { saveRecentOrder } from "@/lib/order-storage";
 import BuffProgressCard from "@/components/BuffProgressCard";
+import BrandLogo from "@/components/BrandLogo";
 import {
   InstructionGuide,
   resolveProductInstruction,
@@ -97,6 +102,7 @@ export default function SecretDisplay({
 }: SecretDisplayProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [copiedAll, setCopiedAll] = useState<boolean>(false);
+  const [activeEnvTab, setActiveEnvTab] = useState<"cursor" | "vscode" | "cli">("cursor");
 
   const [currentUpstreamStatus, setCurrentUpstreamStatus] = useState<
     string | undefined
@@ -282,34 +288,33 @@ export default function SecretDisplay({
 
     return (
       <div className="space-y-6">
-        <div className="relative overflow-hidden rounded-3xl border border-indigo-500/30 bg-gradient-to-br from-indigo-950/50 via-slate-900 to-slate-950 p-8 sm:p-10 shadow-2xl text-center">
-          <div className="absolute -top-24 left-1/2 -translate-x-1/2 h-48 w-48 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none" />
+        <div className="relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 p-8 sm:p-10 shadow-2xl text-center">
           <div className="relative z-10 flex flex-col items-center">
-            <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 shadow-xl shadow-indigo-950/50">
-              <Loader2 className="h-10 w-10 animate-spin text-indigo-400" />
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-100 shadow-xl">
+              <Loader2 className="h-8 w-8 animate-spin text-zinc-200" />
             </div>
 
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 px-3.5 py-1 text-xs font-bold text-indigo-300 mb-3">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Hệ thống cấp phát mã tự động</span>
+            <div className="inline-flex items-center gap-2 rounded-full bg-zinc-900 border border-zinc-800 px-3 py-1 text-xs font-mono font-medium text-zinc-300 mb-3">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+              <span>Máy chủ đang cấp phát tự động...</span>
             </div>
 
-            <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mb-3">
-              Đang Tự Động Cấp Phát Sản Phẩm
+            <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight mb-2">
+              Đang Khởi Tạo & Cấp Key Bản Quyền
             </h3>
 
-            <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto leading-relaxed mb-6 font-medium">
-              Hệ thống đang cấp phát mã tự động cho đơn hàng của bạn. Trang sẽ tự động tải lại sau vài giây.
+            <p className="text-sm text-zinc-400 max-w-lg mx-auto leading-relaxed mb-6">
+              Hệ thống đang kết nối trực tiếp với cổng dịch vụ để xuất mã key cho đơn hàng <span className="font-mono text-zinc-200">{orderCode}</span>.
             </p>
 
             <div className="w-full max-w-md mx-auto mb-4">
-              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
-                <div className="h-full w-full bg-gradient-to-r from-indigo-500 via-sky-400 to-indigo-500 animate-pulse" />
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-900">
+                <div className="h-full w-full bg-gradient-to-r from-zinc-700 via-emerald-500 to-zinc-700 animate-pulse" />
               </div>
             </div>
 
-            <p className="text-xs text-slate-400">
-              Quá trình khởi tạo thường mất từ 5-15 giây. Vui lòng giữ nguyên cửa sổ trình duyệt.
+            <p className="text-xs text-zinc-500 font-mono">
+              Thời gian xử lý: 3 - 10 giây. Trang sẽ tự động làm mới khi hoàn tất.
             </p>
           </div>
         </div>
@@ -322,20 +327,20 @@ export default function SecretDisplay({
     return (
       <div className="space-y-6">
         {/* Issue Notification */}
-        <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-950/30 via-slate-900 to-slate-950 p-6 sm:p-8 backdrop-blur-md shadow-2xl">
+        <div className="rounded-2xl border border-amber-500/20 bg-zinc-950 p-6 sm:p-8 shadow-xl">
           <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
-              <AlertCircle className="h-6 w-6" />
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+              <AlertCircle className="h-5 w-5" />
             </div>
             <div className="flex-1">
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-0.5 text-xs font-bold text-amber-400 mb-2">
-                <span>Thông báo cấp phát</span>
+              <div className="inline-flex items-center gap-1.5 rounded-md bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 text-xs font-semibold text-amber-400 mb-2 font-mono">
+                <span>HỆ THỐNG CẤP PHÁT</span>
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
-                Cấp phát mã đang bị gián đoạn
+              <h3 className="text-lg font-bold text-white mb-1.5">
+                Cấp phát tạm thời bị gián đoạn
               </h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Máy chủ cấp phát mã đang bị quá tải hoặc tạm thời gián đoạn. Chúng tôi cam kết xử lý hoàn tiền tự động hoặc gửi mã qua email cho bạn trong vòng 5-15 phút.
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Máy chủ cấp phát đang quá tải. Đơn hàng của bạn được bảo đảm an toàn 100%. Bạn có thể gửi thông tin tài khoản bên dưới để nhận hoàn tiền ngay lập tức hoặc chờ hỗ trợ.
               </p>
             </div>
           </div>
@@ -343,60 +348,55 @@ export default function SecretDisplay({
 
         {/* Existing refund request or self-service form */}
         {currentRefundInfo || refundSuccessMsg ? (
-          <div className="rounded-3xl border border-emerald-500/30 bg-emerald-950/20 p-6 sm:p-8 backdrop-blur-md shadow-xl">
+          <div className="rounded-2xl border border-emerald-500/20 bg-zinc-950 p-6 sm:p-8 shadow-xl">
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400">
-                <Check className="h-6 w-6" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                <Check className="h-5 w-5" />
               </div>
               <div>
-                <h4 className="text-base font-bold text-white">
-                  Đã Ghi Nhận Yêu Cầu Hoàn Tiền
+                <h4 className="text-sm sm:text-base font-bold text-white">
+                  Đã ghi nhận yêu cầu hoàn tiền
                 </h4>
-                <p className="text-xs text-emerald-400">
-                  {refundSuccessMsg ||
-                    "Yêu cầu hoàn tiền của bạn đã được ghi nhận. Nhân viên CSKH sẽ chuyển khoản lại theo thông tin đã cung cấp."}
+                <p className="text-xs text-zinc-400 mt-0.5">
+                  Đội ngũ CSKH sẽ đối soát và chuyển khoản hoàn lại trong vòng 5-15 phút.
                 </p>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-5 space-y-2.5 text-xs">
-              <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
-                <span className="text-slate-400">Ngân hàng thụ hưởng:</span>
-                <span className="font-bold text-white">
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-2 text-xs font-mono">
+              <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+                <span className="text-zinc-500">Ngân hàng:</span>
+                <span className="font-semibold text-zinc-200">
                   {currentRefundInfo?.bankName || refundBank}
                 </span>
               </div>
-              <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
-                <span className="text-slate-400">Số tài khoản:</span>
-                <span className="font-mono font-bold text-emerald-400">
+              <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+                <span className="text-zinc-500">Số tài khoản:</span>
+                <span className="font-bold text-emerald-400">
                   {currentRefundInfo?.accountNumber || refundAccountNo}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-slate-400">Chủ tài khoản:</span>
-                <span className="font-bold text-white">
+                <span className="text-zinc-500">Chủ tài khoản:</span>
+                <span className="font-semibold text-zinc-200 uppercase">
                   {currentRefundInfo?.accountName || refundAccountName}
                 </span>
               </div>
             </div>
-
-            <p className="mt-4 text-xs text-slate-400 leading-relaxed">
-              Đội ngũ kỹ thuật và CSKH sẽ kiểm tra đối soát và hoàn tiền vào tài khoản trên trong vòng <strong>5-15 phút</strong>. Cảm ơn sự kiên nhẫn của bạn!
-            </p>
           </div>
         ) : (
-          <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-6 sm:p-8 backdrop-blur-md shadow-2xl">
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6 sm:p-8 shadow-xl">
             <div className="mb-6">
-              <h4 className="text-base sm:text-lg font-bold text-white mb-1">
-                Yêu Cầu Hoàn Tiền Tự Động (100% Số Tiền)
+              <h4 className="text-base font-bold text-white mb-1">
+                Yêu cầu hoàn tiền 100% tự động
               </h4>
-              <p className="text-xs text-slate-400">
-                Vui lòng cung cấp số tài khoản ngân hàng để hệ thống xử lý hoàn tiền lại cho bạn:
+              <p className="text-xs text-zinc-400">
+                Nhập số tài khoản ngân hàng để hệ thống hoàn lại tiền cho bạn:
               </p>
             </div>
 
             {refundError && (
-              <div className="mb-5 flex items-start gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
+              <div className="mb-5 flex items-start gap-2 rounded-lg border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-300">
                 <AlertCircle className="h-4 w-4 shrink-0 text-rose-400 mt-0.5" />
                 <span>{refundError}</span>
               </div>
@@ -404,7 +404,7 @@ export default function SecretDisplay({
 
             <form onSubmit={handleSubmitRefund} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
                   Tên ngân hàng thụ hưởng <span className="text-rose-400">*</span>
                 </label>
                 <input
@@ -412,14 +412,14 @@ export default function SecretDisplay({
                   required
                   value={refundBank}
                   onChange={(e) => setRefundBank(e.target.value)}
-                  placeholder="Ví dụ: MBBank, Vietcombank, Techcombank, VPBank..."
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                  placeholder="Ví dụ: MBBank, Vietcombank, Techcombank..."
+                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:border-zinc-500 focus:outline-none transition-all"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-medium text-zinc-300 mb-1.5">
                     Số tài khoản ngân hàng <span className="text-rose-400">*</span>
                   </label>
                   <input
@@ -428,12 +428,12 @@ export default function SecretDisplay({
                     value={refundAccountNo}
                     onChange={(e) => setRefundAccountNo(e.target.value)}
                     placeholder="Nhập số tài khoản..."
-                    className="w-full font-mono rounded-xl border border-slate-700 bg-slate-950 px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full font-mono rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:border-zinc-500 focus:outline-none transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-medium text-zinc-300 mb-1.5">
                     Họ và tên chủ tài khoản <span className="text-rose-400">*</span>
                   </label>
                   <input
@@ -442,13 +442,13 @@ export default function SecretDisplay({
                     value={refundAccountName}
                     onChange={(e) => setRefundAccountName(e.target.value)}
                     placeholder="Ví dụ: NGUYEN VAN A"
-                    className="w-full uppercase rounded-xl border border-slate-700 bg-slate-950 px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full uppercase rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:border-zinc-500 focus:outline-none transition-all"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-medium text-zinc-300 mb-1.5">
                   Ghi chú thêm (tùy chọn)
                 </label>
                 <input
@@ -456,7 +456,7 @@ export default function SecretDisplay({
                   value={refundNote}
                   onChange={(e) => setRefundNote(e.target.value)}
                   placeholder="Ghi chú thêm nếu có..."
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:border-zinc-500 focus:outline-none transition-all"
                 />
               </div>
 
@@ -464,12 +464,12 @@ export default function SecretDisplay({
                 <button
                   type="submit"
                   disabled={isSubmittingRefund}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 py-3 px-6 text-xs font-bold text-white transition-all shadow-lg shadow-indigo-600/30 hover:scale-[1.01] disabled:opacity-50"
+                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-white text-zinc-950 hover:bg-zinc-100 py-2.5 px-6 text-xs font-bold transition-all shadow-xs disabled:opacity-50 active:scale-[0.98]"
                 >
                   {isSubmittingRefund ? (
                     <>
-                      <Loader2 className="h-4 w-4 animate-spin text-white" />
-                      <span>Đang gửi thông tin yêu cầu...</span>
+                      <Loader2 className="h-4 w-4 animate-spin text-zinc-950" />
+                      <span>Đang gửi thông tin...</span>
                     </>
                   ) : (
                     <span>Gửi yêu cầu hoàn tiền ngay</span>
@@ -479,50 +479,6 @@ export default function SecretDisplay({
             </form>
           </div>
         )}
-
-        {/* Support Channels */}
-        <div className="rounded-2xl border border-indigo-500/20 bg-gradient-to-r from-indigo-950/40 via-slate-900/60 to-purple-950/40 p-5 backdrop-blur-md">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                <span>Cần hỗ trợ trực tiếp từ kỹ thuật viên?</span>
-              </h4>
-              <p className="text-xs text-slate-400 mt-1">
-                Đội ngũ kỹ thuật viên trực sẵn sàng hỗ trợ trực tuyến 24/7.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2.5">
-              <a
-                href="https://zalo.me/0987654321"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-3.5 py-2 text-xs font-bold text-white transition-all shadow-md shadow-blue-600/20 hover:scale-[1.02]"
-              >
-                <MessageCircle className="h-4 w-4" />
-                <span>Zalo Hỗ Trợ</span>
-              </a>
-
-              <a
-                href="https://t.me/digistore_support"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-xl bg-sky-500 hover:bg-sky-400 px-3.5 py-2 text-xs font-bold text-white transition-all shadow-md shadow-sky-500/20 hover:scale-[1.02]"
-              >
-                <Send className="h-4 w-4" />
-                <span>Telegram 24/7</span>
-              </a>
-
-              <a
-                href="tel:0987654321"
-                className="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-750 px-3.5 py-2 text-xs font-bold text-slate-200 transition-all hover:scale-[1.02]"
-              >
-                <PhoneCall className="h-4 w-4 text-emerald-400" />
-                <span>0987.654.321</span>
-              </a>
-            </div>
-          </div>
-        </div>
       </div>
     );
   }
@@ -533,8 +489,8 @@ export default function SecretDisplay({
       <div className="space-y-6">
         <BuffProgressCard orderCode={orderCode} />
         {!isBuffService && (
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 text-center">
-            <p className="text-sm text-slate-400">
+          <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-6 text-center">
+            <p className="text-sm text-zinc-400">
               Chưa có thông tin sản phẩm bàn giao cho đơn hàng này.
             </p>
           </div>
@@ -551,38 +507,47 @@ export default function SecretDisplay({
   const firstSecret = deliveredItems[0]?.secretContent || "";
   const instructions = getProductInstructions(primaryType, primaryTitle, firstSecret, primarySlug);
 
+  const isApiKeyProduct =
+    primarySlug.includes("api") ||
+    primarySlug.includes("claude") ||
+    primarySlug.includes("cursor") ||
+    primarySlug.includes("codex") ||
+    primaryTitle.toLowerCase().includes("api") ||
+    firstSecret.startsWith("sk-");
+
   return (
     <div className="space-y-6">
       <BuffProgressCard orderCode={orderCode} />
+
       {/* Top action bar: Copy All button if multiple items */}
       {deliveredItems.length > 1 && (
-        <div className="flex justify-end rounded-2xl border border-slate-800 bg-slate-900/80 px-5 py-4 backdrop-blur-md">
+        <div className="flex justify-end rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3">
           <button
             type="button"
             onClick={handleCopyAll}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all shadow-md ${
+            className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all shadow-xs ${
               copiedAll
-                ? "bg-emerald-600 text-white"
-                : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/20"
+                ? "bg-emerald-600 text-white animate-spring-pop"
+                : "bg-white text-zinc-950 hover:bg-zinc-100"
             }`}
           >
             {copiedAll ? (
               <>
-                <Check className="h-4 w-4" />
+                <Check className="h-3.5 w-3.5" />
                 <span>Đã sao chép tất cả!</span>
               </>
             ) : (
               <>
-                <Layers className="h-4 w-4" />
-                <span>Sao chép tất cả ({deliveredItems.length})</span>
+                <Layers className="h-3.5 w-3.5" />
+                <span>Sao chép tất cả ({deliveredItems.length} mục)</span>
               </>
             )}
           </button>
         </div>
       )}
 
-      {/* Delivered items list */}
-      <div className="space-y-4">
+      {/* Delivered items list - Tech Studio Aesthetic */}
+      <div className="space-y-3.5">
         {deliveredItems.map((item, index) => {
           const product = productMap.get(item.productId);
           const secretContent = item.secretContent || "";
@@ -594,20 +559,21 @@ export default function SecretDisplay({
           return (
             <div
               key={item.id || index}
-              className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5 shadow-lg transition-all hover:border-slate-700"
+              className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 sm:p-5 shadow-lg transition-all duration-200 hover:border-zinc-700"
             >
               {/* Item header */}
-              <div className="flex flex-wrap items-center justify-between gap-2 mb-3 pb-3 border-b border-slate-800/80">
-                <div className="flex items-center gap-2">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-xs font-bold text-indigo-400">
-                    #{index + 1}
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2.5 border-b border-zinc-800/80">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-md bg-zinc-900 border border-zinc-800 text-[10px] font-mono font-bold text-zinc-400">
+                    {index + 1}
                   </span>
-                  <span className="text-sm font-bold text-white">
+                  <span className="text-xs sm:text-sm font-semibold text-zinc-100">
                     {product?.title || "Sản phẩm kỹ thuật số"}
                   </span>
                 </div>
 
-                <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                   Đã bàn giao
                 </span>
               </div>
@@ -617,33 +583,33 @@ export default function SecretDisplay({
                 <div className="space-y-2.5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {/* Username Box */}
-                    <div className="flex items-center justify-between gap-2 rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2.5">
+                    <div className="flex items-center justify-between gap-2 rounded-lg border border-zinc-800/80 bg-zinc-900/60 px-3 py-2">
                       <div className="min-w-0">
-                        <span className="block text-[10px] uppercase font-semibold text-slate-500">
+                        <span className="block text-[9px] uppercase font-mono font-semibold text-zinc-500">
                           Tài khoản / Email
                         </span>
-                        <span className="block font-mono text-sm font-semibold text-white truncate">
+                        <span className="block font-mono text-xs font-semibold text-zinc-200 truncate select-all">
                           {parsed.username}
                         </span>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleCopy(`${item.id}-user`, parsed.username!)}
-                        className={`flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-all ${
+                        className={`flex h-7 items-center gap-1 rounded-md px-2 text-[11px] font-medium transition-all ${
                           isUsernameCopied
-                            ? "bg-emerald-500/20 text-emerald-300"
-                            : "bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white"
+                            ? "bg-emerald-500/20 text-emerald-400 animate-spring-pop"
+                            : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white"
                         }`}
                         title="Sao chép tài khoản"
                       >
                         {isUsernameCopied ? (
                           <>
-                            <Check className="h-3.5 w-3.5" />
+                            <Check className="h-3 w-3" />
                             <span>Đã chép</span>
                           </>
                         ) : (
                           <>
-                            <Copy className="h-3.5 w-3.5" />
+                            <Copy className="h-3 w-3" />
                             <span>Chép</span>
                           </>
                         )}
@@ -651,33 +617,33 @@ export default function SecretDisplay({
                     </div>
 
                     {/* Password Box */}
-                    <div className="flex items-center justify-between gap-2 rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2.5">
+                    <div className="flex items-center justify-between gap-2 rounded-lg border border-zinc-800/80 bg-zinc-900/60 px-3 py-2">
                       <div className="min-w-0">
-                        <span className="block text-[10px] uppercase font-semibold text-slate-500">
+                        <span className="block text-[9px] uppercase font-mono font-semibold text-zinc-500">
                           Mật khẩu
                         </span>
-                        <span className="block font-mono text-sm font-semibold text-white truncate">
+                        <span className="block font-mono text-xs font-semibold text-zinc-200 truncate select-all">
                           {parsed.password}
                         </span>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleCopy(`${item.id}-pass`, parsed.password!)}
-                        className={`flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-all ${
+                        className={`flex h-7 items-center gap-1 rounded-md px-2 text-[11px] font-medium transition-all ${
                           isPasswordCopied
-                            ? "bg-emerald-500/20 text-emerald-300"
-                            : "bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white"
+                            ? "bg-emerald-500/20 text-emerald-400 animate-spring-pop"
+                            : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white"
                         }`}
                         title="Sao chép mật khẩu"
                       >
                         {isPasswordCopied ? (
                           <>
-                            <Check className="h-3.5 w-3.5" />
+                            <Check className="h-3 w-3" />
                             <span>Đã chép</span>
                           </>
                         ) : (
                           <>
-                            <Copy className="h-3.5 w-3.5" />
+                            <Copy className="h-3 w-3" />
                             <span>Chép</span>
                           </>
                         )}
@@ -690,14 +656,14 @@ export default function SecretDisplay({
                     <button
                       type="button"
                       onClick={() => handleCopy(item.id, secretContent)}
-                      className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${
-                        isCopied ? "text-emerald-400" : "text-indigo-400 hover:text-indigo-300"
+                      className={`inline-flex items-center gap-1.5 text-xs font-medium transition-colors ${
+                        isCopied ? "text-emerald-400 font-semibold" : "text-zinc-400 hover:text-white"
                       }`}
                     >
                       {isCopied ? (
                         <>
                           <Check className="h-3.5 w-3.5" />
-                          <span>Đã sao chép toàn bộ thông tin đăng nhập!</span>
+                          <span>Đã sao chép trọn bộ (user|pass)!</span>
                         </>
                       ) : (
                         <>
@@ -709,16 +675,16 @@ export default function SecretDisplay({
                   </div>
                 </div>
               ) : product?.type === "COURSE_LINK" || secretContent.startsWith("http") ? (
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-950 p-3.5">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3">
                   <div className="min-w-0 flex-1">
-                    <span className="block text-[10px] uppercase font-semibold text-slate-500 mb-0.5">
-                      Đường dẫn truy cập khóa học
+                    <span className="block text-[9px] uppercase font-mono font-semibold text-zinc-500 mb-0.5">
+                      Đường dẫn truy cập
                     </span>
                     <a
                       href={secretContent}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-mono text-xs sm:text-sm text-indigo-400 hover:underline truncate block"
+                      className="font-mono text-xs text-blue-400 hover:underline truncate block select-all"
                     >
                       {secretContent}
                     </a>
@@ -729,7 +695,7 @@ export default function SecretDisplay({
                       href={secretContent}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 rounded-lg bg-indigo-600/20 border border-indigo-500/30 px-3 py-2 text-xs font-semibold text-indigo-300 hover:bg-indigo-600/30 transition-all"
+                      className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:bg-zinc-700 transition-all"
                     >
                       <ExternalLink className="h-3.5 w-3.5" />
                       <span>Mở link</span>
@@ -737,16 +703,16 @@ export default function SecretDisplay({
                     <button
                       type="button"
                       onClick={() => handleCopy(item.id, secretContent)}
-                      className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-all ${
+                      className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                         isCopied
-                          ? "bg-emerald-600 text-white"
-                          : "bg-slate-800 text-slate-200 hover:bg-slate-750"
+                          ? "bg-emerald-600 text-white animate-spring-pop"
+                          : "bg-white text-zinc-950 hover:bg-zinc-100"
                       }`}
                     >
                       {isCopied ? (
                         <>
                           <Check className="h-3.5 w-3.5" />
-                          <span>Đã sao chép</span>
+                          <span>Đã chép</span>
                         </>
                       ) : (
                         <>
@@ -758,13 +724,13 @@ export default function SecretDisplay({
                   </div>
                 </div>
               ) : (
-                /* Standard License Key box */
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-950 p-3.5">
+                /* Standard License Key box - Tech Studio Style */
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-lg border border-zinc-800 bg-zinc-900/70 p-3.5">
                   <div className="min-w-0 flex-1">
-                    <span className="block text-[10px] uppercase font-semibold text-slate-500 mb-0.5">
-                      Mã kích hoạt bản quyền
+                    <span className="block text-[9px] uppercase font-mono font-semibold text-zinc-500 mb-1">
+                      MÃ KEY BẢN QUYỀN / API TOKEN
                     </span>
-                    <span className="font-mono text-sm sm:text-base font-bold text-emerald-400 tracking-wider break-all select-all">
+                    <span className="font-mono text-xs sm:text-sm font-semibold text-emerald-400 tracking-wider break-all select-all">
                       {secretContent}
                     </span>
                   </div>
@@ -772,20 +738,20 @@ export default function SecretDisplay({
                   <button
                     type="button"
                     onClick={() => handleCopy(item.id, secretContent)}
-                    className={`flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition-all shadow-md shrink-0 ${
+                    className={`flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-all shrink-0 active:scale-[0.98] ${
                       isCopied
-                        ? "bg-emerald-600 text-white"
-                        : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/20 hover:scale-[1.02]"
+                        ? "bg-emerald-600 text-white animate-spring-pop shadow-xs"
+                        : "bg-white text-zinc-950 hover:bg-zinc-100 shadow-xs"
                     }`}
                   >
                     {isCopied ? (
                       <>
-                        <Check className="h-4 w-4" />
+                        <Check className="h-3.5 w-3.5" />
                         <span>Đã sao chép!</span>
                       </>
                     ) : (
                       <>
-                        <Copy className="h-4 w-4" />
+                        <Copy className="h-3.5 w-3.5" />
                         <span>Sao chép Key</span>
                       </>
                     )}
@@ -797,10 +763,177 @@ export default function SecretDisplay({
         })}
       </div>
 
+      {/* Interactive Environment Quick Setup Tabs for Developer / AI APIs */}
+      {isApiKeyProduct && (
+        <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-5 shadow-xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-zinc-800/80">
+            <div className="flex items-center gap-2">
+              <Terminal className="h-4 w-4 text-emerald-400" />
+              <span className="text-xs sm:text-sm font-bold text-white">
+                Cấu hình nhanh vào công cụ lập trình (1-Click)
+              </span>
+            </div>
+
+            {/* Environment Tabs */}
+            <div className="flex items-center gap-1 rounded-lg bg-zinc-900 p-1 border border-zinc-800 text-[11px] font-semibold">
+              <button
+                type="button"
+                onClick={() => setActiveEnvTab("cursor")}
+                className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-all ${
+                  activeEnvTab === "cursor"
+                    ? "bg-zinc-800 text-white shadow-xs"
+                    : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                <Laptop className="h-3 w-3 text-cyan-400" />
+                <span>Cursor / Windsurf</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveEnvTab("vscode")}
+                className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-all ${
+                  activeEnvTab === "vscode"
+                    ? "bg-zinc-800 text-white shadow-xs"
+                    : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                <Code2 className="h-3 w-3 text-blue-400" />
+                <span>VS Code (Cline)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveEnvTab("cli")}
+                className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-all ${
+                  activeEnvTab === "cli"
+                    ? "bg-zinc-800 text-white shadow-xs"
+                    : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                <Terminal className="h-3 w-3 text-emerald-400" />
+                <span>Terminal / CLI</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Terminal Mockup Code Box with macOS traffic lights */}
+          <div className="rounded-lg border border-zinc-800/90 bg-zinc-900/90 overflow-hidden font-mono text-xs">
+            {/* Terminal Header */}
+            <div className="flex items-center justify-between px-3 py-2 bg-zinc-950 border-b border-zinc-800/80 text-[10px] text-zinc-500">
+              <div className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-rose-500/80 inline-block" />
+                <span className="h-2.5 w-2.5 rounded-full bg-amber-500/80 inline-block" />
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80 inline-block" />
+                <span className="ml-2 font-mono text-zinc-400">
+                  {activeEnvTab === "cursor"
+                    ? "Cursor Settings > Models > OpenAI API Key"
+                    : activeEnvTab === "vscode"
+                    ? "Cline / Roo Code Extension Settings"
+                    : "bash ~/.zshrc / .bashrc"}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const snippet =
+                    activeEnvTab === "cursor"
+                      ? `Base URL: https://modelapi.vn/v1\nAPI Key: ${firstSecret}`
+                      : activeEnvTab === "vscode"
+                      ? `Provider: OpenAI Compatible\nBase URL: https://modelapi.vn/v1\nAPI Key: ${firstSecret}`
+                      : `export OPENAI_BASE_URL="https://modelapi.vn/v1"\nexport OPENAI_API_KEY="${firstSecret}"\nexport ANTHROPIC_BASE_URL="https://modelapi.vn/v1"\nexport ANTHROPIC_API_KEY="${firstSecret}"`;
+                  handleCopy("snippet", snippet);
+                }}
+                className={`flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-semibold transition-all ${
+                  copiedId === "snippet"
+                    ? "bg-emerald-600 text-white animate-spring-pop"
+                    : "bg-zinc-800 text-zinc-300 hover:text-white"
+                }`}
+              >
+                {copiedId === "snippet" ? (
+                  <>
+                    <Check className="h-2.5 w-2.5" />
+                    <span>Đã sao chép cấu hình</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-2.5 w-2.5" />
+                    <span>Sao chép mẫu</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Terminal Body */}
+            <div className="p-3.5 space-y-2 text-zinc-300 overflow-x-auto">
+              {activeEnvTab === "cursor" && (
+                <>
+                  <div className="flex items-start gap-2">
+                    <span className="text-zinc-500 select-none">1.</span>
+                    <span>Mở <strong className="text-white">Cursor Settings</strong> → <strong className="text-white">Models</strong></span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-zinc-500 select-none">2.</span>
+                    <div>
+                      <span>Đặt <strong className="text-cyan-400">Override OpenAI Base URL</strong>: </span>
+                      <code className="text-emerald-400 font-bold bg-zinc-950 px-1.5 py-0.5 rounded border border-zinc-800 select-all">https://modelapi.vn/v1</code>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-zinc-500 select-none">3.</span>
+                    <div>
+                      <span>Dán <strong className="text-cyan-400">OpenAI API Key</strong>: </span>
+                      <code className="text-emerald-400 font-bold bg-zinc-950 px-1.5 py-0.5 rounded border border-zinc-800 select-all">{firstSecret || "sk-..."}</code>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {activeEnvTab === "vscode" && (
+                <>
+                  <div className="flex items-start gap-2">
+                    <span className="text-zinc-500 select-none">1.</span>
+                    <span>Trong extension <strong className="text-white">Cline / Roo Code</strong>: chọn Provider <strong className="text-blue-400">OpenAI Compatible</strong></span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-zinc-500 select-none">2.</span>
+                    <div>
+                      <span>Base URL: </span>
+                      <code className="text-emerald-400 font-bold bg-zinc-950 px-1.5 py-0.5 rounded border border-zinc-800 select-all">https://modelapi.vn/v1</code>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-zinc-500 select-none">3.</span>
+                    <div>
+                      <span>API Key: </span>
+                      <code className="text-emerald-400 font-bold bg-zinc-950 px-1.5 py-0.5 rounded border border-zinc-800 select-all">{firstSecret || "sk-..."}</code>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-zinc-500 select-none">4.</span>
+                    <span>Model ID: <code className="text-zinc-300 bg-zinc-950 px-1 rounded">claude-3-5-sonnet-20241022</code> hoặc <code className="text-zinc-300 bg-zinc-950 px-1 rounded">gpt-4o</code></span>
+                  </div>
+                </>
+              )}
+
+              {activeEnvTab === "cli" && (
+                <>
+                  <p className="text-zinc-500 text-[11px] mb-1"># Thêm biến môi trường để dùng Claude Code / CLI:</p>
+                  <pre className="text-emerald-400 font-bold select-all leading-relaxed">
+{`export ANTHROPIC_BASE_URL="https://modelapi.vn/v1"
+export ANTHROPIC_API_KEY="${firstSecret || "sk-..."}"
+export OPENAI_BASE_URL="https://modelapi.vn/v1"
+export OPENAI_API_KEY="${firstSecret || "sk-..."}"`}
+                  </pre>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Instructions Guide Box */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm">
+      <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-5 sm:p-6 shadow-xl">
         <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-          <HelpCircle className="h-4 w-4 text-indigo-400" />
+          <HelpCircle className="h-4 w-4 text-zinc-400" />
           <span>{instructions.title}</span>
         </h4>
 
@@ -814,10 +947,10 @@ export default function SecretDisplay({
             return (
               <div key={idx} className="space-y-2">
                 <div className="flex items-start gap-2.5">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-500/15 text-indigo-400 font-bold text-[11px] mt-0.5">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono font-bold text-[10px] mt-0.5">
                     {idx + 1}
                   </span>
-                  <div className="text-xs sm:text-sm text-slate-200 leading-relaxed pt-0.5">
+                  <div className="text-xs sm:text-sm text-zinc-300 leading-relaxed pt-0.5">
                     {text}
                   </div>
                 </div>
@@ -828,20 +961,20 @@ export default function SecretDisplay({
                       href={image}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group block overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/80 transition-all hover:border-indigo-500/60 max-w-xl"
+                      className="group block overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/60 transition-all hover:border-zinc-600 max-w-xl"
                       title="Bấm để xem ảnh kích thước lớn"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={image}
                         alt={caption || `Minh họa bước ${idx + 1}`}
-                        className="max-h-72 sm:max-h-80 w-auto rounded-t-xl object-contain transition-transform duration-200 group-hover:scale-[1.01]"
+                        className="max-h-72 sm:max-h-80 w-auto rounded-t-lg object-contain transition-transform duration-200 group-hover:scale-[1.01]"
                         loading="lazy"
                       />
                       {caption && (
-                        <div className="px-3 py-2 text-[11px] text-slate-400 bg-slate-900/90 border-t border-slate-800 flex items-center justify-between">
+                        <div className="px-3 py-2 text-[11px] text-zinc-400 bg-zinc-950 border-t border-zinc-800 flex items-center justify-between">
                           <span>📸 {caption}</span>
-                          <span className="text-[10px] text-indigo-400 font-medium group-hover:underline">
+                          <span className="text-[10px] text-blue-400 font-medium group-hover:underline">
                             Xem ảnh lớn ↗
                           </span>
                         </div>
@@ -856,8 +989,8 @@ export default function SecretDisplay({
 
         {/* Optional general screenshots gallery if instructions.images provided */}
         {instructions.images && instructions.images.length > 0 && (
-          <div className="mt-6 pt-5 border-t border-slate-800/80 space-y-3">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
+          <div className="mt-6 pt-5 border-t border-zinc-800/80 space-y-3">
+            <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block font-mono">
               Hình ảnh chụp màn hình minh họa:
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -867,7 +1000,7 @@ export default function SecretDisplay({
                   href={img.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group block overflow-hidden rounded-xl border border-slate-800 bg-slate-950/80 transition-all hover:border-indigo-500/60"
+                  className="group block overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/60 transition-all hover:border-zinc-600"
                 >
                   <img
                     src={img.url}
@@ -876,7 +1009,7 @@ export default function SecretDisplay({
                     loading="lazy"
                   />
                   {img.title && (
-                    <div className="p-2 text-[11px] text-slate-300 bg-slate-900/90">
+                    <div className="p-2 text-[11px] text-zinc-300 bg-zinc-950">
                       {img.title}
                     </div>
                   )}
@@ -887,51 +1020,52 @@ export default function SecretDisplay({
         )}
 
         {instructions.note && (
-          <div className="mt-5 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3.5 text-xs text-amber-300 leading-relaxed">
+          <div className="mt-5 rounded-lg border border-amber-500/20 bg-amber-500/10 p-3 text-xs text-amber-300 leading-relaxed">
             ⚠️ <strong>Lưu ý:</strong> {instructions.note}
           </div>
         )}
       </div>
 
       {/* 24/7 Customer Support Assistance Box */}
-      <div className="rounded-2xl border border-indigo-500/20 bg-gradient-to-r from-indigo-950/40 via-slate-900/60 to-purple-950/40 p-5 backdrop-blur-md">
+      <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-5 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h4 className="text-sm font-bold text-white flex items-center gap-2">
-              <span>Cần hỗ trợ kích hoạt hoặc bảo hành 1-đổi-1?</span>
+            <h4 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-emerald-400" />
+              <span>Bảo hành 1-đổi-1 & Hỗ trợ kỹ thuật 24/7</span>
             </h4>
-            <p className="text-xs text-slate-400 mt-1">
-              Đội ngũ kỹ thuật viên DigiStore.vn trực sẵn sàng hỗ trợ trực tuyến 24/7.
+            <p className="text-xs text-zinc-400 mt-1">
+              Đội ngũ kỹ thuật viên DaiTruong Store sẵn sàng hỗ trợ bạn qua Zalo & Telegram.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2">
             <a
               href="https://zalo.me/0987654321"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-3.5 py-2 text-xs font-bold text-white transition-all shadow-md shadow-blue-600/20 hover:scale-[1.02]"
+              className="flex items-center gap-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 px-3 py-1.5 text-xs font-semibold text-white transition-all shadow-xs active:scale-[0.98]"
             >
-              <MessageCircle className="h-4 w-4" />
+              <MessageCircle className="h-3.5 w-3.5" />
               <span>Zalo Hỗ Trợ</span>
             </a>
 
             <a
-              href="https://t.me/digistore_support"
+              href="https://t.me/daitruong_store"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-xl bg-sky-500 hover:bg-sky-400 px-3.5 py-2 text-xs font-bold text-white transition-all shadow-md shadow-sky-500/20 hover:scale-[1.02]"
+              className="flex items-center gap-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 px-3 py-1.5 text-xs font-semibold text-white transition-all shadow-xs active:scale-[0.98]"
             >
-              <Send className="h-4 w-4" />
-              <span>Telegram 24/7</span>
+              <Send className="h-3.5 w-3.5" />
+              <span>Telegram</span>
             </a>
 
             <a
               href="tel:0987654321"
-              className="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-750 px-3.5 py-2 text-xs font-bold text-slate-200 transition-all hover:scale-[1.02]"
+              className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-200 transition-all active:scale-[0.98]"
             >
-              <PhoneCall className="h-4 w-4 text-emerald-400" />
-              <span>0987.654.321</span>
+              <PhoneCall className="h-3.5 w-3.5 text-emerald-400" />
+              <span>Hotline</span>
             </a>
           </div>
         </div>

@@ -13,7 +13,7 @@ import {
   User,
   Sun,
   Moon,
-  Sparkles,
+  Terminal,
   Layers,
   Store,
   ChevronRight,
@@ -83,16 +83,16 @@ export default function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8 gap-2 sm:gap-4">
         {/* Brand Logo */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group">
-            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/25 group-hover:bg-blue-700 transition-all">
-              <Store className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:scale-105" />
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 shadow-md group-hover:scale-105 transition-all">
+              <Store className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">
-                Daitruong<span className="text-blue-600">Store</span>
+              <span className="text-base sm:text-lg font-bold tracking-tight text-zinc-900 dark:text-white transition-colors">
+                DaiTruong<span className="text-blue-600 dark:text-blue-400">Store</span>
               </span>
-              <span className="hidden sm:block text-[10px] font-medium text-slate-500 dark:text-slate-400">
-                Nguồn tài nguyên phong phú
+              <span className="hidden sm:block text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
+                Kho tài nguyên số tự động 24/7
               </span>
             </div>
           </Link>
@@ -103,17 +103,17 @@ export default function Navbar() {
           <form onSubmit={handleSearch} className="relative w-full">
             <input
               type="text"
-              placeholder="Tìm kiếm dịch vụ, tài khoản, key bản quyền..."
+              placeholder="Tìm kiếm API Claude, Cursor, CapCut, Codex..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/90 py-2.5 pl-10 pr-20 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 dark:focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all shadow-inner"
+              className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/90 py-2.5 pl-10 pr-20 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-400/20 transition-all shadow-2xs"
             />
-            <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
+            <Search className="absolute left-3.5 top-3 h-4 w-4 text-zinc-400" />
             <button
               type="submit"
-              className="absolute right-1.5 top-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors shadow-xs"
+              className="absolute right-1.5 top-1.5 rounded-lg bg-zinc-900 dark:bg-white px-3 py-1.5 text-xs font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-2xs active:scale-95"
             >
-              Tìm kiếm
+              Tìm
             </button>
           </form>
         </div>
@@ -123,9 +123,9 @@ export default function Navbar() {
           {/* Codex Credit Platform */}
           <Link
             href="/codex"
-            className="flex items-center gap-1.5 rounded-lg border border-purple-500/30 bg-purple-50/70 dark:bg-purple-950/30 px-3 py-2 text-xs font-semibold text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/50 hover:border-purple-500/50 transition-all shadow-sm group"
+            className="flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100/60 dark:bg-zinc-900/80 px-3 py-2 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all shadow-2xs group active:scale-[0.98]"
           >
-            <Sparkles className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400 group-hover:rotate-12 transition-transform" />
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
             <span>Nạp API Credit</span>
           </Link>
 
@@ -270,9 +270,9 @@ export default function Navbar() {
           <div className="flex items-center gap-4 text-[11px]">
             <Link
               href="/developer/usage"
-              className="text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1 font-semibold"
+              className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1 font-semibold transition-colors"
             >
-              <Sparkles className="h-3 w-3" />
+              <Terminal className="h-3 w-3 text-emerald-500" />
               <span>Developer Dashboard</span>
             </Link>
             <div className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
@@ -350,13 +350,13 @@ export default function Navbar() {
             <Link
               href="/codex"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between text-sm font-medium text-purple-700 dark:text-purple-300 hover:text-purple-800 dark:hover:text-white px-2 py-2 rounded-lg bg-purple-50/50 dark:bg-purple-950/20"
+              className="flex items-center justify-between text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:text-blue-600 dark:hover:text-white px-2 py-2 rounded-lg bg-zinc-100/70 dark:bg-zinc-900/60"
             >
               <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                <Terminal className="h-4 w-4 text-emerald-500" />
                 <span>Nạp Codex API Credit</span>
               </div>
-              <ChevronRight className="h-4 w-4 text-purple-400" />
+              <ChevronRight className="h-4 w-4 text-zinc-400" />
             </Link>
 
             <Link
