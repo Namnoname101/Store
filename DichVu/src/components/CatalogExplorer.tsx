@@ -6,19 +6,14 @@ import {
   Search,
   X,
   PackageX,
-  Cpu,
-  Bot,
-  Cloud,
-  Share2,
-  KeyRound,
-  Layers,
+  LayoutGrid,
   ArrowUp,
-  type LucideIcon,
 } from "lucide-react";
 import ProductCard, { ProductCardProps } from "@/components/ProductCard";
 import GroupedProductCard from "@/components/GroupedProductCard";
 import { processSectionProducts, isApiProduct } from "@/lib/catalog-grouping";
 import QuickViewModal from "@/components/QuickViewModal";
+import BrandLogo from "@/components/BrandLogo";
 import type { CategoryWithProducts } from "@/services/catalog.service";
 import type { Category } from "@prisma/client";
 
@@ -29,11 +24,53 @@ interface CatalogExplorerProps {
   initialSearch?: string;
 }
 
+type SectionIconComponent = React.ComponentType<{ className?: string; size?: number }>;
+
+// Authentic official vector brand / industry icons for each catalog section
+const CursorSectionIcon: SectionIconComponent = ({ className = "h-4 w-4" }) => (
+  <BrandLogo brandName="cursor" className={className} size={18} />
+);
+
+const OpenAiSectionIcon: SectionIconComponent = ({ className = "h-4 w-4" }) => (
+  <BrandLogo brandName="openai" className={className} size={18} />
+);
+
+const CapCutSectionIcon: SectionIconComponent = ({ className = "h-4 w-4" }) => (
+  <BrandLogo brandName="capcut" className={className} size={18} />
+);
+
+const TikTokSectionIcon: SectionIconComponent = ({ className = "h-4 w-4" }) => (
+  <BrandLogo brandName="tiktok" className={className} size={18} />
+);
+
+const ServerRackSectionIcon: SectionIconComponent = ({ className = "h-4 w-4" }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <rect x="2" y="2" width="20" height="8" rx="2" />
+    <rect x="2" y="14" width="20" height="8" rx="2" />
+    <line x1="6" y1="6" x2="6.01" y2="6" strokeWidth="2.5" />
+    <line x1="6" y1="18" x2="6.01" y2="18" strokeWidth="2.5" />
+    <line x1="10" y1="6" x2="18" y2="6" />
+    <line x1="10" y1="18" x2="18" y2="18" />
+  </svg>
+);
+
+const UtilitiesSectionIcon: SectionIconComponent = ({ className = "h-4 w-4" }) => (
+  <LayoutGrid className={className} />
+);
+
 interface SectionDefinition {
   id: string;
   title: string;
   shortLabel: string;
-  icon: LucideIcon;
+  icon: SectionIconComponent;
   iconBg: string;
   iconColor: string;
   activeRing: string;
@@ -46,7 +83,7 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     id: "ai-api",
     title: "Key & API Trí Tuệ Nhân Tạo (Cursor, Claude, Gemini, DeepSeek...)",
     shortLabel: "API AI",
-    icon: Cpu,
+    icon: CursorSectionIcon,
     iconBg: "bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80",
     iconColor: "text-zinc-900 dark:text-zinc-100",
     activeRing: "ring-zinc-500/30",
@@ -72,10 +109,10 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     id: "tai-khoan-ai",
     title: "Tài Khoản AI & Trí Tuệ Nhân Tạo (ChatGPT, Gemini Pro...)",
     shortLabel: "Tài khoản AI",
-    icon: Bot,
-    iconBg: "bg-blue-50 dark:bg-blue-950/40 border border-blue-200/70 dark:border-blue-900/50",
-    iconColor: "text-blue-600 dark:text-blue-400",
-    activeRing: "ring-blue-500/30",
+    icon: OpenAiSectionIcon,
+    iconBg: "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-900/50",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
+    activeRing: "ring-emerald-500/30",
     categorySlugs: [
       "ai-tool",
       "ai-cong-nghe",
@@ -98,7 +135,7 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     id: "ban-quyen",
     title: "Phần Mềm & Bản Quyền Ứng Dụng (CapCut, Canva, Office...)",
     shortLabel: "Bản quyền",
-    icon: KeyRound,
+    icon: CapCutSectionIcon,
     iconBg: "bg-amber-50 dark:bg-amber-950/40 border border-amber-200/70 dark:border-amber-900/50",
     iconColor: "text-amber-600 dark:text-amber-400",
     activeRing: "ring-amber-500/30",
@@ -129,10 +166,10 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     id: "mxh",
     title: "Dịch Vụ Tương Tác Mạng Xã Hội (TikTok, Facebook...)",
     shortLabel: "Mạng xã hội",
-    icon: Share2,
-    iconBg: "bg-blue-50 dark:bg-blue-950/40 border border-blue-200/70 dark:border-blue-900/50",
-    iconColor: "text-blue-600 dark:text-blue-400",
-    activeRing: "ring-blue-500/30",
+    icon: TikTokSectionIcon,
+    iconBg: "bg-rose-50 dark:bg-rose-950/40 border border-rose-200/70 dark:border-rose-900/50",
+    iconColor: "text-rose-600 dark:text-rose-400",
+    activeRing: "ring-rose-500/30",
     categorySlugs: [
       "dich-vu-mxh",
       "mang-xa-hoi",
@@ -159,7 +196,7 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     id: "cloud-vps",
     title: "Hạ Tầng Cloud & VPS",
     shortLabel: "Cloud VPS",
-    icon: Cloud,
+    icon: ServerRackSectionIcon,
     iconBg: "bg-sky-50 dark:bg-sky-950/40 border border-sky-200/70 dark:border-sky-900/50",
     iconColor: "text-sky-600 dark:text-sky-400",
     activeRing: "ring-sky-500/30",
@@ -184,7 +221,7 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     id: "khac",
     title: "Dịch Vụ & Tiện Ích Khác",
     shortLabel: "Khác",
-    icon: Layers,
+    icon: UtilitiesSectionIcon,
     iconBg: "bg-slate-100 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700/50",
     iconColor: "text-slate-600 dark:text-slate-400",
     activeRing: "ring-slate-500/30",
@@ -451,7 +488,7 @@ export default function CatalogExplorer({
               : "bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
-          <Layers className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          <LayoutGrid className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           <span>Tất cả</span>
           <span className="ml-0.5 rounded-full bg-slate-200 dark:bg-slate-800 px-1.5 py-0.2 text-[10px] text-slate-600 dark:text-slate-300">
             {allProducts.length}
@@ -632,31 +669,31 @@ export default function CatalogExplorer({
                     key={sec.id}
                     type="button"
                     onClick={() => scrollToSection(sec.id)}
-                    className={`pointer-events-auto group relative flex items-center justify-end rounded-l-2xl border-y border-l transition-all duration-300 ease-out shadow-lg overflow-hidden ${
+                    className={`pointer-events-auto group relative flex items-center justify-end rounded-l-2xl border-y border-l transition-all duration-300 ease-out shadow-md overflow-hidden ${
                       isActive
                         ? "bg-blue-600 text-white border-blue-500 shadow-blue-500/30 ring-2 ring-blue-400/50"
-                        : "bg-white/95 dark:bg-slate-900/95 text-slate-600 dark:text-slate-300 border-slate-200/90 dark:border-slate-800 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-xl"
+                        : "bg-white/95 dark:bg-zinc-900/95 text-zinc-700 dark:text-zinc-200 border-zinc-200/90 dark:border-zinc-800 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-xl backdrop-blur-sm"
                     }`}
-                    style={{ height: "40px" }}
+                    style={{ height: "42px" }}
                     title={sec.title}
                   >
-                    {/* Icon container - on the left edge so it slides outward into the page on hover */}
-                    <div className="w-10 h-10 flex items-center justify-center shrink-0">
-                      <SecIcon className="h-4.5 w-4.5 transition-transform duration-300 group-hover:scale-110" />
-                    </div>
-
-                    {/* Label that expands to the right of the icon */}
-                    <div className="max-w-0 opacity-0 group-hover:max-w-[240px] group-hover:opacity-100 group-hover:pr-3.5 transition-all duration-300 ease-out whitespace-nowrap overflow-hidden flex items-center gap-2 text-xs font-semibold">
+                    {/* Label that expands to the left of the icon on hover */}
+                    <div className="max-w-0 opacity-0 group-hover:max-w-[220px] group-hover:opacity-100 transition-all duration-300 ease-out whitespace-nowrap overflow-hidden flex items-center gap-2 text-xs font-semibold pl-0 group-hover:pl-3.5">
                       <span>{sec.shortLabel}</span>
                       <span
-                        className={`rounded-full px-1.5 py-0.2 text-[10px] ${
+                        className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
                           isActive
                             ? "bg-blue-700 text-white"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
+                            : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700"
                         }`}
                       >
                         {sec.products.length}
                       </span>
+                    </div>
+
+                    {/* Authentic Icon container anchored to the right edge */}
+                    <div className="w-10 h-10 flex items-center justify-center shrink-0">
+                      <SecIcon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
                     </div>
                   </button>
                 );
