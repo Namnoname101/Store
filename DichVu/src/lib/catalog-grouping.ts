@@ -26,6 +26,18 @@ export const BRAND_DEFINITIONS: BrandDef[] = [
   { key: "facebook", name: "Facebook", keywords: ["facebook", "fb"] },
 ];
 
+export const BRAND_FALLBACK_IMAGES: Record<string, string> = {
+  cursor: "https://genzshop.vn/assets/images/featured/featured_cursor_1791432465_324d.png",
+  claude: "https://genzshop.vn/assets/images/featured/featured_claude_1791432484_48b7.png",
+  codex: "https://genzshop.vn/assets/images/featured/featured_codex_1791432649_07eb.png",
+  gemini: "https://genzshop.vn/assets/images/featured/featured_gemini_1791432636_8640.png",
+  grok: "https://genzshop.vn/assets/images/featured/featured_grok_1791432680_1c82.png",
+  deepseek: "https://genzshop.vn/assets/images/featured/featured_deepseek_1791432802_0e47.jpg",
+  kimi: "https://genzshop.vn/assets/images/featured/featured_kimi_1791432662_9462.png",
+  zhipu: "https://genzshop.vn/assets/images/featured/featured_zhipu_1791432694_66f4.png",
+  kiro: "https://genzshop.vn/assets/images/api-circle.png",
+};
+
 export function isApiProduct(product: any): boolean {
   const title = (product.title || "").toLowerCase();
   const desc = (product.description || "").toLowerCase();
@@ -309,6 +321,14 @@ export function processSectionProducts(
       );
       const lowestPriceVariant = sortedByPrice[0].product;
 
+      // Ensure a valid thumbnail exists (first variant with thumbnail, or brand default image)
+      const brandFallback = BRAND_FALLBACK_IMAGES[brandKey] || null;
+      const candidateThumb =
+        sortedByPrice.find((v) => v.product.thumbnailUrl)?.product.thumbnailUrl ||
+        brandFallback ||
+        lowestPriceVariant.thumbnailUrl ||
+        null;
+
       // Ensure variant pills are unique by normalized variantLabel (keeping lowest price first)
       const variants: VariantProduct[] = [];
       const seenVariantKeys = new Set<string>();
@@ -319,6 +339,7 @@ export function processSectionProducts(
           seenVariantKeys.add(key);
           variants.push({
             ...it.product,
+            thumbnailUrl: it.product.thumbnailUrl || candidateThumb,
             variantLabel: it.variantLabel,
           });
         }
@@ -335,7 +356,7 @@ export function processSectionProducts(
             brandName: brandDef.name,
             title: `Gói API / Dịch Vụ ${brandDef.name}`,
             description: lowestPriceVariant.description,
-            thumbnailUrl: lowestPriceVariant.thumbnailUrl,
+            thumbnailUrl: candidateThumb,
             category: lowestPriceVariant.category,
             variants,
           },

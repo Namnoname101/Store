@@ -299,5 +299,9 @@ describe("Catalog Grouping & Codex Variant Deduplication", () => {
     // Lowest price for $50 should be 60000
     const v50 = variants.find((v) => v.variantLabel === "$50");
     expect(v50?.price).toBe(60000);
+
+    // Grouped card MUST have a valid thumbnail (fallback from other variants or brand fallback)
+    expect(codexCard!.groupedData!.thumbnailUrl).toBeTruthy();
+    expect(codexCard!.groupedData!.thumbnailUrl).toContain("http");
   });
 });

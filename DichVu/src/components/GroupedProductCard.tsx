@@ -65,14 +65,16 @@ export default function GroupedProductCard({
         )
       : 0;
 
+  const displayThumbnail = activeVariant.thumbnailUrl || thumbnailUrl;
+
   return (
     <div className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800/90 bg-white dark:bg-slate-900/80 p-2.5 sm:p-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-400 dark:hover:border-blue-500/50 hover:shadow-md hover:shadow-blue-500/5 dark:hover:shadow-blue-950/20">
       <div>
         {/* Compact 16:10 Thumbnail */}
         <div className="relative mb-2 flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-850">
-          {thumbnailUrl ? (
+          {displayThumbnail ? (
             <img
-              src={thumbnailUrl}
+              src={displayThumbnail}
               alt={activeVariant.title || title}
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
