@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  Sparkles,
   Key,
   ShieldCheck,
   CheckCircle2,
@@ -208,9 +207,9 @@ export default function CodexTopupClient() {
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header Banner */}
       <div className="mb-10 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/20 bg-purple-500/10 px-3.5 py-1 text-xs font-semibold text-purple-700 dark:text-purple-300">
-          <Sparkles className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
-          <span>DaiTruong Codex Credit Platform</span>
+        <div className="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1 text-xs font-mono font-medium text-zinc-300 shadow-2xs">
+          <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span>DaiTruong Codex API Quota Platform</span>
         </div>
         <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
           Nạp Tự Động API Credit & Quota

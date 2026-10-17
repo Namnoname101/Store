@@ -16,7 +16,7 @@ import {
   ShieldCheck,
   ArrowLeft,
   ShoppingBag,
-  Sparkles,
+  Info,
   MessageCircle,
   PhoneCall,
   Send,
@@ -509,8 +509,8 @@ export default function CheckoutClient({
 
       {/* Price Changed Alert Banner */}
       {priceChangedNotice && (
-        <div className="mb-6 rounded-2xl border border-sky-500/40 bg-sky-500/10 p-4 text-xs text-sky-300 font-medium flex items-center gap-2.5">
-          <Sparkles className="h-4 w-4 text-sky-400 shrink-0" />
+        <div className="mb-6 rounded-xl border border-sky-500/30 bg-sky-500/10 p-3.5 text-xs text-sky-300 font-medium flex items-center gap-2.5">
+          <Info className="h-4 w-4 text-sky-400 shrink-0" />
           <span>{priceChangedNotice}</span>
         </div>
       )}
@@ -562,9 +562,9 @@ export default function CheckoutClient({
                 <Loader2 className="h-10 w-10 animate-spin text-indigo-400" />
               </div>
 
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 px-3.5 py-1 text-xs font-bold text-indigo-300 mb-3">
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>Đã ghi nhận thanh toán</span>
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-400 mb-3 font-mono">
+                <Check className="h-3.5 w-3.5" />
+                <span>ĐÃ GHI NHẬN THANH TOÁN</span>
               </div>
 
               <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mb-3">

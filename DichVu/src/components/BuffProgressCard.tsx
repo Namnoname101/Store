@@ -9,7 +9,6 @@ import {
   ExternalLink,
   Copy,
   Check,
-  Sparkles,
   Clock,
   Layers,
   Zap,
@@ -358,8 +357,8 @@ export default function BuffProgressCard({
 
       {/* 4-Stage Stepper Timeline */}
       <div className="relative z-10 rounded-2xl border border-slate-800/80 bg-slate-950/60 p-4 sm:p-5 mb-6">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
-          <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
+        <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4 flex items-center gap-2 font-mono">
+          <Zap className="h-3.5 w-3.5 text-zinc-400" />
           <span>Tiến trình xử lý trên máy chủ</span>
         </h4>
 

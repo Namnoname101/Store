@@ -12,7 +12,6 @@ import {
   CreditCard,
   QrCode,
   Clock,
-  Sparkles,
 } from "lucide-react";
 
 const PRESET_AMOUNTS = [20000, 50000, 100000, 200000, 500000, 1000000];
@@ -153,9 +152,9 @@ export default function TopupClient() {
         <div className="absolute top-0 right-0 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-1">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Ví Thành Viên Daitruong Store</span>
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-1 font-mono">
+              <Wallet className="h-3.5 w-3.5" />
+              <span>Ví Thành Viên DaiTruong Store</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-white">
               Xin chào, <span className="text-indigo-400">{user?.username}</span>
