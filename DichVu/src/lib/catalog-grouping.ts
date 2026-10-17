@@ -27,16 +27,64 @@ export const BRAND_DEFINITIONS: BrandDef[] = [
 ];
 
 export const BRAND_FALLBACK_IMAGES: Record<string, string> = {
-  cursor: "https://genzshop.vn/assets/images/featured/featured_cursor_1791432465_324d.png",
-  claude: "https://genzshop.vn/assets/images/featured/featured_claude_1791432484_48b7.png",
-  codex: "https://genzshop.vn/assets/images/featured/featured_codex_1791432649_07eb.png",
-  gemini: "https://genzshop.vn/assets/images/featured/featured_gemini_1791432636_8640.png",
-  grok: "https://genzshop.vn/assets/images/featured/featured_grok_1791432680_1c82.png",
-  deepseek: "https://genzshop.vn/assets/images/featured/featured_deepseek_1791432802_0e47.jpg",
-  kimi: "https://genzshop.vn/assets/images/featured/featured_kimi_1791432662_9462.png",
-  zhipu: "https://genzshop.vn/assets/images/featured/featured_zhipu_1791432694_66f4.png",
-  kiro: "https://genzshop.vn/assets/images/api-circle.png",
+  cursor: "/images/brands/cursor.svg",
+  claude: "/images/brands/claude.svg",
+  codex: "/images/brands/codex.svg",
+  gemini: "/images/brands/gemini.svg",
+  grok: "/images/brands/default.svg",
+  deepseek: "/images/brands/deepseek.svg",
+  kimi: "/images/brands/default.svg",
+  zhipu: "/images/brands/default.svg",
+  kiro: "/images/brands/default.svg",
+  chatgpt: "/images/brands/chatgpt.svg",
+  netflix: "/images/brands/netflix.svg",
+  capcut: "/images/brands/capcut.svg",
+  canva: "/images/brands/canva.svg",
+  locket: "/images/brands/locket.svg",
+  microsoft: "/images/brands/microsoft.svg",
+  spotify: "/images/brands/spotify.svg",
+  youtube: "/images/brands/youtube.svg",
+  tiktok: "/images/brands/tiktok.svg",
+  facebook: "/images/brands/facebook.svg",
+  instagram: "/images/brands/default.svg",
+  duolingo: "/images/brands/duolingo.svg",
+  nordvpn: "/images/brands/nordvpn.svg",
 };
+
+export function resolveProductThumbnail(
+  title: string,
+  slug: string = "",
+  existingThumbnail?: string | null,
+  categorySlug: string = ""
+): string {
+  if (existingThumbnail && existingThumbnail.trim() && !existingThumbnail.includes("placeholder")) {
+    return existingThumbnail;
+  }
+
+  const combined = `${title} ${slug} ${categorySlug}`.toLowerCase();
+
+  if (combined.includes("claude") || combined.includes("anthropic")) return "/images/brands/claude.svg";
+  if (combined.includes("cursor")) return "/images/brands/cursor.svg";
+  if (combined.includes("codex")) return "/images/brands/codex.svg";
+  if (combined.includes("deepseek")) return "/images/brands/deepseek.svg";
+  if (combined.includes("gemini") || combined.includes("google")) return "/images/brands/gemini.svg";
+  if (combined.includes("openai") || combined.includes("chatgpt") || combined.includes("gpt")) return "/images/brands/chatgpt.svg";
+  if (combined.includes("netflix")) return "/images/brands/netflix.svg";
+  if (combined.includes("capcut")) return "/images/brands/capcut.svg";
+  if (combined.includes("canva")) return "/images/brands/canva.svg";
+  if (combined.includes("locket")) return "/images/brands/locket.svg";
+  if (combined.includes("office") || combined.includes("365") || combined.includes("microsoft")) return "/images/brands/microsoft.svg";
+  if (combined.includes("spotify")) return "/images/brands/spotify.svg";
+  if (combined.includes("youtube")) return "/images/brands/youtube.svg";
+  if (combined.includes("tiktok") || combined.includes("douyin")) return "/images/brands/tiktok.svg";
+  if (combined.includes("facebook") || combined.includes("fb")) return "/images/brands/facebook.svg";
+  if (combined.includes("instagram") || combined.includes("ig")) return "/images/brands/default.svg";
+  if (combined.includes("duolingo")) return "/images/brands/duolingo.svg";
+  if (combined.includes("nordvpn") || combined.includes("vpn")) return "/images/brands/nordvpn.svg";
+  if (combined.includes("telegram")) return "/images/brands/default.svg";
+
+  return "/images/brands/default.svg";
+}
 
 export function isApiProduct(product: any): boolean {
   const title = (product.title || "").toLowerCase();

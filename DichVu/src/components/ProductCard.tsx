@@ -5,6 +5,7 @@ import Link from "next/link";
 import { KeyRound, UserCheck, GraduationCap, ArrowRight, Eye } from "lucide-react";
 import type { Product } from "@prisma/client";
 import { formatVND, getProductTypeInfo, getProductBadgeLabel } from "@/lib/product-types";
+import { resolveProductThumbnail } from "@/lib/catalog-grouping";
 
 export interface ProductCardProps {
   product: Product & {
@@ -41,26 +42,28 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
       ? Math.round(((originalPrice - price) / originalPrice) * 100)
       : 0;
 
+  const resolvedThumbnail = resolveProductThumbnail(
+    title,
+    slug,
+    imgError ? null : thumbnailUrl,
+    product.category?.slug
+  );
+
   return (
     <div className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-950 p-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-zinc-400 dark:hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-950/5 dark:hover:shadow-zinc-950/30">
       <div>
         {/* Compact 16:10 Aspect Ratio Product Image */}
         <div className="relative mb-2.5 flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-lg border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-900/60">
-          {thumbnailUrl && !imgError ? (
-            <img
-              src={thumbnailUrl}
-              alt={title}
-              onError={() => setImgError(true)}
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            />
-          ) : (
-            <div className="flex flex-col items-center justify-center gap-1.5 text-zinc-400 dark:text-zinc-500">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 shadow-xs text-zinc-800 dark:text-zinc-200">
-                <TypeIcon className="h-5 w-5" />
-              </div>
-              <span className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-400">{typeInfo.shortLabel}</span>
-            </div>
-          )}
+          <img
+            src={resolvedThumbnail}
+            alt={title}
+            onError={() => {
+              if (!imgError) {
+                setImgError(true);
+              }
+            }}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
 
           {/* Type Badge */}
           <div className="absolute top-2 left-2">

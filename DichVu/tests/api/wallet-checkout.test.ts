@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import prisma from "@/lib/prisma";
 import { POST as payWithWalletHandler } from "@/app/api/orders/[orderCode]/pay-with-wallet/route";
 import { createOrder } from "@/services/order.service";
@@ -11,14 +11,13 @@ describe("POST /api/orders/[orderCode]/pay-with-wallet API Route", () => {
   let productId: string;
 
   beforeEach(async () => {
-    await prisma.walletTransaction.deleteMany();
-    await prisma.paymentTransaction.deleteMany();
-    await prisma.orderItem.deleteMany();
-    await prisma.productItem.deleteMany();
-    await prisma.order.deleteMany();
-    await prisma.product.deleteMany();
-    await prisma.category.deleteMany();
-    await prisma.user.deleteMany();
+    await prisma.productItem.deleteMany({ where: { product: { slug: "test-wallet-netflix-1-month" } } });
+    await prisma.orderItem.deleteMany({ where: { product: { slug: "test-wallet-netflix-1-month" } } });
+    await prisma.product.deleteMany({ where: { slug: "test-wallet-netflix-1-month" } });
+    await prisma.category.deleteMany({ where: { slug: "test-wallet-services" } });
+    await prisma.walletTransaction.deleteMany({ where: { user: { username: "walletapicheckoutuser" } } });
+    await prisma.order.deleteMany({ where: { customerEmail: { contains: "walletapicheckout" } } });
+    await prisma.user.deleteMany({ where: { username: "walletapicheckoutuser" } });
 
     const user = await prisma.user.create({
       data: {
@@ -36,13 +35,13 @@ describe("POST /api/orders/[orderCode]/pay-with-wallet API Route", () => {
     });
 
     const cat = await prisma.category.create({
-      data: { name: "Services", slug: "services" },
+      data: { name: "Services", slug: "test-wallet-services" },
     });
 
     const prod = await prisma.product.create({
       data: {
         title: "Netflix 1 Month",
-        slug: "netflix-1-month",
+        slug: "test-wallet-netflix-1-month",
         description: "Netflix 4K",
         price: 80000,
         categoryId: cat.id,
@@ -106,5 +105,15 @@ describe("POST /api/orders/[orderCode]/pay-with-wallet API Route", () => {
     // Verify User balance updated in DB
     const user = await prisma.user.findUnique({ where: { id: userId } });
     expect(user?.balance).toBe(120000); // 200,000 - 80,000
+  });
+
+  afterAll(async () => {
+    await prisma.productItem.deleteMany({ where: { product: { slug: "test-wallet-netflix-1-month" } } });
+    await prisma.orderItem.deleteMany({ where: { product: { slug: "test-wallet-netflix-1-month" } } });
+    await prisma.product.deleteMany({ where: { slug: "test-wallet-netflix-1-month" } });
+    await prisma.category.deleteMany({ where: { slug: "test-wallet-services" } });
+    await prisma.walletTransaction.deleteMany({ where: { user: { username: "walletapicheckoutuser" } } });
+    await prisma.order.deleteMany({ where: { customerEmail: { contains: "walletapicheckout" } } });
+    await prisma.user.deleteMany({ where: { username: "walletapicheckoutuser" } });
   });
 });

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import prisma, { OrderStatus } from "@/lib/prisma";
 import { payOrderWithWallet } from "@/services/wallet.service";
 import { createOrder } from "@/services/order.service";
@@ -8,15 +8,13 @@ describe("Wallet Service & 1-Click Balance Checkout", () => {
   let productId: string;
 
   beforeEach(async () => {
-    await prisma.walletTransaction.deleteMany();
-    await prisma.paymentTransaction.deleteMany();
-    await prisma.orderItem.deleteMany();
-    await prisma.productItem.deleteMany();
-    await prisma.order.deleteMany();
-    await prisma.product.deleteMany();
-    await prisma.category.deleteMany();
-    await prisma.depositOrder.deleteMany();
-    await prisma.user.deleteMany();
+    await prisma.productItem.deleteMany({ where: { product: { slug: "test-windows-key" } } });
+    await prisma.orderItem.deleteMany({ where: { product: { slug: "test-windows-key" } } });
+    await prisma.product.deleteMany({ where: { slug: "test-windows-key" } });
+    await prisma.category.deleteMany({ where: { slug: "test-wallet-software" } });
+    await prisma.walletTransaction.deleteMany({ where: { user: { username: "walletcheckoutuser" } } });
+    await prisma.order.deleteMany({ where: { customerEmail: { contains: "walletcheckoutuser" } } });
+    await prisma.user.deleteMany({ where: { username: "walletcheckoutuser" } });
 
     const user = await prisma.user.create({
       data: {
@@ -29,7 +27,7 @@ describe("Wallet Service & 1-Click Balance Checkout", () => {
     userId = user.id;
 
     const cat = await prisma.category.create({
-      data: { name: "Software", slug: "software" },
+      data: { name: "Software", slug: "test-wallet-software" },
     });
 
     const prod = await prisma.product.create({
@@ -166,5 +164,15 @@ describe("Wallet Service & 1-Click Balance Checkout", () => {
     // Final balance must be 0, never negative
     const user = await prisma.user.findUnique({ where: { id: userId } });
     expect(user?.balance).toBe(0);
+  });
+
+  afterAll(async () => {
+    await prisma.productItem.deleteMany({ where: { product: { slug: "test-windows-key" } } });
+    await prisma.orderItem.deleteMany({ where: { product: { slug: "test-windows-key" } } });
+    await prisma.product.deleteMany({ where: { slug: "test-windows-key" } });
+    await prisma.category.deleteMany({ where: { slug: "test-wallet-software" } });
+    await prisma.walletTransaction.deleteMany({ where: { user: { username: "walletcheckoutuser" } } });
+    await prisma.order.deleteMany({ where: { customerEmail: { contains: "walletcheckoutuser" } } });
+    await prisma.user.deleteMany({ where: { username: "walletcheckoutuser" } });
   });
 });

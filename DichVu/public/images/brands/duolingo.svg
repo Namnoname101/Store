@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f1c08" />
+      <stop offset="100%" stop-color="#040902" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="45%" r="45%">
+      <stop offset="0%" stop-color="#58cc02" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#58cc02" stop-opacity="0" />
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.03" />
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#bg)" />
+  <rect width="800" height="500" fill="url(#grid)" />
+  <circle cx="400" cy="220" r="280" fill="url(#glow)" />
+
+  <!-- Center Emblem Container -->
+  <g transform="translate(400, 210)">
+    <!-- Ambient Ring -->
+    <circle cx="0" cy="0" r="85" fill="#18181b" fill-opacity="0.7" stroke="#27272a" stroke-width="1.5" />
+    <circle cx="0" cy="0" r="75" fill="#09090b" fill-opacity="0.9" stroke="#58cc02" stroke-width="1" stroke-opacity="0.4" />
+    
+    <!-- Icon -->
+    <g transform="translate(-40, -40) scale(3.33)">
+      <path d="M12 2C7 2 3 6 3 11c0 3.5 2 6.5 5 8v3h8v-3c3-1.5 5-4.5 5-8 0-5-4-9-9-9zm-3 10c-.8 0-1.5-.7-1.5-1.5S8.2 9 9 9s1.5.7 1.5 1.5S9.8 12 9 12zm6 0c-.8 0-1.5-.7-1.5-1.5S14.2 9 15 9s1.5.7 1.5 1.5S15.8 12 15 12z" fill="#58cc02" />
+    </g>
+  </g>
+
+  <!-- Text Badges -->
+  <g transform="translate(400, 385)" text-anchor="middle">
+    <!-- Brand Title -->
+    <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="1">DUOLINGO SUPER</text>
+    
+    <!-- Subtitle Pill -->
+    <g transform="translate(0, 32)">
+      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#58cc02" letter-spacing="1.5">VÔ HẠN TRÁI TIM • LUYỆN NÓI AI</text>
+    </g>
+  </g>
+</svg>
