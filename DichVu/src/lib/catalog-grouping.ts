@@ -202,8 +202,13 @@ export function processSectionProducts(
   items: ProcessedCatalogItem[];
   availableBrands: { key: string; name: string; count: number }[];
 } {
-  // Filter out any short-term, hourly, or daily reset API packages
-  const allowedProducts = products.filter((p) => !isDisallowedShortTermApiPackage(p));
+  // Filter out any short-term, hourly, or daily reset API packages, and direct credit topups that belong to /codex
+  const allowedProducts = products.filter(
+    (p) =>
+      !isDisallowedShortTermApiPackage(p) &&
+      p.type !== "CODEX_CREDIT" &&
+      p.category?.slug !== "codex-credit"
+  );
 
   // Deduplicate products that share identical supplierProductCode or identical title & price
   const seenProducts = new Map<string, any>();
@@ -216,8 +221,13 @@ export function processSectionProducts(
       seenProducts.set(key, p);
       uniqueProducts.push(p);
     } else {
-      // Prefer the product with clearer title (e.g. containing 'Credit' or longer)
-      if ((p.title || "").length > (existing.title || "").length) {
+      // Prefer in-stock product first, then the product with clearer title (e.g. containing 'Credit' or longer)
+      const pInStock = (p.stockCount || 0) > 0;
+      const existingInStock = (existing.stockCount || 0) > 0;
+      if (
+        (pInStock && !existingInStock) ||
+        (pInStock === existingInStock && (p.title || "").length > (existing.title || "").length)
+      ) {
         const idx = uniqueProducts.indexOf(existing);
         if (idx !== -1) {
           uniqueProducts[idx] = p;
@@ -316,32 +326,48 @@ export function processSectionProducts(
     } else {
       // Group 2+ products
       const brandDef = items[0].brand!;
-      const sortedByPrice = [...items].sort(
-        (a, b) => a.product.price - b.product.price
-      );
-      const lowestPriceVariant = sortedByPrice[0].product;
+      // Prioritize in-stock variants first when picking best candidate per variantLabel
+      const candidateVariants = [...items].sort((a, b) => {
+        const aStock = (a.product.stockCount || 0) > 0 ? 1 : 0;
+        const bStock = (b.product.stockCount || 0) > 0 ? 1 : 0;
+        if (aStock !== bStock) {
+          return bStock - aStock; // in-stock variants come first
+        }
+        return a.product.price - b.product.price;
+      });
 
-      // Ensure a valid thumbnail exists (first variant with thumbnail, or brand default image)
-      const brandFallback = BRAND_FALLBACK_IMAGES[brandKey] || null;
-      const candidateThumb =
-        sortedByPrice.find((v) => v.product.thumbnailUrl)?.product.thumbnailUrl ||
-        brandFallback ||
-        lowestPriceVariant.thumbnailUrl ||
-        null;
-
-      // Ensure variant pills are unique by normalized variantLabel (keeping lowest price first)
+      // Ensure variant pills are unique by normalized variantLabel (keeping in-stock / best price first)
       const variants: VariantProduct[] = [];
       const seenVariantKeys = new Set<string>();
 
-      sortedByPrice.forEach((it) => {
+      candidateVariants.forEach((it) => {
         const key = it.variantLabel.toLowerCase().trim();
         if (!seenVariantKeys.has(key)) {
           seenVariantKeys.add(key);
           variants.push({
             ...it.product,
-            thumbnailUrl: it.product.thumbnailUrl || candidateThumb,
+            thumbnailUrl: it.product.thumbnailUrl || null,
             variantLabel: it.variantLabel,
           });
+        }
+      });
+
+      // Sort final variants strictly by price ascending for progressive display
+      variants.sort((a, b) => a.price - b.price);
+      const lowestPriceVariant = variants[0];
+
+      // Ensure a valid thumbnail exists (first variant with thumbnail, or brand default image)
+      const brandFallback = BRAND_FALLBACK_IMAGES[brandKey] || null;
+      const candidateThumb =
+        variants.find((v) => v.thumbnailUrl)?.thumbnailUrl ||
+        brandFallback ||
+        lowestPriceVariant?.thumbnailUrl ||
+        null;
+
+      // Assign candidateThumb to all variants lacking thumbnail
+      variants.forEach((v) => {
+        if (!v.thumbnailUrl) {
+          v.thumbnailUrl = candidateThumb;
         }
       });
 

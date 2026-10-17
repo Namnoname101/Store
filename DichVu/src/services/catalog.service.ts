@@ -43,6 +43,8 @@ export async function getCategoriesWithProducts(
     } else {
       categoryWhere.slug = categorySlug;
     }
+  } else {
+    categoryWhere.slug = { not: "codex-credit" };
   }
 
   const categories = await prisma.category.findMany({
@@ -59,7 +61,10 @@ export async function getCategoriesWithProducts(
   const result: CategoryWithProducts[] = await Promise.all(
     categories.map(async (category) => {
       const allowedCategoryProducts = category.products.filter(
-        (p) => !isDisallowedShortTermApiPackage(p)
+        (p) =>
+          !isDisallowedShortTermApiPackage(p) &&
+          p.type !== "CODEX_CREDIT" &&
+          category.slug !== "codex-credit"
       );
       const productsWithStock = await Promise.all(
         allowedCategoryProducts.map(async (product) => {
@@ -96,7 +101,13 @@ export async function getProductBySlug(
     },
   });
 
-  if (!product || !product.isActive || isDisallowedShortTermApiPackage(product)) {
+  if (
+    !product ||
+    !product.isActive ||
+    isDisallowedShortTermApiPackage(product) ||
+    product.type === "CODEX_CREDIT" ||
+    product.category?.slug === "codex-credit"
+  ) {
     return null;
   }
 

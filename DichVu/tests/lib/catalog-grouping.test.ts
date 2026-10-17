@@ -304,4 +304,37 @@ describe("Catalog Grouping & Codex Variant Deduplication", () => {
     expect(codexCard!.groupedData!.thumbnailUrl).toBeTruthy();
     expect(codexCard!.groupedData!.thumbnailUrl).toContain("http");
   });
+
+  it("should prioritize in-stock variants over out-of-stock variants and exclude CODEX_CREDIT topups from catalog", () => {
+    const rawProducts = [
+      {
+        id: "codex-topup-10",
+        title: "Gói Codex 10$ Credit",
+        price: 12000,
+        slug: "codex-credit-10usd",
+        description: "5.000.000 Quota Points",
+        type: "CODEX_CREDIT",
+        category: { slug: "codex-credit" },
+        stockCount: 0,
+      },
+      {
+        id: "cdx-0055",
+        title: "API Codex AI- tốc độ nhanh (10$ Credit)",
+        price: 22000,
+        slug: "cdx-0055-api-codex-ai-toc-o-nhanh-10-credit",
+        description: "10.000 VNĐ = 10$ Credit",
+        type: "LICENSE_KEY",
+        category: { slug: "ai-api" },
+        stockCount: 120,
+      },
+    ];
+
+    const { items } = processSectionProducts(rawProducts);
+    const codexItem = items[0];
+    const product = codexItem.type === "grouped" ? codexItem.groupedData!.variants[0] : codexItem.singleProduct;
+
+    expect(product.stockCount).toBe(120);
+    expect(product.price).toBe(22000);
+    expect(product.slug).toBe("cdx-0055-api-codex-ai-toc-o-nhanh-10-credit");
+  });
 });
