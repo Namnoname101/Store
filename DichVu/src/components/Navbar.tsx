@@ -129,6 +129,16 @@ export default function Navbar() {
             <span>Nạp API Credit</span>
           </Link>
 
+          {/* Developer Dashboard - Prominent Top Button */}
+          <Link
+            href="/developer/usage"
+            className="flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 px-3 py-2 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all shadow-2xs group active:scale-[0.98]"
+            title="Kiểm tra số dư quota, token và nhật ký request thời gian thực"
+          >
+            <Terminal className="h-3.5 w-3.5 text-emerald-500" />
+            <span>Kiểm tra Quota & Logs</span>
+          </Link>
+
           {/* Order lookup */}
           <Link
             href="/lookup"
@@ -267,17 +277,17 @@ export default function Navbar() {
               </Link>
             ))}
           </nav>
-          <div className="flex items-center gap-4 text-[11px]">
+          <div className="flex items-center gap-3 text-[11px]">
             <Link
               href="/developer/usage"
-              className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1 font-semibold transition-colors"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 font-semibold text-[11px] shadow-2xs hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-all active:scale-95"
             >
-              <Terminal className="h-3 w-3 text-emerald-500" />
-              <span>Developer Dashboard</span>
+              <Terminal className="h-3 w-3 text-emerald-400 dark:text-emerald-600" />
+              <span>Kiểm tra Quota & Logs</span>
             </Link>
-            <div className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              <span>Thanh toán QR tự động</span>
+            <div className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5 font-medium">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Cấp phát tự động 24/7</span>
             </div>
           </div>
         </div>
@@ -362,13 +372,13 @@ export default function Navbar() {
             <Link
               href="/developer/usage"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white px-2 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
+              className="flex items-center justify-between text-sm font-semibold text-zinc-900 dark:text-white px-3 py-2.5 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xs"
             >
-              <div className="flex items-center gap-2">
-                <Layers className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-                <span>Developer API Usage</span>
+              <div className="flex items-center gap-2.5">
+                <Terminal className="h-4 w-4 text-emerald-500" />
+                <span>Kiểm tra Quota & Logs API</span>
               </div>
-              <ChevronRight className="h-4 w-4 text-slate-400" />
+              <span className="text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-2 py-0.5 rounded-md">LIVE</span>
             </Link>
 
             <Link

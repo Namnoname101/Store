@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
-  Sparkles,
+  Terminal,
+  Zap,
   Key,
   TrendingUp,
   Clock,
@@ -65,7 +66,7 @@ export default function UsageDashboardClient() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
-      const paramKey = urlParams.get("apiKey");
+      const paramKey = urlParams.get("apiKey") || urlParams.get("key");
       const storedKey = localStorage.getItem("daitruong_dev_api_key");
 
       if (paramKey) {
@@ -161,8 +162,8 @@ export default function UsageDashboardClient() {
       {/* Header section */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/20 bg-purple-500/10 px-3 py-0.5 text-xs font-semibold text-purple-700 dark:text-purple-300">
-            <Sparkles className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+          <div className="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1 text-xs font-mono font-medium text-zinc-300 shadow-2xs">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>DaiTruong Developer Portal</span>
           </div>
           <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
@@ -173,7 +174,7 @@ export default function UsageDashboardClient() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => {
               if (apiKey) {
@@ -182,7 +183,7 @@ export default function UsageDashboardClient() {
               }
             }}
             disabled={isLoading || !apiKey}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition disabled:opacity-50 shadow-sm"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition disabled:opacity-50 shadow-2xs"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
             <span>Làm mới</span>
@@ -190,10 +191,10 @@ export default function UsageDashboardClient() {
 
           <Link
             href="/codex"
-            className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-blue-600/25 hover:from-blue-700 hover:to-indigo-700 transition"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 dark:bg-white px-3.5 py-2 text-xs font-bold text-white dark:text-zinc-950 shadow-xs hover:bg-zinc-800 dark:hover:bg-zinc-100 transition active:scale-[0.98]"
           >
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>Nạp Thêm Credit</span>
+            <Zap className="h-3.5 w-3.5" />
+            <span>Nạp Thêm Quota</span>
           </Link>
         </div>
       </div>

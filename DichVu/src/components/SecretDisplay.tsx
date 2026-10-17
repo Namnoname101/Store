@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   Copy,
   Check,
@@ -734,27 +735,40 @@ export default function SecretDisplay({
                     </span>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(item.id, secretContent)}
-                    className={`flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-all shrink-0 active:scale-[0.98] ${
-                      isCopied
-                        ? "bg-emerald-600 text-white animate-spring-pop shadow-xs"
-                        : "bg-white text-zinc-950 hover:bg-zinc-100 shadow-xs"
-                    }`}
-                  >
-                    {isCopied ? (
-                      <>
-                        <Check className="h-3.5 w-3.5" />
-                        <span>Đã sao chép!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-3.5 w-3.5" />
-                        <span>Sao chép Key</span>
-                      </>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {secretContent.startsWith("sk-") && (
+                      <Link
+                        href={`/developer/usage?key=${encodeURIComponent(secretContent)}`}
+                        className="flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 px-3 py-2 text-xs font-semibold text-emerald-400 transition-all shadow-2xs active:scale-[0.98]"
+                        title="Kiểm tra hạn mức quota và log request thời gian thực của Key này"
+                      >
+                        <Terminal className="h-3.5 w-3.5 text-emerald-400" />
+                        <span>Xem Quota & Logs</span>
+                      </Link>
                     )}
-                  </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(item.id, secretContent)}
+                      className={`flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-all shrink-0 active:scale-[0.98] ${
+                        isCopied
+                          ? "bg-emerald-600 text-white animate-spring-pop shadow-xs"
+                          : "bg-white text-zinc-950 hover:bg-zinc-100 shadow-xs"
+                      }`}
+                    >
+                      {isCopied ? (
+                        <>
+                          <Check className="h-3.5 w-3.5" />
+                          <span>Đã sao chép!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-3.5 w-3.5" />
+                          <span>Sao chép Key</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -925,6 +939,24 @@ export OPENAI_API_KEY="${firstSecret || "sk-..."}"`}
                 </>
               )}
             </div>
+          </div>
+
+          {/* Quick Developer Dashboard Link Banner */}
+          <div className="mt-4 pt-3.5 border-t border-zinc-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-900/50 -mx-5 -mb-5 px-4 py-3 rounded-b-xl">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              <span className="text-xs text-zinc-300">
+                Theo dõi số dư quota, token và nhật ký request thời gian thực của Key này
+              </span>
+            </div>
+            <Link
+              href={`/developer/usage?key=${encodeURIComponent(firstSecret)}`}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-500 text-zinc-950 hover:bg-emerald-400 px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs shrink-0 active:scale-95"
+            >
+              <Terminal className="h-3.5 w-3.5" />
+              <span>Kiểm tra Quota & Logs</span>
+              <ArrowRight className="h-3 w-3" />
+            </Link>
           </div>
         </div>
       )}

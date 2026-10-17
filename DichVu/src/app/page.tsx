@@ -1,4 +1,5 @@
-import { Search, ArrowRight, Zap, ShieldCheck, Clock } from "lucide-react";
+import Link from "next/link";
+import { Search, ArrowRight, Zap, ShieldCheck, Clock, Terminal } from "lucide-react";
 import { getCategoriesWithProducts, getAllCategories } from "@/services/catalog.service";
 import CatalogExplorer from "@/components/CatalogExplorer";
 import BrandLogo from "@/components/BrandLogo";
@@ -104,6 +105,13 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 <BrandLogo brandName="deepseek" size={12} className="w-3 h-3 text-blue-500" />
                 DeepSeek
               </a>
+              <Link
+                href="/developer/usage"
+                className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20 font-semibold transition-all active:scale-95"
+              >
+                <Terminal className="w-3 h-3 text-emerald-500" />
+                Kiểm tra Quota & Logs API
+              </Link>
             </div>
           </div>
         </div>
