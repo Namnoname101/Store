@@ -244,7 +244,9 @@ export default function CatalogExplorer({
   const [selectedCategoryTab, setSelectedCategoryTab] = useState<string>(
     initialCategory && initialCategory !== "all" ? initialCategory.toLowerCase() : "all"
   );
-  const [activeSectionId, setActiveSectionId] = useState<string>(SECTION_DEFINITIONS[0].id);
+  const [activeSectionId, setActiveSectionId] = useState<string>(
+    initialCategory && initialCategory !== "all" ? initialCategory.toLowerCase() : SECTION_DEFINITIONS[0].id
+  );
   const [quickViewProduct, setQuickViewProduct] = useState<ProductCardProps["product"] | null>(null);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState<boolean>(false);
   const [selectedSubBrands, setSelectedSubBrands] = useState<Record<string, string>>({});
@@ -256,7 +258,9 @@ export default function CatalogExplorer({
   useEffect(() => {
     const urlCategory = searchParams.get("category");
     if (urlCategory) {
-      setSelectedCategoryTab(urlCategory.toLowerCase());
+      const lowerCat = urlCategory.toLowerCase();
+      setSelectedCategoryTab(lowerCat);
+      setActiveSectionId(lowerCat);
     }
 
     const urlSearch = searchParams.get("search");
@@ -357,19 +361,36 @@ export default function CatalogExplorer({
     })).filter((sec) => sec.products.length > 0);
   }, [allProducts, searchQuery]);
 
-  // Scrollspy effect: track which section is currently in view
+  const isManualScrollingRef = useRef(false);
+  const manualScrollTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Scrollspy effect: track which section is currently at the top of the viewport
   useEffect(() => {
     if (populatedSections.length === 0) return;
 
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + 180; // offset below navbar
+      if (isManualScrollingRef.current) return;
 
-      for (let i = populatedSections.length - 1; i >= 0; i--) {
+      // If user is filtering by a specific category, keep that category active
+      if (selectedCategoryTab !== "all") {
+        return;
+      }
+
+      // If scrolled to the very bottom of the document, activate the last section
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 60) {
+        setActiveSectionId(populatedSections[populatedSections.length - 1].id);
+        return;
+      }
+
+      const headerOffset = 130; // navbar height + viewing margin
+
+      for (let i = 0; i < populatedSections.length; i++) {
         const sec = populatedSections[i];
         const el = document.getElementById(`section-${sec.id}`);
         if (el) {
-          const top = el.offsetTop;
-          if (scrollPosition >= top) {
+          const rect = el.getBoundingClientRect();
+          // Active when section top is at or above the viewing line and bottom is still below the viewing line
+          if (rect.top <= headerOffset + 60 && rect.bottom > headerOffset) {
             setActiveSectionId(sec.id);
             break;
           }
@@ -379,25 +400,46 @@ export default function CatalogExplorer({
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [populatedSections]);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (manualScrollTimerRef.current) clearTimeout(manualScrollTimerRef.current);
+    };
+  }, [populatedSections, selectedCategoryTab]);
 
   const scrollToSection = (sectionId: string) => {
     const el = document.getElementById(`section-${sectionId}`);
     if (el) {
+      isManualScrollingRef.current = true;
+      setActiveSectionId(sectionId);
+
+      if (manualScrollTimerRef.current) clearTimeout(manualScrollTimerRef.current);
+      manualScrollTimerRef.current = setTimeout(() => {
+        isManualScrollingRef.current = false;
+      }, 700);
+
       const yOffset = -90; // offset for sticky navbar
       const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: "smooth" });
-      setActiveSectionId(sectionId);
+      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
     }
   };
 
   const handleSelectCategoryTab = (tabId: string) => {
     setSelectedCategoryTab(tabId);
     if (tabId === "all") {
+      setActiveSectionId(populatedSections[0]?.id || SECTION_DEFINITIONS[0].id);
       router.replace("/#catalog", { scroll: false });
     } else {
+      setActiveSectionId(tabId);
       router.replace(`/?category=${tabId}#catalog`, { scroll: false });
+    }
+  };
+
+  const handlePillClick = (sectionId: string) => {
+    setActiveSectionId(sectionId);
+    if (selectedCategoryTab !== "all" && selectedCategoryTab !== sectionId) {
+      handleSelectCategoryTab(sectionId);
+    } else {
+      scrollToSection(sectionId);
     }
   };
 
@@ -429,6 +471,7 @@ export default function CatalogExplorer({
   const clearFilters = () => {
     setSearchQuery("");
     setSelectedCategoryTab("all");
+    setActiveSectionId(populatedSections[0]?.id || SECTION_DEFINITIONS[0].id);
     router.replace("/#catalog", { scroll: false });
   };
 
@@ -662,13 +705,16 @@ export default function CatalogExplorer({
               className="hidden lg:flex fixed right-0 top-1/2 -translate-y-1/2 z-40 flex-col items-end gap-2 select-none pointer-events-none"
             >
               {populatedSections.map((sec) => {
-                const isActive = activeSectionId === sec.id;
+                const isActive =
+                  selectedCategoryTab !== "all"
+                    ? selectedCategoryTab === sec.id
+                    : activeSectionId === sec.id;
                 const SecIcon = sec.icon;
                 return (
                   <button
                     key={sec.id}
                     type="button"
-                    onClick={() => scrollToSection(sec.id)}
+                    onClick={() => handlePillClick(sec.id)}
                     className={`pointer-events-auto group relative flex items-center justify-end rounded-l-2xl border-y border-l transition-all duration-300 ease-out shadow-md overflow-hidden ${
                       isActive
                         ? "bg-blue-600 text-white border-blue-500 shadow-blue-500/30 ring-2 ring-blue-400/50"
