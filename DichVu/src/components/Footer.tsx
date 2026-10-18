@@ -65,7 +65,7 @@ export default function Footer() {
             </h3>
             <ul className="mt-3 space-y-2 text-xs sm:text-sm">
               <li>
-                <Link href="/#how-it-works" className="hover:text-blue-600 transition-colors">
+                <Link href="/#catalog" className="hover:text-blue-600 transition-colors">
                   Hướng dẫn mua hàng
                 </Link>
               </li>
@@ -80,7 +80,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/#how-it-works" className="hover:text-blue-600 transition-colors">
+                <Link href="/#catalog" className="hover:text-blue-600 transition-colors">
                   Chính sách bảo hành 1 đổi 1
                 </Link>
               </li>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search, ArrowRight, Zap, ShieldCheck, Clock, Terminal } from "lucide-react";
+import { Search, ArrowRight, Terminal } from "lucide-react";
 import { getCategoriesWithProducts, getAllCategories } from "@/services/catalog.service";
 import CatalogExplorer from "@/components/CatalogExplorer";
 import BrandLogo from "@/components/BrandLogo";
@@ -131,61 +131,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           initialCategory={categorySlug || "all"}
           initialSearch={search || ""}
         />
-      </section>
-
-      {/* Feature Pillars: Clean Tech Studio Style */}
-      <section
-        id="how-it-works"
-        className="scroll-mt-20 border-t border-zinc-200 dark:border-zinc-850 bg-zinc-50/50 dark:bg-zinc-950 py-12"
-      >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-            <div className="flex flex-col p-6 rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/60">
-              <div className="flex items-center justify-between mb-4">
-                <span className="font-mono text-xs font-bold text-zinc-400">01</span>
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200">
-                  <Zap className="h-4 w-4" />
-                </div>
-              </div>
-              <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
-                Chọn gói & Tạo đơn tức thì
-              </h3>
-              <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                Tùy chọn dung lượng hoặc hạn mức ngay trên card sản phẩm. Không bắt buộc đăng ký tài khoản rườm rà.
-              </p>
-            </div>
-
-            <div className="flex flex-col p-6 rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/60">
-              <div className="flex items-center justify-between mb-4">
-                <span className="font-mono text-xs font-bold text-zinc-400">02</span>
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200">
-                  <Clock className="h-4 w-4" />
-                </div>
-              </div>
-              <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
-                Quét VietQR tự động
-              </h3>
-              <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                Mã QR động khớp số tiền và mã đơn. Ngân hàng xác nhận giao dịch tự động trong 3 đến 5 giây.
-              </p>
-            </div>
-
-            <div className="flex flex-col p-6 rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/60">
-              <div className="flex items-center justify-between mb-4">
-                <span className="font-mono text-xs font-bold text-zinc-400">03</span>
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200">
-                  <ShieldCheck className="h-4 w-4" />
-                </div>
-              </div>
-              <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
-                Cấp key & Quota realtime
-              </h3>
-              <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                Màn hình tự động hiển thị key bản quyền, hoặc nạp trực tiếp credit vào API key với cơ chế đối soát minh bạch.
-              </p>
-            </div>
-          </div>
-        </div>
       </section>
     </div>
   );
