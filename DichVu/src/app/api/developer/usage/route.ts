@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { computeKeyFingerprint, getAuthenticatedUser } from "@/lib/key-security";
+import { computeKeyFingerprint, maskApiKey, getAuthenticatedUser } from "@/lib/key-security";
 import { ModelApiService } from "@/services/modelapi/modelapi.service";
 
 export async function GET(req: NextRequest) {
@@ -21,17 +21,31 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // 1. Verify that this key belongs to DaiTruong Store
+    // 1. Verify key in DaiTruong Store or auto-verify upstream
     const fingerprint = computeKeyFingerprint(apiKey);
-    const binding = await prisma.customerApiKeyBinding.findUnique({
+    let binding = await prisma.customerApiKeyBinding.findUnique({
       where: { keyFingerprint: fingerprint },
     });
 
     if (!binding) {
-      return NextResponse.json(
-        { error: "API Key không thuộc hệ thống DaiTruong Store hoặc chưa được kích hoạt" },
-        { status: 404 }
-      );
+      const verifyResult = await ModelApiService.verifyCustomerKey(apiKey);
+      if (!verifyResult.valid) {
+        return NextResponse.json(
+          { error: "API Key không thuộc hệ thống DaiTruong Store hoặc không hợp lệ" },
+          { status: 404 }
+        );
+      }
+
+      binding = await prisma.customerApiKeyBinding.create({
+        data: {
+          keyFingerprint: fingerprint,
+          maskedKey: maskApiKey(apiKey),
+          keyName: verifyResult.name || "API Key của bạn",
+          upstreamTokenId: verifyResult.tokenId || Math.floor(Date.now() % 1000000000),
+          status: "ACTIVE",
+          lastSyncedAt: new Date(),
+        },
+      });
     }
 
     // 2. IDOR check if bound to a user
