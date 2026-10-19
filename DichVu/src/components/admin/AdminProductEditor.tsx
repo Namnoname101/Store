@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AlertTriangle, ArrowLeft, CheckCircle2, Clock3, Eye, Package, RefreshCw, Save, ShieldCheck } from "lucide-react";
+import { normalizeThumbnailUrl } from "@/lib/catalog-grouping";
 
 interface ProductInput {
   id: string;
@@ -234,7 +235,7 @@ export default function AdminProductEditor({ initialProduct, categories }: Props
         </div>
         {unSavedLabel && <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-200">Đang xem dữ liệu chưa lưu. Khách vẫn thấy bản “Đang bán”.</p>}
         <div className={`mx-auto overflow-hidden rounded-xl border border-slate-200 bg-white text-slate-900 shadow-lg ${previewDevice === "mobile" ? "max-w-[340px]" : "max-w-[760px]"}`}>
-          <div className="flex h-36 items-center justify-center bg-blue-50">{preview.thumbnailUrl ? <img src={preview.thumbnailUrl} alt="" className="h-full w-full object-cover" /> : <Package className="h-10 w-10 text-blue-500" />}</div>
+          <div className="flex h-36 items-center justify-center bg-blue-50">{preview.thumbnailUrl ? <img src={normalizeThumbnailUrl(preview.thumbnailUrl)} alt="" className="h-full w-full object-cover" /> : <Package className="h-10 w-10 text-blue-500" />}</div>
           <div className="space-y-3 p-4"><p className="text-xs font-medium text-blue-700">{categories.find((category) => category.id === preview.categoryId)?.name || "Sản phẩm số"}</p><h3 className="text-lg font-bold">{preview.title || "Tên sản phẩm"}</h3><p className="whitespace-pre-wrap text-sm text-slate-600">{preview.description || "Mô tả sản phẩm"}</p><p className="text-xl font-bold text-blue-600">{formatMoney(previewPrice)}</p>
           {previewType === "quick" && <div className="space-y-3 border-t border-slate-200 pt-3"><div className="flex items-center justify-between"><label htmlFor="previewQuantity" className="text-sm">Số lượng thử</label><input id="previewQuantity" type="number" min={1} max={100} value={previewQuantity} onChange={(e) => setPreviewQuantity(Math.max(1, Math.min(100, Number(e.target.value) || 1)))} className="w-20 rounded-lg border border-slate-300 px-2 py-1 text-right" /></div><label htmlFor="previewInput" className="block text-sm">Thông tin thử (không gửi đi)</label><input id="previewInput" value={previewInput} onChange={(e) => setPreviewInput(e.target.value)} placeholder="Nhập dữ liệu minh họa" className="w-full rounded-lg border border-slate-300 p-2 text-sm" /><p className="text-right text-sm font-semibold">Tạm tính: {formatMoney(previewPrice * previewQuantity)}</p></div>}
           <button type="button" disabled className="w-full cursor-not-allowed rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white opacity-70">Chế độ xem trước — không tạo đơn</button>

@@ -15,6 +15,7 @@ import { getProductBySlug } from "@/services/catalog.service";
 import ProductPurchaseBox from "@/components/ProductPurchaseBox";
 import { getProductTypeInfo, formatVND } from "@/lib/product-types";
 import { resolveProductInstruction } from "@/lib/product-guides";
+import { resolveProductThumbnail } from "@/lib/catalog-grouping";
 
 interface ProductPageProps {
   params: {
@@ -58,6 +59,13 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     title: product.title,
   });
   const TypeIcon = typeInfo.icon;
+
+  const resolvedThumbnail = resolveProductThumbnail(
+    product.title,
+    product.slug,
+    product.thumbnailUrl,
+    product.category?.slug
+  );
 
   const discountPercent =
     product.originalPrice && product.originalPrice > product.price
@@ -199,27 +207,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
           {/* Product Media Card (4:3 or standard ratio, clean look) */}
           <div className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-6 shadow-sm">
-            {product.thumbnailUrl ? (
-              <img
-                src={product.thumbnailUrl}
-                alt={product.title}
-                className="h-full w-full object-contain rounded-xl"
-              />
-            ) : (
-              <div className="flex flex-col items-center justify-center gap-3 text-center">
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-900 text-blue-600 dark:text-blue-400">
-                  <TypeIcon className="h-8 w-8" />
-                </div>
-                <div>
-                  <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200">
-                    {product.title}
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Mã bản quyền / Tài khoản số cấp phát tự động 24/7
-                  </p>
-                </div>
-              </div>
-            )}
+            <img
+              src={resolvedThumbnail}
+              alt={product.title}
+              className="h-full w-full object-contain rounded-xl"
+            />
           </div>
 
           {/* Standardized Product Specification Grid */}

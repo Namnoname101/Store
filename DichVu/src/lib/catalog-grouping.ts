@@ -56,12 +56,24 @@ export const BRAND_FALLBACK_IMAGES: Record<string, string> = {
 export function normalizeThumbnailUrl(url?: string | null): string {
   if (!url || !url.trim()) return "";
   const trimmed = url.trim();
+
+  // 1. Google Drive / lh3 Drive Viewer format (e.g. drive.google.com/u/0/drive-viewer/... or drive.google.com/drive-viewer/...)
+  // Converts to lh3.googleusercontent.com to bypass Cross-Origin-Resource-Policy: same-site restriction
+  const driveViewerMatch = trimmed.match(
+    /(?:drive\.google\.com|lh3\.google(?:usercontent)?\.com)(?:\/u\/\d+)?\/drive-viewer\/(.+)/i
+  );
+  if (driveViewerMatch && driveViewerMatch[1]) {
+    return `https://lh3.googleusercontent.com/drive-viewer/${driveViewerMatch[1]}`;
+  }
+
+  // 2. Standard Google Drive file/d/ or open?id= or uc?id= format
   const gDriveMatch = trimmed.match(
-    /(?:lh3\.google\.com(?:\/u\/\d+)?\/d\/|drive\.google\.com\/(?:file\/d\/|open\?id=))([a-zA-Z0-9_-]+)/
+    /(?:lh3\.google\.com(?:\/u\/\d+)?\/d\/|drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:[^&]+&)*id=))([a-zA-Z0-9_-]+)/i
   );
   if (gDriveMatch && gDriveMatch[1]) {
     return `https://lh3.googleusercontent.com/d/${gDriveMatch[1]}`;
   }
+
   return trimmed;
 }
 

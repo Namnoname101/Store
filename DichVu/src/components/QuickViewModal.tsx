@@ -22,6 +22,7 @@ import {
 import type { ProductCardProps } from "@/components/ProductCard";
 import { formatVND, getProductTypeInfo } from "@/lib/product-types";
 import { useCart } from "@/contexts/CartContext";
+import { resolveProductThumbnail } from "@/lib/catalog-grouping";
 
 interface QuickViewModalProps {
   product: ProductCardProps["product"] | null;
@@ -369,9 +370,14 @@ export default function QuickViewModal({
           <div className="flex flex-col sm:flex-row gap-4 items-start">
             {/* 4:3 image container */}
             <div className="relative aspect-[4/3] w-full sm:w-44 shrink-0 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-850 flex items-center justify-center">
-              {product.thumbnailUrl && !imgError ? (
+              {!imgError ? (
                 <img
-                  src={product.thumbnailUrl}
+                  src={resolveProductThumbnail(
+                    product.title,
+                    product.slug,
+                    product.thumbnailUrl,
+                    product.category?.slug
+                  )}
                   alt={product.title}
                   onError={() => setImgError(true)}
                   className="h-full w-full object-cover"
