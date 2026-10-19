@@ -118,6 +118,20 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
     ],
     note: "Lưu kỹ mật khẩu mới đã đổi để sử dụng cho các lần đăng nhập sau.",
   },
+
+  // ==========================================
+  // 6. CÁC GÓI CAPCUT PRO
+  // ==========================================
+  capcut: {
+    title: "Hướng dẫn đăng nhập & Sử dụng CapCut Pro",
+    steps: [
+      "Mở ứng dụng CapCut trên máy tính (PC/Mac), điện thoại (iOS/Android) hoặc truy cập https://www.capcut.com",
+      "Bấm 'Đăng nhập' (Sign In) > Chọn phương thức 'Đăng nhập bằng Email' (Sign in with Email / Tiếp tục với Email).",
+      "Nhập Email và Mật khẩu được cung cấp ở trên để vào tài khoản.",
+      "Kiểm tra biểu tượng 'Pro' trên hồ sơ tài khoản: bạn đã có thể xuất video 4K, dùng hiệu ứng Pro, xóa phông nền AI, tạo phụ đề tự động và lưu trữ đám mây.",
+    ],
+    note: "Tài khoản bảo hành Full thời hạn (BHF). Tuyệt đối không thay đổi email, mật khẩu hoặc liên kết tài khoản để đảm bảo quyền lợi bảo hành.",
+  },
 };
 
 /**
@@ -173,6 +187,11 @@ export function resolveProductInstruction(params: {
   // 2.6 Office
   if (cleanSlug.includes("office") || cleanTitle.includes("office")) {
     return PRODUCT_GUIDES["office-365"];
+  }
+
+  // 2.7 Capcut Pro
+  if (cleanSlug.includes("capcut") || cleanTitle.includes("capcut")) {
+    return PRODUCT_GUIDES["capcut"];
   }
 
   // 3. Fallback theo Product Type mặc định

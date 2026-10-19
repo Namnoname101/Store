@@ -20,6 +20,7 @@ import SecretDisplay from "@/components/SecretDisplay";
 type PresetType =
   | "CODEX_API"
   | "TELEGRAM"
+  | "CAPCUT"
   | "CLAUDE_API"
   | "LICENSE_KEY"
   | "ACCOUNT"
@@ -58,6 +59,15 @@ export default function GuidePreviewPage() {
       productSlug: "telegram-premium",
       productType: "ACCOUNT",
       secretContent: "https://t.me/+InviteLinkTeleVip888 | session_token_xyz999",
+    },
+    CAPCUT: {
+      name: "Tài Khoản CapCut Pro",
+      desc: "Tài khoản Pro 30 ngày Full Date, bảo hành trọn đời gói",
+      orderCode: "DEMO-CAPCUT",
+      productTitle: "Tài khoản CapCut Pro 30 Ngày Full Date",
+      productSlug: "capcut-pro-30-ngay",
+      productType: "ACCOUNT",
+      secretContent: "capcut.vip.member@hotmail.com | 1234567",
     },
     CLAUDE_API: {
       name: "Claude API / Claude Code",
