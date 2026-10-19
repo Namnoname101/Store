@@ -134,5 +134,34 @@ Email : Mật khẩu
     expect(res.type).toBe("credentials");
     expect(res.content).toBe("ji36586@mic-365.com|F)130046045785af");
   });
+
+  it("should strip markdown backticks and quotes from pipe-separated credentials (e.g. Capcut from Shop Xoai Non)", () => {
+    const raw = `
+✅ **ĐƠN HÀNG THÀNH CÔNG**
+━━━━━━━━━━━━━━━━
+🧾 Mã đơn: \`TEO9541L2H\`
+🛒 Sản phẩm: 🎬 **Capcut Pro 30d full Date - BHF**
+📊 Số lượng: **1**
+💵 Thanh toán: **38.800đ**
+💰 Số dư còn lại: **12.320đ**
+━━━━━━━━━━━━━━━━
+📝 **Mô tả lúc bán:**
+Email | Pass
+Hiện Full Date 
+Bảo hành full
+━━━━━━━━━━━━━━━━
+🔐 **THÔNG TIN TÀI KHOẢN**
+1)
+\`bannoemrysld@hotmail.com|1234567\`
+━━━━━━━━━━━━━━━━
+⚠️ Vui lòng lưu lại thông tin.
+💚 Cảm ơn bạn đã mua hàng tại shop!
+    `;
+
+    const res = extractDeliveredSecret(raw);
+    expect(res.type).toBe("credentials");
+    expect(res.content).toBe("bannoemrysld@hotmail.com|1234567");
+  });
 });
+
 

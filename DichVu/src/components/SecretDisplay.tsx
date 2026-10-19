@@ -59,10 +59,12 @@ export function parseSecretItem(
   if (type === "ACCOUNT" || trimmed.includes("|")) {
     const parts = trimmed.split("|");
     if (parts.length >= 2) {
+      const u = parts[0].trim().replace(/^[`'"]+|[`'"]+$/g, "");
+      const p = parts.slice(1).join("|").trim().replace(/^[`'"]+|[`'"]+$/g, "");
       return {
         isAccount: true,
-        username: parts[0].trim(),
-        password: parts.slice(1).join("|").trim(),
+        username: u,
+        password: p,
         raw: trimmed,
       };
     }

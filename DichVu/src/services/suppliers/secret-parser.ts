@@ -12,6 +12,10 @@ export interface ParsedSecret {
   isNoticeOnly?: boolean;
 }
 
+function cleanPart(val: string): string {
+  return val.trim().replace(/^[`'"]+|[`'"]+$/g, "");
+}
+
 export function extractDeliveredSecret(rawText: string): ParsedSecret {
   if (!rawText || !rawText.trim()) {
     return { type: "text", content: "", rawText: "" };
@@ -43,7 +47,7 @@ export function extractDeliveredSecret(rawText: string): ParsedSecret {
   if (emailPasswordMatch) {
     return {
       type: "credentials",
-      content: `${emailPasswordMatch[1].trim()}|${emailPasswordMatch[2].trim()}`,
+      content: `${cleanPart(emailPasswordMatch[1])}|${cleanPart(emailPasswordMatch[2])}`,
       instructions: text,
       rawText: text,
     };
@@ -51,13 +55,14 @@ export function extractDeliveredSecret(rawText: string): ParsedSecret {
 
   // 3. Check for pipe-separated credentials: email@domain.com|password or user|password
   const pipeMatch = text.match(
-    /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\s*\|\s*[^\s\n\r]+)/
+    /`?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\s*\|\s*([^`\r\n\s]+)`?/
   );
   if (pipeMatch) {
-    const cleanCred = pipeMatch[1].replace(/\s*\|\s*/, "|");
+    const u = cleanPart(pipeMatch[1]);
+    const p = cleanPart(pipeMatch[2]);
     return {
       type: "credentials",
-      content: cleanCred,
+      content: `${u}|${p}`,
       instructions: text,
       rawText: text,
     };
@@ -69,8 +74,8 @@ export function extractDeliveredSecret(rawText: string): ParsedSecret {
     /(?:(?<!(?:Loại|Tên|Dạng)\s*)(?:Tài\s*khoản|Email|Username|User)):\s*`?([^\n\r`]+)`?[\s\S]*?(?:Mật\s*khẩu|Pass|Password):\s*`?([^\n\r`]+)`?/i
   );
   if (labeledMatch && labeledMatch[1] && labeledMatch[2]) {
-    const u = labeledMatch[1].trim();
-    const p = labeledMatch[2].trim();
+    const u = cleanPart(labeledMatch[1]);
+    const p = cleanPart(labeledMatch[2]);
     // Guard against descriptions being mistaken for usernames
     if (!u.toLowerCase().includes("riêng tư") && !u.toLowerCase().includes("cá nhân")) {
       return {
@@ -89,7 +94,7 @@ export function extractDeliveredSecret(rawText: string): ParsedSecret {
   if (keyMatch && keyMatch[1]) {
     return {
       type: "key",
-      content: keyMatch[1].trim(),
+      content: cleanPart(keyMatch[1]),
       instructions: text,
       rawText: text,
     };
