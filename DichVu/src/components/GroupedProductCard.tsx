@@ -60,11 +60,12 @@ export default function GroupedProductCard({
         )
       : 0;
 
+  const [imgError, setImgError] = useState(false);
   const candidateThumbnail = activeVariant.thumbnailUrl || thumbnailUrl;
   const displayThumbnail = resolveProductThumbnail(
     title,
     groupKey,
-    candidateThumbnail,
+    imgError ? null : candidateThumbnail,
     category?.slug
   );
 
@@ -77,6 +78,7 @@ export default function GroupedProductCard({
             src={displayThumbnail}
             alt={activeVariant.title || title}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            onError={() => setImgError(true)}
           />
 
           {/* Official Brand Badge with SVG logo */}

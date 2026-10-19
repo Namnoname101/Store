@@ -3,6 +3,8 @@ import {
   isDisallowedShortTermApiPackage,
   processSectionProducts,
   extractVariantLabel,
+  normalizeThumbnailUrl,
+  resolveProductThumbnail,
 } from "@/lib/catalog-grouping";
 
 describe("Short-Term API Package Filter (isDisallowedShortTermApiPackage)", () => {
@@ -302,7 +304,7 @@ describe("Catalog Grouping & Codex Variant Deduplication", () => {
 
     // Grouped card MUST have a valid thumbnail (fallback from other variants or brand fallback)
     expect(codexCard!.groupedData!.thumbnailUrl).toBeTruthy();
-    expect(codexCard!.groupedData!.thumbnailUrl).toContain("http");
+    expect(codexCard!.groupedData!.thumbnailUrl).toMatch(/(\/images\/brands\/|https?:\/\/)/);
   });
 
   it("should prioritize in-stock variants over out-of-stock variants and exclude CODEX_CREDIT topups from catalog", () => {
@@ -337,4 +339,25 @@ describe("Catalog Grouping & Codex Variant Deduplication", () => {
     expect(product.price).toBe(22000);
     expect(product.slug).toBe("cdx-0055-api-codex-ai-toc-o-nhanh-10-credit");
   });
+
+  it("should normalize private Google Drive / lh3.google.com URLs to public CDN URLs", () => {
+    const rawLh3 = "https://lh3.google.com/u/0/d/1VLWAHdoo3kZUtA_InEEVfYRJ21QY1sOL=w1920-h912-iv1?auditContext=prefetch";
+    expect(normalizeThumbnailUrl(rawLh3)).toBe("https://lh3.googleusercontent.com/d/1VLWAHdoo3kZUtA_InEEVfYRJ21QY1sOL");
+
+    const rawDrive = "https://drive.google.com/file/d/1AodfgSsO9ZOrIahgyZUcibfIi8rEG2Tt/view?usp=sharing";
+    expect(normalizeThumbnailUrl(rawDrive)).toBe("https://lh3.googleusercontent.com/d/1AodfgSsO9ZOrIahgyZUcibfIi8rEG2Tt");
+
+    const rawOpenId = "https://drive.google.com/open?id=12KBk85uvwdZrEecC9GZzm3SxlbuW7_1w";
+    expect(normalizeThumbnailUrl(rawOpenId)).toBe("https://lh3.googleusercontent.com/d/12KBk85uvwdZrEecC9GZzm3SxlbuW7_1w");
+
+    // resolveProductThumbnail automatically normalizes
+    const resolved = resolveProductThumbnail("Capcut Pro 30 Ngày", "capcut-pro-30-ngay", rawLh3);
+    expect(resolved).toBe("https://lh3.googleusercontent.com/d/1VLWAHdoo3kZUtA_InEEVfYRJ21QY1sOL");
+
+    // Standard CDN image URLs remain unchanged
+    const standardUrl = "https://genzshop.vn/assets/images/products/test.png";
+    expect(normalizeThumbnailUrl(standardUrl)).toBe(standardUrl);
+    expect(resolveProductThumbnail("Test Product", "test", standardUrl)).toBe(standardUrl);
+  });
 });
+

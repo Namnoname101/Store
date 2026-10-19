@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma, ProductType } from "@/lib/prisma";
+import { normalizeThumbnailUrl } from "@/lib/catalog-grouping";
 
 function slugify(text: string): string {
   return text
@@ -107,7 +108,7 @@ export async function PUT(
     }
 
     if (thumbnailUrl !== undefined) {
-      dataToUpdate.thumbnailUrl = thumbnailUrl ? thumbnailUrl.trim() : null;
+      dataToUpdate.thumbnailUrl = thumbnailUrl ? normalizeThumbnailUrl(thumbnailUrl.trim()) : null;
     }
 
     if (isActive !== undefined) {

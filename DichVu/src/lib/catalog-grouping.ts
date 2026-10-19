@@ -51,6 +51,18 @@ export const BRAND_FALLBACK_IMAGES: Record<string, string> = {
   nordvpn: "/images/brands/nordvpn.svg",
 };
 
+export function normalizeThumbnailUrl(url?: string | null): string {
+  if (!url || !url.trim()) return "";
+  const trimmed = url.trim();
+  const gDriveMatch = trimmed.match(
+    /(?:lh3\.google\.com(?:\/u\/\d+)?\/d\/|drive\.google\.com\/(?:file\/d\/|open\?id=))([a-zA-Z0-9_-]+)/
+  );
+  if (gDriveMatch && gDriveMatch[1]) {
+    return `https://lh3.googleusercontent.com/d/${gDriveMatch[1]}`;
+  }
+  return trimmed;
+}
+
 export function resolveProductThumbnail(
   title: string,
   slug: string = "",
@@ -58,7 +70,7 @@ export function resolveProductThumbnail(
   categorySlug: string = ""
 ): string {
   if (existingThumbnail && existingThumbnail.trim() && !existingThumbnail.includes("placeholder")) {
-    return existingThumbnail;
+    return normalizeThumbnailUrl(existingThumbnail);
   }
 
   const combined = `${title} ${slug} ${categorySlug}`.toLowerCase();

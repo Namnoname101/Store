@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma, ProductType } from "@/lib/prisma";
 import { getAllProductsAdmin } from "@/services/admin.service";
+import { normalizeThumbnailUrl } from "@/lib/catalog-grouping";
 
 function slugify(text: string): string {
   return text
@@ -113,7 +114,7 @@ export async function POST(request: NextRequest) {
         price: Math.round(Number(price)),
         originalPrice: originalPrice ? Math.round(Number(originalPrice)) : null,
         type: Object.values(ProductType).includes(type) ? type : ProductType.LICENSE_KEY,
-        thumbnailUrl: thumbnailUrl?.trim() || null,
+        thumbnailUrl: thumbnailUrl ? normalizeThumbnailUrl(thumbnailUrl) : null,
         isActive: Boolean(isActive),
         categoryId: finalCategoryId,
       },
