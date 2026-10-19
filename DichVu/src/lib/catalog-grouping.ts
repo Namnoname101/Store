@@ -24,6 +24,7 @@ export const BRAND_DEFINITIONS: BrandDef[] = [
   { key: "vps", name: "Cloud VPS", keywords: ["vps", "cloud server", "máy chủ"] },
   { key: "tiktok", name: "TikTok", keywords: ["tiktok", "douyin"] },
   { key: "facebook", name: "Facebook", keywords: ["facebook", "fb"] },
+  { key: "meitu", name: "Meitu VIP", keywords: ["meitu"] },
 ];
 
 export const BRAND_FALLBACK_IMAGES: Record<string, string> = {
@@ -39,6 +40,7 @@ export const BRAND_FALLBACK_IMAGES: Record<string, string> = {
   chatgpt: "/images/brands/chatgpt.svg",
   netflix: "/images/brands/netflix.svg",
   capcut: "/images/brands/capcut.svg",
+  meitu: "/images/brands/meitu.svg",
   canva: "/images/brands/canva.svg",
   locket: "/images/brands/locket.svg",
   microsoft: "/images/brands/microsoft.svg",
@@ -83,6 +85,7 @@ export function resolveProductThumbnail(
   if (combined.includes("openai") || combined.includes("chatgpt") || combined.includes("gpt")) return "/images/brands/chatgpt.svg";
   if (combined.includes("netflix")) return "/images/brands/netflix.svg";
   if (combined.includes("capcut")) return "/images/brands/capcut.svg";
+  if (combined.includes("meitu")) return "/images/brands/meitu.svg";
   if (combined.includes("canva")) return "/images/brands/canva.svg";
   if (combined.includes("locket")) return "/images/brands/locket.svg";
   if (combined.includes("office") || combined.includes("365") || combined.includes("microsoft")) return "/images/brands/microsoft.svg";
@@ -165,6 +168,11 @@ export function isDisallowedShortTermApiPackage(product: {
   const desc = (product.description || "").toLowerCase();
   const slug = (product.slug || "").toLowerCase();
   const text = `${title} ${desc} ${slug}`;
+
+  // Meitu products are editing software accounts, not short-term API keys
+  if (text.includes("meitu")) {
+    return false;
+  }
 
   // 1. Matches short day durations (1-29 days, specifically excluding 30 days)
   if (

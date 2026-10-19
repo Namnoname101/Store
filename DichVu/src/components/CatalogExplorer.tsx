@@ -341,8 +341,8 @@ export default function CatalogExplorer({
       }
 
       // 4. Strict safety overrides:
-      // A. CapCut is video editing software, always place in ban-quyen
-      if (titleLower.includes("capcut")) {
+      // A. CapCut and Meitu are editing software, always place in ban-quyen
+      if (titleLower.includes("capcut") || titleLower.includes("meitu")) {
         assignedSectionId = "ban-quyen";
       }
 

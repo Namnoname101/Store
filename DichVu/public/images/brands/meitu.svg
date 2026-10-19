@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141215" />
+      <stop offset="100%" stop-color="#0a080c" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="45%" r="45%">
+      <stop offset="0%" stop-color="#ff2e7e" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#ff2e7e" stop-opacity="0" />
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.03" />
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#bg)" />
+  <rect width="800" height="500" fill="url(#grid)" />
+  <circle cx="400" cy="220" r="280" fill="url(#glow)" />
+
+  <!-- Center Emblem Container -->
+  <g transform="translate(400, 210)">
+    <!-- Ambient Ring -->
+    <circle cx="0" cy="0" r="85" fill="#18141a" fill-opacity="0.7" stroke="#2b232c" stroke-width="1.5" />
+    <circle cx="0" cy="0" r="75" fill="#0c0a0e" fill-opacity="0.9" stroke="#ff2e7e" stroke-width="1" stroke-opacity="0.5" />
+    
+    <!-- Meitu Camera & Sparkle Icon -->
+    <g transform="translate(-40, -40) scale(3.33)">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1.5-12.5h3v3h-3zm-2.5 5h8c.55 0 1 .45 1 1v5c0 .55-.45 1-1 1H8c-.55 0-1-.45-1-1v-5c0-.55.45-1 1-1zm4 6c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3z" fill="#ff2e7e" fill-rule="evenodd" />
+    </g>
+  </g>
+
+  <!-- Text Badges -->
+  <g transform="translate(400, 385)" text-anchor="middle">
+    <!-- Brand Title -->
+    <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="1">MEITU VIP</text>
+    
+    <!-- Subtitle Pill -->
+    <g transform="translate(0, 32)">
+      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#ff4d94" letter-spacing="1.5">AI RETOUCH • 4K HD RESTORATION • FILTERS</text>
+    </g>
+  </g>
+</svg>

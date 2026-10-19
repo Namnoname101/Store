@@ -132,6 +132,20 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
     ],
     note: "Tài khoản bảo hành Full thời hạn (BHF). Tuyệt đối không thay đổi email, mật khẩu hoặc liên kết tài khoản để đảm bảo quyền lợi bảo hành.",
   },
+
+  // ==========================================
+  // 7. CÁC GÓI MEITU VIP
+  // ==========================================
+  meitu: {
+    title: "Hướng dẫn đăng nhập & Sử dụng Meitu VIP",
+    steps: [
+      "Mở ứng dụng Meitu trên điện thoại (iOS / Android) hoặc máy tính.",
+      "Vào mục 'Tôi' (Me / Hồ sơ) > Chọn 'Đăng nhập' (Log In) bằng Tài khoản & Mật khẩu được cấp.",
+      "Đây là tài khoản riêng tư, bạn có thể chủ động đổi mật khẩu tùy ý để bảo mật cá nhân.",
+      "Tận hưởng trọn bộ tính năng Meitu VIP: làm nét ảnh AI, xóa vật thể AI, chỉnh sửa video HD và bộ lọc độc quyền.",
+    ],
+    note: "Tài khoản riêng tư 100%, bảo hành Full thời hạn (BHF). Quý khách thoải mái đổi mật khẩu sau khi nhận tài khoản.",
+  },
 };
 
 /**
@@ -192,6 +206,11 @@ export function resolveProductInstruction(params: {
   // 2.7 Capcut Pro
   if (cleanSlug.includes("capcut") || cleanTitle.includes("capcut")) {
     return PRODUCT_GUIDES["capcut"];
+  }
+
+  // 2.8 Meitu VIP
+  if (cleanSlug.includes("meitu") || cleanTitle.includes("meitu")) {
+    return PRODUCT_GUIDES["meitu"];
   }
 
   // 3. Fallback theo Product Type mặc định

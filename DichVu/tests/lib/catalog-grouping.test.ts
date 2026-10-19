@@ -394,4 +394,24 @@ describe("isApiProduct Categorization", () => {
   });
 });
 
+describe("Meitu VIP Product Support", () => {
+  it("should not filter out Meitu VIP 7 ngày", () => {
+    const meitu = {
+      title: "Tài khoản Meitu VIP 7 Ngày Riêng Tư (Full Tính Năng AI)",
+      slug: "meitu-vip-7-ngay",
+      description: "Tài khoản Meitu VIP 7 ngày riêng tư, đổi pass thoải mái",
+    };
+    expect(isDisallowedShortTermApiPackage(meitu)).toBe(false);
+  });
+
+  it("should resolve Meitu brand thumbnail svg", () => {
+    const thumb = resolveProductThumbnail(
+      "Tài khoản Meitu VIP 7 Ngày Riêng Tư (Full Tính Năng AI)",
+      "meitu-vip-7-ngay"
+    );
+    expect(thumb).toBe("/images/brands/meitu.svg");
+  });
+});
+
+
 

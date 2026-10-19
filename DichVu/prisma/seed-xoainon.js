@@ -271,6 +271,61 @@ async function main() {
   });
   console.log("✓ Mapped Capcut Pro 30 Ngày to Xoai Non (#35, 42.8k)");
 
+  // 8. Meitu VIP 7 days: Xoai Non (#55, 9.5k)
+  let meitu = await prisma.product.findUnique({
+    where: { slug: "meitu-vip-7-ngay" },
+  });
+  if (!meitu) {
+    meitu = await prisma.product.create({
+      data: {
+        slug: "meitu-vip-7-ngay",
+        title: "Tài khoản Meitu VIP 7 Ngày Riêng Tư (Full Tính Năng AI)",
+        description:
+          "Tài khoản Meitu VIP 7 ngày riêng tư, full tính năng AI, đổi pass thoải mái, bảo hành trọn vẹn thời hạn.",
+        price: 19000,
+        fulfillmentType: "API_DROPSHIP",
+        type: "ACCOUNT",
+        categoryId: catSoftware.id,
+      },
+    });
+  } else {
+    meitu = await prisma.product.update({
+      where: { id: meitu.id },
+      data: {
+        title: "Tài khoản Meitu VIP 7 Ngày Riêng Tư (Full Tính Năng AI)",
+        description:
+          "Tài khoản Meitu VIP 7 ngày riêng tư, full tính năng AI, đổi pass thoải mái, bảo hành trọn vẹn thời hạn.",
+        price: 19000,
+        fulfillmentType: "API_DROPSHIP",
+        type: "ACCOUNT",
+        categoryId: catSoftware.id,
+      },
+    });
+  }
+  await prisma.supplierProductMapping.upsert({
+    where: { productId: meitu.id },
+    update: {
+      supplierId: supplier.id,
+      supplierProductCode: "55",
+      supplierPrice: 9500,
+      supplierStock: 10,
+      markupType: "PERCENTAGE",
+      markupValue: 100,
+      isAutoSync: true,
+    },
+    create: {
+      productId: meitu.id,
+      supplierId: supplier.id,
+      supplierProductCode: "55",
+      supplierPrice: 9500,
+      supplierStock: 10,
+      markupType: "PERCENTAGE",
+      markupValue: 100,
+      isAutoSync: true,
+    },
+  });
+  console.log("✓ Mapped Meitu VIP 7 Ngày to Xoai Non (#55, 9.5k)");
+
   console.log("--> All Shop Xoai Non products successfully seeded and mapped!");
 }
 

@@ -63,6 +63,11 @@ const XOAINON_KNOWN_PRODUCTS: Record<
     price: 299000,
     inStock: 1,
   },
+  "55": {
+    name: "Meitu Vip 7 days riêng tư - BHF",
+    price: 9500,
+    inStock: 10,
+  },
 };
 
 export class TelegramBotAdapter implements ISupplierAdapter {
