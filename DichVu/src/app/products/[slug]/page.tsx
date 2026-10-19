@@ -9,10 +9,12 @@ import {
   Headphones,
   Send,
   Sparkles,
+  HelpCircle,
 } from "lucide-react";
 import { getProductBySlug } from "@/services/catalog.service";
 import ProductPurchaseBox from "@/components/ProductPurchaseBox";
 import { getProductTypeInfo, formatVND } from "@/lib/product-types";
+import { resolveProductInstruction } from "@/lib/product-guides";
 
 interface ProductPageProps {
   params: {
@@ -44,6 +46,12 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   if (!product) {
     notFound();
   }
+
+  const guide = resolveProductInstruction({
+    slug: product.slug,
+    title: product.title,
+    type: product.type,
+  });
 
   const typeInfo = getProductTypeInfo(product.type, {
     categorySlug: product.category?.slug,
@@ -268,6 +276,58 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               {product.description}
             </div>
           </div>
+
+          {/* Product Instruction Guide if available */}
+          {guide && guide.steps && guide.steps.length > 0 && (
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-6 sm:p-7 shadow-xs">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                <HelpCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                <span>{guide.title}</span>
+              </h2>
+
+              <div className="space-y-3.5">
+                {guide.steps.map((stepItem, idx) => {
+                  const isObj = typeof stepItem === "object" && stepItem !== null;
+                  const text = isObj ? stepItem.text : String(stepItem);
+                  const image = isObj ? stepItem.image : undefined;
+                  const caption = isObj ? stepItem.caption : undefined;
+
+                  return (
+                    <div key={idx} className="space-y-2">
+                      <div className="flex items-start gap-3">
+                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900 text-blue-600 dark:text-blue-400 font-mono font-bold text-xs mt-0.5">
+                          {idx + 1}
+                        </span>
+                        <div className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed pt-0.5">
+                          {text}
+                        </div>
+                      </div>
+
+                      {image && (
+                        <div className="ml-8 mt-2">
+                          <img
+                            src={image}
+                            alt={caption || `Bước ${idx + 1}`}
+                            className="rounded-xl border border-slate-200 dark:border-slate-800 max-w-md w-full object-cover"
+                          />
+                          {caption && (
+                            <p className="mt-1 text-xs text-slate-500 italic">{caption}</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {guide.note && (
+                <div className="mt-5 rounded-xl border border-amber-200/80 dark:border-amber-900/50 bg-amber-50/60 dark:bg-amber-950/20 p-3.5 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2.5">
+                  <span className="font-bold shrink-0">Lưu ý bảo hành:</span>
+                  <span className="leading-relaxed">{guide.note}</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right column: Sticky Purchase Configuration Box */}
