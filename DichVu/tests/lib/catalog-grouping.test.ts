@@ -5,6 +5,7 @@ import {
   extractVariantLabel,
   normalizeThumbnailUrl,
   resolveProductThumbnail,
+  isApiProduct,
 } from "@/lib/catalog-grouping";
 
 describe("Short-Term API Package Filter (isDisallowedShortTermApiPackage)", () => {
@@ -360,4 +361,37 @@ describe("Catalog Grouping & Codex Variant Deduplication", () => {
     expect(resolveProductThumbnail("Test Product", "test", standardUrl)).toBe(standardUrl);
   });
 });
+
+describe("isApiProduct Categorization", () => {
+  it("should classify API Gemini Pro 18 tháng as an API product", () => {
+    const geminiApi1 = {
+      title: "API Gemini Pro 18 tháng chính hãng",
+      slug: "gem-0105-api-gemini-pro-18-thang-chinh-hang",
+      category: { slug: "ai-api" },
+    };
+    const geminiApi2 = {
+      title: "Gemini Pro 18 tháng chính hãng",
+      slug: "gem-0105-gemini-pro-18-thang-chinh-hang",
+      category: { slug: "ai-api" },
+    };
+    expect(isApiProduct(geminiApi1)).toBe(true);
+    expect(isApiProduct(geminiApi2)).toBe(true);
+  });
+
+  it("should classify personal accounts as NOT API products", () => {
+    const geminiAccount = {
+      title: "Gemini Pro 18 Tháng",
+      slug: "gemini-advanced-18-thang",
+      category: { slug: "ai-tool" },
+    };
+    const chatgptAccount = {
+      title: "Tài khoản ChatGPT Plus 1 Tháng",
+      slug: "chatgpt-plus-1-thang",
+      category: { slug: "ai-tool" },
+    };
+    expect(isApiProduct(geminiAccount)).toBe(false);
+    expect(isApiProduct(chatgptAccount)).toBe(false);
+  });
+});
+
 

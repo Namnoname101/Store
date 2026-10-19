@@ -101,6 +101,7 @@ export function resolveProductThumbnail(
 export function isApiProduct(product: any): boolean {
   const title = (product.title || "").toLowerCase();
   const desc = (product.description || "").toLowerCase();
+  const slug = (product.slug || "").toLowerCase();
   const catSlug = (product.category?.slug || "").toLowerCase();
 
   // If product is in a dedicated account/software category
@@ -110,12 +111,31 @@ export function isApiProduct(product: any): boolean {
     catSlug === "hoc-tap-phan-mem" ||
     catSlug === "dich-vu-mxh"
   ) {
-    if (!title.startsWith("api ") && !title.includes("key api")) {
+    if (!title.startsWith("api ") && !title.includes("key api") && !slug.includes("api")) {
       return false;
     }
   }
 
-  // Common duration and personal account phrases
+  // Explicit API indicators always qualify as an API product, even if duration or "chính chủ" is mentioned
+  const isExplicitApi =
+    title.startsWith("api ") ||
+    title.includes("key api") ||
+    title.includes("cursor ai api") ||
+    slug.startsWith("cur-") ||
+    slug.startsWith("gem-") ||
+    slug.startsWith("cla-") ||
+    slug.startsWith("deep-") ||
+    slug.startsWith("cdx-") ||
+    slug.includes("api") ||
+    title.includes("credit") ||
+    title.includes("request") ||
+    desc.includes("credit");
+
+  if (isExplicitApi) {
+    return true;
+  }
+
+  // Common duration and personal account phrases that disqualify non-explicit products
   const hasAccountMarker =
     title.includes("18 tháng") ||
     title.includes("2 năm") ||
@@ -126,21 +146,7 @@ export function isApiProduct(product: any): boolean {
     (title.includes("tài khoản") && !title.includes("api"));
 
   if (hasAccountMarker) {
-    if (title.startsWith("api cursor") || title.includes("cursor ai api")) {
-      return true;
-    }
     return false;
-  }
-
-  if (
-    title.startsWith("api ") ||
-    title.includes("api ") ||
-    title.includes("key api") ||
-    title.includes("credit") ||
-    title.includes("request") ||
-    desc.includes("credit")
-  ) {
-    return true;
   }
 
   if (catSlug === "ai-api" || catSlug === "ai-api-keys") {

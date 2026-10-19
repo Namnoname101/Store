@@ -12,8 +12,8 @@ describe("Order Creation with Coupon Integration", () => {
   });
 
   it("should apply coupon discount to order total and VietQR payment link", async () => {
-    // Ensure product exists
-    let product = await prisma.product.findFirst({ where: { isActive: true } });
+    // Ensure product with price >= 20000 exists
+    let product = await prisma.product.findFirst({ where: { isActive: true, price: { gte: 20000 } } });
     if (!product) {
       const cat = await prisma.category.upsert({
         where: { slug: "test-cat" },
