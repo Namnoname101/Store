@@ -149,9 +149,9 @@ async function main() {
 
     // --- Gemini ---
     {
-      title: "Tài khoản Gemini Advanced 18 Tháng",
+      title: "Gói Gemini Pro & Google Drive 5TB 18 Tháng Chính Chủ",
       slug: "gemini-advanced-18-thang",
-      description: "Tài khoản Google Gemini Advanced 18 tháng sử dụng mô hình Gemini 2.0 Flash 2M Context.",
+      description: "Gói Gemini Pro & Google Drive 5TB 18 tháng chính chủ, bao gồm 5TB lưu trữ Google One và Gemini Advanced.",
       price: 85000,
       originalPrice: 150000,
       categoryId: catAiApi.id,

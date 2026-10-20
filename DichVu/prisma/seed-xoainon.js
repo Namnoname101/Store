@@ -66,21 +66,52 @@ async function main() {
     });
   }
 
-  // 3. Map Gemini Advanced 18 Thang: Xoai Non is CHEAPER (13.800d) than Nghien Trick (14.567d)
-  // Alternative suppliers will fallback to Nghien Trick
-  const gemini = await prisma.product.findUnique({
+  // 3. Map Gemini Advanced 18 Thang: Xoai Non (#51, 14.8k) with fallback to Nghien Trick (#19, 14.5k)
+  const geminiDescription = `Gói Gemini Pro & Google Drive 5TB 18 Tháng Chính Chủ (Kích hoạt trực tiếp qua link nhận ưu đãi):
+
+💾 Dung lượng: 5TB lưu trữ Google Drive, Google Photos và Gmail tốc độ cao.
+🤖 Trí tuệ nhân tạo: Sử dụng Gemini Pro / Gemini Advanced trọn vẹn 18 tháng (mô hình Gemini 2.0 Flash 2M Context, viết code, phân tích tài liệu dài siêu tốc).
+👥 Chia sẻ gia đình: Thêm tối đa 5 thành viên dùng chung kho dung lượng 5TB.
+🔒 Bảo mật: Nâng cấp trên tài khoản chính chủ của bạn, riêng tư dữ liệu 100%.
+💳 Tiện lợi: Kích hoạt trực tiếp qua link nhận ưu đãi, không cần thêm thẻ thanh toán (Visa/Mastercard).
+⚡ Bàn giao tự động: Link kích hoạt được cấp ngay lập tức 24/7 sau khi thanh toán.
+
+📌 HƯỚNG DẪN KÍCH HOẠT:
+1. Sao chép (copy) đường link nhận được sau khi thanh toán thành công (link có dạng https://gemini.serviceactivation.in/... hoặc geminiactivation.com).
+2. Dán (paste) link vào trình duyệt trên thiết bị đang đăng nhập sẵn tài khoản Google (Gmail) cần nâng cấp.
+3. Nhấn "Chấp nhận ưu đãi" (Claim Offer) để hoàn tất nhận gói 18 tháng trực tiếp vào tài khoản.
+4. (Tùy chọn): Vào Google One bật tính năng "Chia sẻ với gia đình" để mời tối đa 5 thành viên dùng chung bộ nhớ 5TB.
+
+⚠️ LƯU Ý QUAN TRỌNG:
+• Thời hạn kích hoạt: Link chỉ có hiệu lực trong vòng 12 giờ kể từ thời điểm giao đơn. Sau 12 giờ link sẽ tự động hết hạn, shop xin phép từ chối xử lý và không hỗ trợ các trường hợp kích hoạt trễ.
+• Vui lòng kích hoạt link ngay sau khi nhận hàng để đảm bảo quyền lợi.`;
+
+  let gemini = await prisma.product.findUnique({
     where: { slug: "gemini-advanced-18-thang" },
   });
   if (gemini) {
+    gemini = await prisma.product.update({
+      where: { id: gemini.id },
+      data: {
+        title: "Gói Gemini Pro & Google Drive 5TB 18 Tháng Chính Chủ",
+        description: geminiDescription,
+        type: "ACCOUNT",
+        fulfillmentType: "API_DROPSHIP",
+        price: 21000,
+        originalPrice: 150000,
+        isActive: true,
+        thumbnailUrl: "/images/brands/gemini.svg",
+      },
+    });
     await prisma.supplierProductMapping.upsert({
       where: { productId: gemini.id },
       update: {
         supplierId: supplier.id,
         supplierProductCode: "51",
-        supplierPrice: 13800,
-        supplierStock: 68,
+        supplierPrice: 14800,
+        supplierStock: 52,
         markupType: "PERCENTAGE",
-        markupValue: 50,
+        markupValue: 42,
         isAutoSync: true,
         customConfig: JSON.stringify({
           alternativeSuppliers: [
@@ -96,10 +127,10 @@ async function main() {
         productId: gemini.id,
         supplierId: supplier.id,
         supplierProductCode: "51",
-        supplierPrice: 13800,
-        supplierStock: 68,
+        supplierPrice: 14800,
+        supplierStock: 52,
         markupType: "PERCENTAGE",
-        markupValue: 50,
+        markupValue: 42,
         isAutoSync: true,
         customConfig: JSON.stringify({
           alternativeSuppliers: [
@@ -112,7 +143,7 @@ async function main() {
         }),
       },
     });
-    console.log("✓ Mapped Gemini Advanced 18 Tháng: Xoai Non (#51, 13.8k) with fallback to Nghien Trick (#19, 14.5k)");
+    console.log("✓ Updated and Mapped Gemini Advanced 18 Tháng: Xoai Non (#51, 14.8k) with fallback to Nghien Trick (#19, 14.5k)");
   }
 
   // 4. Map Duolingo Super 12 Thang: Xoai Non (#60, 19.8k)

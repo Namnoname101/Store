@@ -146,6 +146,22 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
     ],
     note: "Tài khoản riêng tư 100%, bảo hành Full thời hạn (BHF). Quý khách thoải mái đổi mật khẩu sau khi nhận tài khoản.",
   },
+
+  // ==========================================
+  // 8. CÁC GÓI GEMINI PRO & GOOGLE DRIVE 5TB 18 THÁNG
+  // ==========================================
+  "gemini-advanced-18-thang": {
+    title: "Hướng dẫn kích hoạt Gói Gemini Pro & Google Drive 5TB 18 Tháng",
+    steps: [
+      "Sao chép (copy) đường link kích hoạt nhận được sau khi thanh toán thành công (link có dạng https://gemini.serviceactivation.in/... hoặc geminiactivation.com).",
+      "Mở trình duyệt trên máy tính hoặc điện thoại, đảm bảo đang đăng nhập sẵn tài khoản Google (Gmail) chính chủ bạn muốn nâng cấp.",
+      "Dán (paste) đường link vào thanh địa chỉ của trình duyệt rồi nhấn Enter / Truy cập.",
+      "Tại giao diện kích hoạt Google One, nhấn nút 'Chấp nhận ưu đãi' (Claim Offer) để hoàn tất nhận gói 18 tháng trực tiếp vào tài khoản.",
+      "Kiểm tra dung lượng 5TB tại one.google.com và truy cập gemini.google.com để sử dụng mô hình Gemini Advanced với đầy đủ tính năng AI.",
+      "Tùy chọn: Vào Google One bật tính năng 'Chia sẻ với gia đình' (Family Sharing) để mời thêm tối đa 5 thành viên khác cùng dùng chung bộ nhớ 5TB.",
+    ],
+    note: "⚠️ LƯU Ý QUAN TRỌNG: Link chỉ có hiệu lực kích hoạt trong vòng 12 giờ kể từ thời điểm giao đơn. Sau 12 giờ link sẽ tự động hết hạn, shop xin phép từ chối xử lý và không hỗ trợ các trường hợp kích hoạt trễ. Quý khách vui lòng kích hoạt ngay khi nhận link.",
+  },
 };
 
 /**
@@ -211,6 +227,19 @@ export function resolveProductInstruction(params: {
   // 2.8 Meitu VIP
   if (cleanSlug.includes("meitu") || cleanTitle.includes("meitu")) {
     return PRODUCT_GUIDES["meitu"];
+  }
+
+  // 2.9 Gemini Pro & Google Drive 18 Tháng
+  if (
+    cleanSlug.includes("gemini") ||
+    cleanTitle.includes("gemini") ||
+    cleanSlug.includes("google-one") ||
+    cleanTitle.includes("google one") ||
+    rawSecret.includes("gemini") ||
+    rawSecret.includes("serviceactivation") ||
+    rawSecret.includes("geminiactivation")
+  ) {
+    return PRODUCT_GUIDES["gemini-advanced-18-thang"];
   }
 
   // 3. Fallback theo Product Type mặc định
