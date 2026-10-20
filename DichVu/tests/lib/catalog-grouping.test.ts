@@ -351,8 +351,9 @@ describe("Catalog Grouping & Codex Variant Deduplication", () => {
     const rawOpenId = "https://drive.google.com/open?id=12KBk85uvwdZrEecC9GZzm3SxlbuW7_1w";
     expect(normalizeThumbnailUrl(rawOpenId)).toBe("https://lh3.googleusercontent.com/d/12KBk85uvwdZrEecC9GZzm3SxlbuW7_1w");
 
+    // Temporary Google Drive web viewer links expire with 403 Forbidden, so normalizeThumbnailUrl rejects them
     const rawDriveViewer = "https://drive.google.com/u/0/drive-viewer/AKGpihZaTszCB8gbROfxWssvRCrd-DD0elIkRXzlEcHgf1SvJLdXVNu42PczDF4ZRodFOZ2HgbVPGIcLFV0IKNuz3qEOUoovsxQVdw=s1600-rw-v1?auditContext=forDisplay";
-    expect(normalizeThumbnailUrl(rawDriveViewer)).toBe("https://lh3.googleusercontent.com/drive-viewer/AKGpihZaTszCB8gbROfxWssvRCrd-DD0elIkRXzlEcHgf1SvJLdXVNu42PczDF4ZRodFOZ2HgbVPGIcLFV0IKNuz3qEOUoovsxQVdw=s1600-rw-v1?auditContext=forDisplay");
+    expect(normalizeThumbnailUrl(rawDriveViewer)).toBe("");
 
     const rawUcId = "https://drive.google.com/uc?export=view&id=1VLWAHdoo3kZUtA_InEEVfYRJ21QY1sOL";
     expect(normalizeThumbnailUrl(rawUcId)).toBe("https://lh3.googleusercontent.com/d/1VLWAHdoo3kZUtA_InEEVfYRJ21QY1sOL");
@@ -361,8 +362,9 @@ describe("Catalog Grouping & Codex Variant Deduplication", () => {
     const resolved = resolveProductThumbnail("Capcut Pro 30 Ngày", "capcut-pro-30-ngay", rawLh3);
     expect(resolved).toBe("https://lh3.googleusercontent.com/d/1VLWAHdoo3kZUtA_InEEVfYRJ21QY1sOL");
 
+    // Rejected temporary drive-viewer falls back to official brand SVG
     const resolvedViewer = resolveProductThumbnail("Meitu VIP", "meitu-vip-7-ngay", rawDriveViewer);
-    expect(resolvedViewer).toBe("https://lh3.googleusercontent.com/drive-viewer/AKGpihZaTszCB8gbROfxWssvRCrd-DD0elIkRXzlEcHgf1SvJLdXVNu42PczDF4ZRodFOZ2HgbVPGIcLFV0IKNuz3qEOUoovsxQVdw=s1600-rw-v1?auditContext=forDisplay");
+    expect(resolvedViewer).toBe("/images/brands/meitu.svg");
 
     // Standard CDN image URLs remain unchanged
     const standardUrl = "https://genzshop.vn/assets/images/products/test.png";

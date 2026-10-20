@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { KeyRound, UserCheck, GraduationCap, ArrowRight, Eye } from "lucide-react";
 import type { Product } from "@prisma/client";
@@ -21,6 +21,7 @@ export interface ProductCardProps {
 export default function ProductCard({ product, onQuickView }: ProductCardProps) {
   const { title, slug, price, originalPrice, type, stockCount, thumbnailUrl } = product;
   const [imgError, setImgError] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
   const typeInfo = getProductTypeInfo(type, {
     categorySlug: product.category?.slug,
     title,
@@ -49,12 +50,20 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
     product.category?.slug
   );
 
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth === 0) {
+      setImgError(true);
+    }
+  }, [resolvedThumbnail]);
+
   return (
     <div className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-950 p-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-zinc-400 dark:hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-950/5 dark:hover:shadow-zinc-950/30">
       <div>
         {/* Compact 16:10 Aspect Ratio Product Image */}
         <div className="relative mb-2.5 flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-lg border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-900/60">
           <img
+            key={resolvedThumbnail}
+            ref={imgRef}
             src={resolvedThumbnail}
             alt={title}
             onError={() => {

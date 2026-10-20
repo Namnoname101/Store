@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Eye, ArrowRight, Layers, ChevronDown } from "lucide-react";
 import type { Product } from "@prisma/client";
@@ -61,6 +61,7 @@ export default function GroupedProductCard({
       : 0;
 
   const [imgError, setImgError] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
   const candidateThumbnail = activeVariant.thumbnailUrl || thumbnailUrl;
   const displayThumbnail = resolveProductThumbnail(
     title,
@@ -69,12 +70,20 @@ export default function GroupedProductCard({
     category?.slug
   );
 
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth === 0) {
+      setImgError(true);
+    }
+  }, [displayThumbnail]);
+
   return (
     <div className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-950 p-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-zinc-400 dark:hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-950/5 dark:hover:shadow-zinc-950/30">
       <div>
         {/* Compact 16:10 Thumbnail */}
         <div className="relative mb-2.5 flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-lg border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-900/60">
           <img
+            key={displayThumbnail}
+            ref={imgRef}
             src={displayThumbnail}
             alt={activeVariant.title || title}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
