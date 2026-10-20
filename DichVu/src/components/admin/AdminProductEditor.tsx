@@ -133,7 +133,16 @@ export default function AdminProductEditor({ initialProduct, categories }: Props
       };
       savedRef.current = JSON.stringify(confirmed);
       setServerForm(confirmed);
-      setSaveStatus(JSON.stringify(latestRef.current) === savedRef.current ? "saved" : "pending");
+
+      // If user hasn't typed anything new during in-flight network request,
+      // sync the confirmed (normalized) values to form state and mark as saved.
+      if (JSON.stringify(latestRef.current) === serialized) {
+        latestRef.current = confirmed;
+        setForm(confirmed);
+        setSaveStatus("saved");
+      } else {
+        setSaveStatus("pending");
+      }
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Không thể lưu thay đổi.");
       setSaveStatus("error");
@@ -189,6 +198,15 @@ export default function AdminProductEditor({ initialProduct, categories }: Props
             {saveStatus === "saved" ? <CheckCircle2 className="h-4 w-4" /> : saveStatus === "saving" ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Clock3 className="h-4 w-4" />}
             {{ saved: "Đã lưu", pending: "Chưa lưu", saving: "Đang lưu", error: "Lưu thất bại", invalid: "Dữ liệu chưa hợp lệ" }[saveStatus]}
           </span>
+          <button
+            type="button"
+            onClick={() => void save(true)}
+            disabled={inFlightRef.current || saveStatus === "saving" || (!dirty && saveStatus === "saved")}
+            className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-blue-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Save className="h-4 w-4" />
+            Lưu thay đổi
+          </button>
           <button type="button" onClick={() => setShowPreview((value) => !value)} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-blue-500/40 px-3 text-sm font-medium text-blue-300 hover:bg-blue-500/10"><Eye className="h-4 w-4" /> Xem trước</button>
         </div>
       </div>
@@ -204,8 +222,20 @@ export default function AdminProductEditor({ initialProduct, categories }: Props
           <div><label htmlFor="productCategory" className={label}>Danh mục</label><select id="productCategory" className={field} value={form.categoryId} onChange={(e) => patch("categoryId", e.target.value)}>{categories.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></div>
           <div>
             <label htmlFor="productPhoto" className={label}>URL ảnh sản phẩm</label>
-            <input id="productPhoto" className={field} value={form.thumbnailUrl} onChange={(e) => patch("thumbnailUrl", e.target.value)} placeholder="https://..." />
-            <p className="mt-1 text-xs text-slate-400">Dán link ảnh công khai trực tiếp (jpg, png, webp, svg). Không dùng link riêng tư của Google Docs/Drive vì sẽ bị chặn.</p>
+            <input
+              id="productPhoto"
+              className={field}
+              value={form.thumbnailUrl}
+              onChange={(e) => patch("thumbnailUrl", e.target.value)}
+              onBlur={() => {
+                const normalized = normalizeThumbnailUrl(form.thumbnailUrl);
+                if (normalized && normalized !== form.thumbnailUrl) {
+                  patch("thumbnailUrl", normalized);
+                }
+              }}
+              placeholder="https://..."
+            />
+            <p className="mt-1 text-xs text-slate-400">Dán link ảnh trực tiếp (jpg, png, webp, svg) hoặc link chia sẻ Google Drive (hệ thống tự chuyển thành CDN tốc độ cao).</p>
           </div>
           <div><label htmlFor="productDescription" className={label}>Mô tả sản phẩm</label><textarea id="productDescription" rows={6} className={field} value={form.description} onChange={(e) => patch("description", e.target.value)} /></div>
         </>}
