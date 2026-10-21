@@ -4,7 +4,7 @@
 **Version:** 1.0.0  
 **Date:** 2026-10-21  
 **Target Environment:** Next.js 14 (App Router), Tailwind CSS, TypeScript  
-**Upstream Provider:** AgentRouter (`https://agentrouter.org/v1/chat/completions` or `https://agentrouter.to/v1/chat/completions`)  
+**Upstream Provider:** Google Gemini API Free Tier (`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest`)  
 **Security & Rate Limiting:** In-memory sliding-window via `src/lib/rate-limiter.ts`  
 
 ---
@@ -153,7 +153,7 @@ src/
 │       └── CodexCtaBanner.tsx        # CTA card chuyển hướng sang /codex
 └── lib/
     ├── prompt-master-constants.ts    # Danh sách category, prompt templates, meta-prompts
-    └── agentrouter-client.ts         # Helper gọi AgentRouter API an toàn từ server-side
+    └── gemini-client.ts              # Helper gọi Gemini API an toàn từ server-side
 ```
 
 ### 5.2. Tính năng UI tiện ích cho người dùng
@@ -167,10 +167,9 @@ src/
 
 Thêm vào `.env`:
 ```env
-# AgentRouter Gateway Config
-AGENTROUTER_API_KEY="sk-..."
-AGENTROUTER_BASE_URL="https://agentrouter.org/v1"
-AGENTROUTER_DEFAULT_MODEL="gpt-4o-mini"
+# Google Gemini API Config (Free Tier)
+GEMINI_API_KEY="AQ.Ab8..."
+GEMINI_MODEL="gemini-flash-lite-latest"
 ```
 
 ---
@@ -178,7 +177,7 @@ AGENTROUTER_DEFAULT_MODEL="gpt-4o-mini"
 ## 7. Kế hoạch Kiểm thử & Đảm bảo Chất lượng (Testing & Verification)
 
 1. **Unit Tests (Vitest):**
-   - Kiểm tra logic `agentrouter-client.ts` xử lý input rỗng, input quá dài.
+   - Kiểm tra logic `gemini-client.ts` xử lý input rỗng, input quá dài.
    - Kiểm tra rate limiter với IP giả lập (chặn request thứ 11 trong 1 giờ).
    - Kiểm tra parsing JSON câu hỏi clarify an toàn (không bị crash nếu LLM trả về format sai).
 2. **E2E / Browser Smoke Test (Playwright):**

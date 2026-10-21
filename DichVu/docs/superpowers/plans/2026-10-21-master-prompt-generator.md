@@ -2,16 +2,16 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Xây dựng công cụ Lead Magnet công khai "Master Prompt Generator" trên web DaiTruong Store với luồng 2-bước (phân tích/làm rõ và sinh master prompt streaming thời gian thực qua AgentRouter) cùng hệ thống nút Copy/Download và banner CTA chuyển đổi sang dịch vụ Codex API.
+**Goal:** Xây dựng công cụ Lead Magnet công khai "Master Prompt Generator" trên web DaiTruong Store với luồng 2-bước (phân tích/làm rõ và sinh master prompt streaming thời gian thực qua Google Gemini API Free Tier) cùng hệ thống nút Copy/Download và banner CTA chuyển đổi sang dịch vụ Codex API.
 
-**Architecture:** Sử dụng Next.js 14 App Router, tích hợp API `agentrouter.org` (chuẩn OpenAI `v1/chat/completions`) ở phía backend, trang bị Rate Limiting IP theo sliding-window qua `src/lib/rate-limiter.ts`. Giao diện Client Component tương tác mượt mà hỗ trợ Server-Sent Events (SSE) stream, phân loại category (Coding, Content, Marketing, Midjourney, General) và điều hướng về trang `/codex`.
+**Architecture:** Sử dụng Next.js 14 App Router, tích hợp API Google Gemini (Free Tier: `gemini-flash-lite-latest`) ở phía backend, trang bị Rate Limiting IP theo sliding-window qua `src/lib/rate-limiter.ts`. Giao diện Client Component tương tác mượt mà hỗ trợ Server-Sent Events (SSE) stream, phân loại category (Coding, Content, Marketing, Midjourney, General) và điều hướng về trang `/codex`.
 
 **Tech Stack:** Next.js 14.2 (App Router), React 18, TypeScript 5.6, Tailwind CSS 3.4, Lucide React, Vitest 2.1.
 
 **Spec:** `docs/superpowers/specs/2026-10-21-master-prompt-generator-design.md`
 
 ## Global Constraints
-- **Bảo mật API Key:** Biến môi trường `AGENTROUTER_API_KEY` chỉ đọc ở server-side, không bao giờ expose qua `NEXT_PUBLIC_` hay client bundle.
+- **Bảo mật API Key:** Biến môi trường `GEMINI_API_KEY` chỉ đọc ở server-side, không bao giờ expose qua `NEXT_PUBLIC_` hay client bundle.
 - **Chống lạm dụng (Rate Limiting):** Sử dụng `checkRateLimit` từ `src/lib/rate-limiter.ts` với ngưỡng 15 req/h cho Clarify và 10 req/h cho Generate cho mỗi IP.
 - **Giao thức Chuẩn:** Sử dụng native `fetch` và Web Streams API (`ReadableStream`), không cài thêm các SDK nặng không cần thiết.
 - **Tương thích UI:** Thiết kế dark slate đồng bộ với hệ thống giao diện hiện tại của DaiTruong Store (`/codex`, `/products`).
@@ -20,24 +20,24 @@
 ## Review Focus
 1. Người dùng nhập chuỗi rỗng hoặc chuỗi quá ngắn (< 3 ký tự) hoặc quá dài (> 1000 ký tự) phải bị chặn với thông báo lỗi 400 rõ ràng.
 2. Vượt ngưỡng Rate Limit phải trả về HTTP 429 kèm header/thông điệp thời gian reset còn lại.
-3. Khi upstream `agentrouter.org` bị lỗi (500/timeout), client phải hiển thị thông báo lỗi thân thiện thay vì màn hình trắng hay treo giao diện.
+3. Khi upstream Gemini bị lỗi (503/timeout), client phải hiển thị thông báo lỗi thân thiện thay vì màn hình trắng hay treo giao diện.
 4. Quá trình SSE stream không bị đứt gãy ký tự Unicode tiếng Việt khi chia chunk.
 5. Người dùng bấm "Bỏ qua & Tạo ngay" (không chọn câu trả lời clarify) thì API generate vẫn tạo prompt thành công với giá trị mặc định.
 
 ---
 
-### Task 1: Prompt Master Constants & AgentRouter Client Helper
+### Task 1: Prompt Master Constants & Gemini Client Helper
 
 **Files:**
 - Create: `src/lib/prompt-master-constants.ts`
-- Create: `src/lib/agentrouter-client.ts`
-- Test: `tests/lib/agentrouter-client.test.ts`
+- Create: `src/lib/gemini-client.ts`
+- Test: `tests/lib/gemini-client.test.ts`
 
 **Interfaces:**
 - Produces: 
   - `PROMPT_CATEGORIES`, `CategoryType`, `ClarifyQuestion`, `BuildMetaPromptOptions` từ `prompt-master-constants.ts`
-  - `callAgentRouterClarify(prompt: string, category: CategoryType): Promise<{ questions: ClarifyQuestion[] }>`
-  - `callAgentRouterGenerateStream(prompt: string, category: CategoryType, answers?: Record<string, string>): Promise<ReadableStream<Uint8Array>>`
+  - `callGeminiClarify(prompt: string, category: CategoryType): Promise<{ questions: ClarifyQuestion[] }>`
+  - `callGeminiGenerateStream(prompt: string, category: CategoryType, answers?: Record<string, string>): Promise<ReadableStream<Uint8Array>>`
 
 - [ ] **Step 1: Write the failing test for AgentRouter client helper & constants**
 
