@@ -18,6 +18,7 @@ import {
   Store,
   ChevronRight,
   ShoppingBag,
+  Sparkles,
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { useCart } from "@/contexts/CartContext";
@@ -103,7 +104,7 @@ export default function Navbar() {
           <form onSubmit={handleSearch} className="relative w-full">
             <input
               type="text"
-              placeholder="Tìm kiếm API Claude, Cursor, CapCut, Codex..."
+              placeholder="Tìm kiếm API Codex, Gemini, CapCut, Office..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/90 py-2.5 pl-10 pr-20 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-400/20 transition-all shadow-2xs"
@@ -127,6 +128,16 @@ export default function Navbar() {
           >
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
             <span>Nạp API Credit</span>
+          </Link>
+
+          {/* Master Prompt Generator */}
+          <Link
+            href="/tools/prompt-master"
+            className="flex items-center gap-1.5 rounded-lg border border-blue-500/30 bg-blue-500/10 dark:bg-blue-500/15 px-3 py-2 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:border-blue-500 transition-all shadow-2xs group active:scale-[0.98]"
+            title="Tạo Master Prompt chuẩn quốc tế cho Cursor và AI miễn phí"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-blue-500" />
+            <span>Tạo Prompt AI</span>
           </Link>
 
           {/* Developer Dashboard - Prominent Top Button */}
@@ -367,6 +378,18 @@ export default function Navbar() {
                 <span>Nạp Codex API Credit</span>
               </div>
               <ChevronRight className="h-4 w-4 text-zinc-400" />
+            </Link>
+
+            <Link
+              href="/tools/prompt-master"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center justify-between text-sm font-medium text-blue-600 dark:text-blue-400 px-2 py-2 rounded-lg bg-blue-500/10"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-blue-500" />
+                <span>Tạo Master Prompt AI</span>
+              </div>
+              <ChevronRight className="h-4 w-4 text-blue-400" />
             </Link>
 
             <Link
