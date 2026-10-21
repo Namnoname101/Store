@@ -26,8 +26,8 @@ describe("Prompt Master Constants & Gemini Client", () => {
     expect(clarifyPrompt).toContain("JSON");
 
     const genPrompt = buildGenerateSystemPrompt("coding");
-    expect(genPrompt).toContain("Role");
-    expect(genPrompt).toContain("Instructions");
+    expect(genPrompt.toLowerCase()).toContain("role");
+    expect(genPrompt.toLowerCase()).toContain("instructions");
   });
 
   it("should call Gemini clarify and parse structured questions JSON", async () => {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limiter";
 import { callGeminiGenerateStream } from "@/lib/gemini-client";
-import { CategoryType, PROMPT_CATEGORIES } from "@/lib/prompt-master-constants";
+import { CategoryType, OutputFormatType, PROMPT_CATEGORIES } from "@/lib/prompt-master-constants";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
     const prompt = typeof body.prompt === "string" ? body.prompt.trim() : "";
     const category = body.category as CategoryType;
     const answers = body.answers && typeof body.answers === "object" ? body.answers : undefined;
+    const formatType = body.formatType === "system_rule" ? "system_rule" : "standard";
 
     if (!prompt || prompt.length < 3) {
       return NextResponse.json(
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
       ? category
       : "general";
 
-    const rawStream = await callGeminiGenerateStream(prompt, resolvedCategory, answers);
+    const rawStream = await callGeminiGenerateStream(prompt, resolvedCategory, answers, formatType);
 
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();

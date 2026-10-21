@@ -11,8 +11,11 @@ import {
   FileText,
 } from "lucide-react";
 
+import { CategoryType } from "@/lib/prompt-master-constants";
+
 interface ResultStepProps {
   prompt: string;
+  category?: CategoryType;
   masterPrompt: string;
   isStreaming: boolean;
   onReset: () => void;
@@ -20,6 +23,7 @@ interface ResultStepProps {
 
 export default function ResultStep({
   prompt,
+  category,
   masterPrompt,
   isStreaming,
   onReset,
@@ -36,12 +40,14 @@ export default function ResultStep({
     }
   };
 
+  const isCoding = category === "coding";
+
   const handleDownload = () => {
     const blob = new Blob([masterPrompt], { type: "text/markdown;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `master-prompt-${Date.now()}.md`;
+    a.download = isCoding ? ".cursorrules" : `master-prompt-${Date.now()}.md`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -97,7 +103,7 @@ export default function ResultStep({
             className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 transition-all"
           >
             <Download className="h-3.5 w-3.5" />
-            <span>Tải .md</span>
+            <span>{isCoding ? "Tải .cursorrules" : "Tải .md"}</span>
           </button>
 
           <button

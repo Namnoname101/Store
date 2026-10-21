@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Sparkles, ArrowRight, ShieldCheck, CheckCircle2, AlertCircle } from "lucide-react";
-import { CategoryType, ClarifyQuestion } from "@/lib/prompt-master-constants";
+import { CategoryType, ClarifyQuestion, OutputFormatType } from "@/lib/prompt-master-constants";
 import PromptInputStep from "./PromptInputStep";
 import ClarifyStep from "./ClarifyStep";
 import ResultStep from "./ResultStep";
@@ -13,6 +13,7 @@ type StepType = "input" | "clarify" | "result";
 export default function PromptMasterClient() {
   const [step, setStep] = useState<StepType>("input");
   const [category, setCategory] = useState<CategoryType>("coding");
+  const [formatType, setFormatType] = useState<OutputFormatType>("standard");
   const [prompt, setPrompt] = useState("");
   const [questions, setQuestions] = useState<ClarifyQuestion[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -72,6 +73,7 @@ export default function PromptMasterClient() {
           prompt,
           category,
           answers: answersToSend,
+          formatType,
         }),
       });
 
@@ -202,8 +204,10 @@ export default function PromptMasterClient() {
           <PromptInputStep
             prompt={prompt}
             category={category}
+            formatType={formatType}
             onPromptChange={setPrompt}
             onCategoryChange={setCategory}
+            onFormatTypeChange={setFormatType}
             onSubmit={handleAnalyze}
             isLoading={isLoading}
           />
@@ -226,6 +230,7 @@ export default function PromptMasterClient() {
         {step === "result" && (
           <ResultStep
             prompt={prompt}
+            category={category}
             masterPrompt={masterPrompt}
             isStreaming={isStreaming}
             onReset={handleReset}

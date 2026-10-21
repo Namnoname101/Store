@@ -71,9 +71,14 @@ describe("POST /api/tools/prompt-master/generate", () => {
     expect(res.headers.get("content-type")).toContain("text/event-stream");
     expect(res.headers.get("cache-control")).toContain("no-cache");
 
-    expect(streamSpy).toHaveBeenCalledWith("tạo auth jwt nextjs", "coding", {
-      stack: "TypeScript",
-    });
+    expect(streamSpy).toHaveBeenCalledWith(
+      "tạo auth jwt nextjs",
+      "coding",
+      {
+        stack: "TypeScript",
+      },
+      "standard"
+    );
 
     const reader = res.body?.getReader();
     expect(reader).toBeDefined();

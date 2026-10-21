@@ -10,14 +10,23 @@ import {
   ArrowRight,
   Lightbulb,
   Loader2,
+  FileCode2,
+  MessageSquareText,
+  BookmarkCheck,
 } from "lucide-react";
-import { CategoryType, PROMPT_CATEGORIES } from "@/lib/prompt-master-constants";
+import {
+  CategoryType,
+  OutputFormatType,
+  PROMPT_CATEGORIES,
+} from "@/lib/prompt-master-constants";
 
 interface PromptInputStepProps {
   prompt: string;
   category: CategoryType;
+  formatType?: OutputFormatType;
   onPromptChange: (value: string) => void;
   onCategoryChange: (value: CategoryType) => void;
+  onFormatTypeChange?: (value: OutputFormatType) => void;
   onSubmit: () => void;
   isLoading: boolean;
 }
@@ -39,6 +48,11 @@ const EXAMPLE_PROMPTS: { category: CategoryType; label: string; text: string }[]
     text: "viết bài chuẩn seo phân tích xu hướng ai agent trong lập trình năm 2026",
   },
   {
+    category: "marketing",
+    label: "Copywriting AIDA",
+    text: "viết kịch bản video ngắn bán khóa học tiếng anh ứng dụng cho người đi làm",
+  },
+  {
     category: "image",
     label: "Midjourney Cinematic",
     text: "chân dung cyberpunk chiến binh nữ samurai dưới mưa ánh sáng neon tokyo 8k",
@@ -56,8 +70,10 @@ const ICONS_MAP: Record<string, React.ElementType> = {
 export default function PromptInputStep({
   prompt,
   category,
+  formatType = "standard",
   onPromptChange,
   onCategoryChange,
+  onFormatTypeChange,
   onSubmit,
   isLoading,
 }: PromptInputStepProps) {
@@ -65,13 +81,24 @@ export default function PromptInputStep({
   const isTooLong = prompt.length > 1000;
   const canSubmit = prompt.trim().length >= 3 && !isTooLong && !isLoading;
 
+  const currentCategoryObj = PROMPT_CATEGORIES.find((c) => c.id === category);
+
   return (
     <div className="space-y-6">
       {/* Category selector */}
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
-          1. Chọn lĩnh vực bạn muốn tối ưu
-        </label>
+        <div className="flex items-center justify-between mb-3">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            1. Chọn lĩnh vực bạn muốn tối ưu
+          </label>
+          {currentCategoryObj?.repoReference && (
+            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-md border border-blue-500/20">
+              <BookmarkCheck className="h-3 w-3" />
+              <span>Chuẩn: {currentCategoryObj.repoReference}</span>
+            </span>
+          )}
+        </div>
+
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
           {PROMPT_CATEGORIES.map((cat) => {
             const Icon = ICONS_MAP[cat.iconName] || Sparkles;
@@ -105,6 +132,48 @@ export default function PromptInputStep({
           })}
         </div>
       </div>
+
+      {/* Output Format Toggle */}
+      {onFormatTypeChange && (
+        <div className="rounded-xl border border-slate-200 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/40 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="space-y-0.5">
+            <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 block">
+              Định dạng xuất bản
+            </span>
+            <span className="text-[11px] text-slate-500 dark:text-slate-400">
+              Chọn cấu trúc phù hợp với công cụ đích của bạn
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-slate-200/60 dark:bg-slate-800/80 p-1 rounded-lg shrink-0">
+            <button
+              type="button"
+              onClick={() => onFormatTypeChange("standard")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                formatType === "standard"
+                  ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              <MessageSquareText className="h-3.5 w-3.5" />
+              <span>Prompt Chatbot</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onFormatTypeChange("system_rule")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                formatType === "system_rule"
+                  ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              <FileCode2 className="h-3.5 w-3.5" />
+              <span>File .cursorrules</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Input textarea */}
       <div>

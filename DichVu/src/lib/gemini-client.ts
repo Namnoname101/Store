@@ -1,6 +1,7 @@
 import {
   CategoryType,
   ClarifyQuestion,
+  OutputFormatType,
   buildClarifySystemPrompt,
   buildGenerateSystemPrompt,
 } from "./prompt-master-constants";
@@ -82,11 +83,12 @@ export async function callGeminiClarify(
 export async function callGeminiGenerateStream(
   prompt: string,
   category: CategoryType,
-  answers?: Record<string, string>
+  answers?: Record<string, string>,
+  formatType?: OutputFormatType
 ): Promise<ReadableStream<Uint8Array>> {
   const apiKey = getApiKey();
   const model = getModel();
-  const systemInstruction = buildGenerateSystemPrompt(category, answers);
+  const systemInstruction = buildGenerateSystemPrompt(category, answers, formatType);
 
   const url = `${GEMINI_BASE_URL}/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`;
 
