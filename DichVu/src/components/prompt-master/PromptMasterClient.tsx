@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { Sparkles, ArrowRight, ShieldCheck, CheckCircle2, AlertCircle } from "lucide-react";
-import { CategoryType, ClarifyQuestion, OutputFormatType } from "@/lib/prompt-master-constants";
+import { Terminal, CheckCircle2, AlertCircle } from "lucide-react";
+import { CategoryType, ClarifyQuestion, OutputFormatType, TargetAiType } from "@/lib/prompt-master-constants";
 import PromptInputStep from "./PromptInputStep";
 import ClarifyStep from "./ClarifyStep";
+import AnalyzingStep from "./AnalyzingStep";
 import ResultStep from "./ResultStep";
 import CodexCtaBanner from "./CodexCtaBanner";
 
@@ -14,20 +15,25 @@ export default function PromptMasterClient() {
   const [step, setStep] = useState<StepType>("input");
   const [category, setCategory] = useState<CategoryType>("coding");
   const [formatType, setFormatType] = useState<OutputFormatType>("standard");
+  const [targetAi, setTargetAi] = useState<TargetAiType>("all");
   const [prompt, setPrompt] = useState("");
   const [questions, setQuestions] = useState<ClarifyQuestion[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [masterPrompt, setMasterPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [sufficiencyNotice, setSufficiencyNotice] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Step 1: Analyze prompt and fetch clarify questions
+  // Step 1: Analyze prompt and transition to clarify questions or directly to generate
   const handleAnalyze = async () => {
     if (!prompt.trim() || prompt.trim().length < 3) return;
 
     setIsLoading(true);
     setErrorMessage(null);
+    setSufficiencyNotice(null);
+
+    const startTime = Date.now();
 
     try {
       const res = await fetch("/api/tools/prompt-master/clarify", {
@@ -41,12 +47,21 @@ export default function PromptMasterClient() {
         throw new Error(data.error || "Không thể phân tích câu prompt lúc này.");
       }
 
-      if (data.questions && data.questions.length > 0) {
+      // Giữ tối thiểu 2100ms để người dùng theo dõi đầy đủ hiệu ứng step-by-step HUD
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 2100) {
+        await new Promise((resolve) => setTimeout(resolve, 2100 - elapsed));
+      }
+
+      // If prompt is already detailed or no questions needed: skip clarify step and generate immediately!
+      if (data.isSufficient === true || !data.questions || data.questions.length === 0) {
+        setSufficiencyNotice("Ý tưởng của bạn đã rất rõ ràng và đầy đủ! Đang tiến hành tạo Master Prompt...");
+        setQuestions([]);
+        await handleGenerate({});
+      } else {
+        // Switch the central card directly to sequential clarification flow
         setQuestions(data.questions);
         setStep("clarify");
-      } else {
-        // If no questions needed, proceed straight to generate
-        await handleGenerate({});
       }
     } catch (err: any) {
       setErrorMessage(err.message || "Đã xảy ra lỗi khi phân tích prompt.");
@@ -55,7 +70,7 @@ export default function PromptMasterClient() {
     }
   };
 
-  // Step 2: Stream master prompt generation
+  // Step 2: Stream master prompt generation into central result card
   const handleGenerate = async (customAnswers?: Record<string, string>) => {
     setIsLoading(true);
     setIsStreaming(true);
@@ -74,6 +89,7 @@ export default function PromptMasterClient() {
           category,
           answers: answersToSend,
           formatType,
+          targetAi,
         }),
       });
 
@@ -134,55 +150,56 @@ export default function PromptMasterClient() {
   const handleReset = () => {
     setStep("input");
     setPrompt("");
+    setTargetAi("all");
     setQuestions([]);
     setAnswers({});
     setMasterPrompt("");
+    setSufficiencyNotice(null);
     setErrorMessage(null);
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-8">
-      {/* Header section */}
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-3.5 py-1 text-xs font-semibold text-blue-500 dark:text-blue-400">
-          <Sparkles className="h-3.5 w-3.5" />
-          <span>Công Cụ Miễn Phí 100% — DaiTruong Tools</span>
+    <div className="relative max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
+      {/* Header section - Clean, grounded Linear-style */}
+      <div className="relative text-center space-y-3 pt-2">
+        <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-100/80 dark:bg-zinc-900/80 px-3 py-1 text-xs font-mono font-medium text-zinc-700 dark:text-zinc-300">
+          <Terminal className="h-3.5 w-3.5 text-zinc-500" />
+          <span>prompt-master • v2.4</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
           Master Prompt Generator
         </h1>
-        <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-          Biến một câu ý tưởng thô thành Master Prompt chuẩn quốc tế dành cho Cursor, Claude Code,
-          SEO & Marketing. Tối ưu theo cấu trúc chuyên sâu chỉ trong 3 giây.
+        <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 max-w-xl mx-auto leading-relaxed">
+          Chuẩn hóa ý tưởng thô thành System Prompt & Cursor Rules chuyên sâu. Tối ưu theo cấu trúc từng mô hình AI.
         </p>
 
-        {/* Step progress pills */}
-        <div className="flex items-center justify-center gap-2 pt-2 text-xs font-semibold">
+        {/* Step progress pills - Segmented style */}
+        <div className="inline-flex items-center p-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 text-xs font-medium">
           <span
-            className={`px-3 py-1 rounded-full transition-all ${
+            className={`px-3 py-1 rounded-lg transition-all ${
               step === "input"
-                ? "bg-blue-600 text-white shadow-sm"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-500"
+                ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-semibold"
+                : "text-zinc-400"
             }`}
           >
-            1. Nhập ý tưởng
+            {isLoading && step === "input" ? "1. Đang quét..." : "1. Nhập ý tưởng"}
           </span>
-          <span className="text-slate-300 dark:text-slate-700">→</span>
+          <span className="text-zinc-300 dark:text-zinc-700 px-1">/</span>
           <span
-            className={`px-3 py-1 rounded-full transition-all ${
+            className={`px-3 py-1 rounded-lg transition-all ${
               step === "clarify"
-                ? "bg-blue-600 text-white shadow-sm"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-500"
+                ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-semibold"
+                : "text-zinc-400"
             }`}
           >
             2. Làm rõ ngữ cảnh
           </span>
-          <span className="text-slate-300 dark:text-slate-700">→</span>
+          <span className="text-zinc-300 dark:text-zinc-700 px-1">/</span>
           <span
-            className={`px-3 py-1 rounded-full transition-all ${
+            className={`px-3 py-1 rounded-lg transition-all ${
               step === "result"
-                ? "bg-blue-600 text-white shadow-sm"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-500"
+                ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-semibold"
+                : "text-zinc-400"
             }`}
           >
             3. Nhận Master Prompt
@@ -190,51 +207,76 @@ export default function PromptMasterClient() {
         </div>
       </div>
 
+      {/* Sufficiency feedback alert */}
+      {sufficiencyNotice && (
+        <div className="flex items-center gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-3.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 animate-fade-slide-in">
+          <CheckCircle2 className="h-4 w-4 shrink-0" />
+          <span>{sufficiencyNotice}</span>
+        </div>
+      )}
+
       {/* Error alert if any */}
       {errorMessage && (
-        <div className="flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-xs font-medium text-red-600 dark:text-red-400">
+        <div className="flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-3.5 text-xs font-medium text-red-600 dark:text-red-400 animate-fade-slide-in">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
 
-      {/* Main interactive Card */}
-      <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 p-6 sm:p-8 backdrop-blur-md shadow-xl">
+      {/* Main Card: Crisp 1px border, matte surface, no cosmic glow */}
+      <div className="relative rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 sm:p-7 shadow-xs transition-all overflow-hidden">
         {step === "input" && (
-          <PromptInputStep
-            prompt={prompt}
-            category={category}
-            formatType={formatType}
-            onPromptChange={setPrompt}
-            onCategoryChange={setCategory}
-            onFormatTypeChange={setFormatType}
-            onSubmit={handleAnalyze}
-            isLoading={isLoading}
-          />
+          <div key="step-input" className="animate-fade-slide-in">
+            {isLoading ? (
+              <AnalyzingStep
+                prompt={prompt}
+                category={category}
+                targetAi={targetAi}
+              />
+            ) : (
+              <PromptInputStep
+                prompt={prompt}
+                category={category}
+                formatType={formatType}
+                targetAi={targetAi}
+                onPromptChange={setPrompt}
+                onCategoryChange={setCategory}
+                onFormatTypeChange={setFormatType}
+                onTargetAiChange={setTargetAi}
+                onSubmit={handleAnalyze}
+                isLoading={isLoading}
+              />
+            )}
+          </div>
         )}
 
         {step === "clarify" && (
-          <ClarifyStep
-            prompt={prompt}
-            category={category}
-            questions={questions}
-            answers={answers}
-            onAnswerChange={handleAnswerChange}
-            onSubmit={() => handleGenerate()}
-            onSkip={() => handleGenerate({})}
-            onBack={() => setStep("input")}
-            isLoading={isLoading}
-          />
+          <div key="step-clarify" className="animate-fade-slide-in">
+            <ClarifyStep
+              prompt={prompt}
+              category={category}
+              questions={questions}
+              answers={answers}
+              onAnswerChange={handleAnswerChange}
+              onSubmit={() => handleGenerate()}
+              onSkip={() => handleGenerate({})}
+              onBack={() => setStep("input")}
+              isLoading={isLoading}
+            />
+          </div>
         )}
 
         {step === "result" && (
-          <ResultStep
-            prompt={prompt}
-            category={category}
-            masterPrompt={masterPrompt}
-            isStreaming={isStreaming}
-            onReset={handleReset}
-          />
+          <div key="step-result" className="animate-fade-slide-in">
+            <ResultStep
+              prompt={prompt}
+              category={category}
+              targetAi={targetAi}
+              masterPrompt={masterPrompt}
+              isStreaming={isStreaming}
+              onReset={handleReset}
+            />
+          </div>
         )}
       </div>
 

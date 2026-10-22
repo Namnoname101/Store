@@ -273,8 +273,20 @@ async function main() {
         title: "Tài khoản CapCut Pro 30 Ngày Full Date",
         description: "Tài khoản CapCut Pro 30 ngày mở khoá toàn bộ tính năng và hiệu ứng Pro.",
         price: 65000,
+        originalPrice: 120000,
+        type: "ACCOUNT",
+        thumbnailUrl: "https://lh3.googleusercontent.com/d/1VLWAHdoo3kZUtA_InEEVfYRJ21QY1sOL",
         fulfillmentType: "API_DROPSHIP",
         categoryId: catSoftware.id,
+      },
+    });
+  } else {
+    capcut = await prisma.product.update({
+      where: { id: capcut.id },
+      data: {
+        type: "ACCOUNT",
+        thumbnailUrl: "https://lh3.googleusercontent.com/d/1VLWAHdoo3kZUtA_InEEVfYRJ21QY1sOL",
+        originalPrice: 120000,
       },
     });
   }
@@ -301,6 +313,88 @@ async function main() {
     },
   });
   console.log("✓ Mapped Capcut Pro 30 Ngày to Xoai Non (#35, 42.8k)");
+
+  // 7b. Capcut Pro 7d: Xoai Non (#34, 3k -> bán 9k)
+  const capcut7dDescription = `TÀI KHOẢN CAPCUT PRO 7 NGÀY BẢN QUYỀN (FULL DATE - BHF)
+
+Mở khóa trọn bộ tính năng cao cấp của CapCut Pro trên Máy tính (PC Windows, macOS), Điện thoại (iOS, Android) và CapCut Web. Cấp phát tài khoản tự động tức thì ngay sau khi hoàn tất thanh toán.
+
+1. TÍNH NĂNG PRO MỞ KHÓA TOÀN DIỆN:
+• Xuất video chất lượng cao 4K 60fps siêu nét, không logo watermark CapCut.
+• Kho tài nguyên Pro không giới hạn: Hàng nghìn hiệu ứng (Effects), chuyển cảnh (Transitions), bộ lọc màu (Filters) và mẫu chữ động độc quyền.
+• Bộ công cụ AI thông minh: Tự động nhận diện & tạo phụ đề tiếng Việt chuẩn xác (Auto Captions), Xóa phông nền 1 chạm (Smart Cutout), Làm nét video AI và Khử ồn âm thanh giọng nói (Noise Reduction).
+• Lưu trữ đám mây CapCut Cloud Space: Đồng bộ dự án mượt mà giữa điện thoại và máy tính.
+
+2. THÔNG TIN BÀN GIAO & THỜI HẠN:
+• Định dạng bàn giao: Email | Mật khẩu (Hiển thị trực tiếp trên màn hình đơn hàng và gửi qua email).
+• Thời hạn sử dụng: 7 ngày đầy đủ (Full Date).
+• Nền tảng hỗ trợ: Máy tính (Windows, Mac), Điện thoại (iPhone, iPad, Android) và Trình duyệt Web.
+
+3. HƯỚNG DẪN ĐĂNG NHẬP & SỬ DỤNG:
+• Bước 1: Mở ứng dụng CapCut hoặc truy cập https://www.capcut.com
+• Bước 2: Bấm Đăng nhập (Sign In) > Chọn phương thức "Tiếp tục với Email" (Sign in with Email).
+• Bước 3: Nhập chính xác Email và Mật khẩu được cấp ở đơn hàng.
+• Bước 4: Kiểm tra huy hiệu Pro trên góc hồ sơ cá nhân và bắt đầu sáng tạo video.
+
+4. CHÍNH SÁCH BẢO HÀNH (BHF):
+• Bảo hành 1 đổi 1 Full thời hạn (BHF - Bảo hành trọn vẹn 7 ngày).
+• LƯU Ý QUAN TRỌNG: Tuyệt đối không tự ý thay đổi email, mật khẩu hoặc liên kết tài khoản để đảm bảo quyền lợi bảo hành tự động.`;
+
+  let capcut7d = await prisma.product.findUnique({
+    where: { slug: "capcut-pro-7-ngay" },
+  });
+  if (!capcut7d) {
+    capcut7d = await prisma.product.create({
+      data: {
+        slug: "capcut-pro-7-ngay",
+        title: "Tài khoản CapCut Pro 7 Ngày (Full Hiệu Ứng AI)",
+        description: capcut7dDescription,
+        price: 19000,
+        originalPrice: 35000,
+        type: "ACCOUNT",
+        thumbnailUrl: "https://lh3.googleusercontent.com/d/1VLWAHdoo3kZUtA_InEEVfYRJ21QY1sOL",
+        fulfillmentType: "API_DROPSHIP",
+        categoryId: catSoftware.id,
+      },
+    });
+  } else {
+    capcut7d = await prisma.product.update({
+      where: { id: capcut7d.id },
+      data: {
+        title: "Tài khoản CapCut Pro 7 Ngày (Full Hiệu Ứng AI)",
+        description: capcut7dDescription,
+        price: 19000,
+        originalPrice: 35000,
+        type: "ACCOUNT",
+        thumbnailUrl: "https://lh3.googleusercontent.com/d/1VLWAHdoo3kZUtA_InEEVfYRJ21QY1sOL",
+        fulfillmentType: "API_DROPSHIP",
+        categoryId: catSoftware.id,
+      },
+    });
+  }
+  await prisma.supplierProductMapping.upsert({
+    where: { productId: capcut7d.id },
+    update: {
+      supplierId: supplier.id,
+      supplierProductCode: "34",
+      supplierPrice: 3000,
+      supplierStock: 25,
+      markupType: "FIXED_AMOUNT",
+      markupValue: 16000,
+      isAutoSync: true,
+    },
+    create: {
+      productId: capcut7d.id,
+      supplierId: supplier.id,
+      supplierProductCode: "34",
+      supplierPrice: 3000,
+      supplierStock: 25,
+      markupType: "FIXED_AMOUNT",
+      markupValue: 16000,
+      isAutoSync: true,
+    },
+  });
+  console.log("✓ Mapped Capcut Pro 7 Ngày to Xoai Non (#34, 3k -> bán 19k)");
 
   // 8. Meitu VIP 7 days: Xoai Non (#55, 9.5k)
   let meitu = await prisma.product.findUnique({

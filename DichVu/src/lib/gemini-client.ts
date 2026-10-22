@@ -1,7 +1,9 @@
 import {
   CategoryType,
   ClarifyQuestion,
+  ClarifyResult,
   OutputFormatType,
+  TargetAiType,
   buildClarifySystemPrompt,
   buildGenerateSystemPrompt,
 } from "./prompt-master-constants";
@@ -26,7 +28,7 @@ function getModel(): string {
 export async function callGeminiClarify(
   prompt: string,
   category: CategoryType
-): Promise<{ questions: ClarifyQuestion[] }> {
+): Promise<ClarifyResult> {
   const apiKey = getApiKey();
   const model = getModel();
   const systemInstruction = buildClarifySystemPrompt(category);
@@ -51,7 +53,7 @@ export async function callGeminiClarify(
       ],
       generationConfig: {
         responseMimeType: "application/json",
-        temperature: 0.4,
+        temperature: 0.3,
       },
     }),
   });
@@ -65,15 +67,20 @@ export async function callGeminiClarify(
   const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
   if (!rawText) {
-    return { questions: [] };
+    return { isSufficient: true, questions: [] };
   }
 
   try {
     const parsed = JSON.parse(rawText);
+    const isSufficient = Boolean(parsed.is_sufficient ?? (parsed.questions?.length === 0));
     const questions = Array.isArray(parsed.questions) ? parsed.questions : [];
-    return { questions };
+    return {
+      isSufficient: isSufficient || questions.length === 0,
+      reason: parsed.reason,
+      questions: isSufficient ? [] : questions,
+    };
   } catch (err) {
-    return { questions: [] };
+    return { isSufficient: true, questions: [] };
   }
 }
 
@@ -84,11 +91,12 @@ export async function callGeminiGenerateStream(
   prompt: string,
   category: CategoryType,
   answers?: Record<string, string>,
-  formatType?: OutputFormatType
+  formatType?: OutputFormatType,
+  targetAi?: TargetAiType
 ): Promise<ReadableStream<Uint8Array>> {
   const apiKey = getApiKey();
   const model = getModel();
-  const systemInstruction = buildGenerateSystemPrompt(category, answers, formatType);
+  const systemInstruction = buildGenerateSystemPrompt(category, answers, formatType, targetAi);
 
   const url = `${GEMINI_BASE_URL}/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`;
 

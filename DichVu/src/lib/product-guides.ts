@@ -54,7 +54,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
       "Trong VS Code / Cline / Roo Code: Chọn OpenAI Compatible > Điền Base URL và API Key.",
       "Kiểm tra hạn mức & lịch sử request thực tế tại: https://daitruong-store.fly.dev/developer/usage",
     ],
-    note: "Hạn mức 5.000.000 quota points bảo lưu vĩnh viễn, sử dụng chung được cho Claude 3.5 Sonnet, GPT-4o, Gemini 1.5 Pro.",
+    note: "Hạn mức 5.000.000 quota points bảo lưu vĩnh viễn, sử dụng chung được cho Claude 5.5 (Opus & Sonnet), GPT-6 Astra, Gemini 4 Argon.",
   },
   "codex-credit-50usd": {
     title: "Hướng dẫn cấu hình Codex API (Gói 50$ - 25.000.000 Quota)",
@@ -76,7 +76,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
       "Sao chép Claude API Key / Token ở trên.",
       "Cấu hình Claude Code CLI: Mở Terminal gõ `export ANTHROPIC_API_KEY=sk-...` (hoặc dán vào file .env).",
       "Cấu hình trong Cursor / Cline: Chọn Provider là Anthropic Compatible hoặc dán Base URL được cấp.",
-      "Kiểm tra kết nối bằng cách gửi 1 prompt thử nghiệm với model claude-3-5-sonnet-20241022.",
+      "Kiểm tra kết nối bằng cách gửi 1 prompt thử nghiệm với model claude-sonnet-5.5 (hoặc claude-3-5-sonnet).",
     ],
     note: "Không commit API Key lên GitHub công khai để tránh bị bot quét khóa tài khoản.",
   },

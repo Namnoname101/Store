@@ -38,6 +38,11 @@ const XOAINON_KNOWN_PRODUCTS: Record<
     price: 42800,
     inStock: 13,
   },
+  "34": {
+    name: "Capcut Pro 7D Full BH",
+    price: 3000,
+    inStock: 25,
+  },
   "40": {
     name: "Grok Super 7 ngày - BHF",
     price: 68800,

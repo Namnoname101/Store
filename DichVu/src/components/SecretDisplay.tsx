@@ -924,7 +924,7 @@ export default function SecretDisplay({
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-zinc-500 select-none">4.</span>
-                    <span>Model ID: <code className="text-zinc-300 bg-zinc-950 px-1 rounded">claude-3-5-sonnet-20241022</code> hoặc <code className="text-zinc-300 bg-zinc-950 px-1 rounded">gpt-4o</code></span>
+                    <span>Model ID: <code className="text-zinc-300 bg-zinc-950 px-1 rounded">claude-sonnet-5.5</code>, <code className="text-zinc-300 bg-zinc-950 px-1 rounded">gpt-6-astra</code>, hoặc <code className="text-zinc-300 bg-zinc-950 px-1 rounded">gemini-4-argon</code></span>
                   </div>
                 </>
               )}

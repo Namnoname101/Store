@@ -3,6 +3,8 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import PromptInputStep from "@/components/prompt-master/PromptInputStep";
 import ClarifyStep from "@/components/prompt-master/ClarifyStep";
+import ClarifyModal from "@/components/prompt-master/ClarifyModal";
+import AnalyzingStep from "@/components/prompt-master/AnalyzingStep";
 import ResultStep from "@/components/prompt-master/ResultStep";
 import CodexCtaBanner from "@/components/prompt-master/CodexCtaBanner";
 
@@ -70,5 +72,54 @@ describe("Prompt Master UI Sub-Components", () => {
     expect(html).toContain("# Master Prompt Content");
     expect(html).toContain("Sao chép 1-Click");
     expect(html).toContain("Tải .md");
+  });
+
+  it("renders ClarifyModal popup with sequential progress and options", () => {
+    const mockQuestions = [
+      {
+        id: "tech_stack",
+        question: "Bạn muốn dùng stack nào?",
+        options: ["Next.js 14", "Remix"],
+      },
+      {
+        id: "db_type",
+        question: "Cơ sở dữ liệu ưu tiên?",
+        options: ["PostgreSQL", "MySQL"],
+      },
+    ];
+
+    const html = renderToStaticMarkup(
+      React.createElement(ClarifyModal, {
+        isOpen: true,
+        prompt: "làm web bán hàng",
+        category: "coding",
+        questions: mockQuestions,
+        answers: {},
+        onAnswerChange: vi.fn(),
+        onSubmit: vi.fn(),
+        onSkipAll: vi.fn(),
+        onClose: vi.fn(),
+        isLoading: false,
+      })
+    );
+    expect(html).toContain("Xác nhận thông tin");
+    expect(html).toContain("Bạn muốn dùng stack nào?");
+    expect(html).toContain("Next.js 14");
+    expect(html).toContain("Bỏ qua tất cả");
+    expect(html).toContain("Tiếp tục");
+  });
+
+  it("renders AnalyzingStep with HUD radar and inspection checkpoints", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(AnalyzingStep, {
+        prompt: "làm bot telegram bán thẻ",
+        category: "coding",
+        targetAi: "chatgpt",
+      })
+    );
+    expect(html).toContain("Hệ thống đang thẩm định &amp; phân tích Prompt");
+    expect(html).toContain("Phân tích ngữ cảnh &amp; bóc tách thực thể");
+    expect(html).toContain("Đối chiếu framework chuẩn (awesome-cursorrules)");
+    expect(html).toContain("Tối ưu hóa cấu trúc lệnh cho ChatGPT");
   });
 });

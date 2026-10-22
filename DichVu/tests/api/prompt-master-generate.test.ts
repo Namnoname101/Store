@@ -77,7 +77,8 @@ describe("POST /api/tools/prompt-master/generate", () => {
       {
         stack: "TypeScript",
       },
-      "standard"
+      "standard",
+      "all"
     );
 
     const reader = res.body?.getReader();

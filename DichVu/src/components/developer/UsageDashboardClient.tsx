@@ -377,7 +377,7 @@ export default function UsageDashboardClient() {
             <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
             <input
               type="text"
-              placeholder="Lọc theo model (vd: gpt-4o, claude)..."
+              placeholder="Lọc theo model (vd: claude-5.5, gpt-6, gemini-4)..."
               value={modelFilter}
               onChange={(e) => setModelFilter(e.target.value)}
               className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 py-1.5 pl-8 pr-3 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:border-blue-600 focus:outline-none"

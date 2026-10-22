@@ -55,11 +55,13 @@ export async function POST(req: NextRequest) {
       ? category
       : "general";
 
-    const { questions } = await callGeminiClarify(prompt, resolvedCategory);
+    const clarifyResult = await callGeminiClarify(prompt, resolvedCategory);
 
     return NextResponse.json({
       success: true,
-      questions,
+      isSufficient: clarifyResult.isSufficient,
+      reason: clarifyResult.reason,
+      questions: clarifyResult.questions,
     });
   } catch (err: any) {
     console.error("[Prompt Master Clarify Error]:", err);
