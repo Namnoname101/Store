@@ -6,7 +6,7 @@ import {
   ArrowRight,
   Check,
   FastForward,
-  Sparkles,
+  HelpCircle,
   Loader2,
   CheckCircle2,
 } from "lucide-react";
@@ -54,14 +54,14 @@ export default function ClarifyStep({
   if (total === 0) {
     return (
       <div className="text-center py-8 space-y-4">
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
           Không cần thêm câu hỏi làm rõ nào. Bấm nút bên dưới để tạo Master Prompt ngay!
         </p>
         <button
           type="button"
           onClick={onSubmit}
           disabled={isLoading}
-          className="rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-semibold text-white hover:bg-blue-500 shadow-md transition-all"
+          className="rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-5 py-2.5 text-xs font-semibold hover:bg-zinc-800 dark:hover:bg-zinc-200 shadow-xs transition-all"
         >
           {isLoading ? "Đang xử lý..." : "Tạo Master Prompt ngay"}
         </button>
@@ -73,11 +73,11 @@ export default function ClarifyStep({
     onAnswerChange(currentQuestion.id, opt);
     setCustomInput("");
 
-    // Auto-advance smoothly after 260ms if not last question
+    // Auto-advance smoothly after 220ms if not last question
     if (!isLastQuestion) {
       setTimeout(() => {
         setCurrentIndex((prev) => Math.min(total - 1, prev + 1));
-      }, 260);
+      }, 220);
     }
   };
 
@@ -108,26 +108,26 @@ export default function ClarifyStep({
   const progressPercent = Math.round(((currentIndex + 1) / total) * 100);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-200">
+    <div className="space-y-6 animate-fade-slide-in">
       {/* Step Header with progress */}
-      <div className="space-y-3 pb-3 border-b border-slate-200 dark:border-slate-800">
+      <div className="space-y-3 pb-3 border-b border-zinc-200 dark:border-zinc-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10 text-blue-500">
-              <Sparkles className="h-4 w-4" />
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+              <HelpCircle className="h-4 w-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-                Làm Rõ Ngữ Cảnh
+              <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                Làm rõ ngữ cảnh
               </h3>
-              <p className="text-xs text-slate-400">
-                Câu hỏi {currentIndex + 1} / {total} — Chỉ hỏi thêm để đảm bảo AI sinh prompt chuẩn xác nhất
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                Câu hỏi {currentIndex + 1} / {total} — Đảm bảo prompt sinh ra bám sát mục tiêu thực tế
               </p>
             </div>
           </div>
 
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-500 border border-blue-500/20">
-            {progressPercent}% Hoàn thành
+          <span className="text-xs font-mono font-medium px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+            {progressPercent}% hoàn thành
           </span>
         </div>
 
@@ -151,23 +151,23 @@ export default function ClarifyStep({
                 key={q.id}
                 type="button"
                 onClick={() => setCurrentIndex(idx)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-150 ${
                   isCurrent
-                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 ring-2 ring-blue-400/50 scale-105"
+                    ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-semibold shadow-xs ring-1 ring-zinc-900 dark:ring-zinc-100"
                     : isCompleted || hasAnswer
                     ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                    : "bg-zinc-100 dark:bg-zinc-800/80 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
                 }`}
               >
                 {isCompleted || hasAnswer ? (
                   <Check className="h-3 w-3 stroke-[3]" />
                 ) : (
-                  <span className="h-3.5 w-3.5 rounded-full bg-slate-200 dark:bg-slate-700 text-[9px] flex items-center justify-center font-bold">
+                  <span className="h-3.5 w-3.5 rounded-full bg-zinc-200 dark:bg-zinc-700 text-[10px] flex items-center justify-center font-mono">
                     {idx + 1}
                   </span>
                 )}
                 <span>
-                  Bước {idx + 1}
+                  Câu {idx + 1}
                   {answers[q.id] ? `: ${answers[q.id]}` : ""}
                 </span>
               </button>
@@ -177,17 +177,17 @@ export default function ClarifyStep({
       </div>
 
       {/* Initial prompt summary chip */}
-      <div className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-3 text-xs text-slate-500 dark:text-slate-400">
-        <span className="font-semibold text-slate-700 dark:text-slate-300 shrink-0">Ý tưởng:</span>
+      <div className="flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/40 p-3 text-xs text-zinc-500 dark:text-zinc-400">
+        <span className="font-semibold text-zinc-700 dark:text-zinc-300 shrink-0">Ý tưởng ban đầu:</span>
         <span className="truncate italic">"{prompt}"</span>
       </div>
 
       {/* Context badge from previous question */}
       {prevQuestion && prevAnswer && (
-        <div className="flex items-center gap-2 rounded-xl border border-blue-500/20 bg-blue-500/10 p-3 text-xs text-blue-600 dark:text-blue-300">
-          <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-blue-500" />
-          <span className="text-slate-500 dark:text-slate-400">Đã chọn ở câu trước:</span>
-          <span className="font-semibold text-blue-600 dark:text-blue-200 truncate">
+        <div className="flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100/60 dark:bg-zinc-900/60 p-3 text-xs text-zinc-700 dark:text-zinc-300">
+          <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-zinc-500" />
+          <span className="text-zinc-500 dark:text-zinc-400">Đã chọn ở câu trước:</span>
+          <span className="font-medium text-zinc-900 dark:text-zinc-100 truncate">
             {prevAnswer}
           </span>
         </div>
@@ -196,10 +196,10 @@ export default function ClarifyStep({
       {/* Question Details with smooth step transition */}
       <div key={`question-${currentIndex}`} className="animate-fade-slide-in space-y-4">
         <div className="space-y-1">
-          <span className="text-xs font-semibold uppercase tracking-wider text-blue-500">
-            Bước {currentIndex + 1} trên {total}:
+          <span className="text-xs font-mono uppercase tracking-wider text-zinc-500">
+            Câu {currentIndex + 1} trên {total}
           </span>
-          <h4 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug">
+          <h4 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 leading-snug">
             {currentQuestion.question}
           </h4>
         </div>
@@ -214,21 +214,21 @@ export default function ClarifyStep({
                 key={idx}
                 type="button"
                 onClick={() => handleSelectOption(opt)}
-                className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-left text-xs sm:text-sm transition-all duration-200 hover:-translate-y-0.5 active:scale-95 ${
+                className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-left text-xs sm:text-sm transition-all duration-150 hover:-translate-y-0.5 active:scale-95 ${
                   isSelected
-                    ? "border-blue-500 bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-300 font-medium ring-2 ring-blue-500 shadow-md shadow-blue-500/15 scale-[1.01]"
-                    : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 hover:shadow-xs"
+                    ? "border-zinc-900 dark:border-zinc-100 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-semibold ring-1 ring-zinc-900 dark:ring-zinc-100 shadow-xs"
+                    : "border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/40 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-850"
                 }`}
               >
                 <span className="pr-3 leading-relaxed">{opt}</span>
                 <div
                   className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-all ${
                     isSelected
-                      ? "border-blue-500 bg-blue-500 text-white shadow-sm"
-                      : "border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900"
+                      ? "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900 shadow-xs"
+                      : "border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900"
                   }`}
                 >
-                  {isSelected && <Check className="h-3 w-3 stroke-[3] animate-checkmark-pop" />}
+                  {isSelected && <Check className="h-3 w-3 stroke-[3]" />}
                 </div>
               </button>
             );
@@ -243,12 +243,12 @@ export default function ClarifyStep({
               placeholder="Hoặc tự nhập câu trả lời khác theo ý bạn..."
               value={customInput}
               onChange={(e) => setCustomInput(e.target.value)}
-              className="flex-1 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/60 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="flex-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 px-3.5 py-2.5 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:border-zinc-400 dark:focus:border-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-400/20 transition-all shadow-xs"
             />
             {customInput.trim() && (
               <button
                 type="submit"
-                className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-500 transition-all shrink-0"
+                className="rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-4 py-2 text-xs font-semibold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all shrink-0 shadow-xs"
               >
                 Lưu
               </button>
@@ -258,14 +258,14 @@ export default function ClarifyStep({
       </div>
 
       {/* Navigation Footer */}
-      <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+      <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-800">
         <div>
           {currentIndex > 0 ? (
             <button
               type="button"
               onClick={handlePrev}
               disabled={isLoading}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white py-2 px-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-900 dark:hover:text-white py-2 px-3 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>Câu trước</span>
@@ -275,7 +275,7 @@ export default function ClarifyStep({
               type="button"
               onClick={onBack}
               disabled={isLoading}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white py-2 px-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-900 dark:hover:text-white py-2 px-3 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>Sửa lại ý tưởng</span>
@@ -288,7 +288,7 @@ export default function ClarifyStep({
             type="button"
             onClick={onSkip}
             disabled={isLoading}
-            className="inline-flex flex-1 sm:flex-initial items-center justify-center gap-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 hover:-translate-y-0.5 active:scale-95 transition-all duration-150"
+            className="inline-flex flex-1 sm:flex-initial items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2.5 text-xs font-semibold text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800 active:scale-95 transition-all duration-150"
           >
             <FastForward className="h-3.5 w-3.5" />
             <span>Bỏ qua & Tạo ngay</span>

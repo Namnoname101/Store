@@ -114,20 +114,20 @@ export default function PromptInputStep({
       {/* SUB-STEP 1: CHỌN LĨNH VỰC                                    */}
       {/* ============================================================== */}
       <div className={subStep === 1 ? "block animate-fade-slide-in space-y-4" : "hidden"}>
-        <div className="flex items-center justify-between pb-3 border-b border-slate-200/80 dark:border-slate-800">
+        <div className="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-zinc-800">
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-500">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-500">
               Bước 1 trên 3
             </span>
-            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 mt-0.5">
+            <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 mt-0.5">
               Chọn lĩnh vực bạn muốn tối ưu
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
               Hệ thống áp dụng chính xác các framework chuẩn quốc tế tương ứng
             </p>
           </div>
           {currentCategoryObj?.repoReference && (
-            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-lg border border-blue-500/20">
+            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 rounded-lg border border-zinc-200 dark:border-zinc-700 font-mono">
               <BookmarkCheck className="h-3.5 w-3.5" />
               <span>Chuẩn: {currentCategoryObj.repoReference}</span>
             </span>
@@ -193,20 +193,20 @@ export default function PromptInputStep({
       {/* SUB-STEP 2: BẠN ĐỊNH DÙNG PROMPT TRÊN AI NÀO?                */}
       {/* ============================================================== */}
       <div className={subStep === 2 ? "block animate-fade-slide-in space-y-4" : "hidden"}>
-        <div className="flex items-center justify-between pb-3 border-b border-slate-200/80 dark:border-slate-800">
+        <div className="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-zinc-800">
           <div className="space-y-0.5">
             <button
               type="button"
               onClick={() => setSubStep(1)}
-              className="inline-flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 font-semibold transition-colors mb-1"
+              className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-white font-medium transition-colors mb-1"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>Quay lại bước 1: {currentCategoryObj?.name.split("&")[0].trim()}</span>
             </button>
-            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
+            <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
               Bước 2 trên 3: Bạn định dùng prompt trên AI nào?
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
               Định dạng tối ưu 100% cú pháp và thế mạnh riêng của từng model
             </p>
           </div>
@@ -313,17 +313,17 @@ export default function PromptInputStep({
       {/* SUB-STEP 3: NHẬP CÂU PROMPT BAN ĐẦU                         */}
       {/* ============================================================== */}
       <div className={subStep === 3 ? "block animate-fade-slide-in space-y-4" : "hidden"}>
-        <div className="space-y-3 pb-3 border-b border-slate-200/80 dark:border-slate-800">
+        <div className="space-y-3 pb-3 border-b border-zinc-200 dark:border-zinc-800">
           <div>
             <button
               type="button"
               onClick={() => setSubStep(2)}
-              className="inline-flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 font-semibold transition-colors mb-1"
+              className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-white font-medium transition-colors mb-1"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>Quay lại bước 2: {currentTargetAiObj?.name}</span>
             </button>
-            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
+            <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
               Bước 3 trên 3: Nhập câu prompt ban đầu của bạn
             </h3>
           </div>
@@ -367,7 +367,7 @@ export default function PromptInputStep({
               htmlFor="prompt-input"
               className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
             >
-              3. Nhập câu prompt ban đầu của bạn
+              Mô tả yêu cầu hoặc ý tưởng thô
             </label>
             <span
               className={`text-xs font-mono ${

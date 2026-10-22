@@ -172,39 +172,6 @@ export default function PromptMasterClient() {
         <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 max-w-xl mx-auto leading-relaxed">
           Chuẩn hóa ý tưởng thô thành System Prompt & Cursor Rules chuyên sâu. Tối ưu theo cấu trúc từng mô hình AI.
         </p>
-
-        {/* Step progress pills - Segmented style */}
-        <div className="inline-flex items-center p-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 text-xs font-medium">
-          <span
-            className={`px-3 py-1 rounded-lg transition-all ${
-              step === "input"
-                ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-semibold"
-                : "text-zinc-400"
-            }`}
-          >
-            {isLoading && step === "input" ? "1. Đang quét..." : "1. Nhập ý tưởng"}
-          </span>
-          <span className="text-zinc-300 dark:text-zinc-700 px-1">/</span>
-          <span
-            className={`px-3 py-1 rounded-lg transition-all ${
-              step === "clarify"
-                ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-semibold"
-                : "text-zinc-400"
-            }`}
-          >
-            2. Làm rõ ngữ cảnh
-          </span>
-          <span className="text-zinc-300 dark:text-zinc-700 px-1">/</span>
-          <span
-            className={`px-3 py-1 rounded-lg transition-all ${
-              step === "result"
-                ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-semibold"
-                : "text-zinc-400"
-            }`}
-          >
-            3. Nhận Master Prompt
-          </span>
-        </div>
       </div>
 
       {/* Sufficiency feedback alert */}
