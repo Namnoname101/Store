@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { KeyRound, UserCheck, GraduationCap, ArrowRight, Eye } from "lucide-react";
+import { ArrowRight, Eye, Zap } from "lucide-react";
 import type { Product } from "@prisma/client";
 import { formatVND, getProductTypeInfo, getProductBadgeLabel } from "@/lib/product-types";
 import { resolveProductThumbnail } from "@/lib/catalog-grouping";
@@ -57,10 +57,10 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
   }, [resolvedThumbnail]);
 
   return (
-    <div className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-950 p-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-zinc-400 dark:hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-950/5 dark:hover:shadow-zinc-950/30">
+    <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200/90 dark:border-white/10 bg-white/90 dark:bg-zinc-900/60 p-3 sm:p-3.5 backdrop-blur-md transition-all duration-300 hover:-translate-y-1.5 hover:border-blue-500/40 dark:hover:border-blue-400/30 hover:shadow-xl hover:shadow-blue-500/10">
       <div>
         {/* Compact 16:10 Aspect Ratio Product Image */}
-        <div className="relative mb-2.5 flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-lg border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-900/60">
+        <div className="relative mb-2.5 flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-xl border border-zinc-100 dark:border-white/5 bg-zinc-50 dark:bg-zinc-950/60">
           <img
             key={resolvedThumbnail}
             ref={imgRef}
@@ -71,14 +71,12 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
                 setImgError(true);
               }
             }}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
 
           {/* Type Badge */}
           <div className="absolute top-2 left-2">
-            <span
-              className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200/80 dark:border-zinc-700/80 bg-white/95 dark:bg-zinc-900/95 px-2 py-0.5 text-[10px] font-semibold text-zinc-800 dark:text-zinc-200 shadow-xs backdrop-blur-md"
-            >
+            <span className="inline-flex items-center gap-1 rounded-md border border-zinc-200/80 dark:border-white/10 bg-white/95 dark:bg-zinc-900/90 px-2 py-0.5 text-[10px] font-semibold text-zinc-800 dark:text-zinc-200 shadow-xs backdrop-blur-md">
               <TypeIcon className="h-3 w-3 text-zinc-700 dark:text-zinc-300" />
               {typeInfo.shortLabel}
             </span>
@@ -87,14 +85,14 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
           {/* Discount Badge */}
           {discountPercent > 0 && (
             <div className="absolute top-2 right-2">
-              <span className="rounded-md bg-rose-600 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-xs">
+              <span className="rounded-md bg-rose-600 px-1.5 py-0.5 text-[10px] font-extrabold text-white shadow-xs">
                 -{discountPercent}%
               </span>
             </div>
           )}
         </div>
 
-        {/* Category Badge Name */}
+        {/* Category Label */}
         <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 truncate">
           {getProductBadgeLabel(product)}
         </p>
@@ -107,39 +105,39 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
         </Link>
       </div>
 
-      <div className="mt-3 pt-2.5 border-t border-zinc-100 dark:border-zinc-800">
-        {/* Price & Real Availability Row */}
-        <div className="flex items-center justify-between gap-1 mb-2">
+      <div className="mt-3 pt-2.5 border-t border-zinc-100 dark:border-white/10">
+        {/* Price & Stock Row */}
+        <div className="flex items-center justify-between gap-1 mb-2.5">
           <div className="min-w-0">
-            <div className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white tracking-tight truncate">
+            <div className="text-xs sm:text-sm font-extrabold text-zinc-900 dark:text-white tracking-tight truncate font-mono">
               {formatVND(price)}
               {isSMM && (
-                <span className="text-[10px] font-normal text-zinc-500 dark:text-zinc-400 ml-0.5 font-mono">
+                <span className="text-[10px] font-normal text-zinc-500 dark:text-zinc-400 ml-0.5 font-sans">
                   /lượt
                 </span>
               )}
             </div>
             {originalPrice && originalPrice > price && (
-              <div className="text-[10px] text-zinc-400 line-through">
+              <div className="text-[10px] text-zinc-400 line-through font-mono">
                 {formatVND(originalPrice)}
               </div>
             )}
           </div>
 
-          {/* Real Stock Status */}
+          {/* Live Stock Indicator */}
           <div className="shrink-0">
             {isSMM || stockCount >= 99999 ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-950/30 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Có sẵn
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 font-mono">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Sẵn kho
               </span>
             ) : inStock ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[10px] font-medium text-zinc-700 dark:text-zinc-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 font-mono">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Còn {stockCount}
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/20 bg-rose-50/60 dark:bg-rose-950/30 px-2 py-0.5 text-[10px] font-medium text-rose-600 dark:text-rose-400">
+              <span className="inline-flex items-center gap-1 rounded-full border border-rose-500/20 bg-rose-500/10 px-2 py-0.5 text-[10px] font-medium text-rose-500">
                 Hết hàng
               </span>
             )}
@@ -152,7 +150,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
             <button
               type="button"
               onClick={() => onQuickView(product)}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
               title="Xem nhanh"
             >
               <Eye className="h-3.5 w-3.5" />
@@ -160,7 +158,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
           ) : (
             <Link
               href={`/products/${slug}`}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
               title="Chi tiết"
             >
               <Eye className="h-3.5 w-3.5" />
@@ -170,7 +168,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
           {inStock ? (
             <Link
               href={`/products/${slug}`}
-              className="flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg bg-zinc-900 dark:bg-white px-2 text-[11px] sm:text-xs font-bold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 shadow-xs transition-all active:scale-[0.98]"
+              className="flex h-8 flex-1 items-center justify-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 px-2 text-[11px] sm:text-xs font-bold text-white shadow-md shadow-blue-600/30 transition-all active:scale-[0.98]"
             >
               <span>Mua ngay</span>
               <ArrowRight className="h-3 w-3" />
@@ -178,7 +176,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
           ) : (
             <button
               disabled
-              className="flex h-8 flex-1 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-900 text-[11px] sm:text-xs font-medium text-zinc-400 dark:text-zinc-600 cursor-not-allowed"
+              className="flex h-8 flex-1 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-[11px] sm:text-xs font-medium text-zinc-400 dark:text-zinc-600 cursor-not-allowed"
             >
               Hết hàng
             </button>

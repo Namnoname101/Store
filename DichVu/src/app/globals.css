@@ -127,3 +127,48 @@ code, kbd, samp, pre {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(150, 150, 150, 0.45);
 }
+
+
+/* Marquee Animations for Live Order Ticker */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Laser Scanning Line for VietQR */
+@keyframes laser-sweep {
+  0% { top: 0%; opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { top: 95%; opacity: 0.8; }
+}
+
+.animate-laser-sweep {
+  animation: laser-sweep 2.5s infinite linear;
+}
+
+/* Glassmorphism Surface & Bento Glow */
+.glass-surface {
+  background: rgba(18, 24, 38, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-surface:hover {
+  border-color: rgba(96, 165, 250, 0.35);
+  box-shadow: 0 20px 40px -15px rgba(37, 99, 235, 0.25);
+}
+
+.glow-mesh {
+  background: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.18) 0%, rgba(99, 102, 241, 0.06) 40%, transparent 70%);
+}

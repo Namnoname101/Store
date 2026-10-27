@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
+  Download,
   Copy,
   Check,
   ExternalLink,
@@ -260,6 +261,41 @@ export default function SecretDisplay({
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 2000);
     }
+  };
+
+    const handleDownloadTxt = () => {
+    let content = "========================================\n";
+    content += "DAITRUONG STORE - THÔNG TIN ĐƠN HÀNG #" + (orderCode || "ONLINE") + "\n";
+    content += "Thời gian xuất: " + new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) + "\n";
+    content += "========================================\n\n";
+
+    deliveredItems.forEach((item, idx) => {
+      const product = productMap.get(item.productId);
+      content += "[MỤC " + (idx + 1) + "]: " + (product?.title || "Sản phẩm") + "\n";
+      content += "Nội dung: " + (item.secretContent || "") + "\n\n";
+    });
+
+    if (instructions?.steps?.length) {
+      content += "========================================\n";
+      content += "HƯỚNG DẪN KÍCH HOẠT / SỬ DỤNG:\n";
+      instructions.steps.forEach((step, idx) => {
+        const text = typeof step === "object" && step !== null ? step.text : String(step);
+        content += (idx + 1) + ". " + text + "\n";
+      });
+      content += "========================================\n";
+    }
+
+    content += "\nLưu ý: Quý khách vui lòng bảo quản thông tin bàn giao này. Mọi thắc mắc cần bảo hành 1-đổi-1 xin liên hệ bộ phận hỗ trợ khách hàng qua website.\n";
+
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "ORD_" + (orderCode || "delivery") + ".txt";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const handleCopyAll = async () => {
@@ -521,30 +557,49 @@ export default function SecretDisplay({
     <div className="space-y-6">
       <BuffProgressCard orderCode={orderCode} />
 
-      {/* Top action bar: Copy All button if multiple items */}
-      {deliveredItems.length > 1 && (
-        <div className="flex justify-end rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3">
-          <button
-            type="button"
-            onClick={handleCopyAll}
-            className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all shadow-xs ${
-              copiedAll
-                ? "bg-emerald-600 text-white animate-spring-pop"
-                : "bg-white text-zinc-950 hover:bg-zinc-100"
-            }`}
-          >
-            {copiedAll ? (
-              <>
-                <Check className="h-3.5 w-3.5" />
-                <span>Đã sao chép tất cả!</span>
-              </>
-            ) : (
-              <>
-                <Layers className="h-3.5 w-3.5" />
-                <span>Sao chép tất cả ({deliveredItems.length} mục)</span>
-              </>
-            )}
-          </button>
+      {/* Top action bar: Quick download & copy actions */}
+      {deliveredItems.length > 0 && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-zinc-800 bg-zinc-950/80 px-4 py-3 shadow-lg">
+          <div className="flex items-center gap-2">
+            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs font-semibold text-zinc-300">
+              Dữ liệu bàn giao ({deliveredItems.length} mục)
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            <button
+              type="button"
+              onClick={handleDownloadTxt}
+              className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:bg-zinc-800 hover:text-white transition-all shadow-xs active:scale-95"
+              title="Tải tệp .txt lưu trữ về máy"
+            >
+              <Download className="h-3.5 w-3.5 text-cyan-400" />
+              <span>Tải file .TXT</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleCopyAll}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all shadow-xs active:scale-95 ${
+                copiedAll
+                  ? "bg-emerald-600 text-white animate-spring-pop"
+                  : "bg-white text-zinc-950 hover:bg-zinc-100"
+              }`}
+            >
+              {copiedAll ? (
+                <>
+                  <Check className="h-3.5 w-3.5" />
+                  <span>Đã sao chép tất cả!</span>
+                </>
+              ) : (
+                <>
+                  <Layers className="h-3.5 w-3.5" />
+                  <span>Sao chép tất cả</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       )}
 

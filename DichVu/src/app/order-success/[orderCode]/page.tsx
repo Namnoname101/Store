@@ -13,6 +13,7 @@ import {
 import { getOrderDetails } from "@/services/order.service";
 import { formatVND } from "@/lib/product-types";
 import SecretDisplay from "@/components/SecretDisplay";
+import OrderSuccessCelebration from "@/components/OrderSuccessCelebration";
 
 interface OrderSuccessPageProps {
   params: {
@@ -131,70 +132,12 @@ export default async function OrderSuccessPage({
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 pb-24">
-      {/* Celebration Header Banner */}
-      <div className="relative mb-8 overflow-hidden rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/40 via-slate-900 to-slate-950 p-6 sm:p-10 shadow-2xl text-center">
-        {/* Glow backdrop */}
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 h-48 w-48 rounded-full bg-emerald-500/20 blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col items-center">
-          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 shadow-xl shadow-emerald-950/50">
-            <CheckCircle2 className="h-10 w-10 text-emerald-400 animate-in zoom-in-50 duration-500" />
-          </div>
-
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-400 mb-3">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>Thanh toán thành công 100%</span>
-          </div>
-
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            {order.upstreamStatus === "PENDING_UPSTREAM"
-              ? "Đang Tự Động Cấp Phát Sản Phẩm..."
-              : order.upstreamStatus === "FAILED"
-              ? "Đã Nhận Thanh Toán - Đang Xử Lý Cấp Phát"
-              : "Giao Hàng Tự Động Hoàn Tất!"}
-          </h1>
-          <p className="mt-2 text-xs sm:text-sm text-slate-300 max-w-lg leading-relaxed">
-            {order.upstreamStatus === "PENDING_UPSTREAM"
-              ? `Hệ thống đang cấp phát mã tự động cho đơn hàng #${order.orderCode}. Vui lòng đợi trong giây lát.`
-              : order.upstreamStatus === "FAILED"
-              ? `Máy chủ cấp phát mã đang bị quá tải hoặc tạm thời gián đoạn. Chúng tôi đang hỗ trợ xử lý cho đơn hàng #${order.orderCode}.`
-              : `Hệ thống đã tự động xuất kho và bàn giao mã bản quyền / tài khoản số cho đơn hàng #${order.orderCode}.`}
-          </p>
-
-          {/* Quick Order Info Pill Grid */}
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-xl text-left">
-            <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-3">
-              <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase text-slate-400 mb-0.5">
-                <Receipt className="h-3 w-3 text-indigo-400" />
-                <span>Số tiền đã thanh toán</span>
-              </div>
-              <div className="text-sm font-bold text-emerald-400">
-                {formatVND(order.totalAmount)}
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-3">
-              <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase text-slate-400 mb-0.5">
-                <Mail className="h-3 w-3 text-indigo-400" />
-                <span>{order.customerEmail ? "Email nhận hóa đơn" : "Hình thức nhận hàng"}</span>
-              </div>
-              <div className="text-sm font-semibold text-slate-200 truncate">
-                {order.customerEmail || "Trực tiếp trên màn hình"}
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-3">
-              <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase text-slate-400 mb-0.5">
-                <Calendar className="h-3 w-3 text-indigo-400" />
-                <span>Thời gian thanh toán</span>
-              </div>
-              <div className="text-sm font-semibold text-slate-200">
-                {paidFormattedDate}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <OrderSuccessCelebration
+        orderCode={order.orderCode}
+        totalAmount={order.totalAmount}
+        paidAtFormatted={paidFormattedDate}
+        itemCount={order.deliveredItems?.length || 1}
+      />
 
       {/* Secret Display & Activation Guides */}
       <div className="mb-10">

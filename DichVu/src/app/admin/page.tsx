@@ -172,6 +172,66 @@ export default async function AdminOverviewPage() {
         </div>
       </div>
 
+      {/* 7-Day Revenue Trend Chart */}
+      {stats.dailyTrends && stats.dailyTrends.length > 0 && (() => {
+        const trends = stats.dailyTrends;
+        const maxRevenue = Math.max(...trends.map((t) => t.revenue), 1);
+        const total7Days = trends.reduce((sum, t) => sum + t.revenue, 0);
+
+        return (
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 sm:p-6 backdrop-blur-md">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+              <div>
+                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                  <span>Xu hướng doanh thu 7 ngày</span>
+                  <span className="text-xs font-mono font-normal text-slate-400">
+                    (Tổng: <strong className="text-emerald-400">{formatVND(total7Days)}</strong>)
+                  </span>
+                </h2>
+                <p className="text-xs text-slate-400 mt-0.5">Biểu đồ cập nhật theo thời gian thực từ các giao dịch thanh toán thành công</p>
+              </div>
+            </div>
+
+            {/* Visual Bar Chart */}
+            <div className="grid grid-cols-7 gap-2 sm:gap-4 items-end h-44 pt-4 pb-2 border-b border-slate-800/80">
+              {trends.map((item, idx) => {
+                const heightPercent = Math.max(8, Math.round((item.revenue / maxRevenue) * 100));
+                const isPeak = item.revenue === maxRevenue && item.revenue > 0;
+
+                return (
+                  <div key={idx} className="flex flex-col items-center h-full justify-end group">
+                    <div className="text-[10px] sm:text-xs font-mono font-semibold text-slate-400 mb-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {item.orderCount} đơn
+                    </div>
+                    <div className="w-full max-w-[48px] bg-slate-800/60 rounded-xl overflow-hidden flex flex-col justify-end p-1 relative h-32 group-hover:bg-slate-800 transition-colors">
+                      <div
+                        style={{ height: `${heightPercent}%` }}
+                        className={`w-full rounded-lg transition-all duration-500 relative ${
+                          isPeak
+                            ? "bg-gradient-to-t from-emerald-600 to-emerald-400 shadow-lg shadow-emerald-500/20"
+                            : item.revenue > 0
+                            ? "bg-gradient-to-t from-indigo-600 to-indigo-400"
+                            : "bg-slate-700/30"
+                        }`}
+                      >
+                        {item.revenue > 0 && (
+                          <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800 text-[9px] font-mono font-bold text-slate-200 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                            {formatVND(item.revenue)}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <span className="text-[10px] sm:text-xs font-mono text-slate-400 mt-2 font-medium">
+                      {item.date}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Recent Orders Table */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/40 backdrop-blur-md overflow-hidden">
         <div className="p-5 border-b border-slate-800/80 flex items-center justify-between">

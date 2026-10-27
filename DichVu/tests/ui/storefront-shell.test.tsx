@@ -23,7 +23,7 @@ describe("StorefrontShell Component Isolation", () => {
     
     // Fragment children should have 5 items: Navbar, main, Footer, CartDrawer, FloatingSupport
     const childrenArray = React.Children.toArray(element.props.children);
-    expect(childrenArray.length).toBe(5);
+    expect(childrenArray.length).toBe(6);
   });
 
   it("renders ONLY clean main container on /admin routes without storefront navbar or footer", () => {

@@ -33,6 +33,80 @@ export default function OrdersManagerClient({
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [retryingOrderId, setRetryingOrderId] = useState<string | null>(null);
+  const [confirmingOrder, setConfirmingOrder] = useState<AdminOrderDetail | null>(null);
+  const [confirmNote, setConfirmNote] = useState<string>("");
+  const [isConfirming, setIsConfirming] = useState<boolean>(false);
+  const [confirmSuccessMsg, setConfirmSuccessMsg] = useState<string | null>(null);
+  const [confirmErrorMsg, setConfirmErrorMsg] = useState<string | null>(null);
+
+  const handleManualConfirm = async (orderId: string, note?: string) => {
+    try {
+      setIsConfirming(true);
+      setConfirmErrorMsg(null);
+      const res = await fetch(`/api/admin/orders/${orderId}/manual-confirm`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ note: note || "Duyệt đơn thủ công bởi Admin" }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setConfirmSuccessMsg(data.message || "Duyệt đơn thành công!");
+        setOrders((prev) =>
+          prev.map((o) =>
+            o.id === orderId
+              ? {
+                  ...o,
+                  status: "PAID",
+                  paidAt: new Date(),
+                  reconciliationStatus: "MANUAL_RESOLVED",
+                  reconciliationNote: note || "Duyệt thủ công bởi Admin",
+                }
+              : o
+          )
+        );
+        setTimeout(() => {
+          setConfirmingOrder(null);
+          setConfirmSuccessMsg(null);
+        }, 1200);
+      } else {
+        setConfirmErrorMsg(data.error || "Không thể duyệt đơn hàng");
+      }
+    } catch (err: any) {
+      setConfirmErrorMsg(err?.message || "Lỗi kết nối khi duyệt đơn");
+    } finally {
+      setIsConfirming(false);
+    }
+  };
+
+  const handleExportCSV = () => {
+    if (filteredOrders.length === 0) return;
+
+    let csv = "\uFEFF"; // UTF-8 BOM
+    csv += "Mã đơn,Khách hàng,Sản phẩm,Số tiền (VND),Trạng thái,Đối tác dropship,Thời gian tạo,Thời gian thanh toán\n";
+
+    filteredOrders.forEach((o) => {
+      const items = (o.orderItems || [])
+        .map((i) => `${i.product?.title || "Sản phẩm"} (x${i.quantity})`)
+        .join("; ")
+        .replace(/"/g, '""');
+      const email = (o.customerEmail || "Khách vãng lai").replace(/"/g, '""');
+      const createdAt = o.createdAt ? new Date(o.createdAt).toLocaleString("vi-VN") : "";
+      const paidAt = o.paidAt ? new Date(o.paidAt).toLocaleString("vi-VN") : "";
+
+      csv += `"${o.orderCode}","${email}","${items}",${o.totalAmount},"${o.status}","${o.upstreamStatus || "N/A"}","${createdAt}","${paidAt}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `daitruongstore_donhang_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const [retryMessage, setRetryMessage] = useState<{
     id: string;
     success: boolean;

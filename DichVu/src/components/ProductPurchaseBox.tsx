@@ -455,10 +455,18 @@ export default function ProductPurchaseBox({
           </div>
         ) : (
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
-              Số lượng mua
-            </label>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                Số lượng mua
+              </label>
+              {quantity >= 5 && (
+                <span className="text-[10px] font-bold text-amber-500 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                  ⚡ Mua sỉ ≥ 5
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
               <div className="flex items-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-1">
                 <button
                   type="button"
@@ -470,9 +478,19 @@ export default function ProductPurchaseBox({
                   <Minus className="h-4 w-4" />
                 </button>
 
-                <span className="w-12 text-center text-sm font-bold text-slate-900 dark:text-white">
-                  {quantity}
-                </span>
+                <input
+                  type="number"
+                  min={1}
+                  max={stockCount}
+                  value={quantity || 1}
+                  disabled={!inStock || isLoading}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value, 10);
+                    if (isNaN(val)) setQuantity(1);
+                    else setQuantity(Math.max(1, Math.min(stockCount, val)));
+                  }}
+                  className="w-12 text-center text-sm font-bold bg-transparent text-slate-900 dark:text-white border-0 focus:outline-none"
+                />
 
                 <button
                   type="button"
@@ -485,8 +503,28 @@ export default function ProductPurchaseBox({
                 </button>
               </div>
 
-              <div className="text-xs text-slate-500 dark:text-slate-400">
-                Tổng tiền: <strong className="text-slate-900 dark:text-white text-sm">{formatVND(totalPrice)}</strong>
+              {stockCount > 1 && (
+                <div className="flex items-center gap-1">
+                  {[1, 3, 5, 10].filter(n => n <= stockCount).map(n => (
+                    <button
+                      key={n}
+                      type="button"
+                      disabled={isLoading}
+                      onClick={() => setQuantity(n)}
+                      className={`h-7 px-2 rounded-lg text-xs font-semibold border transition-all ${
+                        quantity === n
+                          ? "border-blue-500 bg-blue-500/10 text-blue-500"
+                          : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <div className="text-xs text-slate-500 dark:text-slate-400 ml-auto">
+                Tổng: <strong className="text-slate-900 dark:text-white text-sm">{formatVND(totalPrice)}</strong>
               </div>
             </div>
           </div>

@@ -1,7 +1,14 @@
 import { prisma, ItemStatus, OrderStatus } from "@/lib/prisma";
 import type { Category, Order, OrderItem, PaymentTransaction, Product, ProductItem } from "@prisma/client";
 
+export interface DailyTrendItem {
+  date: string;
+  revenue: number;
+  orderCount: number;
+}
+
 export interface AdminOverviewStats {
+  dailyTrends?: DailyTrendItem[];
   totalRevenue: number;
   totalOrders: number;
   paidOrders: number;

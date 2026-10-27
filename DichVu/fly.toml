@@ -1,6 +1,6 @@
-# fly.toml app configuration file generated for daitruong-store
+# fly.toml app configuration file generated for daitruongstore
 
-app = "daitruong-store"
+app = "daitruongstore"
 primary_region = "sin"
 
 [build]

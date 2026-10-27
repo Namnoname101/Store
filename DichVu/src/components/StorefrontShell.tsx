@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import FloatingSupport from "@/components/FloatingSupport";
+import LiveOrderTicker from "@/components/LiveOrderTicker";
 
 export default function StorefrontShell({
   children,
@@ -21,6 +22,7 @@ export default function StorefrontShell({
 
   return (
     <>
+      <LiveOrderTicker />
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
