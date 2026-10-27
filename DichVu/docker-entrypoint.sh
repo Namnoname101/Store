@@ -36,6 +36,13 @@ else
       node prisma/seed-xoainon.js || true
     fi
   fi
+
+  # Run cleanup of inactive products once
+  if [ ! -f /data/.cleaned_inactive_products ] && [ -f scripts/cleanup-inactive-products.js ]; then
+    echo "[Entrypoint] Cleaning up inactive products from database..."
+    node scripts/cleanup-inactive-products.js || true
+    touch /data/.cleaned_inactive_products
+  fi
 fi
 
 # 2. Process Management & Signal Trap

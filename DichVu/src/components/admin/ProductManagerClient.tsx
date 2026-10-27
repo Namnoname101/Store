@@ -37,6 +37,28 @@ export default function ProductManagerClient({
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [isCleaning, setIsCleaning] = useState(false);
+
+  const handleCleanupInactive = async () => {
+    if (!confirm("Hệ thống sẽ giữ lại toàn bộ các sản phẩm đang mở bán trên web chính và xóa sạch tất cả sản phẩm rác / không bán còn lại. Bạn có chắc chắn muốn dọn dẹp?")) {
+      return;
+    }
+    setIsCleaning(true);
+    try {
+      const res = await fetch("/api/admin/products/cleanup-inactive", { method: "POST" });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setAlert({ type: "success", message: data.message });
+        setTimeout(() => window.location.reload(), 1200);
+      } else {
+        setAlert({ type: "error", message: data.error || "Không thể dọn dẹp sản phẩm." });
+      }
+    } catch (e: any) {
+      setAlert({ type: "error", message: e?.message || "Lỗi kết nối khi dọn dẹp." });
+    } finally {
+      setIsCleaning(false);
+    }
+  };
 
   // Form State
   const [title, setTitle] = useState("");
