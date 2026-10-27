@@ -31,8 +31,10 @@ else
   if [ "$PRISMA_AUTO_MIGRATE" = "true" ]; then
     echo "[Entrypoint] PRISMA_AUTO_MIGRATE=true: applying schema updates..."
     npx prisma db push --skip-generate || true
-    echo "[Entrypoint] Running Shop Xoai Non seed updates..."
-    node prisma/seed-xoainon.js || true
+    if [ "$FORCE_SEED" = "true" ]; then
+      echo "[Entrypoint] FORCE_SEED=true: Running Shop Xoai Non seed updates..."
+      node prisma/seed-xoainon.js || true
+    fi
   fi
 fi
 

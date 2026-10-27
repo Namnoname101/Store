@@ -240,9 +240,17 @@ export default function AdminProductEditor({ initialProduct, categories }: Props
           <div><label htmlFor="productDescription" className={label}>Mô tả sản phẩm</label><textarea id="productDescription" rows={6} className={field} value={form.description} onChange={(e) => patch("description", e.target.value)} /></div>
         </>}
         {tab === "pricing" && <>
+          <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-3.5 mb-2 flex items-start gap-3">
+            <ShieldCheck className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />
+            <div>
+              <h4 className="text-sm font-bold text-white">Cơ Chế Bảo Vệ Giá (Price Lock Guard)</h4>
+              <p className="text-xs text-slate-300 mt-0.5 leading-relaxed">
+                Giá bán bạn nhập dưới đây là giá cố định thực tế khách hàng thanh toán. Hệ thống đã kích hoạt tính năng khóa giá, không cho phép tác vụ đồng bộ hoặc khởi động lại container tự ý đè giá của bạn.
+              </p>
+            </div>
+          </div>
           <div><label htmlFor="productPrice" className={label}>Giá bán (VND)</label><input id="productPrice" className={field} inputMode="numeric" value={form.price} onChange={(e) => patch("price", e.target.value)} /></div>
-          <div><label htmlFor="productOriginalPrice" className={label}>Giá gốc để so sánh (VND, có thể bỏ trống)</label><input id="productOriginalPrice" className={field} inputMode="numeric" value={form.originalPrice} onChange={(e) => patch("originalPrice", e.target.value)} /></div>
-          <p className="text-xs text-slate-400">Giá đã thanh toán của các đơn trước đó không bị cập nhật. Những sản phẩm đồng bộ giá theo API nhà cung cấp có thể bị thay đổi ở lần đồng bộ sau.</p>
+          <div><label htmlFor="productOriginalPrice" className={label}>Giá gốc so sánh (VND, có thể bỏ trống)</label><input id="productOriginalPrice" className={field} inputMode="numeric" value={form.originalPrice} onChange={(e) => patch("originalPrice", e.target.value)} /></div>
         </>}
         {tab === "supplier" && <>
           <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-4"><h2 className="font-semibold text-white">Cấu hình nhà cung cấp API</h2><p className="mt-2 text-sm text-slate-300">Sản phẩm hiện sử dụng cơ chế <strong>{initialProduct.fulfillmentType === "API_DROPSHIP" ? "API nhà cung cấp" : "Kho nội bộ"}</strong>. Liên kết và đồng bộ nguồn hàng được quản lý ở trang Nhà cung cấp riêng.</p><Link className="mt-3 inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white" href="/admin/suppliers">Mở quản lý nhà cung cấp</Link></div>

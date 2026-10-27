@@ -138,6 +138,23 @@ export async function PUT(
       }
     }
 
+    const { isAutoSync, markupValue, markupType } = body;
+    if (isAutoSync !== undefined || markupValue !== undefined || markupType !== undefined) {
+      const existingMapping = await prisma.supplierProductMapping.findUnique({
+        where: { productId: params.id },
+      });
+      if (existingMapping) {
+        const mappingUpdate: any = {};
+        if (isAutoSync !== undefined) mappingUpdate.isAutoSync = Boolean(isAutoSync);
+        if (markupValue !== undefined && !isNaN(Number(markupValue))) mappingUpdate.markupValue = Number(markupValue);
+        if (markupType !== undefined) mappingUpdate.markupType = String(markupType);
+        await prisma.supplierProductMapping.update({
+          where: { productId: params.id },
+          data: mappingUpdate,
+        });
+      }
+    }
+
     const updatedProduct = await prisma.product.update({
       where: { id: params.id },
       data: dataToUpdate,

@@ -337,8 +337,21 @@ export default function ProductManagerClient({
                         {p.type}
                       </span>
                     </td>
-                    <td className="px-5 py-4 font-semibold text-emerald-400">
-                      {formatVND(p.price)}
+                    <td className="px-5 py-4">
+                      <div className="font-semibold text-emerald-400">
+                        {formatVND(p.price)}
+                      </div>
+                      <div className="mt-0.5">
+                        {p.fulfillmentType === "API_DROPSHIP" ? (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20" title="Nguồn API sàn (Có thể khóa giá thủ công)">
+                            <span>⚡ Nguồn API</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20" title="Giá bán cố định">
+                            <span>🔒 Giá cố định</span>
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">

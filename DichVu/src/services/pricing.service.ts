@@ -106,13 +106,11 @@ export async function syncProductFromSupplier(
     mapping.supplierProductCode
   );
 
-  const newRetailPrice = calculateRetailPrice(
-    info.price,
-    mapping.markupType,
-    mapping.markupValue
-  );
-
   const shouldBeActive = info.inStock > 0;
+  // Price Lock Guard: if isAutoSync is false, preserve the admin's manual fixed price
+  const targetRetailPrice = mapping.isAutoSync
+    ? calculateRetailPrice(info.price, mapping.markupType, mapping.markupValue)
+    : mapping.product.price;
 
   const [updatedMapping, updatedProduct] = await prisma.$transaction([
     prisma.supplierProductMapping.update({
@@ -126,7 +124,7 @@ export async function syncProductFromSupplier(
     prisma.product.update({
       where: { id: mapping.productId },
       data: {
-        price: newRetailPrice,
+        price: targetRetailPrice,
         isActive: shouldBeActive,
       },
     }),

@@ -97,7 +97,7 @@ async function main() {
         description: geminiDescription,
         type: "ACCOUNT",
         fulfillmentType: "API_DROPSHIP",
-        price: 21000,
+        // preserved price
         originalPrice: 150000,
         isActive: true,
         thumbnailUrl: "/images/brands/gemini.svg",
