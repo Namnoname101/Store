@@ -14,7 +14,6 @@ import {
   Sun,
   Moon,
   Terminal,
-  Layers,
   Store,
   ChevronRight,
   ShoppingBag,
@@ -79,400 +78,181 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800/80 bg-white/95 dark:bg-[#0b0f19]/90 backdrop-blur-md transition-colors duration-150 shadow-sm">
-      {/* Main Top Header */}
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8 gap-2 sm:gap-4">
-        {/* Brand Logo */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+    <header className="sticky top-2 z-50 w-full max-w-7xl mx-auto px-3 sm:px-6 pt-2">
+      <div className="rounded-2xl border border-white/10 dark:border-white/10 bg-slate-900/85 dark:bg-[#070b14]/85 backdrop-blur-xl px-4 py-2.5 flex items-center justify-between shadow-2xl transition-all">
+        {/* Brand Logo with MMO HUB Tag */}
+        <div className="flex items-center gap-3 shrink-0">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 shadow-md group-hover:scale-105 transition-all">
-              <Store className="h-4 w-4 sm:h-5 sm:w-5" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-extrabold text-white shadow-lg shadow-blue-500/30 text-lg group-hover:scale-105 transition-all">
+              D
             </div>
             <div className="flex flex-col">
-              <span className="text-base sm:text-lg font-bold tracking-tight text-zinc-900 dark:text-white transition-colors">
-                DaiTruong<span className="text-blue-600 dark:text-blue-400">Store</span>
-              </span>
-              <span className="hidden sm:block text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
-                Kho tài nguyên số tự động 24/7
-              </span>
+              <div className="font-extrabold tracking-tight text-white flex items-center gap-1.5 text-base">
+                <span>DaiTruong</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Store</span>
+                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">MMO HUB</span>
+              </div>
+              <span className="hidden sm:block text-[10px] text-slate-400 font-medium">Chợ Tài Nguyên Số & Key Tự Động 24/7</span>
             </div>
           </Link>
         </div>
 
-        {/* Prominent Search Bar - Desktop & Tablet */}
-        <div className="hidden sm:flex flex-1 max-w-lg mx-2 md:mx-6">
-          <form onSubmit={handleSearch} className="relative w-full">
+        {/* Center Navigation Links - Desktop */}
+        <nav className="hidden lg:flex items-center gap-1 text-xs font-semibold text-slate-300">
+          <Link href="/#catalog" className="px-3 py-1.5 rounded-lg hover:bg-white/5 hover:text-white transition-all flex items-center gap-1">
+            <span>Kho Tài Nguyên</span>
+            <span className="px-1.5 py-0.2 rounded-full bg-blue-500/20 text-[10px] text-blue-300">124</span>
+          </Link>
+          <Link href="/topup" className="px-3 py-1.5 rounded-lg hover:bg-white/5 hover:text-emerald-400 transition-all flex items-center gap-1">
+            <span>Nạp Ví Tự Động</span>
+            <span className="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-[10px] text-emerald-300 font-mono font-bold">+5%</span>
+          </Link>
+          <Link href="/lookup" className="px-3 py-1.5 rounded-lg hover:bg-white/5 hover:text-white transition-all flex items-center gap-1">
+            <ReceiptText className="h-3.5 w-3.5 text-indigo-400" />
+            <span>Tra Cứu Đơn</span>
+          </Link>
+          <Link href="/codex" className="px-3 py-1.5 rounded-lg hover:bg-white/5 hover:text-white transition-all flex items-center gap-1">
+            <Terminal className="h-3.5 w-3.5 text-emerald-400" />
+            <span>API Quota</span>
+          </Link>
+          <Link href="/tools/prompt-master" className="px-3 py-1.5 rounded-lg hover:bg-white/5 hover:text-white transition-all flex items-center gap-1">
+            <Sparkles className="h-3.5 w-3.5 text-blue-400" />
+            <span>Prompt AI</span>
+          </Link>
+          {user?.role === "ADMIN" && (
+            <Link href="/admin" className="px-2.5 py-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/20 transition-all flex items-center gap-1">
+              <Shield className="h-3.5 w-3.5" />
+              <span>Admin</span>
+            </Link>
+          )}
+        </nav>
+
+        {/* Right Actions: Search / Wallet / Cart / Login */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Quick Search form */}
+          <form onSubmit={handleSearch} className="hidden md:flex relative items-center">
             <input
               type="text"
-              placeholder="Tìm kiếm API Codex, Gemini, CapCut, Office..."
+              placeholder="Tìm nhanh..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/90 py-2.5 pl-10 pr-20 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-400/20 transition-all shadow-2xs"
+              className="w-32 lg:w-40 rounded-xl border border-white/10 bg-slate-800/60 py-1.5 pl-8 pr-3 text-xs text-white placeholder-slate-400 focus:w-52 focus:border-blue-500 focus:outline-none transition-all"
             />
-            <Search className="absolute left-3.5 top-3 h-4 w-4 text-zinc-400" />
-            <button
-              type="submit"
-              className="absolute right-1.5 top-1.5 rounded-lg bg-zinc-900 dark:bg-white px-3 py-1.5 text-xs font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-2xs active:scale-95"
-            >
-              Tìm
-            </button>
+            <Search className="absolute left-2.5 h-3.5 w-3.5 text-slate-400" />
           </form>
-        </div>
 
-        {/* Action Controls - Desktop */}
-        <div className="hidden lg:flex items-center gap-2.5 shrink-0">
-          {/* Codex Credit Platform */}
-          <Link
-            href="/codex"
-            className="flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100/60 dark:bg-zinc-900/80 px-3 py-2 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all shadow-2xs group active:scale-[0.98]"
-          >
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            <span>Nạp API Credit</span>
-          </Link>
+          {/* User Wallet Pill */}
+          {!isLoadingUser && user && (
+            <Link
+              href="/topup"
+              title="Số dư ví"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold shadow-xs hover:bg-emerald-500/20 transition-all font-mono"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Ví: {user.balance.toLocaleString("vi-VN")}đ</span>
+            </Link>
+          )}
 
-          {/* Master Prompt Generator */}
-          <Link
-            href="/tools/prompt-master"
-            className="flex items-center gap-1.5 rounded-lg border border-blue-500/30 bg-blue-500/10 dark:bg-blue-500/15 px-3 py-2 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:border-blue-500 transition-all shadow-2xs group active:scale-[0.98]"
-            title="Tạo Master Prompt chuẩn quốc tế cho Cursor và AI miễn phí"
-          >
-            <Sparkles className="h-3.5 w-3.5 text-blue-500" />
-            <span>Tạo Prompt AI</span>
-          </Link>
-
-          {/* Developer Dashboard - Prominent Top Button */}
-          <Link
-            href="/developer/usage"
-            className="flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 px-3 py-2 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all shadow-2xs group active:scale-[0.98]"
-            title="Kiểm tra số dư quota, token và nhật ký request thời gian thực"
-          >
-            <Terminal className="h-3.5 w-3.5 text-emerald-500" />
-            <span>Kiểm tra Quota & Logs</span>
-          </Link>
-
-          {/* Order lookup */}
-          <Link
-            href="/lookup"
-            className="flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-white transition-all shadow-sm"
-          >
-            <ReceiptText className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-            <span>Tra cứu đơn</span>
-          </Link>
-
-          {/* Cart Drawer Trigger - Desktop */}
+          {/* Cart Button */}
           <button
             onClick={openCart}
             aria-label="Mở giỏ hàng"
-            className="relative flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 px-3 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-white transition-all shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md shadow-blue-600/30 transition-all active:scale-95 shrink-0"
           >
-            <ShoppingBag className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            <span>Giỏ hàng</span>
+            <ShoppingBag className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Giỏ hàng</span>
             {itemCount > 0 && (
-              <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-blue-600 px-1 text-[11px] font-bold text-white shadow-sm">
+              <span className="w-4 h-4 rounded-full bg-white text-blue-700 text-[10px] font-extrabold flex items-center justify-center">
                 {itemCount > 99 ? "99+" : itemCount}
               </span>
             )}
           </button>
 
-          {/* Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            aria-label="Đổi giao diện sáng/tối"
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors shadow-sm"
-            title={theme === "dark" ? "Chuyển sang giao diện sáng" : "Chuyển sang giao diện tối"}
-          >
-            {theme === "dark" ? (
-              <Sun className="h-4 w-4 text-amber-400" />
-            ) : (
-              <Moon className="h-4 w-4 text-slate-600" />
-            )}
-          </button>
-
-          {/* User Session / Wallet */}
+          {/* User login / profile */}
           {!isLoadingUser && (
             user ? (
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/topup"
-                  title="Nạp tiền vào ví"
-                  className="flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-all shadow-sm group"
-                >
-                  <Wallet className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
-                  <span>{user.balance.toLocaleString("vi-VN")}đ</span>
-                </Link>
-
-                <Link
-                  href="/profile"
-                  title="Trang cá nhân & Lịch sử số dư"
-                  className="flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-slate-800 transition-all shadow-sm"
-                >
-                  <User className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-                  <span className="max-w-[90px] truncate">{user.username}</span>
-                </Link>
-              </div>
+              <Link
+                href="/profile"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-white/10 bg-slate-800/80 text-xs font-medium text-slate-200 hover:text-white hover:border-slate-600 transition-all"
+              >
+                <User className="h-3.5 w-3.5 text-blue-400" />
+                <span className="max-w-[70px] truncate">{user.username}</span>
+              </Link>
             ) : (
               <Link
                 href="/login"
-                className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition-all shadow-sm shadow-blue-600/25"
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/10 bg-slate-800/60 hover:bg-slate-800 text-xs font-semibold text-slate-200 hover:text-white transition-all"
               >
-                <User className="h-3.5 w-3.5" />
+                <User className="h-3.5 w-3.5 text-slate-400" />
                 <span>Đăng nhập</span>
               </Link>
             )
           )}
 
-          {user?.role === "ADMIN" && (
-            <Link
-              href="/admin"
-              className="flex items-center gap-1.5 rounded-lg border border-blue-500/30 bg-blue-50 dark:bg-slate-900/80 px-3 py-2 text-xs font-semibold text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-slate-800 transition-all shadow-sm"
-            >
-              <Shield className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-              <span>Quản trị</span>
-            </Link>
-          )}
-        </div>
-
-        {/* Mobile controls (Cart + Theme toggle + hamburger) */}
-        <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
-          {/* Cart Icon Mobile */}
-          <Link
-            href="/cart"
-            aria-label="Giỏ hàng"
-            className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200"
-          >
-            <ShoppingBag className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            {itemCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-blue-600 px-1 text-[10px] font-bold text-white shadow-sm">
-                {itemCount > 99 ? "99+" : itemCount}
-              </span>
-            )}
-          </Link>
-
+          {/* Theme toggle */}
           <button
             onClick={toggleTheme}
             aria-label="Đổi giao diện sáng/tối"
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300"
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-slate-800/60 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
           >
-            {theme === "dark" ? (
-              <Sun className="h-4 w-4 text-amber-400" />
-            ) : (
-              <Moon className="h-4 w-4 text-slate-600" />
-            )}
+            {theme === "dark" ? <Sun className="h-3.5 w-3.5 text-amber-400" /> : <Moon className="h-3.5 w-3.5 text-slate-400" />}
           </button>
 
+          {/* Mobile menu hamburger */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="inline-flex items-center justify-center rounded-lg p-2 text-slate-700 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none"
+            className="flex lg:hidden items-center justify-center p-2 rounded-xl border border-white/10 bg-slate-800/60 text-slate-300 hover:text-white focus:outline-none"
             aria-label="Toggle menu"
           >
-            {isMobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
 
-      {/* Category Navigation Bar (Subnav on Desktop) */}
-      <div className="hidden lg:block border-t border-slate-100 dark:border-slate-850/60 bg-slate-50/70 dark:bg-slate-900/40">
-        <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <nav className="flex items-center space-x-1 lg:space-x-2 text-xs font-medium">
-            {STORE_CATEGORIES.map((cat) => (
-              <Link
-                key={cat.slug}
-                href={getCategoryHref(cat)}
-                className="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800/80 transition-colors"
-              >
-                {cat.name}
-              </Link>
-            ))}
-          </nav>
-          <div className="flex items-center gap-3 text-[11px]">
-            <Link
-              href="/developer/usage"
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 font-semibold text-[11px] shadow-2xs hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-all active:scale-95"
-            >
-              <Terminal className="h-3 w-3 text-emerald-400 dark:text-emerald-600" />
-              <span>Kiểm tra Quota & Logs</span>
-            </Link>
-            <div className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5 font-medium">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Cấp phát tự động 24/7</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Drawer */}
       {isMobileMenuOpen && (
-        <div className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b0f19] px-4 pt-3 pb-6 md:hidden shadow-lg animate-in slide-in-from-top-2 duration-150">
-          {/* Mobile Search */}
-          <form onSubmit={handleSearch} className="relative mb-4">
+        <div className="mt-2 rounded-2xl border border-white/10 bg-slate-900/95 p-4 backdrop-blur-xl shadow-2xl space-y-4 animate-in slide-in-from-top-2 duration-200 lg:hidden">
+          <form onSubmit={handleSearch} className="relative">
             <input
               type="text"
-              placeholder="Tìm kiếm AI, Cloud, TikTok, FB..."
+              placeholder="Tìm kiếm AI, CapCut, TikTok, FB..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 py-2.5 pl-10 pr-4 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none"
+              className="w-full rounded-xl border border-white/10 bg-slate-800 px-4 py-2.5 pl-10 text-xs text-white placeholder-slate-400 focus:outline-none"
             />
-            <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
           </form>
 
-          {/* Mobile Category Quick Chips */}
-          <div className="mb-4">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2">
-              Danh mục nổi bật
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {STORE_CATEGORIES.map((cat) => (
-                <Link
-                  key={cat.slug}
-                  href={getCategoryHref(cat)}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 transition-colors"
-                >
-                  {cat.name}
-                </Link>
-              ))}
-            </div>
+          <div className="grid grid-cols-2 gap-2 text-xs font-semibold text-slate-300">
+            <Link href="/#catalog" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-slate-800/60 border border-white/5 flex items-center gap-2 hover:bg-slate-800">
+              <span>🛍️ Kho Hàng</span>
+            </Link>
+            <Link href="/topup" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-slate-800/60 border border-white/5 flex items-center gap-2 text-emerald-400 hover:bg-slate-800">
+              <span>🎁 Nạp Ví (+5%)</span>
+            </Link>
+            <Link href="/lookup" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-slate-800/60 border border-white/5 flex items-center gap-2 hover:bg-slate-800">
+              <span>🔍 Tra Cứu Đơn</span>
+            </Link>
+            <Link href="/codex" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-slate-800/60 border border-white/5 flex items-center gap-2 hover:bg-slate-800">
+              <span>⚡ API Quota</span>
+            </Link>
           </div>
 
-          {/* Mobile Navigation Links */}
-          <nav className="flex flex-col space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
-            <Link
-              href="/"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white px-2 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
-            >
-              <span>Trang chủ</span>
-              <ChevronRight className="h-4 w-4 text-slate-400" />
-            </Link>
-            <Link
-              href="/#catalog"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white px-2 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
-            >
-              <span>Kho sản phẩm dịch vụ</span>
-              <ChevronRight className="h-4 w-4 text-slate-400" />
-            </Link>
-            <Link
-              href="/lookup"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white px-2 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
-            >
-              <div className="flex items-center gap-2">
-                <ReceiptText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                <span>Tra cứu đơn hàng</span>
-              </div>
-              <ChevronRight className="h-4 w-4 text-slate-400" />
-            </Link>
-
-            <Link
-              href="/codex"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:text-blue-600 dark:hover:text-white px-2 py-2 rounded-lg bg-zinc-100/70 dark:bg-zinc-900/60"
-            >
-              <div className="flex items-center gap-2">
-                <Terminal className="h-4 w-4 text-emerald-500" />
-                <span>Nạp Codex API Credit</span>
-              </div>
-              <ChevronRight className="h-4 w-4 text-zinc-400" />
-            </Link>
-
-            <Link
-              href="/tools/prompt-master"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between text-sm font-medium text-blue-600 dark:text-blue-400 px-2 py-2 rounded-lg bg-blue-500/10"
-            >
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-blue-500" />
-                <span>Tạo Master Prompt AI</span>
-              </div>
-              <ChevronRight className="h-4 w-4 text-blue-400" />
-            </Link>
-
-            <Link
-              href="/developer/usage"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between text-sm font-semibold text-zinc-900 dark:text-white px-3 py-2.5 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xs"
-            >
-              <div className="flex items-center gap-2.5">
-                <Terminal className="h-4 w-4 text-emerald-500" />
-                <span>Kiểm tra Quota & Logs API</span>
-              </div>
-              <span className="text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-2 py-0.5 rounded-md">LIVE</span>
-            </Link>
-
-            <Link
-              href="/cart"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white px-2 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
-            >
-              <div className="flex items-center gap-2">
-                <ShoppingBag className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                <span>Giỏ hàng</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                {itemCount > 0 && (
-                  <span className="rounded-full bg-blue-600 px-2 py-0.5 text-[11px] font-bold text-white">
-                    {itemCount}
-                  </span>
-                )}
-                <ChevronRight className="h-4 w-4 text-slate-400" />
-              </div>
-            </Link>
-
-            {/* Mobile User / Auth */}
+          <div className="pt-2 border-t border-white/10 flex items-center justify-between">
             {user ? (
-              <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
-                <Link
-                  href="/topup"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 px-3.5 py-2.5 text-xs font-semibold text-emerald-800 dark:text-emerald-300"
-                >
-                  <div className="flex items-center gap-2">
-                    <Wallet className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                    <span>Số dư ví</span>
-                  </div>
-                  <span>{user.balance.toLocaleString("vi-VN")}đ</span>
-                </Link>
-
-                <Link
-                  href="/profile"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 px-2 py-2"
-                >
-                  <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  <span>Tài khoản ({user.username})</span>
-                </Link>
-              </div>
+              <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5 text-blue-400" />
+                <span>{user.username} ({user.balance.toLocaleString("vi-VN")}đ)</span>
+              </Link>
             ) : (
-              <div className="pt-2">
-                <Link
-                  href="/login"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 shadow-md shadow-blue-600/20"
-                >
-                  <User className="h-4 w-4" />
-                  <span>Đăng nhập / Đăng ký</span>
-                </Link>
-              </div>
+              <Link href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-xs text-blue-400 font-bold">
+                Đăng nhập tài khoản →
+              </Link>
             )}
-
-            {user?.role === "ADMIN" && (
-              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
-                <Link
-                  href="/admin"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-3.5 py-2 text-xs font-semibold text-blue-600 dark:text-blue-400"
-                >
-                  <Shield className="h-4 w-4" />
-                  <span>Trang quản trị (Admin)</span>
-                </Link>
-              </div>
-            )}
-          </nav>
+            <button onClick={toggleTheme} className="p-2 rounded-xl border border-white/10 bg-slate-800/60 text-slate-300">
+              {theme === "dark" ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
       )}
     </header>

@@ -502,10 +502,10 @@ export default function CatalogExplorer({
         <div className="relative w-full sm:w-72 md:w-80">
           <input
             type="text"
-            placeholder="Lọc sản phẩm..."
+            placeholder="Lọc tài nguyên, API, key..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-2.5 pl-10 pr-9 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all shadow-xs"
+            className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white/90 dark:bg-slate-900/80 backdrop-blur-md py-2.5 pl-10 pr-9 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all shadow-xs"
           />
           <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
           {searchQuery && (
@@ -527,13 +527,19 @@ export default function CatalogExplorer({
           onClick={() => handleSelectCategoryTab("all")}
           className={`flex items-center gap-1.5 shrink-0 rounded-xl px-3 sm:px-3.5 py-2 text-xs font-semibold transition-all ${
             selectedCategoryTab === "all"
-              ? "bg-blue-600 text-white shadow-xs ring-1 ring-blue-500"
-              : "bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:text-slate-900 dark:hover:text-white"
+              ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/20 ring-1 ring-blue-400/40 scale-[1.02]"
+              : "bg-slate-100 dark:bg-slate-900/60 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 hover:border-blue-500/40 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-slate-800/80 backdrop-blur-md"
           }`}
         >
           <LayoutGrid className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           <span>Tất cả</span>
-          <span className="ml-0.5 rounded-full bg-slate-200 dark:bg-slate-800 px-1.5 py-0.2 text-[10px] text-slate-600 dark:text-slate-300">
+          <span
+            className={`ml-0.5 rounded-full px-1.5 py-0.2 text-[10px] ${
+              selectedCategoryTab === "all"
+                ? "bg-white/20 text-white font-bold"
+                : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+            }`}
+          >
             {allProducts.length}
           </span>
         </button>
@@ -551,8 +557,8 @@ export default function CatalogExplorer({
               onClick={() => handleSelectCategoryTab(def.id)}
               className={`flex items-center gap-1.5 shrink-0 rounded-xl px-3 sm:px-3.5 py-2 text-xs font-semibold transition-all ${
                 isSelected
-                  ? "bg-blue-600 text-white shadow-xs ring-1 ring-blue-500"
-                  : "bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:text-slate-900 dark:hover:text-white"
+                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/20 ring-1 ring-blue-400/40 scale-[1.02]"
+                  : "bg-slate-100 dark:bg-slate-900/60 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 hover:border-blue-500/40 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-slate-800/80 backdrop-blur-md"
               }`}
             >
               <DefIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -561,7 +567,7 @@ export default function CatalogExplorer({
                 <span
                   className={`ml-0.5 rounded-full px-1.5 py-0.2 text-[10px] ${
                     isSelected
-                      ? "bg-blue-700 text-white"
+                      ? "bg-white/20 text-white font-bold"
                       : "bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
                   }`}
                 >

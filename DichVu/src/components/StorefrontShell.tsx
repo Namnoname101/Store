@@ -24,7 +24,10 @@ export default function StorefrontShell({
     <>
       <LiveOrderTicker />
       <Navbar />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 relative">
+        <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[450px] glow-mesh pointer-events-none -z-10" />
+        {children}
+      </main>
       <Footer />
       <CartDrawer />
       <FloatingSupport />

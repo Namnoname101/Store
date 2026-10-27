@@ -16,6 +16,7 @@ import {
   FileText,
 } from "lucide-react";
 import SecretDisplay from "@/components/SecretDisplay";
+import OrderSuccessCelebration from "@/components/OrderSuccessCelebration";
 
 type PresetType =
   | "CODEX_API"
@@ -212,6 +213,14 @@ export default function GuidePreviewPage() {
               Đơn hàng: #{current.orderCode}
             </span>
           </div>
+
+          {/* Compact Order Success Celebration Banner */}
+          <OrderSuccessCelebration
+            orderCode={current.orderCode}
+            totalAmount={50000}
+            paidAtFormatted="Vừa xong"
+            itemCount={1}
+          />
 
           <SecretDisplay
             orderCode={current.orderCode}
