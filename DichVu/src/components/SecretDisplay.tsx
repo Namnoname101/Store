@@ -19,6 +19,7 @@ import {
   Laptop,
   Code2,
   ArrowRight,
+  Sparkles,
 } from "lucide-react";
 import type { Product } from "@prisma/client";
 import { playSuccessChime } from "@/lib/sound";
@@ -846,122 +847,121 @@ export default function SecretDisplay({
         })}
       </div>
 
-      {/* Interactive Environment Quick Setup Tabs for Developer / AI APIs */}
-      {isApiKeyProduct && (
+      {/* Instructions Guide Box */}
+      {isApiKeyProduct ? (
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <h4 className="text-sm font-bold text-white flex items-center gap-2">
-              <Terminal className="h-4 w-4 text-emerald-400" />
-              <span>Cấu hình nhanh vào công cụ lập trình & AI (1-Click)</span>
+              <Sparkles className="h-4 w-4 text-indigo-400" />
+              <span>{instructions.title}</span>
             </h4>
             <Link
               href="/huong-dan/api-claude"
               target="_blank"
               className="text-xs text-indigo-400 hover:text-indigo-300 font-medium inline-flex items-center gap-1 transition-colors"
             >
-              <span>Xem hướng dẫn chi tiết toàn màn hình</span>
+              <span>Mở trang hướng dẫn toàn màn hình</span>
               <ExternalLink className="h-3 w-3" />
             </Link>
           </div>
           <ClaudeApiGuideHub apiKey={firstSecret} showKeyInput={false} />
         </div>
-      )}
+      ) : (
+        <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-5 sm:p-6 shadow-xl">
+          <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+            <HelpCircle className="h-4 w-4 text-zinc-400" />
+            <span>{instructions.title}</span>
+          </h4>
 
-      {/* Instructions Guide Box */}
-      <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-5 sm:p-6 shadow-xl">
-        <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-          <HelpCircle className="h-4 w-4 text-zinc-400" />
-          <span>{instructions.title}</span>
-        </h4>
+          <div className="space-y-4">
+            {instructions.steps.map((stepItem, idx) => {
+              const isObj = typeof stepItem === "object" && stepItem !== null;
+              const text = isObj ? stepItem.text : String(stepItem);
+              const image = isObj ? stepItem.image : undefined;
+              const caption = isObj ? stepItem.caption : undefined;
 
-        <div className="space-y-4">
-          {instructions.steps.map((stepItem, idx) => {
-            const isObj = typeof stepItem === "object" && stepItem !== null;
-            const text = isObj ? stepItem.text : String(stepItem);
-            const image = isObj ? stepItem.image : undefined;
-            const caption = isObj ? stepItem.caption : undefined;
-
-            return (
-              <div key={idx} className="space-y-2">
-                <div className="flex items-start gap-2.5">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono font-bold text-[10px] mt-0.5">
-                    {idx + 1}
-                  </span>
-                  <div className="text-xs sm:text-sm text-zinc-300 leading-relaxed pt-0.5">
-                    {text}
+              return (
+                <div key={idx} className="space-y-2">
+                  <div className="flex items-start gap-2.5">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono font-bold text-[10px] mt-0.5">
+                      {idx + 1}
+                    </span>
+                    <div className="text-xs sm:text-sm text-zinc-300 leading-relaxed pt-0.5">
+                      {text}
+                    </div>
                   </div>
-                </div>
 
-                {image && (
-                  <div className="ml-7 sm:ml-8 mt-2">
-                    <a
-                      href={image}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group block overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/60 transition-all hover:border-zinc-600 max-w-xl"
-                      title="Bấm để xem ảnh kích thước lớn"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={image}
-                        alt={caption || `Minh họa bước ${idx + 1}`}
-                        className="max-h-72 sm:max-h-80 w-auto rounded-t-lg object-contain transition-transform duration-200 group-hover:scale-[1.01]"
-                        loading="lazy"
-                      />
-                      {caption && (
-                        <div className="px-3 py-2 text-[11px] text-zinc-400 bg-zinc-950 border-t border-zinc-800 flex items-center justify-between">
-                          <span>📸 {caption}</span>
-                          <span className="text-[10px] text-blue-400 font-medium group-hover:underline">
-                            Xem ảnh lớn ↗
-                          </span>
-                        </div>
-                      )}
-                    </a>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Optional general screenshots gallery if instructions.images provided */}
-        {instructions.images && instructions.images.length > 0 && (
-          <div className="mt-6 pt-5 border-t border-zinc-800/80 space-y-3">
-            <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block font-mono">
-              Hình ảnh chụp màn hình minh họa:
-            </span>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {instructions.images.map((img, imgIdx) => (
-                <a
-                  key={imgIdx}
-                  href={img.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group block overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/60 transition-all hover:border-zinc-600"
-                >
-                  <img
-                    src={img.url}
-                    alt={img.title || `Hình minh họa ${imgIdx + 1}`}
-                    className="h-44 w-full object-cover transition-transform group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  {img.title && (
-                    <div className="p-2 text-[11px] text-zinc-300 bg-zinc-950">
-                      {img.title}
+                  {image && (
+                    <div className="ml-7 sm:ml-8 mt-2">
+                      <a
+                        href={image}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group block overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/60 transition-all hover:border-zinc-600 max-w-xl"
+                        title="Bấm để xem ảnh kích thước lớn"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={image}
+                          alt={caption || `Minh họa bước ${idx + 1}`}
+                          className="max-h-72 sm:max-h-80 w-auto rounded-t-lg object-contain transition-transform duration-200 group-hover:scale-[1.01]"
+                          loading="lazy"
+                        />
+                        {caption && (
+                          <div className="px-3 py-2 text-[11px] text-zinc-400 bg-zinc-950 border-t border-zinc-800 flex items-center justify-between">
+                            <span>📸 {caption}</span>
+                            <span className="text-[10px] text-blue-400 font-medium group-hover:underline">
+                              Xem ảnh lớn ↗
+                            </span>
+                          </div>
+                        )}
+                      </a>
                     </div>
                   )}
-                </a>
-              ))}
-            </div>
+                </div>
+              );
+            })}
           </div>
-        )}
 
-        {instructions.note && (
-          <div className="mt-5 rounded-lg border border-amber-500/20 bg-amber-500/10 p-3 text-xs text-amber-300 leading-relaxed">
-            ⚠️ <strong>Lưu ý:</strong> {instructions.note}
-          </div>
-        )}
-      </div>
+          {/* Optional general screenshots gallery if instructions.images provided */}
+          {instructions.images && instructions.images.length > 0 && (
+            <div className="mt-6 pt-5 border-t border-zinc-800/80 space-y-3">
+              <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block font-mono">
+                Hình ảnh chụp màn hình minh họa:
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {instructions.images.map((img, imgIdx) => (
+                  <a
+                    key={imgIdx}
+                    href={img.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group block overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/60 transition-all hover:border-zinc-600"
+                  >
+                    <img
+                      src={img.url}
+                      alt={img.title || `Hình minh họa ${imgIdx + 1}`}
+                      className="h-44 w-full object-cover transition-transform group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    {img.title && (
+                      <div className="p-2 text-[11px] text-zinc-300 bg-zinc-950">
+                        {img.title}
+                      </div>
+                    )}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {instructions.note && (
+            <div className="mt-5 rounded-lg border border-amber-500/20 bg-amber-500/10 p-3 text-xs text-amber-300 leading-relaxed">
+              ⚠️ <strong>Lưu ý:</strong> {instructions.note}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* 24/7 Customer Support Assistance Box */}
       <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-5 shadow-xl">
