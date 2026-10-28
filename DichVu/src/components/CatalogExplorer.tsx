@@ -81,7 +81,7 @@ interface SectionDefinition {
 const SECTION_DEFINITIONS: SectionDefinition[] = [
   {
     id: "ai-api",
-    title: "Key & API Trí Tuệ Nhân Tạo (Claude, Codex, AI Developer)",
+    title: "Key & API Trí Tuệ Nhân Tạo (Claude, Codex, Cursor)",
     shortLabel: "API AI",
     icon: CursorSectionIcon,
     iconBg: "bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80",
@@ -585,7 +585,21 @@ export default function CatalogExplorer({
           {/* Category Sections */}
           <div className="w-full space-y-10 sm:space-y-14">
             {sectionsToDisplay.map((sec) => {
-              const currentSubBrand = selectedSubBrands[sec.id] || "all";
+              // 1. Probe available sub-brands across products in this section
+              const { availableBrands: allAvailableBrands } = processSectionProducts(
+                sec.products,
+                "all"
+              );
+
+              // 2. If sub-brands exist, do not show 'all' tab; default directly to first brand
+              const hasSubBrands = allAvailableBrands.length > 1;
+              const defaultSubBrand = hasSubBrands ? allAvailableBrands[0].key : "all";
+              const currentSubBrand =
+                hasSubBrands && (!selectedSubBrands[sec.id] || selectedSubBrands[sec.id] === "all")
+                  ? defaultSubBrand
+                  : selectedSubBrands[sec.id] || "all";
+
+              // 3. Process products for active sub-brand
               const { items, availableBrands } = processSectionProducts(
                 sec.products,
                 currentSubBrand
@@ -611,7 +625,9 @@ export default function CatalogExplorer({
                             {sec.title}
                           </h3>
                           <span className="rounded-full bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400 whitespace-nowrap shrink-0">
-                            {sec.products.length} dịch vụ
+                            {hasSubBrands
+                              ? allAvailableBrands.reduce((sum, b) => sum + b.count, 0)
+                              : sec.products.length} dịch vụ
                           </span>
                         </div>
                       </div>
@@ -628,22 +644,9 @@ export default function CatalogExplorer({
                     </button>
                   </div>
 
-                  {/* Sub-Brand Filter Tabs (e.g. Claude, Cursor, DeepSeek, Gemini...) */}
+                  {/* Sub-Brand Filter Tabs (e.g. API Codex, API Claude, API Cursor...) */}
                   {availableBrands.length > 1 && (
                     <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-2 mb-3.5">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setSelectedSubBrands((prev) => ({ ...prev, [sec.id]: "all" }))
-                        }
-                        className={`rounded-xl px-3 py-1.5 text-xs font-semibold shrink-0 transition-all ${
-                          currentSubBrand === "all"
-                            ? "bg-blue-600 text-white shadow-xs ring-1 ring-blue-500"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700"
-                        }`}
-                      >
-                        Tất cả ({sec.products.length})
-                      </button>
                       {availableBrands.map((b) => {
                         const isSelected = currentSubBrand === b.key;
                         return (

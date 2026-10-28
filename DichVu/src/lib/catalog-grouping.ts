@@ -8,15 +8,15 @@ export interface BrandDef {
 }
 
 export const BRAND_DEFINITIONS: BrandDef[] = [
-  { key: "claude", name: "Claude AI", keywords: ["claude"] },
-  { key: "cursor", name: "Cursor AI", keywords: ["cursor"] },
-  { key: "codex", name: "Codex AI", keywords: ["codex"] },
-  { key: "deepseek", name: "DeepSeek", keywords: ["deepseek"] },
-  { key: "gemini", name: "Gemini AI", keywords: ["gemini"] },
-  { key: "grok", name: "Grok xAI", keywords: ["grok"] },
-  { key: "kimi", name: "Kimi AI", keywords: ["kimi"] },
-  { key: "zhipu", name: "GLM / Zhipu", keywords: ["zhipu", "glm"] },
-  { key: "kiro", name: "Kiro AI", keywords: ["kiro"] },
+  { key: "codex", name: "API Codex", keywords: ["codex"] },
+  { key: "claude", name: "API Claude", keywords: ["claude"] },
+  { key: "cursor", name: "API Cursor", keywords: ["cursor"] },
+  { key: "deepseek", name: "API DeepSeek", keywords: ["deepseek"] },
+  { key: "gemini", name: "API Gemini", keywords: ["gemini"] },
+  { key: "grok", name: "API Grok", keywords: ["grok"] },
+  { key: "kimi", name: "API Kimi", keywords: ["kimi"] },
+  { key: "zhipu", name: "API GLM", keywords: ["zhipu", "glm"] },
+  { key: "kiro", name: "API Kiro", keywords: ["kiro"] },
   { key: "chatgpt", name: "ChatGPT", keywords: ["chatgpt", "gpt-4", "gpt-3", "openai"] },
   { key: "netflix", name: "Netflix", keywords: ["netflix"] },
   { key: "youtube", name: "YouTube", keywords: ["youtube"] },
@@ -299,19 +299,22 @@ export function processSectionProducts(
   const seenProducts = new Map<string, any>();
   const uniqueProducts: any[] = [];
   allowedProducts.forEach((p) => {
-    const code = p.supplierMapping?.supplierProductCode;
+    const code =
+      p.supplierMapping?.supplierProductCode ||
+      p.slug.match(/^([a-z]{3}-\d{4})/i)?.[1]?.toUpperCase();
     const key = code ? `code_${code}` : `title_${p.title}_price_${p.price}`;
     const existing = seenProducts.get(key);
     if (!existing) {
       seenProducts.set(key, p);
       uniqueProducts.push(p);
     } else {
-      // Prefer in-stock product first, then the product with clearer title (e.g. containing 'Credit' or longer)
+      // Prefer in-stock product first, then the product with lower price, then clearer title
       const pInStock = (p.stockCount || 0) > 0;
       const existingInStock = (existing.stockCount || 0) > 0;
       if (
         (pInStock && !existingInStock) ||
-        (pInStock === existingInStock && (p.title || "").length > (existing.title || "").length)
+        (pInStock === existingInStock && p.price < existing.price) ||
+        (pInStock === existingInStock && p.price === existing.price && (p.title || "").length > (existing.title || "").length)
       ) {
         const idx = uniqueProducts.indexOf(existing);
         if (idx !== -1) {
@@ -364,6 +367,17 @@ export function processSectionProducts(
     }
   });
 
+  const brandPriority = [
+    "codex",
+    "claude",
+    "cursor",
+    "deepseek",
+    "gemini",
+    "grok",
+    "kimi",
+    "zhipu",
+    "kiro",
+  ];
   const availableBrands = Array.from(brandCountMap.values())
     .filter((b) => b.count >= 1)
     .map((b) => ({
@@ -371,7 +385,14 @@ export function processSectionProducts(
       name: b.brand.name,
       count: b.count,
     }))
-    .sort((a, b) => b.count - a.count);
+    .sort((a, b) => {
+      const idxA = brandPriority.indexOf(a.key);
+      const idxB = brandPriority.indexOf(b.key);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return b.count - a.count;
+    });
 
   // 3. Filter by selected brand if user clicked a sub-brand tab
   let filtered = tagged;
@@ -465,7 +486,7 @@ export function processSectionProducts(
           groupedData: {
             groupKey: brandKey,
             brandName: brandDef.name,
-            title: `Gói API / Dịch Vụ ${brandDef.name}`,
+            title: `Gói ${brandDef.name.startsWith("API ") ? brandDef.name : `API ${brandDef.name}`}`,
             description: lowestPriceVariant.description,
             thumbnailUrl: candidateThumb,
             category: lowestPriceVariant.category,

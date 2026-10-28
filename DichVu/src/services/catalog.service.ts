@@ -52,6 +52,9 @@ export async function getCategoriesWithProducts(
     include: {
       products: {
         where: productWhere,
+        include: {
+          supplierMapping: true,
+        },
         orderBy: { createdAt: "desc" },
       },
     },

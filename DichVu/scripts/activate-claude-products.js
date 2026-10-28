@@ -166,6 +166,22 @@ async function activateInDb(dbUrl) {
       }
     }
 
+    // 3. Deactivate old duplicate Codex products if present
+    const oldCodexSlugs = [
+      "cdx-0055-api-codex-ai-toc-o-nhanh",
+      "cdx-0056-api-codex-ai-toc-o-nhanh",
+      "cdx-0057-api-codex-ai-toc-o-nhanh",
+      "cdx-0058-api-codex-ai-toc-o-nhanh",
+      "cdx-0060-api-codex-ai-toc-o-nhanh",
+    ];
+    const deactRes = await prisma.product.updateMany({
+      where: { slug: { in: oldCodexSlugs } },
+      data: { isActive: false },
+    });
+    if (deactRes.count > 0) {
+      console.log(`✓ Deactivated ${deactRes.count} legacy duplicate Codex products`);
+    }
+
     console.log(`=== Done activating in ${dbUrl || "default DB"} ===`);
   } finally {
     await prisma.$disconnect();

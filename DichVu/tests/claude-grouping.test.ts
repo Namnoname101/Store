@@ -25,7 +25,7 @@ describe("Catalog Grouping with Claude API", () => {
 
     const claudeBrand = result.availableBrands.find((b) => b.key === "claude");
     expect(claudeBrand).toBeDefined();
-    expect(claudeBrand?.name).toBe("Claude AI");
+    expect(claudeBrand?.name).toBe("API Claude");
     expect(claudeBrand?.count).toBe(5);
 
     const claudeCard = result.items.find(
