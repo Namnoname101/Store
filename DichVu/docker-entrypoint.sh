@@ -45,6 +45,12 @@ else
   fi
 fi
 
+# Ensure Claude API products are activated
+if [ -f scripts/activate-claude-products.js ]; then
+  echo "[Entrypoint] Ensuring Claude API products are activated..."
+  node scripts/activate-claude-products.js || true
+fi
+
 # 2. Process Management & Signal Trap
 SWEEP_PID=""
 NEXT_PID=""

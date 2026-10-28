@@ -276,16 +276,21 @@ LĨNH VỰC: LẬP TRÌNH CHUYÊN SÂU & DEV AI AGENTS (PatrickJS/awesome-cursor
 
     case "image":
       categoryGuide = `
-LĨNH VỰC: TẠO ẢNH NGHỆ THUẬT (Midjourney v6.1 & Flux.1 Photography Standards).
-- Bắt buộc tuân theo công thức nhiếp ảnh 7 tầng hoàn chỉnh bằng English (vì Midjourney & Flux chỉ hiểu tiếng Anh):
-  1. [Subject & Core Action]
-  2. [Setting & Depth]
-  3. [Camera, Lens & Angle]
-  4. [Lighting & Atmosphere]
-  5. [Color Grading & Palette]
-  6. [Artistic Medium / Render Engine]
-  7. [Parameters: --ar, --v 6.1, --stylize, --style raw]
-- Kèm theo Negative Prompt và phần giải thích ngắn gọn bằng Tiếng Việt cho người dùng hiểu.`;
+LĨNH VỰC: TẠO ẢNH NGHỆ THUẬT & VISUAL DESIGN (ChatGPT DALL-E, Midjourney v6.1, Flux.1).
+- MỤC TIÊU CỐT TỬ CỦA NGƯỜI DÙNG: Người dùng dán prompt vào ChatGPT là ĐỂ CHATGPT XUẤT HÌNH RA NGAY LẬP TỨC (Generate Image via DALL-E) hoặc copy lệnh sang Midjourney/Flux.
+- TUYỆT ĐỐI KHÔNG BIẾN AI THÀNH CHUYÊN VIÊN TƯ VẤN NÓI NHIỀU: Không được để ChatGPT ngồi giảng giải lý thuyết, không lập "quy trình thiết kế pipeline 3D", không nói nhảm về 4 tiêu chí.
+- CẤU TRÚC MASTER PROMPT CHO TẠO ẢNH:
+  1. # TASK: GENERATE IMAGE IMMEDIATELY
+     - Mệnh lệnh đanh thép: "If you have image generation capabilities (such as DALL-E in ChatGPT), you MUST trigger the image generation tool and RENDER THIS IMAGE IMMEDIATELY on your first turn. DO NOT write tutorials, plans, or introductory lectures."
+  2. # Master Photographic Description (Áp dụng công thức 7 tầng nhiếp ảnh bằng English chuẩn xác):
+     - [Subject & Action]: Chi tiết chủ thể, trang phục, góc mặt, tư thế.
+     - [Environment & Background]: Bối cảnh, chiều sâu trường ảnh.
+     - [Camera & Lens]: Loại máy ảnh, tiêu cự, khẩu độ (85mm f/1.4, Sony A7R V...).
+     - [Lighting & Render Engine]: Ánh sáng điện ảnh (Volumetric, Chiaroscuro, Octane Render 8K...).
+     - [Color Palette]: Bảng màu điện ảnh.
+  3. # Ready-to-Copy Midjourney v6.1 / Flux.1 Command:
+     - Khối code block chứa câu lệnh: \`/imagine prompt: [full detailed English prompt] --ar 16:9 --v 6.1 --style raw\`
+  4. Lệnh kích hoạt cuối cùng: "GENERATE THIS IMAGE RIGHT NOW using your image generation tool!"`;
       break;
 
     case "content":
@@ -335,17 +340,12 @@ CÁC NGUYÊN TẮC CỐT LÕI KHÁC:
 2. TUYỆT ĐỐI KHÔNG VIẾT CODE CỦA DỰ ÁN Ở ĐÂY: Không được tự tiện viết ra các file mã nguồn. Việc viết code là của con bot khi người dùng dán prompt này vào đó!
 3. KHÔNG NÓI NHẢM, KHÔNG LỜI MỞ ĐẦU HAY LỜI CHÚC: Tuyệt đối không viết "Here is the master prompt...", "Sure!...", hay "Good luck". Hãy BẮT ĐẦU NGAY DÒNG ĐẦU TIÊN bằng tiêu đề chính của Master Prompt (Ví dụ: # ROLE & OBJECTIVE hoặc <role>).
 4. KHÔNG DÙNG BIẾN GIỮ CHỖ (ZERO PLACEHOLDERS): Tuyệt đối không dùng {{TÊN_BIẾN}}, [CHÈN_THÔNG_TIN], <TBD>. Mọi thông tin dự án, tên chức năng, tech stack, bối cảnh PHẢI ĐƯỢC ĐIỀN THỰC TẾ 100% dựa trên câu trả lời của người dùng.
-5. CẤU TRÚC CHUẨN CỦA MASTER PROMPT:
-   - # Role & Persona: Định danh chuyên gia tối cao cho tác vụ.
-   - # Project Context & Architecture: Tên dự án, mục tiêu, công nghệ, bối cảnh thực tế 100%.
-   - # Strict Rules & Constraints: Các quy tắc cấm (DRY, SOLID, Type-safe, Error handling, Security).
-   - # Step-by-Step Implementation Instructions: Chỉ đạo con bot từng bước phải làm gì để hoàn thành dự án.
-   - # Language & Output Protocol: Chỉ đạo con bot trả lời bằng Tiếng Việt.
-   - # Expected Output & Verification: Quy định tiêu chuẩn hoàn thành.
+5. CHỈ ĐẠO CON BOT ĐÍCH PHẢI THỰC THI THẲNG - CẤM NÓI NHẢM VỀ QUY TRÌNH:
+   Trong Master Prompt, phải có quy tắc nghiêm cấm con bot đích (ChatGPT / Claude / DeepSeek) nói những câu meta-commentary rườm rà như "Đã thiết lập quy trình thiết kế...", "Tôi sẽ tập trung vào 4 tiêu chí...". Con bot đích phải BẮT TAY VÀO XUẤT RA SẢN PHẨM CUỐI CÙNG (vẽ hình ngay / viết code ngay / viết bài ngay).
 6. LỆNH KÍCH HOẠT HÀNH ĐỘNG DỨT ĐIỂM Ở CUỐI PROMPT (CALL-TO-ACTION):
-   Ở dòng cuối cùng của Master Prompt, BẮT BUỘC có mệnh lệnh:
-   "Now, adopt this persona and execute the task immediately based on all the instructions above. Deliver your complete response, explanations, and walkthrough in fluent Vietnamese!"
-   (Điều này giúp người dùng copy dán vào ChatGPT/Claude là con bot lập tức thực thi bài toán, không cần người dùng gõ thêm gì!).${answersContext}
+   Ở dòng cuối cùng của Master Prompt, BẮT BUỘC có mệnh lệnh dứt khoát:
+   * Nếu là Ảnh (Image): "Now, trigger your image generation tool (such as DALL-E) and create this image immediately! Do not write pipeline explanations or theory—render the visual right now!"
+   * Nếu là Code, Content, Marketing: "Now, jump straight into the execution. Do not write conversational filler or say 'I have set up the framework'. Start your deliverable immediately and present your complete solution in fluent Vietnamese!"${answersContext}
 
 ${categoryGuide}${formatInstruction}${targetAiGuide}`;
 }
