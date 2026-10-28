@@ -100,7 +100,22 @@ export function extractDeliveredSecret(rawText: string): ParsedSecret {
     };
   }
 
-  // 5. Check if message is merely a delivery notification pointing to an attached file or video
+  // 5. Guard against error messages, balance alerts, or failure notices being treated as delivered secrets
+  const isErrorNotice =
+    /(?:số dư|ví)[^.]*không đủ|thất bại|không đủ để (?:mua|thanh toán|thực hiện)|nạp thêm tiền|hết hàng|error|failed|❌/i.test(
+      text
+    );
+  if (isErrorNotice) {
+    return {
+      type: "text",
+      content: "",
+      instructions: text,
+      rawText: text,
+      isNoticeOnly: true,
+    };
+  }
+
+  // 6. Check if message is merely a delivery notification pointing to an attached file or video
   const isNotice = /(?:nằm trong file|file\s*(?:txt|đính kèm)|video\s*kiểm\s*tra)/i.test(text);
   if (isNotice) {
     return {

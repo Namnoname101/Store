@@ -483,17 +483,23 @@ export class TelegramBotAdapter implements ISupplierAdapter {
     for (const m of recent) {
       const text = m.text || "";
 
-      // Check balance issues
+      // Check balance issues and failure notices (case-insensitive & comprehensive)
+      const lowerText = text.toLowerCase();
       if (
-        text.includes("Số dư không đủ") ||
-        text.includes("Ví chưa đủ") ||
-        text.includes("không đủ để mua") ||
-        text.includes("không đủ để thực hiện")
+        lowerText.includes("số dư không đủ") ||
+        lowerText.includes("ví chưa đủ") ||
+        lowerText.includes("không đủ để mua") ||
+        lowerText.includes("không đủ để thanh toán") ||
+        lowerText.includes("không đủ để thực hiện") ||
+        lowerText.includes("nạp thêm tiền") ||
+        lowerText.includes("giao dịch thất bại") ||
+        lowerText.includes("hết hàng") ||
+        (text.includes("❌") && (lowerText.includes("số dư") || lowerText.includes("thanh toán")))
       ) {
         return {
           success: false,
           deliveredKeys: [],
-          error: `Số dư tài khoản Telegram bot @${botUsername.replace(/^@/, "")} không đủ để thanh toán`,
+          error: `Số dư tài khoản Telegram bot @${botUsername.replace(/^@/, "")} không đủ để thanh toán hoặc bot hết hàng`,
         };
       }
 
@@ -546,7 +552,7 @@ export class TelegramBotAdapter implements ISupplierAdapter {
       }
     }
 
-    const selected = bestCandidate || fallbackTextCandidate;
+    const selected = bestCandidate || (fallbackTextCandidate && !fallbackTextCandidate.content.includes("❌") && !/không đủ/i.test(fallbackTextCandidate.content) ? fallbackTextCandidate : null);
     if (selected) {
       return {
         success: true,

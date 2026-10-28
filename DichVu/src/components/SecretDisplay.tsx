@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import {
   Download,
@@ -122,6 +122,18 @@ export default function SecretDisplay({
     }
     return null;
   });
+
+  // Filter out any leaked system error notices so customers never see raw balance or bot errors
+  const validDeliveredItems = useMemo(() => {
+    return (deliveredItems || []).filter((item) => {
+      const c = item.secretContent || "";
+      const isError =
+        c.includes("❌") ||
+        /(?:số dư|ví)[^.]*không đủ/i.test(c) ||
+        /(?:thất bại|lỗi kết nối|nạp thêm tiền)/i.test(c);
+      return !isError && c.trim().length > 0;
+    });
+  }, [deliveredItems]);
 
   const isBuffService = Boolean(
     orderItems?.some(
@@ -269,7 +281,7 @@ export default function SecretDisplay({
     content += "Thời gian xuất: " + new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) + "\n";
     content += "========================================\n\n";
 
-    deliveredItems.forEach((item, idx) => {
+    validDeliveredItems.forEach((item, idx) => {
       const product = productMap.get(item.productId);
       content += "[MỤC " + (idx + 1) + "]: " + (product?.title || "Sản phẩm") + "\n";
       content += "Nội dung: " + (item.secretContent || "") + "\n\n";
@@ -299,7 +311,7 @@ export default function SecretDisplay({
   };
 
   const handleCopyAll = async () => {
-    const allSecrets = deliveredItems
+    const allSecrets = validDeliveredItems
       .map((item) => item.secretContent)
       .filter(Boolean)
       .join("\n");
@@ -522,7 +534,7 @@ export default function SecretDisplay({
   }
 
   // Fallback if no delivered items yet
-  if (!deliveredItems || deliveredItems.length === 0) {
+  if (!validDeliveredItems || validDeliveredItems.length === 0) {
     return (
       <div className="space-y-6">
         <BuffProgressCard orderCode={orderCode} />
@@ -538,11 +550,11 @@ export default function SecretDisplay({
   }
 
   // Determine dominant product type for instruction box
-  const primaryProduct = productMap.get(deliveredItems[0].productId);
+  const primaryProduct = productMap.get(validDeliveredItems[0].productId);
   const primaryType = primaryProduct?.type || "LICENSE_KEY";
   const primaryTitle = primaryProduct?.title || "";
   const primarySlug = (primaryProduct as any)?.slug || "";
-  const firstSecret = deliveredItems[0]?.secretContent || "";
+  const firstSecret = validDeliveredItems[0]?.secretContent || "";
   const instructions = getProductInstructions(primaryType, primaryTitle, firstSecret, primarySlug);
 
   const isApiKeyProduct =
@@ -558,12 +570,12 @@ export default function SecretDisplay({
       <BuffProgressCard orderCode={orderCode} />
 
       {/* Top action bar: Quick download & copy actions */}
-      {deliveredItems.length > 0 && (
+      {validDeliveredItems.length > 0 && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-zinc-800 bg-zinc-950/80 px-4 py-3 shadow-lg">
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-xs font-semibold text-zinc-300">
-              Dữ liệu bàn giao ({deliveredItems.length} mục)
+              Dữ liệu bàn giao ({validDeliveredItems.length} mục)
             </span>
           </div>
 
@@ -605,7 +617,7 @@ export default function SecretDisplay({
 
       {/* Delivered items list - Tech Studio Aesthetic */}
       <div className="space-y-3.5">
-        {deliveredItems.map((item, index) => {
+        {validDeliveredItems.map((item, index) => {
           const product = productMap.get(item.productId);
           const secretContent = item.secretContent || "";
           const parsed = parseSecretItem(secretContent, product?.type);
