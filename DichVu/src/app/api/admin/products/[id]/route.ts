@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma, ProductType } from "@/lib/prisma";
 import { normalizeThumbnailUrl } from "@/lib/catalog-grouping";
+import { calculateRetailPrice } from "@/services/pricing.service";
 
 function slugify(text: string): string {
   return text
@@ -139,15 +140,51 @@ export async function PUT(
     }
 
     const { isAutoSync, markupValue, markupType } = body;
-    if (isAutoSync !== undefined || markupValue !== undefined || markupType !== undefined) {
-      const existingMapping = await prisma.supplierProductMapping.findUnique({
-        where: { productId: params.id },
-      });
-      if (existingMapping) {
-        const mappingUpdate: any = {};
-        if (isAutoSync !== undefined) mappingUpdate.isAutoSync = Boolean(isAutoSync);
-        if (markupValue !== undefined && !isNaN(Number(markupValue))) mappingUpdate.markupValue = Number(markupValue);
-        if (markupType !== undefined) mappingUpdate.markupType = String(markupType);
+    const existingMapping = await prisma.supplierProductMapping.findUnique({
+      where: { productId: params.id },
+    });
+
+    if (existingMapping) {
+      const mappingUpdate: any = {};
+
+      if (isAutoSync !== undefined) {
+        mappingUpdate.isAutoSync = Boolean(isAutoSync);
+      } else if (price !== undefined) {
+        // Price Lock Guard: When admin explicitly edits price without specifying isAutoSync,
+        // automatically lock the price to prevent background sync overwrites.
+        mappingUpdate.isAutoSync = false;
+      }
+
+      if (markupValue !== undefined && !isNaN(Number(markupValue))) {
+        mappingUpdate.markupValue = Number(markupValue);
+      }
+      if (markupType !== undefined) {
+        mappingUpdate.markupType = String(markupType);
+      }
+
+      const willBeAutoSync =
+        mappingUpdate.isAutoSync !== undefined
+          ? mappingUpdate.isAutoSync
+          : existingMapping.isAutoSync;
+
+      // When auto-sync is active and markup was updated (and price was not manually fixed),
+      // dynamically recalculate retail price based on supplierPrice
+      if (
+        willBeAutoSync &&
+        price === undefined &&
+        (markupValue !== undefined || markupType !== undefined)
+      ) {
+        const effectiveMarkupType = markupType || existingMapping.markupType;
+        const effectiveMarkupValue =
+          markupValue !== undefined ? Number(markupValue) : existingMapping.markupValue;
+        dataToUpdate.price = calculateRetailPrice(
+          existingMapping.supplierPrice,
+          effectiveMarkupType,
+          effectiveMarkupValue
+        );
+      }
+
+      if (Object.keys(mappingUpdate).length > 0) {
         await prisma.supplierProductMapping.update({
           where: { productId: params.id },
           data: mappingUpdate,

@@ -75,6 +75,19 @@ const XOAINON_KNOWN_PRODUCTS: Record<
   },
 };
 
+interface CachedBotProduct {
+  code: string;
+  name: string;
+  price: number;
+  inStock: number;
+}
+
+const telegramCatalogCache = new Map<
+  string,
+  { timestamp: number; products: Record<string, CachedBotProduct> }
+>();
+const CATALOG_CACHE_TTL_MS = 5 * 60 * 1000;
+
 export class TelegramBotAdapter implements ISupplierAdapter {
   private client: TelegramClient | null = null;
 
@@ -200,6 +213,92 @@ export class TelegramBotAdapter implements ISupplierAdapter {
     return 35433; // Default estimated balance for nghientrick
   }
 
+  private parsePrice(str: string): number | null {
+    const m = str.match(/•\s*([\d.,]+)\s*([đk])/i);
+    if (!m) return null;
+    const isK = m[2].toLowerCase() === "k";
+    const clean = m[1].replace(/[.,]/g, "");
+    const num = parseInt(clean, 10);
+    return isK ? num * 1000 : num;
+  }
+
+  private parseStock(str: string): number {
+    if (/hết\s*hàng/i.test(str)) return 0;
+    const m = str.match(/SL\s*(\d+)/i);
+    return m ? parseInt(m[1], 10) : 0;
+  }
+
+  private async getLiveCatalog(
+    creds: SupplierCredentials,
+    botUsername: string
+  ): Promise<Record<string, CachedBotProduct>> {
+    const cached = telegramCatalogCache.get(botUsername);
+    const now = Date.now();
+    if (cached && now - cached.timestamp < CATALOG_CACHE_TTL_MS) {
+      return cached.products;
+    }
+
+    if (botUsername.includes("xoainon")) {
+      try {
+        const client = await this.getClient(creds);
+        await client.sendMessage(botUsername, { message: "/buy" });
+        await new Promise((r) => setTimeout(r, 2000));
+
+        const msgs = await client.getMessages(botUsername, { limit: 1 });
+        const msg = msgs[0];
+        const parsedProducts: Record<string, CachedBotProduct> = {};
+
+        if (msg?.replyMarkup && (msg.replyMarkup as any).rows) {
+          for (const row of (msg.replyMarkup as any).rows) {
+            for (const b of row.buttons) {
+              const dataStr = b.data ? Buffer.from(b.data).toString("utf-8") : "";
+              const btnText = b.text || "";
+
+              let code: string | null = null;
+              const codeMatch = dataStr.match(/product:view:(\d+)/);
+              if (codeMatch) {
+                code = codeMatch[1];
+              } else {
+                for (const [kCode, info] of Object.entries(XOAINON_KNOWN_PRODUCTS)) {
+                  if (btnText.toLowerCase().includes(info.name.toLowerCase().slice(0, 15))) {
+                    code = kCode;
+                    break;
+                  }
+                }
+              }
+
+              if (code) {
+                const price = this.parsePrice(btnText);
+                const stock = this.parseStock(btnText);
+                const fallbackName = XOAINON_KNOWN_PRODUCTS[code]?.name || btnText.split("•")[0].trim();
+                if (price !== null) {
+                  parsedProducts[code] = {
+                    code,
+                    name: fallbackName,
+                    price,
+                    inStock: stock,
+                  };
+                }
+              }
+            }
+          }
+        }
+
+        if (Object.keys(parsedProducts).length > 0) {
+          telegramCatalogCache.set(botUsername, {
+            timestamp: now,
+            products: parsedProducts,
+          });
+          return parsedProducts;
+        }
+      } catch (err) {
+        console.warn(`[TelegramBotAdapter] Live catalog fetch failed for @${botUsername}, using fallback dictionary:`, err);
+      }
+    }
+
+    return {};
+  }
+
   public async fetchProductInfo(
     creds: SupplierCredentials,
     supplierProductCode: string
@@ -207,6 +306,23 @@ export class TelegramBotAdapter implements ISupplierAdapter {
     const { botUsername } = this.resolveConfig(creds);
 
     if (botUsername.includes("xoainon")) {
+      // 1. Try live parsed catalog first
+      try {
+        const liveCatalog = await this.getLiveCatalog(creds, botUsername);
+        const liveItem = liveCatalog[supplierProductCode];
+        if (liveItem) {
+          return {
+            supplierProductCode,
+            name: liveItem.name,
+            price: liveItem.price,
+            inStock: liveItem.inStock,
+          };
+        }
+      } catch (e) {
+        // Fallback to static catalog on live scrape error
+      }
+
+      // 2. Fallback to known static catalog
       const known = XOAINON_KNOWN_PRODUCTS[supplierProductCode];
       if (known) {
         return {

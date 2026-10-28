@@ -180,7 +180,7 @@ describe("Best-Price Supplier Routing Engine", () => {
 
     const order = await prisma.order.create({
       data: {
-        orderCode: `BP_FALLBACK_${Date.now()}`,
+        orderCode: `BP_TEST_FALLBACK_${Date.now()}`,
         status: OrderStatus.PAID,
         totalAmount: 25000,
         expiresAt: new Date(Date.now() + 15 * 60 * 1000),

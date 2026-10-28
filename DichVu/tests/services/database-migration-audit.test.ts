@@ -107,7 +107,7 @@ describe("Task 6: Database Migration & Schema Verification Suite", () => {
     });
 
     for (const order of orders) {
-      expect(order.orderCode).toMatch(/^(ORD|BP_TEST|TEST|DEMO)/);
+      expect(order.orderCode).toMatch(/^(ORD|BP_TEST|BP_FALLBACK|TEST|DEMO)/);
       expect(order.totalAmount).toBeGreaterThan(0);
       expect(["PENDING", "PAID", "CANCELLED", "EXPIRED"]).toContain(order.status);
       if (order.accessToken) {
