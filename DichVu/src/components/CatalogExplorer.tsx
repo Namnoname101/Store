@@ -644,64 +644,108 @@ export default function CatalogExplorer({
                     </button>
                   </div>
 
-                  {/* Sub-Brand Filter Tabs (e.g. API Codex, API Claude, API Cursor...) */}
-                  {availableBrands.length > 1 && (
-                    <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-2 mb-3.5">
-                      {availableBrands.map((b) => {
-                        const isSelected = currentSubBrand === b.key;
+                  {/* Sub-Brand Sections or Standard Single Grid */}
+                  {hasSubBrands ? (
+                    <div className="space-y-7 sm:space-y-9">
+                      {allAvailableBrands.map((b) => {
+                        const { items: brandItems } = processSectionProducts(
+                          sec.products,
+                          b.key
+                        );
+                        if (brandItems.length === 0) return null;
+
+                        const isCodex = b.key === "codex";
+                        const isClaude = b.key === "claude";
+                        const dotColor = isCodex
+                          ? "bg-emerald-500 shadow-emerald-500/50"
+                          : isClaude
+                          ? "bg-amber-500 shadow-amber-500/50"
+                          : "bg-blue-500 shadow-blue-500/50";
+                        const badgeBorder = isCodex
+                          ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                          : isClaude
+                          ? "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                          : "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400";
+                        const subtitle = isCodex
+                          ? "Hạn mức Credit cấp phát tự động 24/7 cho Cursor & IDE"
+                          : isClaude
+                          ? "API Anthropic Claude 3.5 Sonnet & Opus chính hãng tốc độ cao"
+                          : "Cấp phát tự động 24/7";
+
                         return (
-                          <button
+                          <div
                             key={b.key}
-                            type="button"
-                            onClick={() =>
-                              setSelectedSubBrands((prev) => ({
-                                ...prev,
-                                [sec.id]: b.key,
-                              }))
-                            }
-                            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold shrink-0 transition-all ${
-                              isSelected
-                                ? "bg-blue-600 text-white shadow-xs ring-1 ring-blue-500"
-                                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700"
-                            }`}
+                            id={`subbrand-${b.key}`}
+                            className="space-y-3"
                           >
-                            <span>{b.name}</span>
-                            <span
-                              className={`rounded-full px-1.5 py-0.2 text-[10px] ${
-                                isSelected
-                                  ? "bg-blue-700 text-white"
-                                  : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-                              }`}
-                            >
-                              {b.count}
-                            </span>
-                          </button>
+                            {/* Sub-brand Header Bar */}
+                            <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100 dark:border-white/5">
+                              <div className="flex items-center gap-2 sm:gap-2.5">
+                                <span
+                                  className={`w-2.5 h-2.5 rounded-full shadow-xs ${dotColor}`}
+                                />
+                                <h4 className="text-sm sm:text-base font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                                  <span>{b.name}</span>
+                                  <span
+                                    className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${badgeBorder}`}
+                                  >
+                                    {b.count} dịch vụ
+                                  </span>
+                                </h4>
+                                <span className="hidden sm:inline text-xs text-slate-400 dark:text-slate-500">
+                                  • {subtitle}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Products Grid for this Brand */}
+                            <div className="grid grid-cols-2 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3.5">
+                              {brandItems.map((item, idx) => {
+                                if (item.type === "grouped" && item.groupedData) {
+                                  return (
+                                    <GroupedProductCard
+                                      key={`group-${item.groupKey}-${idx}`}
+                                      {...item.groupedData}
+                                      onQuickView={handleOpenQuickView}
+                                    />
+                                  );
+                                }
+                                return (
+                                  <ProductCard
+                                    key={item.singleProduct.id}
+                                    product={item.singleProduct}
+                                    onQuickView={handleOpenQuickView}
+                                  />
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    /* Dense Product Grid: Grouped Service Cards or Single Products */
+                    <div className="grid grid-cols-2 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3.5">
+                      {items.map((item, idx) => {
+                        if (item.type === "grouped" && item.groupedData) {
+                          return (
+                            <GroupedProductCard
+                              key={`group-${item.groupKey}-${idx}`}
+                              {...item.groupedData}
+                              onQuickView={handleOpenQuickView}
+                            />
+                          );
+                        }
+                        return (
+                          <ProductCard
+                            key={item.singleProduct.id}
+                            product={item.singleProduct}
+                            onQuickView={handleOpenQuickView}
+                          />
                         );
                       })}
                     </div>
                   )}
-
-                  {/* Dense Product Grid: Grouped Service Cards or Single Products */}
-                  <div className="grid grid-cols-2 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3.5">
-                    {items.map((item, idx) => {
-                      if (item.type === "grouped" && item.groupedData) {
-                        return (
-                          <GroupedProductCard
-                            key={`group-${item.groupKey}-${idx}`}
-                            {...item.groupedData}
-                            onQuickView={handleOpenQuickView}
-                          />
-                        );
-                      }
-                      return (
-                        <ProductCard
-                          key={item.singleProduct.id}
-                          product={item.singleProduct}
-                          onQuickView={handleOpenQuickView}
-                        />
-                      );
-                    })}
-                  </div>
                 </section>
               );
             })}
