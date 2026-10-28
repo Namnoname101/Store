@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import {
   RefreshCw,
   CheckCircle2,
+  AlertCircle,
   Activity,
   TrendingUp,
   ExternalLink,
@@ -12,6 +13,7 @@ import {
   Clock,
   Layers,
   Zap,
+  X,
 } from "lucide-react";
 import type { BuffProgressResult } from "@/services/buff-progress.service";
 
@@ -47,9 +49,11 @@ export function getTimelineSteps(
   delivered?: number
 ) {
   const isCompleted = status === "COMPLETED";
+  const isCancelled = status === "CANCELLED" || status === "CANCELED";
   const hasScannedStart = typeof startCount === "number" && startCount > 0;
   const isRunning =
-    status === "IN_PROGRESS" || (delivered !== undefined && delivered > 0);
+    !isCancelled &&
+    (status === "IN_PROGRESS" || (delivered !== undefined && delivered > 0));
 
   return [
     {
@@ -61,26 +65,38 @@ export function getTimelineSteps(
     {
       id: 2,
       title: "Quét số lượng gốc",
-      desc: hasScannedStart
+      desc: isCancelled
+        ? "Đơn bị máy chủ đối tác hủy hoặc từ chối"
+        : hasScannedStart
         ? `Số gốc ban đầu: ${startCount.toLocaleString("vi-VN")}`
         : isCompleted
         ? "Đã xác nhận hoàn tất"
         : "Đang kết nối & quét số lượng hiện tại",
-      status: isCompleted || hasScannedStart ? "done" : "active",
+      status:
+        isCompleted || hasScannedStart
+          ? "done"
+          : isCancelled
+          ? "error"
+          : "active",
     },
     {
       id: 3,
       title: "Đang đẩy tương tác",
-      desc:
-        delivered !== undefined && delivered > 0
-          ? `Đã tăng thực tế: +${delivered.toLocaleString("vi-VN")}`
-          : "Đang phân bổ luồng máy chủ",
+      desc: isCancelled
+        ? "Đã dừng phân bổ luồng"
+        : delivered !== undefined && delivered > 0
+        ? `Đã tăng thực tế: +${delivered.toLocaleString("vi-VN")}`
+        : "Đang phân bổ luồng máy chủ",
       status: isCompleted ? "done" : isRunning ? "active" : "pending",
     },
     {
       id: 4,
       title: "Hoàn tất đơn hàng",
-      desc: isCompleted ? "Đã giao đủ 100% số lượng" : "Kiểm tra & chốt số lượng",
+      desc: isCompleted
+        ? "Đã giao đủ 100% số lượng"
+        : isCancelled
+        ? "Đã hủy đơn / hoàn lại tiền"
+        : "Kiểm tra & chốt số lượng",
       status: isCompleted ? "done" : "pending",
     },
   ];
@@ -142,9 +158,13 @@ export default function BuffProgressCard({
     fetchProgress(false);
   }, [fetchProgress]);
 
-  // Polling every 5 seconds while active
+  // Polling every 5 seconds while active (stop if COMPLETED or CANCELLED)
   useEffect(() => {
-    if (!progress || progress.status === "COMPLETED" || progress.status === "CANCELLED") {
+    if (
+      !progress ||
+      progress.status === "COMPLETED" ||
+      progress.status === "CANCELLED"
+    ) {
       return;
     }
 
@@ -177,18 +197,28 @@ export default function BuffProgressCard({
 
   const total = progress?.totalQuantity || 1;
   const isCompleted = progress?.status === "COMPLETED";
-  const isRunning = progress?.status === "IN_PROGRESS";
+  const isCancelled = progress?.status === "CANCELLED";
+  const isRunning =
+    !isCancelled &&
+    (progress?.status === "IN_PROGRESS" || (progress?.deliveredCount || 0) > 0);
   const currentCount = isCompleted
     ? total
+    : isCancelled
+    ? 0
     : Math.min(total, progress?.deliveredCount || 0);
   const remainsCount = isCompleted
     ? 0
+    : isCancelled
+    ? total
     : progress?.remains !== undefined
     ? progress.remains
     : Math.max(0, total - currentCount);
   const displayPercent = isCompleted
     ? 100
+    : isCancelled
+    ? 0
     : Math.min(100, Math.max(0, Math.round((currentCount / total) * 100)));
+
   const timelineSteps = getTimelineSteps(
     progress?.status || "IN_PROGRESS",
     progress?.startCount,
@@ -211,6 +241,11 @@ export default function BuffProgressCard({
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 HOÀN TẤT 100%
               </span>
+            ) : isCancelled ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/15 px-3 py-1 text-xs font-bold text-rose-400 shadow-sm shadow-rose-500/20">
+                <AlertCircle className="h-3.5 w-3.5" />
+                ĐÃ HỦY ĐƠN (HOÀN TIỀN)
+              </span>
             ) : isRunning ? (
               <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-300">
                 <span className="relative flex h-2 w-2">
@@ -221,8 +256,8 @@ export default function BuffProgressCard({
               </span>
             ) : (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/40 bg-indigo-500/10 px-3 py-1 text-xs font-bold text-indigo-300">
-                <Clock className="h-3.5 w-3.5 animate-spin" />
-                {progress?.statusLabel || "Đang kết nối & quét số gốc"}
+                <Clock className="h-3.5 w-3.5" />
+                {progress?.statusLabel || "Đang xếp hàng chờ bot quét"}
               </span>
             )}
 
@@ -243,9 +278,21 @@ export default function BuffProgressCard({
         {/* Sync status & Manual refresh button */}
         <div className="flex items-center gap-3 self-start sm:self-auto">
           <div className="text-right text-[11px] text-slate-400 hidden sm:block">
-            <div className="text-emerald-400 font-medium flex items-center justify-end gap-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Số liệu chuẩn xác từ máy chủ
+            <div
+              className={`font-medium flex items-center justify-end gap-1 ${
+                isCancelled ? "text-rose-400" : "text-emerald-400"
+              }`}
+            >
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${
+                  isCancelled
+                    ? "bg-rose-400"
+                    : "bg-emerald-400 animate-pulse"
+                }`}
+              />
+              {isCancelled
+                ? "Đã đồng bộ kết quả hủy"
+                : "Số liệu chuẩn xác từ máy chủ"}
             </div>
             <div className="text-slate-500">
               {secondsAgo === 0 ? "Vừa xong" : `Cập nhật ${secondsAgo}s trước`}
@@ -268,6 +315,26 @@ export default function BuffProgressCard({
         </div>
       </div>
 
+      {/* Cancelled Alert Banner if upstream cancelled */}
+      {isCancelled && (
+        <div className="relative z-10 my-5 rounded-2xl border border-rose-500/30 bg-rose-950/40 p-4 text-xs text-rose-200">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-rose-400 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="font-bold text-rose-300 text-sm">
+                Máy chủ đối tác đã từ chối hoặc hủy đơn hàng
+              </p>
+              <p className="text-rose-200/90 leading-relaxed">
+                Nguyên nhân thường gặp: Tài khoản TikTok đang bật chế độ{" "}
+                <strong>Riêng tư (Private)</strong>, tên người dùng bị đổi hoặc
+                máy chủ cụm bot đang bảo trì. Số tiền sẽ được hoàn trả đầy đủ
+                hoặc hỗ trợ chuyển server khác.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Progress Bar & Percentage display */}
       <div className="relative z-10 py-6">
         <div className="flex items-end justify-between mb-2.5">
@@ -276,7 +343,11 @@ export default function BuffProgressCard({
               Tiến độ hoàn thành
             </span>
             <div className="flex items-center gap-2 text-sm text-slate-300 font-semibold">
-              <span className="text-emerald-400 font-bold">
+              <span
+                className={`font-bold ${
+                  isCancelled ? "text-rose-400" : "text-emerald-400"
+                }`}
+              >
                 +{currentCount.toLocaleString("vi-VN")}
               </span>
               <span>/</span>
@@ -285,37 +356,50 @@ export default function BuffProgressCard({
           </div>
 
           <div className="text-3xl sm:text-4xl font-black tracking-tight text-white flex items-center gap-1">
-            <span className="text-emerald-400">{displayPercent}%</span>
+            <span
+              className={isCancelled ? "text-rose-400" : "text-emerald-400"}
+            >
+              {displayPercent}%
+            </span>
           </div>
         </div>
 
         {/* Shimmer Neon Progress Track */}
         <div className="relative h-4 w-full overflow-hidden rounded-full bg-slate-800/80 p-0.5 border border-slate-700/60 shadow-inner">
           <div
-            className="relative h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-400 to-indigo-500 transition-all duration-700 ease-out shadow-lg shadow-emerald-500/30"
+            className={`relative h-full rounded-full transition-all duration-700 ease-out shadow-lg ${
+              isCancelled
+                ? "bg-rose-500/50 shadow-rose-500/20"
+                : "bg-gradient-to-r from-emerald-500 via-teal-400 to-indigo-500 shadow-emerald-500/30"
+            }`}
             style={{ width: `${displayPercent}%` }}
           >
-            {/* Shimmer animated sweep */}
-            {!isCompleted && (
+            {!isCompleted && !isCancelled && (
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse" />
             )}
           </div>
         </div>
 
-        {/* Live Channel Follower Counter */}
+        {/* Live Channel Follower Counter - Visible as soon as upstream scans startCount */}
         {progress?.startCount && progress.startCount > 0 ? (
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-indigo-500/20 bg-indigo-950/30 px-3.5 py-2 text-xs">
             <span className="flex items-center gap-1.5 text-slate-300">
               <span className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
               <span>Số lượng hiện tại trên kênh:</span>
               <strong className="text-white font-mono font-bold text-sm">
-                {(progress.currentCount || (progress.startCount + currentCount)).toLocaleString("vi-VN")}
+                {(
+                  progress.currentCount ||
+                  progress.startCount + currentCount
+                ).toLocaleString("vi-VN")}
               </strong>
             </span>
             <span className="flex items-center gap-1.5 text-emerald-300">
               <span>Mục tiêu hoàn tất:</span>
               <strong className="text-emerald-400 font-mono font-bold text-sm">
-                {(progress.targetCount || (progress.startCount + total)).toLocaleString("vi-VN")}
+                {(
+                  progress.targetCount ||
+                  progress.startCount + total
+                ).toLocaleString("vi-VN")}
               </strong>
             </span>
           </div>
@@ -333,11 +417,17 @@ export default function BuffProgressCard({
             {progress?.startCount && progress.startCount > 0 ? (
               progress.startCount.toLocaleString("vi-VN")
             ) : isCompleted ? (
-              <span className="text-emerald-400 text-sm font-sans font-semibold">Đã đồng bộ</span>
+              <span className="text-emerald-400 text-sm font-sans font-semibold">
+                Đã đồng bộ
+              </span>
+            ) : isCancelled ? (
+              <span className="text-rose-400 text-sm font-sans font-semibold">
+                Đã hủy đơn
+              </span>
             ) : (
               <span className="inline-flex items-center gap-1.5 text-xs font-sans font-medium text-amber-300">
-                <RefreshCw className="h-3 w-3 animate-spin text-amber-400" />
-                Đang quét...
+                <Clock className="h-3 w-3 text-amber-400" />
+                Đang xếp hàng...
               </span>
             )}
           </div>
@@ -348,7 +438,11 @@ export default function BuffProgressCard({
             <TrendingUp className="h-3 w-3 text-emerald-400" />
             <span>Đã tăng thực tế</span>
           </div>
-          <div className="text-base sm:text-lg font-bold text-emerald-400 font-mono">
+          <div
+            className={`text-base sm:text-lg font-mono font-bold ${
+              isCancelled ? "text-slate-500" : "text-emerald-400"
+            }`}
+          >
             +{currentCount.toLocaleString("vi-VN")}
           </div>
         </div>
@@ -358,7 +452,11 @@ export default function BuffProgressCard({
             <Clock className="h-3 w-3 text-amber-400" />
             <span>Còn lại</span>
           </div>
-          <div className="text-base sm:text-lg font-bold text-amber-300 font-mono">
+          <div
+            className={`text-base sm:text-lg font-mono font-bold ${
+              isCancelled ? "text-slate-500" : "text-amber-300"
+            }`}
+          >
             {remainsCount.toLocaleString("vi-VN")}
           </div>
         </div>
@@ -385,25 +483,39 @@ export default function BuffProgressCard({
           {timelineSteps.map((step) => {
             const isStepDone = step.status === "done";
             const isStepActive = step.status === "active";
+            const isStepError = step.status === "error";
 
             return (
-              <div key={step.id} className="relative flex sm:flex-col items-start gap-3 sm:gap-2">
+              <div
+                key={step.id}
+                className="relative flex sm:flex-col items-start gap-3 sm:gap-2"
+              >
                 <div className="flex items-center gap-2">
                   <div
                     className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-all ${
                       isStepDone
                         ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30"
+                        : isStepError
+                        ? "bg-rose-500 text-white shadow-md shadow-rose-500/30"
                         : isStepActive
                         ? "bg-indigo-600 text-white ring-4 ring-indigo-500/20 animate-pulse"
                         : "bg-slate-800 text-slate-400"
                     }`}
                   >
-                    {isStepDone ? <Check className="h-4 w-4" /> : step.id}
+                    {isStepDone ? (
+                      <Check className="h-4 w-4" />
+                    ) : isStepError ? (
+                      <X className="h-4 w-4" />
+                    ) : (
+                      step.id
+                    )}
                   </div>
                   <span
                     className={`text-xs font-bold ${
                       isStepDone
                         ? "text-white"
+                        : isStepError
+                        ? "text-rose-400"
                         : isStepActive
                         ? "text-indigo-300"
                         : "text-slate-400"
@@ -465,10 +577,12 @@ export default function BuffProgressCard({
         </div>
       )}
 
-      {/* Safety & White-label guarantee banner */}
+      {/* Safety & Queue guarantee banner */}
       <div className="relative z-10 mt-4 text-center">
-        <p className="text-[11px] text-slate-400">
-          Máy chủ phân bổ tự động phân tán IP an toàn 100% cho tài khoản. Bạn có thể đóng trình duyệt, hệ thống vẫn tiếp tục chạy tự động.
+        <p className="text-[11px] text-slate-400 leading-relaxed">
+          {isCancelled
+            ? "Đơn hàng đã được máy chủ dừng xử lý an toàn. Vui lòng liên hệ hỗ trợ hoặc đặt lại đơn mới với tài khoản công khai."
+            : "Máy chủ phân bổ tự động IP an toàn 100% cho tài khoản. Thời gian xếp hàng và quét số gốc ban đầu thường từ 2 – 15 phút. Bạn có thể đóng trình duyệt, hệ thống vẫn tiếp tục chạy tự động."}
         </p>
       </div>
     </div>
