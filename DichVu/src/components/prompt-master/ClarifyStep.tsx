@@ -42,7 +42,7 @@ export default function ClarifyStep({
     return (
       <div className="text-center py-8 space-y-4">
         <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          Không cần thêm câu hỏi làm rõ nào. Bấm nút bên dưới để tạo Master Prompt ngay!
+          Ý tưởng đã đủ dữ liệu. Bấm nút bên dưới để tạo Master Prompt ngay!
         </p>
         <button
           type="button"
@@ -63,7 +63,7 @@ export default function ClarifyStep({
     if (!isLastQuestion) {
       setTimeout(() => {
         setCurrentIndex((prev) => Math.min(total - 1, prev + 1));
-      }, 200);
+      }, 300);
     }
   };
 
@@ -94,14 +94,19 @@ export default function ClarifyStep({
   const progressPercent = Math.round(((currentIndex + 1) / total) * 100);
 
   return (
-    <div className="space-y-6 animate-fade-slide-in">
+    <div className="space-y-5 animate-fade-slide-in">
       {/* Header & Clean Progress Track */}
       <div className="space-y-3 pb-3 border-b border-zinc-200 dark:border-zinc-800">
         <div className="flex items-center justify-between text-xs">
-          <span className="font-semibold text-zinc-900 dark:text-zinc-100">
-            Làm rõ bài toán ({currentIndex + 1} / {total})
-          </span>
-          <span className="font-mono text-zinc-400">
+          <div>
+            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">
+              Làm rõ bài toán &amp; kiến trúc
+            </h3>
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+              Quyết định {currentIndex + 1} trên {total} — Chốt các mắt xích kỹ thuật để prompt bám sát thực tế
+            </p>
+          </div>
+          <span className="font-mono text-zinc-400 text-xs">
             {progressPercent}%
           </span>
         </div>
@@ -118,13 +123,36 @@ export default function ClarifyStep({
         <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate italic">
           "{prompt}"
         </p>
+
+        {/* Context Chain: Decisions already locked in previous questions */}
+        {currentIndex > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5 pt-1 text-xs">
+            <span className="text-[11px] font-mono text-zinc-400">Đã chốt:</span>
+            {questions.slice(0, currentIndex).map((q, idx) => {
+              const ans = answers[q.id];
+              if (!ans) return null;
+              return (
+                <button
+                  key={q.id}
+                  type="button"
+                  onClick={() => setCurrentIndex(idx)}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium text-[11px] hover:border-zinc-300 dark:hover:border-zinc-500 transition-colors"
+                  title="Bấm để sửa lại câu này"
+                >
+                  <span className="text-zinc-400">#{idx + 1}</span>
+                  <span className="truncate max-w-[140px]">{ans}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Current Question */}
       <div key={`q-${currentIndex}`} className="space-y-4">
-        <h3 className="text-base sm:text-lg font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
+        <h4 className="text-base sm:text-lg font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
           {currentQuestion.question}
-        </h3>
+        </h4>
 
         {/* Options Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -212,7 +240,7 @@ export default function ClarifyStep({
             disabled={isLoading}
             className="text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors px-2 py-1"
           >
-            Bỏ qua & Tạo ngay
+            Bỏ qua &amp; Tạo ngay
           </button>
 
           <button

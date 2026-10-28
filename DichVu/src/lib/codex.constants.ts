@@ -18,7 +18,7 @@ export const CODEX_PACKAGES: CodexPackage[] = [
     priceVnd: 12000,
     badge: "Tiết kiệm",
     popular: false,
-    description: "5.000.000 Quota Points — Thích hợp dùng thử cá nhân hoặc test bot",
+    description: "5.000.000 Quota Points — Thích hợp dùng thử cá nhân hoặc test bot (Hỗ trợ Claude & OpenAI)",
   },
   {
     id: "codex-50",

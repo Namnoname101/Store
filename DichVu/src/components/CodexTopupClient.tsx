@@ -276,11 +276,11 @@ export default function CodexTopupClient() {
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <Link
-                        href="/#catalog"
+                        href="/?category=ai-api#catalog"
                         className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 transition"
                       >
                         <ShoppingBag className="h-3.5 w-3.5" />
-                        <span>Mua gói cấp Key mới tại Trang chủ</span>
+                        <span>Mua gói Key Claude / Cursor tại Cửa hàng</span>
                       </Link>
                       <a
                         href="https://m.me/daitruongstore"

@@ -81,8 +81,8 @@ interface SectionDefinition {
 const SECTION_DEFINITIONS: SectionDefinition[] = [
   {
     id: "ai-api",
-    title: "Key & API Trí Tuệ Nhân Tạo (Codex AI)",
-    shortLabel: "API Codex",
+    title: "Key & API Trí Tuệ Nhân Tạo (Claude, Codex, AI Developer)",
+    shortLabel: "API AI",
     icon: CursorSectionIcon,
     iconBg: "bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80",
     iconColor: "text-zinc-900 dark:text-zinc-100",

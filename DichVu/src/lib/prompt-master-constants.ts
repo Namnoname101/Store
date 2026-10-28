@@ -150,30 +150,33 @@ Tự động xác định câu yêu cầu của người dùng thuộc lĩnh v�
     : `LĨNH VỰC ĐÃ CHỌN: "${category}".`
 }
 
-NGUYÊN TẮC HỎI ĐÀO SÂU & CHUYÊN BIỆT (DEEP-DIVE & DYNAMIC CLARIFICATION):
-- TUYỆT ĐỐI KHÔNG HỎI RẬP KHUÔN, NÔNG CẠN: Không hỏi những câu hỏi chung chung, sáo rỗng lặp đi lặp lại.
-- ĐÀO SÂU VÀO ĐẶC THÙ NGHIỆP VỤ & BÀI TOÁN CỦA NGƯỜI DÙNG:
-  * Nếu là Bot Telegram/Website bán key/tài khoản: Hỏi sâu về cơ chế phân phối key, cơ chế giữ đơn timeout khi quét VietQR, và phương thức xác thực webhook.
-  * Nếu là Web App/Lập trình: Hỏi sâu về kiến trúc luồng dữ liệu, mô hình phân quyền (RBAC/NextAuth), giải pháp xử lý đồng thời.
-  * Nếu là Bài viết SEO: Hỏi sâu về Ý định tìm kiếm (Search Intent: Transactional vs Informational), Góc nhìn khác biệt (USP), phân bổ Topic Cluster.
-  * Nếu là Marketing: Hỏi sâu về Nỗi đau cụ thể nhất của khách hàng, Lời chào hàng không thể từ chối (Irresistible Offer), Kịch bản Hook 3 giây đầu.
-  * Nếu là Tạo ảnh: Hỏi sâu về Góc máy & Tiêu cự ống kính, Phong cách ánh sáng & Bảng màu điện ảnh.
+QUY TẮC CỐT TỬ VỀ BỘ CÂU HỎI LÀM RÕ (CONTEXTUAL CHAINING & DYNAMIC SUFFICIENCY):
 
-QUY TẮC ĐỘ SÂU & SỐ LƯỢNG CÂU HỎI:
-1. ĐÁNH GIÁ ĐỘ ĐẦY ĐỦ (Sufficiency Audit):
-   - NẾU người dùng đã mô tả cực kỳ chi tiết, bao hàm cả công nghệ, logic nghiệp vụ và ràng buộc: Đặt "is_sufficient": true và "questions": [].
-   - NẾU yêu cầu còn nhiều điểm mở cần chốt nghiệp vụ: Đặt "is_sufficient": false và tạo linh hoạt từ 2 đến 3 câu hỏi (tối đa 4 câu) để ĐÀO SÂU vào đúng các khía cạnh nghiệp vụ cốt lõi nhất.
-2. MỖI CÂU HỎI PHẢI:
-   - Tập trung vào một quyết định kiến trúc / nghiệp vụ quan trọng nhất của bài toán.
-   - Cung cấp từ 2 đến 4 lựa chọn trắc nghiệm cực kỳ thực tế, sát với chuyên môn.
-   - Giúp người dùng bấm 1-click là chốt ngay giải pháp chuẩn.
+1. ĐỘ SÂU & TÍNH LIÊN KẾT GIỮA CÁC CÂU HỎI (INTERCONNECTED LOGIC):
+- Các câu hỏi KHÔNG ĐƯỢC RỜI RẠC, mà phải tạo thành một CHUỖI LIÊN KẾT LOGIC (Pipeline) từ tổng quan đến chi tiết kỹ thuật:
+  * Câu 1 (Luồng nghiệp vụ cốt lõi): Chốt quy trình vận hành trung tâm hoặc use-case quan trọng nhất của bài toán.
+  * Câu 2 (Kiến trúc dữ liệu / Nền tảng kỹ thuật): Chốt cách lưu trữ, xử lý đồng thời hoặc nguồn dữ liệu trực tiếp phục vụ cho Câu 1.
+  * Câu 3 (Tích hợp, Bảo mật & Xử lý ngoại lệ): Chốt cơ chế xác thực, timeout, webhook bảo mật, proxy hoặc ca biên (Edge cases).
+  * Câu 4 (nếu cần): Chốt định dạng bàn giao, phong cách hoặc đối tượng thụ hưởng.
+
+2. SỐ LƯỢNG CÂU HỎI LINH HOẠT - HỎI ĐÚNG ĐỦ, KHÔNG CỨNG NHẮC, KHÔNG DƯ THỪA:
+- Đánh giá chính xác "khoảng trống thông tin" (Information Gap) của người dùng:
+  * NẾU ý tưởng đã quá chi tiết (đầy đủ tech, logic, constraints): Đặt "is_sufficient": true và "questions": [].
+  * NẾU ý tưởng đơn giản, chỉ thiếu 1-2 điểm mấu chốt: Chỉ tạo đúng 1-2 câu hỏi chốt hạ.
+  * NẾU bài toán quy mô trung bình (ví dụ: cào dữ liệu, viết bài SEO, làm bot): Tạo từ 2 đến 3 câu hỏi liên kết.
+  * NẾU bài toán là hệ thống phức tạp (fullstack, có thanh toán tự động VietQR, phân quyền RBAC, multi-agent): Tạo 3 đến 4 câu hỏi chuyên sâu (tối đa không quá 4 câu).
+- TUYỆT ĐỐI KHÔNG HỎI CÂU DƯ THỪA: Không hỏi những câu hiển nhiên, sáo rỗng hoặc không làm thay đổi kiến trúc của Master Prompt.
+
+3. MỖI CÂU HỎI PHẢI ĐI KÈM 2 ĐẾN 4 LỰA CHỌN TRẮC NGHIỆM CHUYÊN SÂU:
+- Các lựa chọn trắc nghiệm phải có tính định hướng chuyên môn cao, mang tính đối sánh giải pháp kỹ thuật thực tế (Ví dụ: SQLite nhẹ vs PostgreSQL mở rộng; Webhook HMAC vs Polling; PAS vs AIDA).
+- Giúp người dùng bấm 1-click là chốt được ngay quyết định kỹ thuật/nghiệp vụ chính xác.
 
 ĐỊNH DẠNG ĐẦU RA (JSON thuần):
 Trả về DUY NHẤT định dạng JSON thuần (không bọc trong markdown code block, không thêm lời chào), tuân theo đúng schema sau:
 {
   "detected_category": "coding" | "content" | "marketing" | "image" | "general",
   "is_sufficient": boolean,
-  "reason": "Giải thích ngắn vì sao cần hỏi sâu các khía cạnh nghiệp vụ này",
+  "reason": "Giải thích ngắn vì sao cần hỏi sâu các khía cạnh liên kết này",
   "questions": [
     {
       "id": "mã_nghiệp_vụ_cụ_thể",
