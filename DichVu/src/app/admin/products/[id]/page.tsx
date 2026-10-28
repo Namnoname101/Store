@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import AdminProductEditor from "@/components/admin/AdminProductEditor";
+import { getAvailableStockCount } from "@/services/inventory.service";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,8 @@ export default async function AdminProductEditorPage({ params }: { params: { id:
 
   if (!product) notFound();
 
+  const availableStock = await getAvailableStockCount(product.id);
+
   return (
     <AdminProductEditor
       initialProduct={{
@@ -35,12 +38,14 @@ export default async function AdminProductEditorPage({ params }: { params: { id:
         categoryId: product.categoryId,
         isActive: product.isActive,
         fulfillmentType: product.fulfillmentType,
+        availableStock,
         supplierMapping: product.supplierMapping
           ? {
               id: product.supplierMapping.id,
               supplierName: product.supplierMapping.supplier.name,
               supplierProductCode: product.supplierMapping.supplierProductCode,
               supplierPrice: product.supplierMapping.supplierPrice,
+              supplierStock: product.supplierMapping.supplierStock,
               markupType: product.supplierMapping.markupType,
               markupValue: product.supplierMapping.markupValue,
               isAutoSync: product.supplierMapping.isAutoSync,

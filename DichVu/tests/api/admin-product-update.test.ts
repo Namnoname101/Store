@@ -151,4 +151,31 @@ describe("Admin Product Update API - Google Drive Thumbnail & Unified Pricing Mo
     expect(mapping?.isAutoSync).toBe(true);
     expect(mapping?.markupValue).toBe(50);
   });
+
+  it("allows admin to directly adjust stock and updates supplierStock for dropship products", async () => {
+    await prisma.product.update({
+      where: { id: testProductId },
+      data: { fulfillmentType: "API_DROPSHIP" },
+    });
+
+    const req = new NextRequest(`http://localhost:3000/api/admin/products/${testProductId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        stock: 45,
+      }),
+    });
+
+    const res = await updateProduct(req, { params: { id: testProductId } });
+    expect(res.status).toBe(200);
+
+    const data = await res.json();
+    expect(data.success).toBe(true);
+    expect(data.product.availableStock).toBe(45);
+
+    const mapping = await prisma.supplierProductMapping.findUnique({
+      where: { productId: testProductId },
+    });
+    expect(mapping?.supplierStock).toBe(45);
+  });
 });

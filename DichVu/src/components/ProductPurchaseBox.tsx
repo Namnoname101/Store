@@ -343,7 +343,13 @@ export default function ProductPurchaseBox({
           <div className="flex items-center gap-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-500/30 px-3 py-2 text-xs font-medium text-blue-800 dark:text-blue-300">
             <span className="h-2 w-2 rounded-full bg-blue-500" />
             <span>
-              Còn <strong>{stockCount}</strong> sản phẩm trong kho
+              {stockCount >= 99999 ? (
+                <>Dịch vụ tự động — Luôn có sẵn</>
+              ) : (
+                <>
+                  Còn <strong>{stockCount}</strong> sản phẩm trong kho
+                </>
+              )}
             </span>
           </div>
         ) : (

@@ -23,6 +23,7 @@ export interface SupplierMappingInput {
   supplierName: string;
   supplierProductCode: string;
   supplierPrice: number;
+  supplierStock?: number;
   markupType: string;
   markupValue: number;
   isAutoSync: boolean;
@@ -41,6 +42,7 @@ export interface ProductInput {
   categoryId: string;
   isActive: boolean;
   fulfillmentType: string;
+  availableStock?: number;
   supplierMapping?: SupplierMappingInput | null;
 }
 
@@ -64,6 +66,7 @@ interface Draft {
   type: string;
   categoryId: string;
   isActive: boolean;
+  stock: string;
   // Unified Pricing Mode
   isAutoSync: boolean;
   markupType: string;
@@ -101,6 +104,9 @@ function calculateRetailPreview(
 
 function draftFromProduct(product: ProductInput): Draft {
   const mapping = product.supplierMapping;
+  const currentStock = mapping?.supplierStock !== undefined
+    ? mapping.supplierStock
+    : (product.availableStock ?? 0);
   return {
     title: product.title,
     slug: product.slug,
@@ -111,6 +117,7 @@ function draftFromProduct(product: ProductInput): Draft {
     type: product.type,
     categoryId: product.categoryId,
     isActive: product.isActive,
+    stock: String(currentStock),
     isAutoSync: mapping ? mapping.isAutoSync : false,
     markupType: mapping?.markupType || "PERCENTAGE",
     markupValue: mapping ? String(mapping.markupValue) : "20",
@@ -129,6 +136,9 @@ function validationError(form: Draft): string | null {
   }
   if (form.isAutoSync && (isNaN(Number(form.markupValue)) || Number(form.markupValue) < 0)) {
     return "Mức chênh lệch lãi (markup) phải là số không âm.";
+  }
+  if (form.stock && (!/^\d+$/.test(form.stock) || Number(form.stock) < 0 || !Number.isSafeInteger(Number(form.stock)))) {
+    return "Số lượng tồn kho phải là số nguyên không âm hợp lệ.";
   }
   if (form.thumbnailUrl && !/^https?:\/\//i.test(form.thumbnailUrl)) {
     return "Ảnh phải có đường dẫn HTTP hoặc HTTPS.";
@@ -248,6 +258,7 @@ export default function AdminProductEditor({ initialProduct, categories }: Props
             ...snapshot,
             price: Number(snapshot.price),
             originalPrice: snapshot.originalPrice ? Number(snapshot.originalPrice) : null,
+            stock: Number(snapshot.stock) || 0,
             isAutoSync: snapshot.isAutoSync,
             markupType: snapshot.markupType,
             markupValue: Number(snapshot.markupValue) || 0,
@@ -269,6 +280,11 @@ export default function AdminProductEditor({ initialProduct, categories }: Props
           categoryId: payload.product.categoryId,
           type: payload.product.type,
           isActive: payload.product.isActive,
+          stock: payload.product.availableStock !== undefined
+            ? String(payload.product.availableStock)
+            : payload.product.supplierMapping?.supplierStock !== undefined
+            ? String(payload.product.supplierMapping.supplierStock)
+            : snapshot.stock,
           isAutoSync: payload.product.supplierMapping
             ? payload.product.supplierMapping.isAutoSync
             : snapshot.isAutoSync,
@@ -338,7 +354,7 @@ export default function AdminProductEditor({ initialProduct, categories }: Props
   const tabs: Array<{ key: Tab; title: string }> = [
     { key: "general", title: "Thông tin chung" },
     { key: "pricing", title: "Gói & Giá" },
-    { key: "supplier", title: "Nhà cung cấp" },
+    { key: "supplier", title: "Tồn kho & Nguồn hàng" },
     { key: "settings", title: "Cấu hình bán hàng" },
   ];
 
@@ -771,25 +787,102 @@ export default function AdminProductEditor({ initialProduct, categories }: Props
         )}
 
         {tab === "supplier" && (
-          <>
-            <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-4">
-              <h2 className="font-semibold text-white">Cấu hình nhà cung cấp API</h2>
-              <p className="mt-2 text-sm text-slate-300">
-                Sản phẩm hiện sử dụng cơ chế{" "}
-                <strong>{initialProduct.fulfillmentType === "API_DROPSHIP" ? "API nhà cung cấp" : "Kho nội bộ"}</strong>.
-                Liên kết và đồng bộ nguồn hàng được quản lý ở trang Nhà cung cấp riêng.
-              </p>
-              <Link
-                className="mt-3 inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white"
-                href="/admin/suppliers"
-              >
-                Mở quản lý nhà cung cấp
-              </Link>
-            </div>
-            <p className="text-xs text-slate-400">
-              Bạn có thể điều chỉnh trực tiếp cơ chế tính giá tự động hoặc khóa giá cố định ngay tại tab &quot;Gói &amp; Giá&quot;.
-            </p>
-          </>
+          <div className="space-y-5">
+            {initialProduct.fulfillmentType === "API_DROPSHIP" ? (
+              <>
+                <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h2 className="font-semibold text-white flex items-center gap-2">
+                      <Package className="h-5 w-5 text-blue-400" />
+                      Quản lý số lượng tồn kho (API Dropship)
+                    </h2>
+                    <span className="text-xs px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 font-medium border border-blue-500/30">
+                      Nguồn: {supplierMapping?.supplierName || "API Sàn"}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm text-slate-300 leading-relaxed">
+                    Số lượng tồn kho hiển thị cho khách đặt mua trên web. Hệ thống sẽ tự động trừ dần khi có đơn hàng mua thành công. Bạn cũng có thể trực tiếp sửa số lượng tồn kho theo ý muốn bất cứ lúc nào tại đây.
+                  </p>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor="productStock" className={label}>
+                      Số lượng tồn kho khả dụng
+                    </label>
+                    <input
+                      id="productStock"
+                      className={field}
+                      inputMode="numeric"
+                      value={form.stock}
+                      onChange={(e) => patch("stock", e.target.value)}
+                      placeholder="Ví dụ: 50"
+                    />
+                    <p className="mt-1.5 text-xs text-slate-400">
+                      Với dịch vụ buff MXH vô hạn (999999), hệ thống hiển thị thông minh &quot;Dịch vụ tự động — Luôn có sẵn&quot;.
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-4 flex flex-col justify-between">
+                    <div>
+                      <span className="text-xs uppercase tracking-wider text-slate-400 font-semibold">Tình trạng hiển thị Web</span>
+                      <div className="mt-2 flex items-center gap-2">
+                        <span
+                          className={`h-2.5 w-2.5 rounded-full ${
+                            Number(form.stock) > 0 ? "bg-emerald-400 animate-pulse" : "bg-rose-500"
+                          }`}
+                        />
+                        <span className="text-sm font-bold text-white">
+                          {Number(form.stock) >= 99999
+                            ? "Dịch vụ tự động — Luôn có sẵn"
+                            : Number(form.stock) > 0
+                            ? `Còn ${form.stock} sản phẩm trong kho`
+                            : "Tạm hết hàng (khách không thể đặt)"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-slate-800/80 text-xs text-slate-400 flex flex-wrap gap-2 justify-between">
+                      <span>Đối tác: <strong className="text-slate-200">{supplierMapping?.supplierName || "—"}</strong></span>
+                      <span>Mã: <strong className="text-slate-200">{supplierMapping?.supplierProductCode || "—"}</strong></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-1 flex items-center justify-between">
+                  <Link
+                    className="inline-flex items-center gap-2 rounded-lg bg-slate-800 hover:bg-slate-700 px-4 py-2 text-xs font-medium text-slate-200 border border-slate-700 transition-all"
+                    href="/admin/suppliers"
+                  >
+                    <TrendingUp className="h-4 w-4 text-blue-400" />
+                    Mở bảng quản lý nhà cung cấp &amp; đối tác
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-4">
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
+                  <h2 className="font-semibold text-white flex items-center gap-2">
+                    <ShieldCheck className="h-5 w-5 text-emerald-400" />
+                    Sản phẩm kho nội bộ (Kho Key / Tài khoản)
+                  </h2>
+                  <p className="mt-2 text-sm text-slate-300 leading-relaxed">
+                    Sản phẩm này sử dụng danh sách key hoặc tài khoản lưu trực tiếp trong cơ sở dữ liệu. Tồn kho khả dụng hiện tại là{" "}
+                    <strong className="text-emerald-300 font-bold">{form.stock}</strong> sản phẩm.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <Link
+                    href={`/admin/inventory?productId=${initialProduct.id}`}
+                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 shadow-lg shadow-blue-500/20"
+                  >
+                    <Package className="h-4 w-4" />
+                    Nhập thêm Key / Tài khoản vào kho
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
         )}
 
         {tab === "settings" && (

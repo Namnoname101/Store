@@ -286,6 +286,26 @@ export async function fulfillOrderViaUpstream(
       });
       totalKeysDelivered += purchaseResult.deliveredKeys.length;
     }
+
+    // Decrement supplierStock so inventory decreases when sold
+    if (item.productId) {
+      try {
+        const mapping = await prisma.supplierProductMapping.findUnique({
+          where: { productId: item.productId },
+          select: { id: true, supplierStock: true },
+        });
+        if (mapping && mapping.supplierStock > 0) {
+          await prisma.supplierProductMapping.update({
+            where: { id: mapping.id },
+            data: {
+              supplierStock: Math.max(0, mapping.supplierStock - (item.quantity || 1)),
+            },
+          });
+        }
+      } catch (stockErr) {
+        console.warn(`Failed to decrement supplierStock for product ${item.productId}:`, stockErr);
+      }
+    }
   }
 
   // Update order as COMPLETED

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma, ProductType } from "@/lib/prisma";
 import { normalizeThumbnailUrl } from "@/lib/catalog-grouping";
 import { calculateRetailPrice } from "@/services/pricing.service";
+import { getAvailableStockCount } from "@/services/inventory.service";
 
 function slugify(text: string): string {
   return text
@@ -33,7 +34,8 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ success: true, product }, { status: 200 });
+    const availableStock = await getAvailableStockCount(product.id);
+    return NextResponse.json({ success: true, product: { ...product, availableStock } }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { error: error?.message || "Failed to fetch product" },
@@ -58,6 +60,7 @@ export async function PUT(
       thumbnailUrl,
       isActive,
       categoryId,
+      stock,
     } = body;
 
     const existingProduct = await prisma.product.findUnique({
@@ -192,6 +195,16 @@ export async function PUT(
       }
     }
 
+    if (stock !== null && stock !== undefined && !isNaN(Number(stock))) {
+      const cleanStock = Math.max(0, Math.floor(Number(stock)));
+      if (existingProduct.fulfillmentType === "API_DROPSHIP") {
+        await prisma.supplierProductMapping.updateMany({
+          where: { productId: params.id },
+          data: { supplierStock: cleanStock },
+        });
+      }
+    }
+
     const updatedProduct = await prisma.product.update({
       where: { id: params.id },
       data: dataToUpdate,
@@ -201,8 +214,9 @@ export async function PUT(
       },
     });
 
+    const availableStock = await getAvailableStockCount(updatedProduct.id);
     return NextResponse.json(
-      { success: true, product: updatedProduct },
+      { success: true, product: { ...updatedProduct, availableStock } },
       { status: 200 }
     );
   } catch (error: any) {

@@ -165,6 +165,24 @@ export async function fulfillCodexCreditOrder(
             orderId: orderId,
           },
         });
+
+        // Decrement supplierStock if mapping exists
+        try {
+          const mapping = await prisma.supplierProductMapping.findUnique({
+            where: { productId: firstProductId },
+            select: { id: true, supplierStock: true },
+          });
+          if (mapping && mapping.supplierStock > 0) {
+            await prisma.supplierProductMapping.update({
+              where: { id: mapping.id },
+              data: {
+                supplierStock: Math.max(0, mapping.supplierStock - 1),
+              },
+            });
+          }
+        } catch (stockErr) {
+          console.warn(`Failed to decrement supplierStock for codex product ${firstProductId}:`, stockErr);
+        }
       }
 
       return {

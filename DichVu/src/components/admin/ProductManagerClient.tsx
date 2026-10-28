@@ -384,7 +384,7 @@ export default function ProductManagerClient({
                               : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                           }`}
                         >
-                          {p.availableStock} sẵn sàng
+                          {p.availableStock >= 99999 ? "Vô hạn (SMM)" : `${p.availableStock} sẵn sàng`}
                         </span>
                         {p.fulfillmentType === "API_DROPSHIP" && (
                           <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
