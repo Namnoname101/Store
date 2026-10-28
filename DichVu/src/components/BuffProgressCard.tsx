@@ -301,6 +301,25 @@ export default function BuffProgressCard({
             )}
           </div>
         </div>
+
+        {/* Live Channel Follower Counter */}
+        {progress?.startCount && progress.startCount > 0 ? (
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-indigo-500/20 bg-indigo-950/30 px-3.5 py-2 text-xs">
+            <span className="flex items-center gap-1.5 text-slate-300">
+              <span className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
+              <span>Số lượng hiện tại trên kênh:</span>
+              <strong className="text-white font-mono font-bold text-sm">
+                {(progress.currentCount || (progress.startCount + currentCount)).toLocaleString("vi-VN")}
+              </strong>
+            </span>
+            <span className="flex items-center gap-1.5 text-emerald-300">
+              <span>Mục tiêu hoàn tất:</span>
+              <strong className="text-emerald-400 font-mono font-bold text-sm">
+                {(progress.targetCount || (progress.startCount + total)).toLocaleString("vi-VN")}
+              </strong>
+            </span>
+          </div>
+        ) : null}
       </div>
 
       {/* 4-Stat Metric Cards */}

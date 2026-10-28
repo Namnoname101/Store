@@ -1,8 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Terminal, CheckCircle2, AlertCircle } from "lucide-react";
-import { CategoryType, ClarifyQuestion, OutputFormatType, TargetAiType } from "@/lib/prompt-master-constants";
+import {
+  CategoryType,
+  ClarifyQuestion,
+  OutputFormatType,
+  TargetAiType,
+} from "@/lib/prompt-master-constants";
 import PromptInputStep from "./PromptInputStep";
 import ClarifyStep from "./ClarifyStep";
 import AnalyzingStep from "./AnalyzingStep";
@@ -13,7 +17,7 @@ type StepType = "input" | "clarify" | "result";
 
 export default function PromptMasterClient() {
   const [step, setStep] = useState<StepType>("input");
-  const [category, setCategory] = useState<CategoryType>("coding");
+  const [category, setCategory] = useState<CategoryType>("auto");
   const [formatType, setFormatType] = useState<OutputFormatType>("standard");
   const [targetAi, setTargetAi] = useState<TargetAiType>("all");
   const [prompt, setPrompt] = useState("");
@@ -33,8 +37,6 @@ export default function PromptMasterClient() {
     setErrorMessage(null);
     setSufficiencyNotice(null);
 
-    const startTime = Date.now();
-
     try {
       const res = await fetch("/api/tools/prompt-master/clarify", {
         method: "POST",
@@ -47,19 +49,19 @@ export default function PromptMasterClient() {
         throw new Error(data.error || "Không thể phân tích câu prompt lúc này.");
       }
 
-      // Giữ tối thiểu 2100ms để người dùng theo dõi đầy đủ hiệu ứng step-by-step HUD
-      const elapsed = Date.now() - startTime;
-      if (elapsed < 2100) {
-        await new Promise((resolve) => setTimeout(resolve, 2100 - elapsed));
+      // Auto-update category if detected from prompt
+      let resolvedCat = category;
+      if (data.detectedCategory && data.detectedCategory !== "auto") {
+        resolvedCat = data.detectedCategory;
+        setCategory(data.detectedCategory);
       }
 
-      // If prompt is already detailed or no questions needed: skip clarify step and generate immediately!
+      // If prompt is already detailed or no questions needed: skip clarify step and generate immediately
       if (data.isSufficient === true || !data.questions || data.questions.length === 0) {
-        setSufficiencyNotice("Ý tưởng của bạn đã rất rõ ràng và đầy đủ! Đang tiến hành tạo Master Prompt...");
+        setSufficiencyNotice("Ý tưởng của bạn đã rất rõ ràng! Đang tiến hành tạo Master Prompt...");
         setQuestions([]);
-        await handleGenerate({});
+        await handleGenerate({}, resolvedCat);
       } else {
-        // Switch the central card directly to sequential clarification flow
         setQuestions(data.questions);
         setStep("clarify");
       }
@@ -71,7 +73,10 @@ export default function PromptMasterClient() {
   };
 
   // Step 2: Stream master prompt generation into central result card
-  const handleGenerate = async (customAnswers?: Record<string, string>) => {
+  const handleGenerate = async (
+    customAnswers?: Record<string, string>,
+    overrideCategory?: CategoryType
+  ) => {
     setIsLoading(true);
     setIsStreaming(true);
     setStep("result");
@@ -79,6 +84,7 @@ export default function PromptMasterClient() {
     setErrorMessage(null);
 
     const answersToSend = customAnswers !== undefined ? customAnswers : answers;
+    const catToSend = overrideCategory || category;
 
     try {
       const res = await fetch("/api/tools/prompt-master/generate", {
@@ -86,7 +92,7 @@ export default function PromptMasterClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt,
-          category,
+          category: catToSend,
           answers: answersToSend,
           formatType,
           targetAi,
@@ -99,7 +105,7 @@ export default function PromptMasterClient() {
       }
 
       if (!res.body) {
-        throw new Error("Không thể kết nối luồng dữ liệu (ReadableStream).");
+        throw new Error("Không thể kết nối luồng dữ liệu.");
       }
 
       const reader = res.body.getReader();
@@ -150,6 +156,7 @@ export default function PromptMasterClient() {
   const handleReset = () => {
     setStep("input");
     setPrompt("");
+    setCategory("auto");
     setTargetAi("all");
     setQuestions([]);
     setAnswers({});
@@ -159,93 +166,85 @@ export default function PromptMasterClient() {
   };
 
   return (
-    <div className="relative max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
-      {/* Header section - Clean, grounded Linear-style */}
-      <div className="relative text-center space-y-3 pt-2">
-        <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-100/80 dark:bg-zinc-900/80 px-3 py-1 text-xs font-mono font-medium text-zinc-700 dark:text-zinc-300">
-          <Terminal className="h-3.5 w-3.5 text-zinc-500" />
-          <span>prompt-master • v2.4</span>
-        </div>
+    <div className="relative max-w-3xl mx-auto px-4 sm:px-6 space-y-6">
+      {/* Header section - Clean, human typography, no icon clutter */}
+      <div className="text-center space-y-2 pt-2">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
           Master Prompt Generator
         </h1>
-        <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 max-w-xl mx-auto leading-relaxed">
-          Chuẩn hóa ý tưởng thô thành System Prompt & Cursor Rules chuyên sâu. Tối ưu theo cấu trúc từng mô hình AI.
+        <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 max-w-lg mx-auto leading-relaxed">
+          Gõ 1 câu ý tưởng thô — AI sẽ làm rõ chi tiết và xuất ra Master Prompt chuẩn mực cho Cursor, Claude, ChatGPT hoặc Midjourney.
         </p>
       </div>
 
       {/* Sufficiency feedback alert */}
       {sufficiencyNotice && (
-        <div className="flex items-center gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-3.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 animate-fade-slide-in">
-          <CheckCircle2 className="h-4 w-4 shrink-0" />
-          <span>{sufficiencyNotice}</span>
+        <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-3 text-xs font-medium text-emerald-700 dark:text-emerald-300 text-center animate-fade-slide-in">
+          {sufficiencyNotice}
         </div>
       )}
 
       {/* Error alert if any */}
       {errorMessage && (
-        <div className="flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-3.5 text-xs font-medium text-red-600 dark:text-red-400 animate-fade-slide-in">
-          <AlertCircle className="h-4 w-4 shrink-0" />
-          <span>{errorMessage}</span>
+        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-xs font-medium text-red-600 dark:text-red-400 text-center animate-fade-slide-in">
+          {errorMessage}
         </div>
       )}
 
-      {/* Main Card: Crisp 1px border, matte surface, no cosmic glow */}
-      <div className="relative rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 sm:p-7 shadow-xs transition-all overflow-hidden">
-        {step === "input" && (
-          <div key="step-input" className="animate-fade-slide-in">
-            {isLoading ? (
-              <AnalyzingStep
-                prompt={prompt}
-                category={category}
-                targetAi={targetAi}
-              />
-            ) : (
-              <PromptInputStep
-                prompt={prompt}
-                category={category}
-                formatType={formatType}
-                targetAi={targetAi}
-                onPromptChange={setPrompt}
-                onCategoryChange={setCategory}
-                onFormatTypeChange={setFormatType}
-                onTargetAiChange={setTargetAi}
-                onSubmit={handleAnalyze}
-                isLoading={isLoading}
-              />
-            )}
-          </div>
-        )}
-
-        {step === "clarify" && (
-          <div key="step-clarify" className="animate-fade-slide-in">
-            <ClarifyStep
-              prompt={prompt}
-              category={category}
-              questions={questions}
-              answers={answers}
-              onAnswerChange={handleAnswerChange}
-              onSubmit={() => handleGenerate()}
-              onSkip={() => handleGenerate({})}
-              onBack={() => setStep("input")}
-              isLoading={isLoading}
-            />
-          </div>
-        )}
-
-        {step === "result" && (
-          <div key="step-result" className="animate-fade-slide-in">
-            <ResultStep
+      {/* Dynamic Step View */}
+      {step === "input" && (
+        isLoading ? (
+          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-xs">
+            <AnalyzingStep
               prompt={prompt}
               category={category}
               targetAi={targetAi}
-              masterPrompt={masterPrompt}
-              isStreaming={isStreaming}
-              onReset={handleReset}
             />
           </div>
-        )}
-      </div>
+        ) : (
+          <PromptInputStep
+            prompt={prompt}
+            category={category}
+            formatType={formatType}
+            targetAi={targetAi}
+            onPromptChange={setPrompt}
+            onCategoryChange={setCategory}
+            onFormatTypeChange={setFormatType}
+            onTargetAiChange={setTargetAi}
+            onSubmit={handleAnalyze}
+            isLoading={isLoading}
+          />
+        )
+      )}
+
+      {step === "clarify" && (
+        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 sm:p-7 shadow-xs">
+          <ClarifyStep
+            prompt={prompt}
+            category={category}
+            questions={questions}
+            answers={answers}
+            onAnswerChange={handleAnswerChange}
+            onSubmit={() => handleGenerate()}
+            onSkip={() => handleGenerate({})}
+            onBack={() => setStep("input")}
+            isLoading={isLoading}
+          />
+        </div>
+      )}
+
+      {step === "result" && (
+        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 sm:p-7 shadow-xs">
+          <ResultStep
+            prompt={prompt}
+            category={category}
+            targetAi={targetAi}
+            masterPrompt={masterPrompt}
+            isStreaming={isStreaming}
+            onReset={handleReset}
+          />
+        </div>
+      )}
 
       {/* Bottom CTA to Codex */}
       <CodexCtaBanner />

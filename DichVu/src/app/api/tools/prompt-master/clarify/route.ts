@@ -53,12 +53,13 @@ export async function POST(req: NextRequest) {
     const validCategories = PROMPT_CATEGORIES.map((c) => c.id);
     const resolvedCategory: CategoryType = validCategories.includes(category)
       ? category
-      : "general";
+      : "auto";
 
     const clarifyResult = await callGeminiClarify(prompt, resolvedCategory);
 
     return NextResponse.json({
       success: true,
+      detectedCategory: clarifyResult.detectedCategory || resolvedCategory,
       isSufficient: clarifyResult.isSufficient,
       reason: clarifyResult.reason,
       questions: clarifyResult.questions,

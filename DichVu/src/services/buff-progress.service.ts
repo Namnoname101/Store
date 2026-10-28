@@ -21,6 +21,8 @@ export interface BuffProgressResult {
   remains?: number;
   deliveredCount?: number;
   progressPercent?: number;
+  currentCount?: number;
+  targetCount?: number;
   serviceName?: string;
   providerName?: string;
   serverOrderId?: string;
@@ -29,7 +31,7 @@ export interface BuffProgressResult {
   error?: string;
 }
 
-const STAGE_LABELS: Record<BuffStage, string> = {
+export const STAGE_LABELS: Record<BuffStage, string> = {
   RECEIVED: "Đang tiếp nhận đơn",
   INITIALIZING: "Đang kết nối & quét số gốc",
   IN_PROGRESS: "Đang tăng tương tác",
@@ -38,6 +40,142 @@ const STAGE_LABELS: Record<BuffStage, string> = {
   CANCELLED: "Đã hủy đơn",
   FAILED: "Lỗi kết nối máy chủ",
 };
+
+/**
+ * Accurately calculate stage, delivered count, remains, and progress percent
+ * based on upstream supplier truth without premature 100% false completions.
+ */
+export function computeBuffMetrics(params: {
+  totalQuantity: number;
+  rawStatus?: string;
+  serverStartCount?: number;
+  serverRemains?: number;
+}): {
+  stage: BuffStage;
+  startCount: number;
+  remains: number;
+  deliveredCount: number;
+  progressPercent: number;
+  currentCount?: number;
+  targetCount?: number;
+} {
+  const { totalQuantity, rawStatus = "", serverStartCount, serverRemains } = params;
+  const normStatus = rawStatus.toUpperCase().trim();
+  const safeTotal = Math.max(1, totalQuantity);
+  const startCount =
+    serverStartCount !== undefined && !isNaN(serverStartCount) && serverStartCount > 0
+      ? serverStartCount
+      : 0;
+
+  // 1. Order is COMPLETED
+  if (normStatus === "COMPLETED" || normStatus === "SUCCESS") {
+    return {
+      stage: "COMPLETED",
+      startCount,
+      remains: 0,
+      deliveredCount: safeTotal,
+      progressPercent: 100,
+      currentCount: startCount > 0 ? startCount + safeTotal : undefined,
+      targetCount: startCount > 0 ? startCount + safeTotal : undefined,
+    };
+  }
+
+  // 2. Order is CANCELLED
+  if (normStatus === "CANCELLED" || normStatus === "CANCELED") {
+    return {
+      stage: "CANCELLED",
+      startCount,
+      remains: safeTotal,
+      deliveredCount: 0,
+      progressPercent: 0,
+      currentCount: startCount > 0 ? startCount : undefined,
+      targetCount: startCount > 0 ? startCount + safeTotal : undefined,
+    };
+  }
+
+  // 3. Order is PENDING or INITIALIZING
+  // Note: SMM panels (e.g. HackTim) return remains: 0 and start_count: 0 while queued/Pending.
+  // This must NEVER evaluate to 100% delivered!
+  if (normStatus === "PENDING" || normStatus === "INITIALIZING" || normStatus === "WAITING") {
+    return {
+      stage: "INITIALIZING",
+      startCount: 0,
+      remains: safeTotal,
+      deliveredCount: 0,
+      progressPercent: 0,
+      currentCount: undefined,
+      targetCount: undefined,
+    };
+  }
+
+  // 4. Order is PARTIAL
+  if (normStatus === "PARTIAL") {
+    const remains =
+      serverRemains !== undefined && !isNaN(serverRemains)
+        ? Math.min(safeTotal, Math.max(0, serverRemains))
+        : 0;
+    const deliveredCount = Math.max(0, Math.min(safeTotal, safeTotal - remains));
+    const progressPercent = Math.min(
+      100,
+      Math.max(0, Math.round((deliveredCount / safeTotal) * 100))
+    );
+    return {
+      stage: "PARTIAL",
+      startCount,
+      remains,
+      deliveredCount,
+      progressPercent,
+      currentCount: startCount > 0 ? startCount + deliveredCount : undefined,
+      targetCount: startCount > 0 ? startCount + safeTotal : undefined,
+    };
+  }
+
+  // 5. Order is IN_PROGRESS / PROCESSING
+  // Case A: supplier has non-zero remains reported
+  if (serverRemains !== undefined && !isNaN(serverRemains) && serverRemains > 0) {
+    const remains = Math.min(safeTotal, Math.max(0, serverRemains));
+    const deliveredCount = Math.max(0, Math.min(safeTotal, safeTotal - remains));
+    const progressPercent = Math.min(
+      99,
+      Math.max(0, Math.round((deliveredCount / safeTotal) * 100))
+    );
+    return {
+      stage: "IN_PROGRESS",
+      startCount,
+      remains,
+      deliveredCount,
+      progressPercent,
+      currentCount: startCount > 0 ? startCount + deliveredCount : undefined,
+      targetCount: startCount > 0 ? startCount + safeTotal : undefined,
+    };
+  }
+
+  // Case B: serverRemains is 0 or undefined, but not completed yet
+  // If startCount has not been scanned yet, it is still queued/initializing
+  if (startCount === 0) {
+    return {
+      stage: "INITIALIZING",
+      startCount: 0,
+      remains: safeTotal,
+      deliveredCount: 0,
+      progressPercent: 0,
+      currentCount: undefined,
+      targetCount: undefined,
+    };
+  }
+
+  // Case C: startCount > 0 and serverRemains is 0, but status is IN_PROGRESS
+  // Delivery is practically finished, capping at 99% until status flips to COMPLETED
+  return {
+    stage: "IN_PROGRESS",
+    startCount,
+    remains: 0,
+    deliveredCount: safeTotal,
+    progressPercent: 99,
+    currentCount: startCount + safeTotal,
+    targetCount: startCount + safeTotal,
+  };
+}
 
 export async function getBuffProgress(orderCode: string): Promise<BuffProgressResult> {
   const order = await prisma.order.findUnique({
@@ -154,52 +292,26 @@ export async function getBuffProgress(orderCode: string): Promise<BuffProgressRe
       };
     }
 
-    const startCount =
-      statusRes.startCount !== undefined && !isNaN(statusRes.startCount)
-        ? statusRes.startCount
-        : 0;
-    let remains =
-      statusRes.remains !== undefined && !isNaN(statusRes.remains)
-        ? statusRes.remains
-        : totalQuantity;
-    let deliveredCount = Math.max(0, Math.min(totalQuantity, totalQuantity - remains));
-
-    let stage: BuffStage = "IN_PROGRESS";
-    const rawStatus = (statusRes.status || "").toUpperCase();
-
-    if (rawStatus === "COMPLETED") {
-      stage = "COMPLETED";
-      remains = 0;
-      deliveredCount = totalQuantity;
-    } else if (rawStatus === "PARTIAL") {
-      stage = "PARTIAL";
-    } else if (rawStatus === "CANCELLED" || rawStatus === "CANCELED") {
-      stage = "CANCELLED";
-    } else if (rawStatus === "PENDING") {
-      stage = "INITIALIZING";
-    } else if (rawStatus === "PROCESSING") {
-      // If startCount has been scanned or progress is delivered, mark as IN_PROGRESS
-      stage = startCount > 0 || deliveredCount > 0 ? "IN_PROGRESS" : "INITIALIZING";
-    } else {
-      stage = "IN_PROGRESS";
-    }
-
-    const progressPercent =
-      totalQuantity > 0
-        ? Math.min(100, Math.max(0, Math.round((deliveredCount / totalQuantity) * 100)))
-        : 0;
+    const metrics = computeBuffMetrics({
+      totalQuantity,
+      rawStatus: statusRes.status || statusRes.rawStatus || "",
+      serverStartCount: statusRes.startCount,
+      serverRemains: statusRes.remains,
+    });
 
     return {
       orderCode,
       isBuffOrder: true,
-      status: stage,
-      statusLabel: STAGE_LABELS[stage] || STAGE_LABELS.IN_PROGRESS,
+      status: metrics.stage,
+      statusLabel: STAGE_LABELS[metrics.stage] || STAGE_LABELS.IN_PROGRESS,
       targetLink,
       totalQuantity,
-      startCount,
-      remains,
-      deliveredCount,
-      progressPercent,
+      startCount: metrics.startCount,
+      remains: metrics.remains,
+      deliveredCount: metrics.deliveredCount,
+      progressPercent: metrics.progressPercent,
+      currentCount: metrics.currentCount,
+      targetCount: metrics.targetCount,
       serviceName,
       providerName,
       serverOrderId,

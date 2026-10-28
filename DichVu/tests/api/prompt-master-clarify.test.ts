@@ -58,6 +58,7 @@ describe("POST /api/tools/prompt-master/clarify", () => {
     });
 
     vi.spyOn(geminiClient, "callGeminiClarify").mockResolvedValue({
+      isSufficient: false,
       questions: [
         {
           id: "library",

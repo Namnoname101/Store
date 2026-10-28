@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     }
 
     const validCategories = PROMPT_CATEGORIES.map((c) => c.id);
-    const resolvedCategory: CategoryType = validCategories.includes(category)
+    const resolvedCategory: CategoryType = validCategories.includes(category) && category !== "auto"
       ? category
       : "general";
 

@@ -28,7 +28,7 @@ describe("Prompt Master UI Sub-Components", () => {
       })
     );
     expect(html).toContain("tạo auth nextjs");
-    expect(html).toContain("Phân tích &amp; Tối ưu");
+    expect(html).toContain("Nâng cấp Prompt");
     expect(html).toContain("Lập trình &amp; Cursor Rules");
   });
 
@@ -109,7 +109,7 @@ describe("Prompt Master UI Sub-Components", () => {
     expect(html).toContain("Tiếp tục");
   });
 
-  it("renders AnalyzingStep with HUD radar and inspection checkpoints", () => {
+  it("renders AnalyzingStep with calm spinner and prompt quote", () => {
     const html = renderToStaticMarkup(
       React.createElement(AnalyzingStep, {
         prompt: "làm bot telegram bán thẻ",
@@ -117,9 +117,7 @@ describe("Prompt Master UI Sub-Components", () => {
         targetAi: "chatgpt",
       })
     );
-    expect(html).toContain("Hệ thống đang thẩm định &amp; phân tích Prompt");
-    expect(html).toContain("Phân tích ngữ cảnh &amp; bóc tách thực thể");
-    expect(html).toContain("Đối chiếu framework chuẩn (awesome-cursorrules)");
-    expect(html).toContain("Tối ưu hóa cấu trúc lệnh cho ChatGPT");
+    expect(html).toContain("Đang phân tích ý tưởng của bạn...");
+    expect(html).toContain("làm bot telegram bán thẻ");
   });
 });

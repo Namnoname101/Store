@@ -74,7 +74,13 @@ export async function callGeminiClarify(
     const parsed = JSON.parse(rawText);
     const isSufficient = Boolean(parsed.is_sufficient ?? (parsed.questions?.length === 0));
     const questions = Array.isArray(parsed.questions) ? parsed.questions : [];
+    const validCats = ["coding", "content", "marketing", "image", "general"];
+    const detectedCategory = validCats.includes(parsed.detected_category)
+      ? (parsed.detected_category as CategoryType)
+      : (category === "auto" ? "general" : category);
+
     return {
+      detectedCategory,
       isSufficient: isSufficient || questions.length === 0,
       reason: parsed.reason,
       questions: isSufficient ? [] : questions,

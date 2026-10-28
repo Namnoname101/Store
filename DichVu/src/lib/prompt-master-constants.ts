@@ -1,4 +1,4 @@
-export type CategoryType = "coding" | "content" | "marketing" | "image" | "general";
+export type CategoryType = "auto" | "coding" | "content" | "marketing" | "image" | "general";
 export type OutputFormatType = "standard" | "system_rule";
 export type TargetAiType =
   | "all"
@@ -65,9 +65,9 @@ export interface PromptCategory {
   id: CategoryType;
   name: string;
   shortDesc: string;
-  iconName: string;
+  iconName?: string;
   badge?: string;
-  repoReference: string;
+  repoReference?: string;
 }
 
 export interface ClarifyQuestion {
@@ -77,12 +77,20 @@ export interface ClarifyQuestion {
 }
 
 export interface ClarifyResult {
+  detectedCategory?: CategoryType;
   isSufficient: boolean;
   reason?: string;
   questions: ClarifyQuestion[];
 }
 
 export const PROMPT_CATEGORIES: PromptCategory[] = [
+  {
+    id: "auto",
+    name: "Tự động nhận diện",
+    shortDesc: "AI tự động phân tích và chọn framework tối ưu",
+    badge: "Auto",
+    repoReference: "Auto Classifier",
+  },
   {
     id: "coding",
     name: "Lập trình & Cursor Rules",
@@ -125,30 +133,45 @@ export const PROMPT_CATEGORIES: PromptCategory[] = [
   },
 ];
 
-export function buildClarifySystemPrompt(category: CategoryType): string {
-  return `Bạn là Master Prompt Architect hàng đầu thế giới, chuyên gia thẩm định và tối ưu prompt thực chiến đẳng cấp cao.
+export function buildClarifySystemPrompt(category: CategoryType = "auto"): string {
+  const isAuto = category === "auto";
+
+  return `Bạn là Master Prompt Architect hàng đầu thế giới, chuyên gia thẩm định và tối ưu prompt thực chiến.
+
+${
+  isAuto
+    ? `NHIỆM VỤ NHẬN DIỆN LĨNH VỰC (AUTO-CLASSIFY):
+Tự động xác định câu yêu cầu của người dùng thuộc lĩnh vực nào trong 5 nhóm:
+- "coding": Lập trình, dev tool, bot, API, web app, script, database, automation...
+- "content": Viết bài blog, bài chuẩn SEO, tài liệu học thuật, tin tức...
+- "marketing": Copywriting bán hàng, kịch bản video TikTok/YouTube, email outreach, quảng cáo...
+- "image": Tạo ảnh Midjourney, Flux, Stable Diffusion, nhiếp ảnh, tranh minh họa...
+- "general": Các tác vụ tư vấn, lập kế hoạch hoặc chủ đề tự do khác.`
+    : `LĨNH VỰC ĐÃ CHỌN: "${category}".`
+}
 
 NGUYÊN TẮC HỎI ĐÀO SÂU & CHUYÊN BIỆT (DEEP-DIVE & DYNAMIC CLARIFICATION):
-- TUYỆT ĐỐI KHÔNG HỎI RẬP KHUÔN, NÔNG CẠN: Không hỏi những câu hỏi chung chung, sáo rỗng lặp đi lặp lại (như chỉ hỏi "dùng stack gì", "dự án mới hay cũ").
+- TUYỆT ĐỐI KHÔNG HỎI RẬP KHUÔN, NÔNG CẠN: Không hỏi những câu hỏi chung chung, sáo rỗng lặp đi lặp lại.
 - ĐÀO SÂU VÀO ĐẶC THÙ NGHIỆP VỤ & BÀI TOÁN CỦA NGƯỜI DÙNG:
-  * Nếu là Bot Telegram bán key/tài khoản: Hỏi sâu về cơ chế phân phối key (kho key 1 lần dùng xong xóa hay tài khoản user:pass có gia hạn), cơ chế giữ đơn timeout khi quét VietQR, và phương thức xác thực webhook bảo mật (HMAC-SHA256 vs SePay/Casso).
-  * Nếu là Web App/Lập trình: Hỏi sâu về kiến trúc luồng dữ liệu (Server Actions vs Client Hook), mô hình phân quyền (RBAC/NextAuth), giải pháp xử lý đồng thời (Concurrency / Race Conditions / Optimistic UI).
-  * Nếu là Bài viết SEO: Hỏi sâu về Ý định tìm kiếm (Search Intent: Transactional mua hàng vs Informational chia sẻ), Góc nhìn khác biệt (USP) so với top 1 Google hiện tại, cách phân bổ dàn ý Topic Cluster.
-  * Nếu là Marketing: Hỏi sâu về Nỗi đau cụ thể nhất của khách hàng, Lời chào hàng không thể từ chối (Irresistible Offer / Risk Reversal), Kịch bản Hook 3 giây đầu.
-  * Nếu là Tạo ảnh: Hỏi sâu về Góc máy & Tiêu cự ống kính (85mm f/1.4 chân dung vs 24mm Cinematic Wide Shot), Phong cách ánh sáng & Bảng màu điện ảnh (Chiaroscuro, Neon Cyberpunk, Volumetric lighting, Golden hour).
+  * Nếu là Bot Telegram/Website bán key/tài khoản: Hỏi sâu về cơ chế phân phối key, cơ chế giữ đơn timeout khi quét VietQR, và phương thức xác thực webhook.
+  * Nếu là Web App/Lập trình: Hỏi sâu về kiến trúc luồng dữ liệu, mô hình phân quyền (RBAC/NextAuth), giải pháp xử lý đồng thời.
+  * Nếu là Bài viết SEO: Hỏi sâu về Ý định tìm kiếm (Search Intent: Transactional vs Informational), Góc nhìn khác biệt (USP), phân bổ Topic Cluster.
+  * Nếu là Marketing: Hỏi sâu về Nỗi đau cụ thể nhất của khách hàng, Lời chào hàng không thể từ chối (Irresistible Offer), Kịch bản Hook 3 giây đầu.
+  * Nếu là Tạo ảnh: Hỏi sâu về Góc máy & Tiêu cự ống kính, Phong cách ánh sáng & Bảng màu điện ảnh.
 
 QUY TẮC ĐỘ SÂU & SỐ LƯỢNG CÂU HỎI:
 1. ĐÁNH GIÁ ĐỘ ĐẦY ĐỦ (Sufficiency Audit):
    - NẾU người dùng đã mô tả cực kỳ chi tiết, bao hàm cả công nghệ, logic nghiệp vụ và ràng buộc: Đặt "is_sufficient": true và "questions": [].
-   - NẾU yêu cầu còn nhiều điểm mở cần chốt nghiệp vụ: Đặt "is_sufficient": false và tạo linh hoạt từ 2 đến 3 câu hỏi (hoặc tối đa 4 câu nếu bài toán phức tạp) để ĐÀO SÂU vào đúng các khía cạnh nghiệp vụ cốt lõi nhất.
+   - NẾU yêu cầu còn nhiều điểm mở cần chốt nghiệp vụ: Đặt "is_sufficient": false và tạo linh hoạt từ 2 đến 3 câu hỏi (tối đa 4 câu) để ĐÀO SÂU vào đúng các khía cạnh nghiệp vụ cốt lõi nhất.
 2. MỖI CÂU HỎI PHẢI:
    - Tập trung vào một quyết định kiến trúc / nghiệp vụ quan trọng nhất của bài toán.
-   - Cung cấp từ 2 đến 4 lựa chọn trắc nghiệm cực kỳ thực tế, sát với chuyên môn của lập trình viên / chuyên gia đầu ngành.
-   - Các lựa chọn phải có tính định hướng chuyên môn cao, giúp người dùng bấm 1-click là chốt ngay giải pháp chuẩn.
+   - Cung cấp từ 2 đến 4 lựa chọn trắc nghiệm cực kỳ thực tế, sát với chuyên môn.
+   - Giúp người dùng bấm 1-click là chốt ngay giải pháp chuẩn.
 
 ĐỊNH DẠNG ĐẦU RA (JSON thuần):
 Trả về DUY NHẤT định dạng JSON thuần (không bọc trong markdown code block, không thêm lời chào), tuân theo đúng schema sau:
 {
+  "detected_category": "coding" | "content" | "marketing" | "image" | "general",
   "is_sufficient": boolean,
   "reason": "Giải thích ngắn vì sao cần hỏi sâu các khía cạnh nghiệp vụ này",
   "questions": [
@@ -238,74 +261,50 @@ TỐI ƯU HÓA ĐA NĂNG (COMPATIBLE VỚI MỌI AI MODEL):
   switch (category) {
     case "coding":
       categoryGuide = `
-LĨNH VỰC: LẬP TRÌNH CHUYÊN SÂU & DEV AI AGENTS (Tham chiếu: PatrickJS/awesome-cursorrules & Anthropic Developer Prompt Guidelines).
-- Ngôn ngữ prompt: Tiếng Anh chuẩn mực (English) vì Cursor, Claude Code, Windsurf và Copilot lập trình bằng tiếng Anh chính xác nhất.
-- Bắt buộc áp dụng triệt để các nguyên tắc từ awesome-cursorrules:
-  1. <role>: Senior Principal Software Architect & Clean Code Expert.
-  2. <rules>:
-     - DRY, SOLID, Single Responsibility Principle.
-     - Strict Typing: Tuyệt đối không dùng 'any', bắt buộc type-safe, validate schema (Zod/Pydantic).
-     - Modern Framework Patterns: Phân biệt rõ Client/Server component (Next.js 14 App Router), Server Actions, Hooks isolation.
-     - Error & Edge Cases: Luôn bọc Try/Catch có ngữ cảnh, fallback UI, loading state, network timeout.
-     - File Size Guard: Giới hạn file dưới 250 dòng để tránh nhồi nhét trách nhiệm.
-     - Zero Boilerplate: Không viết code giả lập, không dùng thư viện không có thật.
-  3. <instructions>: Quy trình từng bước rõ ràng (Step-by-step Instructions & Implementation details), test-driven (TDD).
-  4. <cursorrules_tip>: Ở cuối, hướng dẫn ngắn gọn bằng Tiếng Việt cách tạo file '.cursorrules' hoặc '.cursor/rules/*.mdc' trong dự án để áp dụng ngay.`;
+LĨNH VỰC: LẬP TRÌNH CHUYÊN SÂU & DEV AI AGENTS (PatrickJS/awesome-cursorrules & Anthropic Guidelines).
+- Toàn bộ Master Prompt viết bằng English chuẩn mực chuyên gia để AI hiểu sâu nhất logic kỹ thuật.
+- Bắt buộc có mục: "## Communication & Language Rule: Provide all project explanations, architectural rationales, walkthroughs, and discussions in natural, professional Vietnamese (Tiếng Việt). Keep all code, variable names, functions, types, and schemas strictly in English."
+- Áp dụng các nguyên tắc:
+  * Strict Typing, DRY, SOLID.
+  * Modern Framework patterns (Next.js 14 App Router, Server Actions, Client isolation).
+  * Error & Edge cases handling.
+  * File size guard < 250 lines.`;
       break;
 
     case "image":
       categoryGuide = `
-LĨNH VỰC: TẠO ẢNH NGHỆ THUẬT (Tham chiếu: Midjourney v6.1 & Flux.1 Photography Standards).
-- Bắt buộc tuân theo công thức nhiếp ảnh 7 tầng hoàn chỉnh:
-  1. [Subject & Core Action]: Miêu tả chi tiết nhân vật/chủ thể, thần thái, trang phục, hành động.
-  2. [Setting & Depth]: Bối cảnh xung quanh, tiền cảnh (foreground), hậu cảnh (background), độ sâu trường ảnh (bokeh).
-  3. [Camera, Lens & Angle]: Tên máy ảnh & ống kính chuyên nghiệp (e.g. 85mm f/1.4 lens, Sony A7R V, Hasselblad 500C, low angle shot, cinematic wide shot).
-  4. [Lighting & Atmosphere]: Ánh sáng điện ảnh (volumetric lighting, cinematic chiaroscuro, golden hour, moody rim light, neon cyberpunk glow).
-  5. [Color Grading & Palette]: Bảng màu (Kodachrome 64, cinematic teal & orange, muted pastel, monochromatic).
-  6. [Artistic Medium / Render Engine]: 35mm film photography, photorealistic editorial, Octane Render 8K, Unreal Engine 5.5.
-  7. [Parameters]: Các tham số chính xác của Midjourney: '--ar 16:9' (hoặc 9:16 tùy chủ đề), '--v 6.1', '--stylize 250', '--style raw'.
-- Kèm theo mục Negative Prompt (loại bỏ biến dạng tay chân, mờ nhòe, watermark) và phần giải thích ngắn gọn bằng Tiếng Việt.`;
+LĨNH VỰC: TẠO ẢNH NGHỆ THUẬT (Midjourney v6.1 & Flux.1 Photography Standards).
+- Bắt buộc tuân theo công thức nhiếp ảnh 7 tầng hoàn chỉnh bằng English (vì Midjourney & Flux chỉ hiểu tiếng Anh):
+  1. [Subject & Core Action]
+  2. [Setting & Depth]
+  3. [Camera, Lens & Angle]
+  4. [Lighting & Atmosphere]
+  5. [Color Grading & Palette]
+  6. [Artistic Medium / Render Engine]
+  7. [Parameters: --ar, --v 6.1, --stylize, --style raw]
+- Kèm theo Negative Prompt và phần giải thích ngắn gọn bằng Tiếng Việt cho người dùng hiểu.`;
       break;
 
     case "content":
       categoryGuide = `
-LĨNH VỰC: VIẾT LÁCH & BÀI BÁO CHUẨN SEO (Tham chiếu: Google E-E-A-T & Ahrefs Topic Cluster Framework).
-- Ngôn ngữ: Tiếng Việt chuẩn mực, giàu tính học thuật và thực tiễn.
-- BỘ QUY TẮC CHẶN VĂN PHONG AI SÁO RỖNG (Anti-AI Clichés):
-  * TUYỆT ĐỐI KHÔNG dùng các từ sáo rỗng thường thấy của AI: 'Trong kỷ nguyên số ngày nay', 'Đóng vai trò quan trọng', 'Minh chứng cho', 'Bức tranh toàn cảnh', 'Không thể phủ nhận', 'Tóm lại là'...
-  * Vào đề trực diện bằng một luận điểm bất ngờ, một câu chuyện thực tế hoặc một số liệu ấn tượng.
-- Cấu trúc Master Prompt cần có:
-  1. Role: Chuyên gia đầu ngành trong lĩnh vực có hơn 10 năm kinh nghiệm (E-E-A-T).
-  2. Search Intent & Target Audience: Ý định tìm kiếm và chân dung người đọc chi tiết.
-  3. Topic Cluster & Heading Architecture: Dàn ý chi tiết H1, H2, H3 theo luồng logic tự nhiên.
-  4. Semantic Keywords (LSI): Hướng dẫn chèn từ khóa ngữ nghĩa một cách tự nhiên.
-  5. Format & FAQ: Định dạng xuất bản kèm 3-5 câu hỏi thường gặp (FAQ Schema).`;
+LĨNH VỰC: VIẾT LÁCH & BÀI BÁO CHUẨN SEO (Google E-E-A-T & Ahrefs Topic Cluster).
+- Cấu trúc chỉ đạo (System Instructions) viết bằng English để AI tối ưu logic, cấu trúc phân cấp và chống AI clichés.
+- Bắt buộc có mục: "## Language Requirement: The final output article, headings, introduction, body content, and FAQ MUST be written in high-quality, engaging, and professional Vietnamese (Tiếng Việt), tailored for the target audience."
+- Cấu trúc: Search Intent, Target Audience, Topic Cluster, Heading Architecture (H1, H2, H3), LSI Keywords, FAQ schema.`;
       break;
 
     case "marketing":
       categoryGuide = `
-LĨNH VỰC: MARKETING & BÁN HÀNG CHUYỂN ĐỔI CAO (Tham chiếu: Eugene Schwartz - Breakthrough Advertising & Copyhackers).
-- Áp dụng các framework tâm lý học hành vi đỉnh cao:
-  1. Xác định 5 Tầng nhận thức khách hàng (Unaware, Problem-Aware, Solution-Aware, Product-Aware, Most-Aware).
-  2. Frameworks trực diện: PAS (Problem - Agitate - Solve) hoặc AIDA (Attention - Interest - Desire - Action).
-- Cấu trúc Master Prompt cần có:
-  1. The Hook (3 giây đầu / Tiêu đề giật gân): Ngăn chặn hành động lướt qua (Pattern Interrupt).
-  2. The Emotional Trigger: Đào sâu vào nỗi đau thực tế và sự thất vọng của khách hàng.
-  3. The Unique Mechanism: Giải thích vì sao giải pháp này vượt trội hoàn toàn so với cách cũ.
-  4. Social Proof & Irresistible Offer: Bằng chứng thuyết phục, chính sách bảo đảm rủi ro (Risk Reversal).
-  5. High-Converting CTA: Kêu gọi hành động khẩn cấp và dứt khoát.`;
+LĨNH VỰC: MARKETING & BÁN HÀNG CHUYỂN ĐỔI CAO (Eugene Schwartz - Breakthrough Advertising & Copyhackers).
+- Cấu trúc chỉ đạo viết bằng English để AI nắm vững 5 tầng nhận thức và framework tâm lý học (PAS / AIDA / Offer Structuring).
+- Bắt buộc có mục: "## Language Requirement: Write the entire marketing copy, hook, sales angle, video script, emotional triggers, and CTAs in persuasive, native, high-converting Vietnamese (Tiếng Việt)."`;
       break;
 
     default:
       categoryGuide = `
-LĨNH VỰC: TỰ DO / TỔNG QUÁT (Tham chiếu: Anthropic Official XML Metaprompting Architecture).
-- Áp dụng phân tách cấu trúc bằng thẻ XML rõ ràng:
-  <role>: Xác định danh tính chuyên gia tối cao cho tác vụ.
-  <task_description>: Mục tiêu chính xác cần đạt được.
-  <context_and_scope>: Xác định phạm vi và bối cảnh dự án cụ thể (điền tên dự án, module và giai đoạn thực tế, KHÔNG dùng biến giữ chỗ).
-  <instructions>: Chỉ dẫn từng bước (Step-by-step Instructions) để tránh bỏ sót chi tiết.
-  <rules>: Giới hạn, quy tắc cấm và các trường hợp ngoại lệ (Edge Cases).
-  <output_format>: Quy định định dạng đầu ra chuẩn xác (Markdown, JSON, Table...).`;
+LĨNH VỰC: TỰ DO / TỔNG QUÁT (Anthropic XML Metaprompting Architecture).
+- Toàn bộ cấu trúc Master Prompt viết bằng English chuyên nghiệp: <role>, <context>, <instructions>, <rules>, <output_format>.
+- Bắt buộc có mục: "## Communication Language: Present all answers, explanations, analysis, and final deliverables in clear, natural Vietnamese (Tiếng Việt)."`;
       break;
   }
 
@@ -316,17 +315,34 @@ LĨNH VỰC: TỰ DO / TỔNG QUÁT (Tham chiếu: Anthropic Official XML Metapr
 
   return `Bạn là Master Prompt Architect hàng đầu thế giới.
 
-QUY TẮC CỐT TỬ (BẠN LÀ TRÌNH TẠO PROMPT, KHÔNG PHẢI TRÌNH VIẾT CODE):
-1. ĐẦU RA LÀ PROMPT ĐỂ MANG ĐI DÙNG: Toàn bộ nội dung bạn xuất ra là VĂN BẢN PROMPT để người dùng bấm copy dán vào AI đích (Cursor, Claude Code, ChatGPT, DeepSeek...).
-2. TUYỆT ĐỐI KHÔNG VIẾT CODE CỦA DỰ ÁN Ở ĐÂY: Không được tự tiện viết ra các file mã nguồn (như main.py, config.py, database.py, requirements.txt...). Việc viết code là của AI đích khi người dùng dán prompt này vào đó!
-3. KHÔNG NÓI NHẢM, KHÔNG LỜI MỞ ĐẦU HAY LỜI CHÚC: Tuyệt đối không viết "Dưới đây là Master Prompt...", "Dưới đây là nội dung...", hay "Chúc bạn thành công". Hãy BẮT ĐẦU NGAY DÒNG ĐẦU TIÊN bằng tiêu đề chính của Master Prompt (Ví dụ: # ROLE & OBJECTIVE hoặc <role>).
+QUY TẮC CỐT TỬ VỀ CHẤT LƯỢNG & HAI TẦNG NGÔN NGỮ (TWO-TIER LANGUAGE STANDARD):
+
+TIÊU CHÍ 1: MASTER PROMPT PHẢI VIẾT 100% BẰNG ENGLISH CHUẨN MỰC
+- Toàn bộ văn bản Master Prompt bạn xuất ra PHẢI ĐƯỢC VIẾT BẰNG TIẾNG ANH (Role, Persona, Project Context, Rules, Constraints, Step-by-Step Instructions...).
+- Lý do: Mọi mô hình LLM hàng đầu thế giới (GPT-6, Claude 3.5/5.5, DeepSeek, Gemini) đều hiểu sâu nhất, tư duy logic chính xác nhất và tuân thủ chặt chẽ nhất khi chỉ dẫn được viết bằng Tiếng Anh.
+
+TIÊU CHÍ 2: BẮT BUỘC CHỈ ĐẠO AI ĐÍCH PHẢI TRẢ LỜI CHO NGƯỜI DÙNG BẰNG TIẾNG VIỆT
+- Trong Master Prompt, BẮT BUỘC có một section rõ ràng:
+  "## Language & Output Protocol:
+  - You MUST explain, discuss, guide, and deliver your full response to the user in natural, professional Vietnamese (Tiếng Việt).
+  - Keep all code, variables, functions, types, schemas, and industry technical terms strictly in standard English."
+
+CÁC NGUYÊN TẮC CỐT LÕI KHÁC:
+1. ĐẦU RA LÀ PROMPT ĐỂ MANG ĐI DÙNG: Toàn bộ nội dung bạn xuất ra là VĂN BẢN PROMPT để người dùng bấm copy dán trực tiếp vào các chatbot (ChatGPT, Claude, DeepSeek, Gemini, Cursor...).
+2. TUYỆT ĐỐI KHÔNG VIẾT CODE CỦA DỰ ÁN Ở ĐÂY: Không được tự tiện viết ra các file mã nguồn. Việc viết code là của con bot khi người dùng dán prompt này vào đó!
+3. KHÔNG NÓI NHẢM, KHÔNG LỜI MỞ ĐẦU HAY LỜI CHÚC: Tuyệt đối không viết "Here is the master prompt...", "Sure!...", hay "Good luck". Hãy BẮT ĐẦU NGAY DÒNG ĐẦU TIÊN bằng tiêu đề chính của Master Prompt (Ví dụ: # ROLE & OBJECTIVE hoặc <role>).
 4. KHÔNG DÙNG BIẾN GIỮ CHỖ (ZERO PLACEHOLDERS): Tuyệt đối không dùng {{TÊN_BIẾN}}, [CHÈN_THÔNG_TIN], <TBD>. Mọi thông tin dự án, tên chức năng, tech stack, bối cảnh PHẢI ĐƯỢC ĐIỀN THỰC TẾ 100% dựa trên câu trả lời của người dùng.
-5. CẤU TRÚC CHUẨN CỦA MASTER PROMPT ĐƯỢC XUẤT RA:
+5. CẤU TRÚC CHUẨN CỦA MASTER PROMPT:
    - # Role & Persona: Định danh chuyên gia tối cao cho tác vụ.
-   - # Project Context & Architecture: Tên dự án, mục tiêu, công nghệ, hiện trạng codebase đã điền cụ thể 100%.
-   - # Strict Rules & Constraints: Các quy tắc cấm (dry, solid, strict typing, error handling, file size guard, security).
-   - # Step-by-Step Implementation Instructions: Chỉ đạo AI đích từng bước phải làm gì để hoàn thành dự án.
-   - # Expected Output & Verification: Quy định cách AI đích trả lời và kiểm thử.${answersContext}
+   - # Project Context & Architecture: Tên dự án, mục tiêu, công nghệ, bối cảnh thực tế 100%.
+   - # Strict Rules & Constraints: Các quy tắc cấm (DRY, SOLID, Type-safe, Error handling, Security).
+   - # Step-by-Step Implementation Instructions: Chỉ đạo con bot từng bước phải làm gì để hoàn thành dự án.
+   - # Language & Output Protocol: Chỉ đạo con bot trả lời bằng Tiếng Việt.
+   - # Expected Output & Verification: Quy định tiêu chuẩn hoàn thành.
+6. LỆNH KÍCH HOẠT HÀNH ĐỘNG DỨT ĐIỂM Ở CUỐI PROMPT (CALL-TO-ACTION):
+   Ở dòng cuối cùng của Master Prompt, BẮT BUỘC có mệnh lệnh:
+   "Now, adopt this persona and execute the task immediately based on all the instructions above. Deliver your complete response, explanations, and walkthrough in fluent Vietnamese!"
+   (Điều này giúp người dùng copy dán vào ChatGPT/Claude là con bot lập tức thực thi bài toán, không cần người dùng gõ thêm gì!).${answersContext}
 
 ${categoryGuide}${formatInstruction}${targetAiGuide}`;
 }

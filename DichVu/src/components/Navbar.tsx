@@ -233,6 +233,9 @@ export default function Navbar() {
             <Link href="/codex" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200/60 dark:border-white/5 flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
               <span>⚡ API Quota</span>
             </Link>
+            <Link href="/tools/prompt-master" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200/60 dark:border-white/5 flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors col-span-2 text-blue-600 dark:text-blue-400">
+              <span>✨ Prompt Master (Tạo Prompt AI)</span>
+            </Link>
           </div>
 
           <div className="pt-2 border-t border-slate-200 dark:border-white/10 flex items-center justify-between">
