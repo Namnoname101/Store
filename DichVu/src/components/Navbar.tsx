@@ -13,6 +13,7 @@ import {
   Sun,
   Moon,
   Terminal,
+  BookOpen,
   ShoppingBag,
   Sparkles,
 } from "lucide-react";
@@ -111,6 +112,10 @@ export default function Navbar() {
           <Link href="/codex" className="px-2.5 xl:px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
             <Terminal className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400 shrink-0" />
             <span>API Quota</span>
+          </Link>
+          <Link href="/huong-dan/api-claude" className="px-2.5 xl:px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
+            <BookOpen className="h-3.5 w-3.5 text-indigo-500 dark:text-indigo-400 shrink-0" />
+            <span>Hướng Dẫn API</span>
           </Link>
           <Link href="/tools/prompt-master" className="px-2.5 xl:px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
             <Sparkles className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400 shrink-0" />
@@ -235,6 +240,9 @@ export default function Navbar() {
             </Link>
             <Link href="/tools/prompt-master" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200/60 dark:border-white/5 flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors col-span-2 text-blue-600 dark:text-blue-400">
               <span>✨ Prompt Master (Tạo Prompt AI)</span>
+            </Link>
+            <Link href="/huong-dan/api-claude" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-2 text-indigo-400 hover:bg-indigo-500/20 transition-colors col-span-2 font-bold">
+              <span>📖 Hướng Dẫn Cấu Hình API Claude / Codex</span>
             </Link>
           </div>
 

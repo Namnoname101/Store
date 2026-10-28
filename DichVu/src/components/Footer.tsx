@@ -128,6 +128,12 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/huong-dan/api-claude" className="hover:text-indigo-400 transition-colors flex items-center gap-1 font-semibold text-indigo-400">
+                  <span>Hướng Dẫn Cấu Hình API Claude</span>
+                  <ArrowUpRight className="h-3 w-3 text-indigo-400" />
+                </Link>
+              </li>
+              <li>
                 <Link href="/preview/guide" className="hover:text-indigo-400 transition-colors flex items-center gap-1">
                   <span>Xem Trước Quy Trình Bàn Giao</span>
                   <ArrowUpRight className="h-3 w-3 text-indigo-400" />

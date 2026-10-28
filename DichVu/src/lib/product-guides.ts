@@ -54,7 +54,8 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
       "Trong VS Code / Cline / Roo Code: Chọn OpenAI Compatible > Điền Base URL và API Key.",
       "Kiểm tra hạn mức & lịch sử request thực tế tại: https://daitruong-store.fly.dev/developer/usage",
     ],
-    note: "Hạn mức 5.000.000 quota points bảo lưu vĩnh viễn, sử dụng chung được cho Claude 5.5 (Opus & Sonnet), GPT-6 Astra, Gemini 4 Argon.",
+    note: "Hạn mức 5.000.000 quota points bảo lưu vĩnh viễn, sử dụng chung được cho Claude 3.5 Sonnet, Claude Opus 4.7, GPT-6 Astra, Gemini 4 Argon.",
+    docsUrl: "/huong-dan/api-claude",
   },
   "codex-credit-50usd": {
     title: "Hướng dẫn cấu hình Codex API (Gói 50$ - 25.000.000 Quota)",
@@ -65,20 +66,39 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
       "Kiểm tra hạn mức & lịch sử request thực tế tại: https://daitruong-store.fly.dev/developer/usage",
     ],
     note: "Gói 25.000.000 quota points tối ưu cho lập trình viên làm việc chuyên nghiệp hàng ngày với Cursor & Claude Code.",
+    docsUrl: "/huong-dan/api-claude",
   },
 
   // ==========================================
   // 3. CÁC GÓI CLAUDE API & CLAUDE CODE
   // ==========================================
   "claude-api": {
-    title: "Hướng dẫn cấu hình Claude API & Claude Code CLI",
+    title: "Hướng dẫn cấu hình API Claude (Hỗ trợ cả 5 nền tảng)",
     steps: [
-      "Sao chép Claude API Key / Token ở trên.",
-      "Cấu hình Claude Code CLI: Mở Terminal gõ `export ANTHROPIC_API_KEY=sk-...` (hoặc dán vào file .env).",
-      "Cấu hình trong Cursor / Cline: Chọn Provider là Anthropic Compatible hoặc dán Base URL được cấp.",
-      "Kiểm tra kết nối bằng cách gửi 1 prompt thử nghiệm với model claude-sonnet-5.5 (hoặc claude-3-5-sonnet).",
+      "Sao chép Claude API Key / Token ở trên (bắt đầu bằng 'sk-...'). Mã này dùng chung được cho cả 5 công cụ bên dưới.",
+      {
+        text: "1. VS Code & Claude Code CLI: Cài npm install -g @anthropic-ai/claude-code, cấu hình file settings.json với Base URL https://1gw.gwai.cloud.",
+        caption: "Tự động hóa lập trình trực tiếp trong Terminal của VS Code",
+      },
+      {
+        text: "2. Claude AI Desktop (Cowork): Tải app tại claude.com/download > Bật Developer Mode > Configure Third-Party Inference > Chọn Gateway với Base URL https://1gw.gwai.cloud và Auth schema x-api-key.",
+        caption: "Ứng dụng desktop chính thức của Claude trên PC/Mac",
+      },
+      {
+        text: "3. OpenClaw Agent: Khởi tạo openclaw onboard --install-daemon, dán cấu hình vào ~/.openclaw/openclaw.json để chạy Claude Opus 4.7 & Sonnet 4.6.",
+        caption: "Framework AI Agent chạy ngầm đa nhiệm",
+      },
+      {
+        text: "4. Open Design Gateway (Thiết kế Web): Truy cập design.gwai.cloud > Nhập Username, Password và dán API Key để tạo giao diện website trực tiếp trên trình duyệt.",
+        caption: "Sinh code và thiết kế giao diện bằng Claude trên web",
+      },
+      {
+        text: "5. Cursor & Windsurf: Settings > Models > Override Base URL https://1gw.gwai.cloud (hoặc https://modelapi.vn/v1) > Dán API Key.",
+        caption: "Soạn thảo code AI với Composer và Autocomplete mượt mà",
+      },
     ],
-    note: "Không commit API Key lên GitHub công khai để tránh bị bot quét khóa tài khoản.",
+    note: "Xem trung tâm hướng dẫn trực quan đầy đủ với bộ cấu hình tự động 1-Click tại đường dẫn /huong-dan/api-claude. Tuyệt đối không chia sẻ hoặc commit API Key lên GitHub công khai.",
+    docsUrl: "/huong-dan/api-claude",
   },
 
   // ==========================================

@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import type { Product } from "@prisma/client";
 import { playSuccessChime } from "@/lib/sound";
+import ClaudeApiGuideHub from "@/components/ClaudeApiGuideHub";
 import { saveRecentOrder } from "@/lib/order-storage";
 import BuffProgressCard from "@/components/BuffProgressCard";
 import BrandLogo from "@/components/BrandLogo";
@@ -847,186 +848,22 @@ export default function SecretDisplay({
 
       {/* Interactive Environment Quick Setup Tabs for Developer / AI APIs */}
       {isApiKeyProduct && (
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-5 shadow-xl">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-zinc-800/80">
-            <div className="flex items-center gap-2">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-bold text-white flex items-center gap-2">
               <Terminal className="h-4 w-4 text-emerald-400" />
-              <span className="text-xs sm:text-sm font-bold text-white">
-                Cấu hình nhanh vào công cụ lập trình (1-Click)
-              </span>
-            </div>
-
-            {/* Environment Tabs */}
-            <div className="flex items-center gap-1 rounded-lg bg-zinc-900 p-1 border border-zinc-800 text-[11px] font-semibold">
-              <button
-                type="button"
-                onClick={() => setActiveEnvTab("cursor")}
-                className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-all ${
-                  activeEnvTab === "cursor"
-                    ? "bg-zinc-800 text-white shadow-xs"
-                    : "text-zinc-400 hover:text-zinc-200"
-                }`}
-              >
-                <Laptop className="h-3 w-3 text-cyan-400" />
-                <span>Cursor / Windsurf</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveEnvTab("vscode")}
-                className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-all ${
-                  activeEnvTab === "vscode"
-                    ? "bg-zinc-800 text-white shadow-xs"
-                    : "text-zinc-400 hover:text-zinc-200"
-                }`}
-              >
-                <Code2 className="h-3 w-3 text-blue-400" />
-                <span>VS Code (Cline)</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveEnvTab("cli")}
-                className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-all ${
-                  activeEnvTab === "cli"
-                    ? "bg-zinc-800 text-white shadow-xs"
-                    : "text-zinc-400 hover:text-zinc-200"
-                }`}
-              >
-                <Terminal className="h-3 w-3 text-emerald-400" />
-                <span>Terminal / CLI</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Terminal Mockup Code Box with macOS traffic lights */}
-          <div className="rounded-lg border border-zinc-800/90 bg-zinc-900/90 overflow-hidden font-mono text-xs">
-            {/* Terminal Header */}
-            <div className="flex items-center justify-between px-3 py-2 bg-zinc-950 border-b border-zinc-800/80 text-[10px] text-zinc-500">
-              <div className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-rose-500/80 inline-block" />
-                <span className="h-2.5 w-2.5 rounded-full bg-amber-500/80 inline-block" />
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80 inline-block" />
-                <span className="ml-2 font-mono text-zinc-400">
-                  {activeEnvTab === "cursor"
-                    ? "Cursor Settings > Models > OpenAI API Key"
-                    : activeEnvTab === "vscode"
-                    ? "Cline / Roo Code Extension Settings"
-                    : "bash ~/.zshrc / .bashrc"}
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  const snippet =
-                    activeEnvTab === "cursor"
-                      ? `Base URL: https://modelapi.vn/v1\nAPI Key: ${firstSecret}`
-                      : activeEnvTab === "vscode"
-                      ? `Provider: OpenAI Compatible\nBase URL: https://modelapi.vn/v1\nAPI Key: ${firstSecret}`
-                      : `export OPENAI_BASE_URL="https://modelapi.vn/v1"\nexport OPENAI_API_KEY="${firstSecret}"\nexport ANTHROPIC_BASE_URL="https://modelapi.vn/v1"\nexport ANTHROPIC_API_KEY="${firstSecret}"`;
-                  handleCopy("snippet", snippet);
-                }}
-                className={`flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-semibold transition-all ${
-                  copiedId === "snippet"
-                    ? "bg-emerald-600 text-white animate-spring-pop"
-                    : "bg-zinc-800 text-zinc-300 hover:text-white"
-                }`}
-              >
-                {copiedId === "snippet" ? (
-                  <>
-                    <Check className="h-2.5 w-2.5" />
-                    <span>Đã sao chép cấu hình</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-2.5 w-2.5" />
-                    <span>Sao chép mẫu</span>
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* Terminal Body */}
-            <div className="p-3.5 space-y-2 text-zinc-300 overflow-x-auto">
-              {activeEnvTab === "cursor" && (
-                <>
-                  <div className="flex items-start gap-2">
-                    <span className="text-zinc-500 select-none">1.</span>
-                    <span>Mở <strong className="text-white">Cursor Settings</strong> → <strong className="text-white">Models</strong></span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-zinc-500 select-none">2.</span>
-                    <div>
-                      <span>Đặt <strong className="text-cyan-400">Override OpenAI Base URL</strong>: </span>
-                      <code className="text-emerald-400 font-bold bg-zinc-950 px-1.5 py-0.5 rounded border border-zinc-800 select-all">https://modelapi.vn/v1</code>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-zinc-500 select-none">3.</span>
-                    <div>
-                      <span>Dán <strong className="text-cyan-400">OpenAI API Key</strong>: </span>
-                      <code className="text-emerald-400 font-bold bg-zinc-950 px-1.5 py-0.5 rounded border border-zinc-800 select-all">{firstSecret || "sk-..."}</code>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {activeEnvTab === "vscode" && (
-                <>
-                  <div className="flex items-start gap-2">
-                    <span className="text-zinc-500 select-none">1.</span>
-                    <span>Trong extension <strong className="text-white">Cline / Roo Code</strong>: chọn Provider <strong className="text-blue-400">OpenAI Compatible</strong></span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-zinc-500 select-none">2.</span>
-                    <div>
-                      <span>Base URL: </span>
-                      <code className="text-emerald-400 font-bold bg-zinc-950 px-1.5 py-0.5 rounded border border-zinc-800 select-all">https://modelapi.vn/v1</code>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-zinc-500 select-none">3.</span>
-                    <div>
-                      <span>API Key: </span>
-                      <code className="text-emerald-400 font-bold bg-zinc-950 px-1.5 py-0.5 rounded border border-zinc-800 select-all">{firstSecret || "sk-..."}</code>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-zinc-500 select-none">4.</span>
-                    <span>Model ID: <code className="text-zinc-300 bg-zinc-950 px-1 rounded">claude-sonnet-5.5</code>, <code className="text-zinc-300 bg-zinc-950 px-1 rounded">gpt-6-astra</code>, hoặc <code className="text-zinc-300 bg-zinc-950 px-1 rounded">gemini-4-argon</code></span>
-                  </div>
-                </>
-              )}
-
-              {activeEnvTab === "cli" && (
-                <>
-                  <p className="text-zinc-500 text-[11px] mb-1"># Thêm biến môi trường để dùng Claude Code / CLI:</p>
-                  <pre className="text-emerald-400 font-bold select-all leading-relaxed">
-{`export ANTHROPIC_BASE_URL="https://modelapi.vn/v1"
-export ANTHROPIC_API_KEY="${firstSecret || "sk-..."}"
-export OPENAI_BASE_URL="https://modelapi.vn/v1"
-export OPENAI_API_KEY="${firstSecret || "sk-..."}"`}
-                  </pre>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Quick Developer Dashboard Link Banner */}
-          <div className="mt-4 pt-3.5 border-t border-zinc-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-900/50 -mx-5 -mb-5 px-4 py-3 rounded-b-xl">
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              <span className="text-xs text-zinc-300">
-                Theo dõi số dư quota, token và nhật ký request thời gian thực của Key này
-              </span>
-            </div>
+              <span>Cấu hình nhanh vào công cụ lập trình & AI (1-Click)</span>
+            </h4>
             <Link
-              href={`/developer/usage?key=${encodeURIComponent(firstSecret)}`}
-              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-500 text-zinc-950 hover:bg-emerald-400 px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs shrink-0 active:scale-95"
+              href="/huong-dan/api-claude"
+              target="_blank"
+              className="text-xs text-indigo-400 hover:text-indigo-300 font-medium inline-flex items-center gap-1 transition-colors"
             >
-              <Terminal className="h-3.5 w-3.5" />
-              <span>Kiểm tra Quota & Logs</span>
-              <ArrowRight className="h-3 w-3" />
+              <span>Xem hướng dẫn chi tiết toàn màn hình</span>
+              <ExternalLink className="h-3 w-3" />
             </Link>
           </div>
+          <ClaudeApiGuideHub apiKey={firstSecret} showKeyInput={false} />
         </div>
       )}
 
