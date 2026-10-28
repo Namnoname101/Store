@@ -29,7 +29,7 @@ export default function OrdersManagerClient({
 }: OrdersManagerClientProps) {
   const [orders, setOrders] = useState<AdminOrderDetail[]>(initialOrders);
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [statusFilter, setStatusFilter] = useState<string>("PAID");
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [retryingOrderId, setRetryingOrderId] = useState<string | null>(null);
@@ -296,10 +296,10 @@ export default function OrdersManagerClient({
         {/* Status Filter Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           {[
-            { key: "ALL", label: "Tất cả", count: statusCounts.ALL },
             { key: "PAID", label: "Đã thanh toán", count: statusCounts.PAID },
             { key: "PENDING", label: "Chờ thanh toán", count: statusCounts.PENDING },
-            { key: "EXPIRED", label: "Hết hạn", count: statusCounts.EXPIRED },
+            { key: "EXPIRED", label: "Hết hạn / Khách thử", count: statusCounts.EXPIRED },
+            { key: "ALL", label: "Tất cả đơn", count: statusCounts.ALL },
           ].map((tab) => (
             <button
               key={tab.key}
@@ -356,7 +356,26 @@ export default function OrdersManagerClient({
               {filteredOrders.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-5 py-12 text-center text-sm text-slate-500">
-                    Không tìm thấy đơn hàng nào.
+                    <div className="space-y-2">
+                      <p>
+                        {statusFilter === "PAID"
+                          ? "Chưa có đơn hàng nào đã thanh toán."
+                          : statusFilter === "PENDING"
+                          ? "Không có đơn hàng nào đang chờ thanh toán."
+                          : statusFilter === "EXPIRED"
+                          ? "Không có đơn hàng hết hạn nào."
+                          : "Không tìm thấy đơn hàng nào."}
+                      </p>
+                      {statusFilter !== "ALL" && statusCounts.ALL > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setStatusFilter("ALL")}
+                          className="text-xs text-indigo-400 hover:text-indigo-300 underline font-medium"
+                        >
+                          Xem tất cả {statusCounts.ALL} đơn hàng
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ) : (
