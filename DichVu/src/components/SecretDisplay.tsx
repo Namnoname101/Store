@@ -25,6 +25,7 @@ import {
 import type { Product } from "@prisma/client";
 import { playSuccessChime } from "@/lib/sound";
 import ClaudeApiGuideHub from "@/components/ClaudeApiGuideHub";
+import CodexApiGuideHub from "@/components/CodexApiGuideHub";
 import { saveRecentOrder } from "@/lib/order-storage";
 import BuffProgressCard from "@/components/BuffProgressCard";
 import BrandLogo from "@/components/BrandLogo";
@@ -578,6 +579,10 @@ export default function SecretDisplay({
   const firstSecret = validDeliveredItems[0]?.secretContent || "";
   const instructions = getProductInstructions(primaryType, primaryTitle, firstSecret, primarySlug);
 
+  const isCodexProduct =
+    primarySlug.toLowerCase().includes("codex") ||
+    primaryTitle.toLowerCase().includes("codex");
+
   const isApiKeyProduct =
     primarySlug.includes("api") ||
     primarySlug.includes("claude") ||
@@ -867,7 +872,25 @@ export default function SecretDisplay({
       </div>
 
       {/* Instructions Guide Box */}
-      {isApiKeyProduct ? (
+      {isCodexProduct ? (
+        <div className="space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <h4 className="text-sm font-bold text-white flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-emerald-400" />
+              <span>{instructions.title || "Hướng dẫn cấu hình Codex API (ModelAPI)"}</span>
+            </h4>
+            <Link
+              href="/huong-dan/codex"
+              target="_blank"
+              className="text-xs text-emerald-400 hover:text-emerald-300 font-medium inline-flex items-center gap-1 transition-colors"
+            >
+              <span>Mở trang hướng dẫn Codex đầy đủ</span>
+              <ExternalLink className="h-3 w-3" />
+            </Link>
+          </div>
+          <CodexApiGuideHub apiKey={firstSecret} showKeyInput={false} />
+        </div>
+      ) : isApiKeyProduct ? (
         <div className="space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <h4 className="text-sm font-bold text-white flex items-center gap-2">

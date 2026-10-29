@@ -57,6 +57,17 @@ export default function ClaudeApiGuidePage() {
             <span>Bảo lưu Quota vĩnh viễn</span>
           </span>
         </div>
+
+        {/* Switch to Codex API */}
+        <div className="pt-2">
+          <Link
+            href="/huong-dan/codex"
+            className="inline-flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 px-4 py-2 text-xs font-semibold text-emerald-400 transition shadow-xs"
+          >
+            <span>👉 Bạn đang dùng gói Codex API (ModelAPI)? Bấm xem Hướng Dẫn Codex API tại đây</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
       </div>
 
       {/* Embedded Interactive Guide Hub */}
