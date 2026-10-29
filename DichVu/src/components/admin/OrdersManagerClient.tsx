@@ -17,6 +17,8 @@ import {
   ExternalLink,
   RefreshCw,
   Truck,
+  PlusCircle,
+  Send,
 } from "lucide-react";
 import type { AdminOrderDetail } from "@/services/admin.service";
 
@@ -33,6 +35,10 @@ export default function OrdersManagerClient({
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [retryingOrderId, setRetryingOrderId] = useState<string | null>(null);
+  const [manualFulfillOrderId, setManualFulfillOrderId] = useState<string | null>(null);
+  const [manualSecretsInput, setManualSecretsInput] = useState<string>("");
+  const [isSubmittingFulfill, setIsSubmittingFulfill] = useState<boolean>(false);
+  const [fulfillMessage, setFulfillMessage] = useState<{ id: string; success: boolean; text: string } | null>(null);
   const [confirmingOrder, setConfirmingOrder] = useState<AdminOrderDetail | null>(null);
   const [confirmNote, setConfirmNote] = useState<string>("");
   const [isConfirming, setIsConfirming] = useState<boolean>(false);
@@ -112,6 +118,46 @@ export default function OrdersManagerClient({
     success: boolean;
     text: string;
   } | null>(null);
+
+  const handleManualFulfill = async (orderId: string) => {
+    if (!manualSecretsInput.trim()) return;
+    try {
+      setIsSubmittingFulfill(true);
+      setFulfillMessage(null);
+      const res = await fetch(`/api/admin/orders/${orderId}/manual-fulfill`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ secrets: manualSecretsInput.trim() }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success && data.order) {
+        setFulfillMessage({
+          id: orderId,
+          success: true,
+          text: data.message || "Bàn giao sản phẩm thành công!",
+        });
+        setOrders((prev) =>
+          prev.map((o) => (o.id === orderId ? { ...o, ...data.order } : o))
+        );
+        setManualSecretsInput("");
+        setManualFulfillOrderId(null);
+      } else {
+        setFulfillMessage({
+          id: orderId,
+          success: false,
+          text: data.error || "Không thể cấp hàng thủ công",
+        });
+      }
+    } catch (err: any) {
+      setFulfillMessage({
+        id: orderId,
+        success: false,
+        text: err?.message || "Lỗi mạng khi gửi yêu cầu",
+      });
+    } finally {
+      setIsSubmittingFulfill(false);
+    }
+  };
 
   const handleRetryUpstream = async (orderId: string) => {
     try {
@@ -535,7 +581,7 @@ export default function OrdersManagerClient({
                                   )}
 
                                   {order.upstreamStatus === "FAILED" && (
-                                    <div className="flex items-center gap-2 pt-1">
+                                    <div className="flex flex-wrap items-center gap-2 pt-1">
                                       <button
                                         onClick={() => handleRetryUpstream(order.id)}
                                         disabled={retryingOrderId === order.id}
@@ -548,16 +594,101 @@ export default function OrdersManagerClient({
                                         />
                                         <span>{retryingOrderId === order.id ? "Đang gửi đơn..." : "Thử đặt lại qua API"}</span>
                                       </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setManualFulfillOrderId(manualFulfillOrderId === order.id ? null : order.id);
+                                          setManualSecretsInput("");
+                                          setFulfillMessage(null);
+                                        }}
+                                        className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500 transition-all shadow-md shadow-emerald-600/20"
+                                      >
+                                        <PlusCircle className="h-3.5 w-3.5" />
+                                        <span>Cấp hàng thủ công</span>
+                                      </button>
                                     </div>
                                   )}
                                 </div>
                               )}
                               {/* Delivered Items / Keys Section */}
                               <div>
-                                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
-                                  <KeyRound className="h-3.5 w-3.5 text-indigo-400" />
-                                  <span>Mã bản quyền / Tài khoản bàn giao ({order.deliveredItems?.length || 0})</span>
-                                </h4>
+                                <div className="flex items-center justify-between mb-2">
+                                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                                    <KeyRound className="h-3.5 w-3.5 text-indigo-400" />
+                                    <span>Mã bản quyền / Tài khoản bàn giao ({order.deliveredItems?.length || 0})</span>
+                                  </h4>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setManualFulfillOrderId(manualFulfillOrderId === order.id ? null : order.id);
+                                      setManualSecretsInput("");
+                                      setFulfillMessage(null);
+                                    }}
+                                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/20 transition-all"
+                                  >
+                                    <PlusCircle className="h-3 w-3" />
+                                    <span>+ Cấp thủ công</span>
+                                  </button>
+                                </div>
+
+                                {fulfillMessage && fulfillMessage.id === order.id && (
+                                  <div
+                                    className={`mb-3 p-2.5 rounded-lg text-xs font-medium border ${
+                                      fulfillMessage.success
+                                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300"
+                                        : "bg-rose-500/10 border-rose-500/20 text-rose-300"
+                                    }`}
+                                  >
+                                    {fulfillMessage.text}
+                                  </div>
+                                )}
+
+                                {manualFulfillOrderId === order.id && (
+                                  <div className="mb-3 p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-950/20 space-y-2.5">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                                        <Send className="h-3.5 w-3.5" />
+                                        Bàn giao Key / Tài khoản thủ công cho đơn #{order.orderCode}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setManualFulfillOrderId(null)}
+                                        className="text-slate-400 hover:text-white text-xs"
+                                      >
+                                        Đóng
+                                      </button>
+                                    </div>
+                                    <textarea
+                                      rows={3}
+                                      value={manualSecretsInput}
+                                      onChange={(e) => setManualSecretsInput(e.target.value)}
+                                      placeholder="Dán mã bản quyền hoặc tài khoản:mật khẩu tại đây. Nếu khách mua nhiều mục, dán mỗi mục 1 dòng."
+                                      className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none font-mono"
+                                    />
+                                    <div className="flex items-center justify-end gap-2">
+                                      <button
+                                        type="button"
+                                        onClick={() => setManualFulfillOrderId(null)}
+                                        className="px-3 py-1.5 rounded-lg border border-slate-700 text-xs text-slate-400 hover:bg-slate-800"
+                                      >
+                                        Hủy
+                                      </button>
+                                      <button
+                                        type="button"
+                                        disabled={isSubmittingFulfill || !manualSecretsInput.trim()}
+                                        onClick={() => handleManualFulfill(order.id)}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold disabled:opacity-50 transition-all shadow-md shadow-emerald-600/20"
+                                      >
+                                        {isSubmittingFulfill ? (
+                                          <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                                        ) : (
+                                          <Send className="h-3.5 w-3.5" />
+                                        )}
+                                        <span>{isSubmittingFulfill ? "Đang gửi..." : "Xác nhận bàn giao"}</span>
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
                                 {order.deliveredItems && order.deliveredItems.length > 0 ? (
                                   <div className="space-y-2">
                                     {order.deliveredItems.map((item, idx) => (

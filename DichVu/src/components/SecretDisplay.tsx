@@ -14,6 +14,7 @@ import {
   HelpCircle,
   Layers,
   Loader2,
+  Clock,
   AlertCircle,
   Terminal,
   Laptop,
@@ -541,10 +542,28 @@ export default function SecretDisplay({
       <div className="space-y-6">
         <BuffProgressCard orderCode={orderCode} />
         {!isBuffService && (
-          <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-6 text-center">
-            <p className="text-sm text-zinc-400">
-              Chưa có thông tin sản phẩm bàn giao cho đơn hàng này.
+          <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-6 text-center shadow-lg">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/20 text-amber-400">
+              <Clock className="h-6 w-6 animate-pulse" />
+            </div>
+            <h3 className="text-base font-bold text-white mb-1.5">
+              Đơn hàng đã thanh toán thành công!
+            </h3>
+            <p className="text-xs sm:text-sm text-zinc-300 max-w-md mx-auto leading-relaxed">
+              Hệ thống đang chuẩn bị tài khoản / bản quyền riêng cho bạn. Thông tin bàn giao sẽ tự động cập nhật tại trang này ngay khi hoàn tất.
             </p>
+            <div className="mt-4 pt-4 border-t border-amber-500/20 flex flex-wrap items-center justify-center gap-3 text-xs text-zinc-400">
+              <span>Mã đơn: <strong className="text-amber-300 font-mono">#{orderCode}</strong></span>
+              <span>•</span>
+              <a
+                href="https://t.me/daitruongstore"
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-400 hover:underline font-medium inline-flex items-center gap-1"
+              >
+                Hỗ trợ 24/7 qua Telegram
+              </a>
+            </div>
           </div>
         )}
       </div>
