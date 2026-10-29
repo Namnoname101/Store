@@ -597,7 +597,7 @@ export default function SecretDisplay({
               onClick={handleCopyAll}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all shadow-xs active:scale-95 ${
                 copiedAll
-                  ? "bg-emerald-600 text-white animate-spring-pop"
+                  ? "bg-emerald-600 text-white animate-smooth-pop"
                   : "bg-white text-zinc-950 hover:bg-zinc-100"
               }`}
             >
@@ -668,7 +668,7 @@ export default function SecretDisplay({
                         onClick={() => handleCopy(`${item.id}-user`, parsed.username!)}
                         className={`flex h-7 items-center gap-1 rounded-md px-2 text-[11px] font-medium transition-all ${
                           isUsernameCopied
-                            ? "bg-emerald-500/20 text-emerald-400 animate-spring-pop"
+                            ? "bg-emerald-500/20 text-emerald-400 animate-smooth-pop"
                             : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white"
                         }`}
                         title="Sao chép tài khoản"
@@ -702,7 +702,7 @@ export default function SecretDisplay({
                         onClick={() => handleCopy(`${item.id}-pass`, parsed.password!)}
                         className={`flex h-7 items-center gap-1 rounded-md px-2 text-[11px] font-medium transition-all ${
                           isPasswordCopied
-                            ? "bg-emerald-500/20 text-emerald-400 animate-spring-pop"
+                            ? "bg-emerald-500/20 text-emerald-400 animate-smooth-pop"
                             : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white"
                         }`}
                         title="Sao chép mật khẩu"
@@ -776,7 +776,7 @@ export default function SecretDisplay({
                       onClick={() => handleCopy(item.id, secretContent)}
                       className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                         isCopied
-                          ? "bg-emerald-600 text-white animate-spring-pop"
+                          ? "bg-emerald-600 text-white animate-smooth-pop"
                           : "bg-white text-zinc-950 hover:bg-zinc-100"
                       }`}
                     >
@@ -823,7 +823,7 @@ export default function SecretDisplay({
                       onClick={() => handleCopy(item.id, secretContent)}
                       className={`flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-all shrink-0 active:scale-[0.98] ${
                         isCopied
-                          ? "bg-emerald-600 text-white animate-spring-pop shadow-xs"
+                          ? "bg-emerald-600 text-white animate-smooth-pop shadow-xs"
                           : "bg-white text-zinc-950 hover:bg-zinc-100 shadow-xs"
                       }`}
                     >

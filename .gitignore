@@ -55,3 +55,7 @@ yarn-error.log*
 .superpowers/qa-screenshots/
 *.tmp
 *.temp
+
+# Impeccable binary cache
+.github/skills/impeccable/scripts/bin/
+*.exe

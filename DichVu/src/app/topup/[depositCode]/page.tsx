@@ -123,7 +123,7 @@ export default function DepositCheckoutPage() {
       <div className="max-w-md mx-auto my-12 px-4">
         <div className="relative overflow-hidden rounded-2xl border border-emerald-500/40 bg-slate-900/90 p-8 text-center shadow-2xl backdrop-blur-xl">
           <div className="absolute top-0 right-0 h-40 w-40 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none" />
-          <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-4 animate-bounce">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-4 animate-fade-slide-in">
             <CheckCircle2 className="h-9 w-9" />
           </div>
 
