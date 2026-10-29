@@ -10,7 +10,7 @@ import {
 import { commitReservedItemsToSold, releaseExpiredReservations } from "@/services/inventory.service";
 import { parseOrderCodeFromMemo, parseDepositCodeFromMemo } from "@/lib/vietqr";
 import { fulfillOrderViaUpstream } from "@/services/upstream-fulfillment.service";
-import { fulfillCodexCreditOrder } from "@/services/codex-fulfillment.service";
+import { fulfillCodexCreditOrder, isCodexProduct } from "@/services/codex-fulfillment.service";
 
 export interface BankTransactionPayload {
   transactionId: string;
@@ -515,10 +515,14 @@ export async function handleIncomingTransaction(
     );
 
     // Fulfill dropship items via upstream if any (exclude codex credit orders)
+    const hasCodexItems =
+      Boolean(order.creditTopupOrder) ||
+      order.orderItems.some((item) => isCodexProduct(item.product));
+
     const hasDropshipItems = order.orderItems.some(
       (item) =>
         item.product?.fulfillmentType === FulfillmentType.API_DROPSHIP &&
-        item.product?.type !== "CODEX_CREDIT" &&
+        !isCodexProduct(item.product) &&
         !order.creditTopupOrder
     );
 
@@ -533,8 +537,8 @@ export async function handleIncomingTransaction(
       }
     }
 
-    // Fulfill Codex Credit order if present
-    if (order.creditTopupOrder) {
+    // Fulfill Codex Credit / API Key order if present
+    if (hasCodexItems) {
       try {
         await fulfillCodexCreditOrder(order.id);
       } catch (codexErr) {

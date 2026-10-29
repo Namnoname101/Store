@@ -1,24 +1,220 @@
 import prisma from "@/lib/prisma";
-import { ItemStatus, UpstreamStatus, SupplierType } from "@/lib/prisma";
+import { ItemStatus, UpstreamStatus } from "@/lib/prisma";
 import { ModelApiService } from "@/services/modelapi/modelapi.service";
-import { GENZSHOP_CODEX_MAPPING } from "@/lib/codex.constants";
-import { getSupplierAdapter } from "@/services/suppliers/adapter.registry";
+import { computeKeyFingerprint, maskApiKey } from "@/lib/key-security";
 
 export interface CodexFulfillmentResult {
   success: boolean;
   status: string;
   discrepancyDelta?: number;
+  deliveredKey?: string;
   error?: string;
 }
 
 /**
- * Fulfills a Codex Credit Topup order idempotently.
- * Serialized via in-process mutex and atomic DB status transitions.
+ * Checks if a product or order is related to Codex.
+ */
+export function isCodexProduct(product?: {
+  slug?: string | null;
+  title?: string | null;
+  type?: string | null;
+} | null): boolean {
+  if (!product) return false;
+  const slug = (product.slug || "").toLowerCase();
+  const title = (product.title || "").toLowerCase();
+  const type = product.type || "";
+  return (
+    type === "CODEX_CREDIT" ||
+    slug.includes("codex") ||
+    slug.includes("cdx") ||
+    title.includes("codex")
+  );
+}
+
+/**
+ * Fulfills a Codex Credit / API Key order automatically via ModelAPI.
+ * - If customer has an existing API key: adds purchased quota directly to that key.
+ * - If customer does not have a key: auto-creates a new key on ModelAPI with quota and delivers it.
+ * - Idempotent, serialized via mutex & atomic DB state transitions.
  */
 export async function fulfillCodexCreditOrder(
   orderId: string
 ): Promise<CodexFulfillmentResult> {
-  // 1. Atomic state transition: PENDING or RECONCILE_REQUIRED -> PROCESSING
+  // 1. Check if CreditTopupOrder exists
+  let topupOrder = await prisma.creditTopupOrder.findUnique({
+    where: { orderId },
+    include: {
+      binding: true,
+      order: {
+        include: {
+          orderItems: {
+            include: { product: true },
+          },
+        },
+      },
+    },
+  });
+
+  // If no CreditTopupOrder yet, check if this is an order for a Codex product from catalog
+  if (!topupOrder) {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        orderItems: {
+          include: { product: true },
+        },
+      },
+    });
+
+    if (!order) {
+      return {
+        success: false,
+        status: "SKIPPED",
+        error: "Order not found",
+      };
+    }
+
+    const codexItem = order.orderItems.find((item) =>
+      isCodexProduct(item.product)
+    );
+
+    if (!codexItem || !codexItem.product) {
+      return {
+        success: false,
+        status: "SKIPPED",
+        error: "Not a codex order",
+      };
+    }
+
+    // Determine creditUsd from product title / slug (e.g. "10$ Credit" -> 10, "50$ Credit" -> 50)
+    let creditUsd = 10;
+    const match = codexItem.product.title.match(/(\d+)\s*\$\s*Credit/i) ||
+      codexItem.product.slug.match(/(\d+)(?:-credit|usd)/i);
+    if (match && match[1]) {
+      creditUsd = Number(match[1]);
+    }
+
+    const quotaUnits = ModelApiService.usdToQuota(creditUsd);
+
+    // Check if customer provided their existing API key in customerNote
+    const customerKeyMatch = (order.customerNote || "").match(/sk-[a-zA-Z0-9_\-]{10,}/);
+    let resolvedBindingId: string | null = null;
+
+    if (customerKeyMatch) {
+      const providedKey = customerKeyMatch[0].trim();
+      const verifyRes = await ModelApiService.verifyCustomerKey(providedKey);
+      if (verifyRes.valid && verifyRes.tokenId) {
+        const fp = computeKeyFingerprint(providedKey);
+        let binding = await prisma.customerApiKeyBinding.findUnique({
+          where: { keyFingerprint: fp },
+        });
+        if (!binding) {
+          binding = await prisma.customerApiKeyBinding.create({
+            data: {
+              upstreamTokenId: verifyRes.tokenId,
+              keyFingerprint: fp,
+              maskedKey: maskApiKey(providedKey),
+              keyName: verifyRes.name || "API Key của bạn",
+              userId: order.userId || null,
+              guestEmail: order.customerEmail || null,
+              status: "ACTIVE",
+              lastSyncedAt: new Date(),
+            },
+          });
+        }
+        resolvedBindingId = binding.id;
+      }
+    }
+
+    // If still no binding, customer requested a brand new key -> create on ModelAPI
+    let deliveredRawKey: string | null = null;
+    if (!resolvedBindingId) {
+      const createRes = await ModelApiService.createCustomerKey({
+        creditUsd,
+        guestEmail: order.customerEmail,
+        userId: order.userId,
+        name: `DaiTruong_${order.orderCode}`,
+      });
+
+      if (!createRes.success || !createRes.bindingId || !createRes.key) {
+        const errorMsg = createRes.error || "Không thể tự động tạo API Key mới trên ModelAPI";
+        await prisma.order.update({
+          where: { id: orderId },
+          data: { upstreamStatus: UpstreamStatus.FAILED, upstreamError: errorMsg },
+        });
+        return {
+          success: false,
+          status: "FAILED",
+          error: errorMsg,
+        };
+      }
+
+      resolvedBindingId = createRes.bindingId;
+      deliveredRawKey = createRes.key;
+    }
+
+    // Create linked CreditTopupOrder
+    topupOrder = await prisma.creditTopupOrder.create({
+      data: {
+        orderId,
+        bindingId: resolvedBindingId,
+        creditUsd,
+        quotaUnits,
+        status: deliveredRawKey ? "COMPLETED" : "PENDING",
+        completedAt: deliveredRawKey ? new Date() : null,
+      },
+      include: {
+        binding: true,
+        order: {
+          include: {
+            orderItems: {
+              include: { product: true },
+            },
+          },
+        },
+      },
+    });
+
+    // If new key was created, record delivery and complete order
+    if (deliveredRawKey) {
+      const secretContent = `🎉 API Key mới của bạn đã được khởi tạo thành công!
+
+• API Key: ${deliveredRawKey}
+• Hạn mức ban đầu: $${creditUsd} (${quotaUnits.toLocaleString("vi-VN")} Quota Points)
+• Base URL: https://modelapi.vn/v1
+
+📖 Hướng dẫn kết nối nhanh vào Cursor IDE:
+1. Mở Cursor > Cài đặt (Settings) > Models
+2. Bật công tắc "OpenAI Compatible"
+3. Điền Base URL: https://modelapi.vn/v1
+4. Dán API Key ở trên và bắt đầu sử dụng!`;
+
+      await prisma.productItem.create({
+        data: {
+          productId: codexItem.productId,
+          secretContent,
+          status: ItemStatus.SOLD,
+          orderId,
+        },
+      });
+
+      await prisma.order.update({
+        where: { id: orderId },
+        data: {
+          upstreamStatus: UpstreamStatus.COMPLETED,
+          upstreamError: null,
+        },
+      });
+
+      return {
+        success: true,
+        status: "COMPLETED",
+        deliveredKey: deliveredRawKey,
+      };
+    }
+  }
+
+  // 2. State transition: PENDING or RECONCILE_REQUIRED -> PROCESSING
   const lockResult = await prisma.creditTopupOrder.updateMany({
     where: {
       orderId,
@@ -29,41 +225,19 @@ export async function fulfillCodexCreditOrder(
     },
   });
 
-  if (lockResult.count === 0) {
-    const existing = await prisma.creditTopupOrder.findUnique({
-      where: { orderId },
-    });
-    if (!existing) {
-      return {
-        success: false,
-        status: "SKIPPED",
-        error: "Not a codex credit order",
-      };
-    }
+  if (lockResult.count === 0 && topupOrder.status !== "PROCESSING") {
     return {
-      success: existing.status === "COMPLETED",
-      status: existing.status,
+      success: topupOrder.status === "COMPLETED",
+      status: topupOrder.status,
       error:
-        existing.status === "COMPLETED"
+        topupOrder.status === "COMPLETED"
           ? undefined
-          : `Order is already in ${existing.status} status`,
+          : `Order is already in ${topupOrder.status} status`,
     };
   }
 
-  // 2. Fetch full topup order with binding and order items
-  const topupOrder = await prisma.creditTopupOrder.findUnique({
-    where: { orderId },
-    include: {
-      binding: true,
-      order: {
-        include: {
-          orderItems: true,
-        },
-      },
-    },
-  });
-
-  if (!topupOrder || !topupOrder.binding) {
+  // 3. Topup quota to existing key via ModelApiService.applyQuotaTopup
+  if (!topupOrder.binding) {
     const errorMsg = "Customer API key binding not found for order";
     await prisma.creditTopupOrder.update({
       where: { orderId },
@@ -80,53 +254,6 @@ export async function fulfillCodexCreditOrder(
     };
   }
 
-  // 3. Purchase replenishment card from GenzShop and redeem into ModelAPI master account
-  const genzProductCode = GENZSHOP_CODEX_MAPPING[topupOrder.creditUsd];
-  let genzRedemptionCode: string | null = null;
-
-  if (genzProductCode) {
-    try {
-      const genzSupplier = await prisma.supplier.findFirst({
-        where: {
-          type: SupplierType.GENZSHOP,
-          isActive: true,
-        },
-      });
-
-      if (genzSupplier && genzSupplier.apiKey) {
-        const adapter = getSupplierAdapter(SupplierType.GENZSHOP);
-        const buyResult = await adapter.buyProduct(
-          {
-            baseUrl: genzSupplier.baseUrl,
-            apiKey: genzSupplier.apiKey,
-          },
-          genzProductCode,
-          1,
-          topupOrder.order?.orderCode || `CODEX_${orderId}`
-        );
-
-        if (buyResult.success && buyResult.deliveredKeys?.length > 0) {
-          genzRedemptionCode = buyResult.deliveredKeys[0];
-          const redeemRes = await ModelApiService.redeemMasterAccount(genzRedemptionCode);
-          if (!redeemRes.success) {
-            console.warn(
-              `[CodexFulfillment] Redeeming GenzShop card ${genzRedemptionCode} into ModelAPI master account returned:`,
-              redeemRes.message
-            );
-          }
-        } else {
-          console.warn(
-            `[CodexFulfillment] GenzShop purchase failed for ${genzProductCode}:`,
-            buyResult.error
-          );
-        }
-      }
-    } catch (genzErr: any) {
-      console.warn(`[CodexFulfillment] Error in GenzShop replenishment pipeline:`, genzErr.message);
-    }
-  }
-
-  // 4. Call ModelApiService.applyQuotaTopup to allocate quota to customer key
   try {
     const topupResult = await ModelApiService.applyQuotaTopup({
       bindingId: topupOrder.bindingId,
@@ -160,29 +287,11 @@ export async function fulfillCodexCreditOrder(
         await prisma.productItem.create({
           data: {
             productId: firstProductId,
-            secretContent: `Đã nạp thành công $${topupOrder.creditUsd} vào API Key: ${topupOrder.binding.maskedKey} (+${topupOrder.quotaUnits.toLocaleString()} quota points)`,
+            secretContent: `✅ Đã nạp thành công $${topupOrder.creditUsd} vào API Key: ${topupOrder.binding.maskedKey} (+${topupOrder.quotaUnits.toLocaleString("vi-VN")} quota points). Bạn có thể tiếp tục sử dụng ngay!`,
             status: ItemStatus.SOLD,
             orderId: orderId,
           },
         });
-
-        // Decrement supplierStock if mapping exists
-        try {
-          const mapping = await prisma.supplierProductMapping.findUnique({
-            where: { productId: firstProductId },
-            select: { id: true, supplierStock: true },
-          });
-          if (mapping && mapping.supplierStock > 0) {
-            await prisma.supplierProductMapping.update({
-              where: { id: mapping.id },
-              data: {
-                supplierStock: Math.max(0, mapping.supplierStock - 1),
-              },
-            });
-          }
-        } catch (stockErr) {
-          console.warn(`Failed to decrement supplierStock for codex product ${firstProductId}:`, stockErr);
-        }
       }
 
       return {
@@ -191,7 +300,6 @@ export async function fulfillCodexCreditOrder(
         discrepancyDelta: topupResult.discrepancyDelta,
       };
     } else {
-      // Upstream failure or reconcile required
       const finalStatus = "RECONCILE_REQUIRED";
 
       await prisma.creditTopupOrder.update({
@@ -209,24 +317,6 @@ export async function fulfillCodexCreditOrder(
           upstreamError: topupResult.error,
         },
       });
-
-      // Audit Log for Owner / Admin investigation
-      await prisma.auditLog
-        .create({
-          data: {
-            action: "CODEX_TOPUP_FAILED",
-            entityType: "ORDER",
-            entityId: orderId,
-            details: JSON.stringify({
-              status: finalStatus,
-              error: topupResult.error,
-              topupOrderId: topupOrder.id,
-              discrepancyDelta: topupResult.discrepancyDelta,
-            }),
-            performedBy: "SYSTEM",
-          },
-        })
-        .catch(() => {});
 
       return {
         success: false,

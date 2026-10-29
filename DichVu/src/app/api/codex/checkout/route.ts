@@ -19,25 +19,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { bindingId, packageId, email, customerNote, couponCode } = body || {};
+    const { bindingId, packageId, email, customerNote, couponCode, isNewKey } = body || {};
 
-    if (!bindingId || typeof bindingId !== "string") {
-      return NextResponse.json(
-        { error: "Vui lòng chọn hoặc kiểm tra API Key hợp lệ" },
-        { status: 400 }
-      );
-    }
+    let binding: any = null;
+    if (!isNewKey) {
+      if (!bindingId || typeof bindingId !== "string") {
+        return NextResponse.json(
+          { error: "Vui lòng chọn hoặc kiểm tra API Key hợp lệ" },
+          { status: 400 }
+        );
+      }
 
-    // 1. Verify CustomerApiKeyBinding
-    const binding = await prisma.customerApiKeyBinding.findUnique({
-      where: { id: bindingId },
-    });
+      // 1. Verify CustomerApiKeyBinding
+      binding = await prisma.customerApiKeyBinding.findUnique({
+        where: { id: bindingId },
+      });
 
-    if (!binding) {
-      return NextResponse.json(
-        { error: "API Key chưa được xác minh hoặc không tồn tại trong hệ thống" },
-        { status: 404 }
-      );
+      if (!binding) {
+        return NextResponse.json(
+          { error: "API Key chưa được xác minh hoặc không tồn tại trong hệ thống" },
+          { status: 404 }
+        );
+      }
     }
 
     // 2. Verify selected package
@@ -51,7 +54,7 @@ export async function POST(req: NextRequest) {
 
     // 3. User session check
     const authUser = await getAuthenticatedUser(req);
-    const userId = authUser?.userId || binding.userId || null;
+    const userId = authUser?.userId || binding?.userId || null;
 
     // 4. Find or ensure Category & Product exists
     let category = await prisma.category.findFirst({
@@ -123,8 +126,8 @@ export async function POST(req: NextRequest) {
       const createdOrder = await tx.order.create({
         data: {
           orderCode,
-          customerEmail: email ? email.trim() : binding.guestEmail || null,
-          customerNote: customerNote ? customerNote.trim() : null,
+          customerEmail: email ? email.trim() : binding?.guestEmail || null,
+          customerNote: customerNote ? customerNote.trim() : (isNewKey ? "CREATE_NEW_KEY" : null),
           userId,
           totalAmount,
           subtotalAmount,
@@ -145,16 +148,18 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      // Create linked CreditTopupOrder
-      await tx.creditTopupOrder.create({
-        data: {
-          orderId: createdOrder.id,
-          bindingId: binding.id,
-          creditUsd: selectedPkg.creditUsd,
-          quotaUnits: selectedPkg.quotaUnits,
-          status: TopupStatus.PENDING,
-        },
-      });
+      // Create linked CreditTopupOrder if existing binding present
+      if (binding) {
+        await tx.creditTopupOrder.create({
+          data: {
+            orderId: createdOrder.id,
+            bindingId: binding.id,
+            creditUsd: selectedPkg.creditUsd,
+            quotaUnits: selectedPkg.quotaUnits,
+            status: TopupStatus.PENDING,
+          },
+        });
+      }
 
       if (couponId) {
         await tx.coupon.update({

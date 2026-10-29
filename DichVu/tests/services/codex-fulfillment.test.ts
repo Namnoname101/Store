@@ -236,53 +236,54 @@ describe("Codex Auto-Fulfillment Pipeline Tests", () => {
     expect(updatedTopup?.retryCount).toBe(1);
   });
 
-  it("should buy product from GenzShop and redeem into ModelAPI master account if GenzShop is active", async () => {
-    // 1. Create active GenzShop supplier
-    const genzSupplier = await prisma.supplier.create({
+  it("should auto-create new key on ModelAPI if customer does not have a key and deliver it", async () => {
+    // 1. Create a fresh order for Codex without pre-existing binding
+    const newOrder = await prisma.order.create({
       data: {
-        code: `GENZSHOP_TEST_${Date.now()}`,
-        name: "Test GenzShop",
-        type: "GENZSHOP",
-        baseUrl: "https://genzshop.vn/api/partner/v1",
-        apiKey: "gzsk_test_mock_key_123",
-        isActive: true,
+        orderCode: `ORD_NEW_KEY_${Date.now()}`,
+        totalAmount: 110000,
+        status: "PAID",
+        paidAt: new Date(),
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        orderItems: {
+          create: {
+            productId: testProductId,
+            price: 110000,
+            quantity: 1,
+          },
+        },
       },
     });
 
+    const createKeySpy = vi.spyOn(ModelApiService, "createCustomerKey").mockResolvedValue({
+      success: true,
+      key: "sk-mock-auto-generated-key-12345",
+      maskedKey: "sk-mock...2345",
+      bindingId: testBindingId,
+      upstreamTokenId: 998877,
+      remainQuota: 5000000,
+    });
+
     try {
-      const adapter = getSupplierAdapter("GENZSHOP");
-      const buySpy = vi.spyOn(adapter, "buyProduct").mockResolvedValue({
-        success: true,
-        deliveredKeys: ["CARD_GENZ_TOPUP_MOCK_XYZ"],
-      });
-
-      const redeemSpy = vi.spyOn(ModelApiService, "redeemMasterAccount").mockResolvedValue({
-        success: true,
-        message: "Nạp thành công",
-        quota: 10000000,
-      });
-
-      const topupSpy = vi.spyOn(ModelApiService, "applyQuotaTopup").mockResolvedValue({
-        success: true,
-        quotaBefore: 1000000,
-        quotaAdded: 5000000,
-        quotaAfter: 6000000,
-        discrepancyDelta: 0,
-      });
-
-      const result = await fulfillCodexCreditOrder(testOrderId);
+      const result = await fulfillCodexCreditOrder(newOrder.id);
 
       expect(result.success).toBe(true);
-      expect(buySpy).toHaveBeenCalledWith(
-        expect.anything(),
-        "CDX-0055",
-        1,
-        expect.any(String)
-      );
-      expect(redeemSpy).toHaveBeenCalledWith("CARD_GENZ_TOPUP_MOCK_XYZ");
-      expect(topupSpy).toHaveBeenCalled();
+      expect(result.status).toBe("COMPLETED");
+      expect(createKeySpy).toHaveBeenCalled();
+
+      // Verify delivered item contains the new key
+      const updatedOrder = await prisma.order.findUnique({
+        where: { id: newOrder.id },
+        include: { deliveredItems: true },
+      });
+
+      expect(updatedOrder?.deliveredItems.length).toBe(1);
+      expect(updatedOrder?.deliveredItems[0].secretContent).toContain("sk-mock-auto-generated-key-12345");
     } finally {
-      await prisma.supplier.delete({ where: { id: genzSupplier.id } }).catch(() => {});
+      await prisma.orderItem.deleteMany({ where: { orderId: newOrder.id } }).catch(() => {});
+      await prisma.productItem.deleteMany({ where: { orderId: newOrder.id } }).catch(() => {});
+      await prisma.creditTopupOrder.deleteMany({ where: { orderId: newOrder.id } }).catch(() => {});
+      await prisma.order.delete({ where: { id: newOrder.id } }).catch(() => {});
     }
   });
 });

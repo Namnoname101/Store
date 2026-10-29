@@ -556,4 +556,66 @@ describe("ModelApiService & TokenMutex Tests", () => {
       );
     });
   });
+
+  describe("7. Automatic Key Creation (createCustomerKey)", () => {
+    it("should successfully create token on ModelAPI and create CustomerApiKeyBinding", async () => {
+      globalThis.fetch = vi.fn().mockImplementation((url: string, init?: RequestInit) => {
+        if (init?.method === "POST" && url.includes("/api/token/")) {
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            json: async () => ({
+              success: true,
+              data: {
+                id: 887766,
+                key: "sk-mock-auto-key-test-887766",
+                name: "DaiTruong_TestOrder",
+                remain_quota: 5000000,
+              },
+            }),
+          });
+        }
+        return Promise.reject(new Error("Unexpected endpoint"));
+      });
+
+      const res = await ModelApiService.createCustomerKey({
+        creditUsd: 10,
+        name: "DaiTruong_TestOrder",
+        guestEmail: "testguest@daitruong.com",
+      });
+
+      expect(res.success).toBe(true);
+      expect(res.key).toBe("sk-mock-auto-key-test-887766");
+      expect(res.maskedKey).toBe("sk-mock...7766");
+      expect(res.bindingId).toBeDefined();
+
+      if (res.bindingId) {
+        createdBindingIds.push(res.bindingId);
+        const bindingInDb = await prisma.customerApiKeyBinding.findUnique({
+          where: { id: res.bindingId },
+        });
+        expect(bindingInDb).toBeDefined();
+        expect(bindingInDb?.upstreamTokenId).toBe(887766);
+        expect(bindingInDb?.totalCreditUsd).toBe(10);
+      }
+    });
+
+    it("should return error when upstream token creation fails", async () => {
+      globalThis.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        json: async () => ({
+          success: false,
+          message: "Master account insufficient balance",
+        }),
+      } as any);
+
+      const res = await ModelApiService.createCustomerKey({
+        creditUsd: 50,
+      });
+
+      expect(res.success).toBe(false);
+      expect(res.error).toContain("insufficient balance");
+    });
+  });
 });

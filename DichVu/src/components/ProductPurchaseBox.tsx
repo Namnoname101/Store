@@ -58,8 +58,14 @@ export default function ProductPurchaseBox({
 
   const [quantity, setQuantity] = useState<number>(isCustomQuantity ? effectiveMin : 1);
   const [targetLink, setTargetLink] = useState<string>("");
+  const [customerApiKey, setCustomerApiKey] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const isCodexProduct =
+    (slug || "").toLowerCase().includes("codex") ||
+    (slug || "").toLowerCase().includes("cdx") ||
+    productTitle.toLowerCase().includes("codex");
 
   // Coupon state
   const [couponCode, setCouponCode] = useState<string>("");
@@ -239,7 +245,11 @@ export default function ProductPurchaseBox({
       fulfillmentType: fulfillmentType || "LOCAL_STOCK",
       categorySlug,
       requiresLink,
-      targetLink: requiresLink ? targetLink.trim() : undefined,
+      targetLink: requiresLink
+        ? targetLink.trim()
+        : isCodexProduct && customerApiKey.trim()
+        ? customerApiKey.trim()
+        : undefined,
     });
   };
 
@@ -273,6 +283,12 @@ export default function ProductPurchaseBox({
     setIsLoading(true);
 
     try {
+      const finalCustomerNote = requiresLink
+        ? targetLink.trim()
+        : isCodexProduct && customerApiKey.trim()
+        ? customerApiKey.trim()
+        : undefined;
+
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: {
@@ -280,7 +296,7 @@ export default function ProductPurchaseBox({
         },
         body: JSON.stringify({
           customerEmail: null,
-          customerNote: requiresLink ? targetLink.trim() : undefined,
+          customerNote: finalCustomerNote,
           couponCode: appliedCoupon?.code || undefined,
           items: [
             {
@@ -560,6 +576,34 @@ export default function ProductPurchaseBox({
             </div>
             <p className="mt-1 text-[11px] text-slate-500">
               {targetLinkHelper}
+            </p>
+          </div>
+        )}
+
+        {/* Optional Customer API Key for Codex */}
+        {isCodexProduct && (
+          <div>
+            <label
+              htmlFor="customerApiKey"
+              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
+            >
+              API Key cần nạp thêm <span className="text-slate-400 font-normal lowercase">(để trống nếu muốn tạo key mới)</span>
+            </label>
+            <div className="relative">
+              <input
+                id="customerApiKey"
+                type="text"
+                placeholder="sk-... (tùy chọn)"
+                value={customerApiKey}
+                disabled={isLoading}
+                onChange={(e) => setCustomerApiKey(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2.5 px-3.5 text-xs font-mono text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
+              />
+            </div>
+            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+              {customerApiKey.trim()
+                ? "✨ Hạn mức sẽ được nạp trực tiếp vào API Key này."
+                : "💡 Nếu chưa có key, hệ thống sẽ tự động tạo 1 key mới và bàn giao ngay sau khi thanh toán."}
             </p>
           </div>
         )}

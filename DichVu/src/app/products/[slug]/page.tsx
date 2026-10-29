@@ -15,6 +15,7 @@ import {
 import { getProductBySlug } from "@/services/catalog.service";
 import ProductPurchaseBox from "@/components/ProductPurchaseBox";
 import ClaudeApiGuideHub from "@/components/ClaudeApiGuideHub";
+import CodexApiGuideHub from "@/components/CodexApiGuideHub";
 import { getProductTypeInfo, formatVND } from "@/lib/product-types";
 import { resolveProductInstruction } from "@/lib/product-guides";
 import { resolveProductThumbnail } from "@/lib/catalog-grouping";
@@ -90,13 +91,14 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     product.slug.toLowerCase().includes("cdx") ||
     titleLower.includes("codex");
 
-  const isApiKeyProduct =
+  const isClaude =
     product.slug.toLowerCase().includes("claude") ||
-    product.slug.toLowerCase().includes("codex") ||
-    product.slug.toLowerCase().includes("cdx") ||
+    titleLower.includes("claude");
+
+  const isApiKeyProduct =
+    isClaude ||
+    isCodex ||
     product.slug.toLowerCase().includes("api") ||
-    titleLower.includes("claude") ||
-    titleLower.includes("codex") ||
     titleLower.includes("api") ||
     product.category?.slug === "ai-api";
 
@@ -226,48 +228,50 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             />
           </div>
 
-          {/* Standardized Product Specification Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 sm:p-5 shadow-xs">
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800/80">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 shrink-0">
-                <Send className="h-4 w-4" />
+          {/* Standardized Product Specification Grid (Ẩn đối với sản phẩm API theo phản hồi) */}
+          {!isApiKeyProduct && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 sm:p-5 shadow-xs">
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800/80">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 shrink-0">
+                  <Send className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Hình thức nhận hàng</span>
+                  <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">{deliveryFormat}</p>
+                </div>
               </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Hình thức nhận hàng</span>
-                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">{deliveryFormat}</p>
-              </div>
-            </div>
 
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800/80">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 shrink-0">
-                <Clock className="h-4 w-4" />
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800/80">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 shrink-0">
+                  <Clock className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Thời hạn sử dụng</span>
+                  <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">{durationLabel}</p>
+                </div>
               </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Thời hạn sử dụng</span>
-                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">{durationLabel}</p>
-              </div>
-            </div>
 
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800/80">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 shrink-0">
-                <ShieldCheck className="h-4 w-4" />
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800/80">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 shrink-0">
+                  <ShieldCheck className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Chính sách bảo hành</span>
+                  <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">{warrantyLabel}</p>
+                </div>
               </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Chính sách bảo hành</span>
-                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">{warrantyLabel}</p>
-              </div>
-            </div>
 
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800/80">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 shrink-0">
-                <Headphones className="h-4 w-4" />
-              </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Hỗ trợ kỹ thuật</span>
-                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">Đồng hành 24/7 qua Zalo & Telegram</p>
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800/80">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 shrink-0">
+                  <Headphones className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Hỗ trợ kỹ thuật</span>
+                  <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">Đồng hành 24/7 qua Zalo & Telegram</p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Product Description */}
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-6 sm:p-7 shadow-xs">
@@ -282,7 +286,24 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           </div>
 
           {/* Product Instruction Guide if available */}
-          {isApiKeyProduct ? (
+          {isCodex ? (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  <span>Hướng dẫn cấu hình API Codex (Cursor & OpenAI Compatible)</span>
+                </h2>
+                <Link
+                  href="/codex"
+                  className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold inline-flex items-center gap-1 transition-colors"
+                >
+                  <span>Mở trang nạp hạn mức tự động</span>
+                  <ExternalLink className="h-3 w-3" />
+                </Link>
+              </div>
+              <CodexApiGuideHub showKeyInput={true} />
+            </div>
+          ) : isClaude ? (
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">

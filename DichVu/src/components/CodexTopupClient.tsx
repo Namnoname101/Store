@@ -162,7 +162,7 @@ export default function CodexTopupClient() {
   // Handle Checkout Submit
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!verifiedKey) {
+    if (hasKeyMode === "has_key" && !verifiedKey) {
       setCheckoutError("Vui lòng kiểm tra và xác nhận API Key trước khi thanh toán");
       return;
     }
@@ -175,7 +175,8 @@ export default function CodexTopupClient() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          bindingId: verifiedKey.bindingId,
+          isNewKey: hasKeyMode === "no_key",
+          bindingId: hasKeyMode === "has_key" ? verifiedKey?.bindingId : undefined,
           packageId: selectedPackage.id,
           email: email || undefined,
           couponCode: couponCode || undefined,
@@ -261,47 +262,18 @@ export default function CodexTopupClient() {
               </button>
             </div>
 
-            {/* If No Key: Helpful assistance card */}
+            {/* If No Key: Auto-creation note */}
             {hasKeyMode === "no_key" && (
-              <div className="mt-5 rounded-xl border border-purple-200 dark:border-purple-900/50 bg-purple-50/50 dark:bg-purple-950/20 p-4">
+              <div className="mt-5 rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/60 dark:bg-blue-950/20 p-4">
                 <div className="flex items-start gap-3">
-                  <Info className="h-5 w-5 shrink-0 text-purple-600 dark:text-purple-400 mt-0.5" />
-                  <div className="text-xs sm:text-sm text-purple-950 dark:text-purple-200">
+                  <Zap className="h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400 mt-0.5" />
+                  <div className="text-xs sm:text-sm text-blue-950 dark:text-blue-200">
                     <p className="font-semibold">
-                      Chưa có API Key? Cửa hàng cấp miễn phí key định danh ban đầu
+                      Chưa có API Key? Cửa hàng sẽ tự động tạo Key mới cho bạn!
                     </p>
-                    <p className="mt-1 text-purple-800/80 dark:text-purple-300/80">
-                      Để đảm bảo an toàn hạn mức và quản lý quota độc lập, vui lòng
-                      nhắn tin nhanh cho Admin qua kênh hỗ trợ để được cấp key trong 2 phút:
+                    <p className="mt-1 text-blue-800/90 dark:text-blue-300/90 leading-relaxed">
+                      Bạn không cần phải chuẩn bị key trước. Hãy chọn gói hạn mức bên dưới và thanh toán, hệ thống sẽ tự động khởi tạo 1 API Key mới kèm toàn bộ hạn mức bạn mua và hiển thị ngay trên màn hình đơn hàng!
                     </p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <Link
-                        href="/?category=ai-api#catalog"
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 transition"
-                      >
-                        <ShoppingBag className="h-3.5 w-3.5" />
-                        <span>Mua gói Key Claude / Cursor tại Cửa hàng</span>
-                      </Link>
-                      <a
-                        href="https://m.me/daitruongstore"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition"
-                      >
-                        <MessageCircle className="h-3.5 w-3.5" />
-                        <span>Chat Messenger</span>
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                      <a
-                        href="https://t.me/daitruong"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-sky-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-600 transition"
-                      >
-                        <span>Telegram @daitruong</span>
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -530,7 +502,9 @@ export default function CodexTopupClient() {
               <div className="flex justify-between pt-3">
                 <span className="text-slate-500 dark:text-slate-400">API Key nhận quota:</span>
                 <span className="font-mono font-medium text-slate-800 dark:text-slate-200">
-                  {verifiedKey ? verifiedKey.maskedKey : "Chưa chọn"}
+                  {hasKeyMode === "has_key"
+                    ? (verifiedKey ? verifiedKey.maskedKey : "Chưa chọn")
+                    : "Khởi tạo Key mới tự động"}
                 </span>
               </div>
 
@@ -553,7 +527,7 @@ export default function CodexTopupClient() {
             {/* Action Checkout Button */}
             <button
               type="button"
-              disabled={isSubmitting || !verifiedKey}
+              disabled={isSubmitting || (hasKeyMode === "has_key" && !verifiedKey)}
               onClick={handleCheckout}
               className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/25 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
@@ -564,7 +538,9 @@ export default function CodexTopupClient() {
                 </>
               ) : (
                 <>
-                  <span>Thanh toán VietQR Tự Động</span>
+                  <span>
+                    {hasKeyMode === "no_key" ? "Tạo Key Mới & Thanh Toán VietQR" : "Thanh toán VietQR Tự Động"}
+                  </span>
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}

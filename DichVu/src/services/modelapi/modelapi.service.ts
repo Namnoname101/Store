@@ -1,5 +1,23 @@
 import { prisma, TopupStatus, UpstreamStatus } from "@/lib/prisma";
 import { acquireTokenLock } from "./token-mutex";
+import { computeKeyFingerprint, maskApiKey } from "@/lib/key-security";
+
+export interface CreateCustomerKeyParams {
+  name?: string;
+  creditUsd: number;
+  userId?: string | null;
+  guestEmail?: string | null;
+}
+
+export interface CreateCustomerKeyResult {
+  success: boolean;
+  key?: string;
+  maskedKey?: string;
+  bindingId?: string;
+  upstreamTokenId?: number;
+  remainQuota?: number;
+  error?: string;
+}
 
 export interface ApplyQuotaTopupParams {
   bindingId: string;
@@ -630,6 +648,92 @@ export class ModelApiService {
     } catch (err) {
       clearTimeout(timer);
       return null;
+    }
+  }
+
+  /**
+   * Creates a new customer token on ModelAPI with initial quota credit,
+   * stores key fingerprint and masked representation in CustomerApiKeyBinding.
+   */
+  static async createCustomerKey(
+    params: CreateCustomerKeyParams
+  ): Promise<CreateCustomerKeyResult> {
+    const quotaUnits = this.usdToQuota(params.creditUsd);
+    const tokenName = params.name || `DaiTruong_${Date.now()}`;
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.getTimeoutMs());
+
+    try {
+      const res = await fetch(`${this.getBaseUrl()}/api/token/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.getSystemToken()}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: tokenName,
+          remain_quota: quotaUnits,
+          expired_time: -1,
+          unlimited_quota: false,
+        }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timer);
+
+      const json = await res.json().catch(() => null);
+
+      if (!res.ok || !json?.success || !json?.data) {
+        return {
+          success: false,
+          error: json?.message || `Failed to create token upstream (HTTP ${res.status})`,
+        };
+      }
+
+      const tokenData = json.data;
+      const rawKey = tokenData.key;
+      const upstreamTokenId = tokenData.id;
+
+      if (!rawKey || typeof rawKey !== "string") {
+        return {
+          success: false,
+          error: "Upstream created token but did not return raw key string",
+        };
+      }
+
+      const maskedKey = maskApiKey(rawKey);
+      const keyFingerprint = computeKeyFingerprint(rawKey);
+
+      // Create or update CustomerApiKeyBinding in DB
+      const binding = await prisma.customerApiKeyBinding.create({
+        data: {
+          upstreamTokenId,
+          keyFingerprint,
+          maskedKey,
+          keyName: tokenData.name || tokenName,
+          status: "ACTIVE",
+          totalCreditUsd: params.creditUsd,
+          userId: params.userId || null,
+          guestEmail: params.guestEmail || null,
+          lastSyncedAt: new Date(),
+        },
+      });
+
+      return {
+        success: true,
+        key: rawKey,
+        maskedKey,
+        bindingId: binding.id,
+        upstreamTokenId,
+        remainQuota: tokenData.remain_quota ?? quotaUnits,
+      };
+    } catch (err: any) {
+      clearTimeout(timer);
+      return {
+        success: false,
+        error: err.message || "Network error while creating token on ModelAPI",
+      };
     }
   }
 }

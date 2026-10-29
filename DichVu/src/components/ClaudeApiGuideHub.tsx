@@ -166,33 +166,33 @@ export default function ClaudeApiGuideHub({
   ];
 
   return (
-    <div className="w-full space-y-5 text-slate-200">
+    <div className="w-full space-y-5 text-slate-800 dark:text-slate-200">
       {/* Key Synchronization Bar */}
       {showKeyInput && (
-        <div className="rounded-xl border border-indigo-500/20 bg-gradient-to-r from-indigo-950/40 via-purple-950/20 to-slate-900/60 p-4 backdrop-blur-sm shadow-lg">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 sm:p-5 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <div className="h-8 w-8 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center shrink-0 text-indigo-400">
+              <div className="h-9 w-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900/50 flex items-center justify-center shrink-0 text-blue-600 dark:text-blue-400">
                 <Sparkles className="h-4 w-4" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-white uppercase tracking-wider">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                     API Key Đang Áp Dụng
                   </span>
                   {isRealKey ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/50 px-2 py-0.5 rounded-full">
                       <CheckCircle2 className="h-3 w-3" />
                       Key thật đã đồng bộ vào toàn bộ hướng dẫn
                     </span>
                   ) : (
-                    <span className="text-[10px] font-medium text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
+                    <span className="text-[11px] font-medium text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/50 px-2 py-0.5 rounded-full">
                       Đang dùng Key mẫu (bạn có thể dán Key riêng vào đây)
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-slate-400 mt-0.5">
-                  Mọi file mẫu (<code className="text-indigo-300">settings.json</code>, <code className="text-indigo-300">openclaw.json</code>, lệnh Terminal) bên dưới sẽ tự động thay thế bằng Key này!
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                  Mọi file mẫu (<code className="text-blue-600 dark:text-indigo-300 font-semibold">settings.json</code>, <code className="text-blue-600 dark:text-indigo-300 font-semibold">openclaw.json</code>, lệnh Terminal) bên dưới sẽ tự động thay thế bằng Key này!
                 </p>
               </div>
             </div>
@@ -203,12 +203,12 @@ export default function ClaudeApiGuideHub({
                 value={customKey}
                 onChange={(e) => setCustomKey(e.target.value)}
                 placeholder="sk-ant-api03-... hoặc dán key của bạn"
-                className="w-full sm:w-64 rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-1.5 text-xs font-mono text-emerald-400 placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 shadow-inner"
+                className="w-full sm:w-64 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/80 px-3 py-2 text-xs font-mono text-slate-900 dark:text-emerald-400 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-600 dark:focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-blue-600 dark:focus:ring-indigo-500 shadow-inner"
               />
               <button
                 type="button"
                 onClick={() => handleCopy("main-key", currentKey)}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 text-xs font-semibold text-white transition-all shrink-0 active:scale-95 shadow-md shadow-indigo-600/30"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 px-3.5 py-2 text-xs font-semibold text-white transition-all shrink-0 active:scale-95 shadow-sm"
                 title="Sao chép Key này"
               >
                 {copiedKey === "main-key" ? (
@@ -229,12 +229,12 @@ export default function ClaudeApiGuideHub({
       )}
 
       {/* Main Hub Container */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-950/90 shadow-2xl overflow-hidden backdrop-blur-md">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/90 shadow-sm overflow-hidden">
         {/* Navigation Tabs Bar */}
-        <div className="border-b border-slate-800/80 bg-slate-900/60 p-2 sm:p-3">
+        <div className="border-b border-slate-200 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/60 p-2 sm:p-3">
           <div className="flex items-center justify-between gap-2 mb-2 px-1">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-              <Layers className="h-3.5 w-3.5 text-indigo-400" />
+            <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <Layers className="h-3.5 w-3.5 text-blue-600 dark:text-indigo-400" />
               <span>Chọn nền tảng bạn muốn sử dụng:</span>
             </span>
             <span className="text-[11px] text-slate-500 hidden sm:inline">
@@ -253,16 +253,16 @@ export default function ClaudeApiGuideHub({
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex flex-col items-start gap-1 p-2.5 sm:p-3 rounded-xl border text-left transition-all relative ${
                     isActive
-                      ? "bg-slate-800/90 border-indigo-500/50 shadow-md shadow-indigo-500/10 ring-1 ring-indigo-500/30"
-                      : "bg-slate-900/40 border-slate-800/80 hover:bg-slate-800/50 hover:border-slate-700 text-slate-400 hover:text-slate-200"
+                      ? "bg-blue-50/80 dark:bg-slate-800/90 border-blue-500 dark:border-indigo-500/50 shadow-xs ring-1 ring-blue-500/30 dark:ring-indigo-500/30"
+                      : "bg-white dark:bg-slate-900/40 border-slate-200 dark:border-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
                   }`}
                 >
                   <div className="flex items-center justify-between w-full">
                     <div
                       className={`h-7 w-7 rounded-lg flex items-center justify-center transition-colors ${
                         isActive
-                          ? "bg-indigo-600 text-white"
-                          : "bg-slate-800 text-slate-400"
+                          ? "bg-blue-600 dark:bg-indigo-600 text-white"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
                       }`}
                     >
                       <Icon className="h-4 w-4" />
@@ -277,18 +277,18 @@ export default function ClaudeApiGuideHub({
                   <div className="mt-1">
                     <div
                       className={`text-xs font-bold truncate ${
-                        isActive ? "text-white" : "text-slate-300"
+                        isActive ? "text-blue-950 dark:text-white" : "text-slate-700 dark:text-slate-300"
                       }`}
                     >
                       {tab.shortName}
                     </div>
-                    <div className="text-[10px] text-slate-400 line-clamp-1">
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1">
                       {tab.desc}
                     </div>
                   </div>
 
                   {isActive && (
-                    <div className="absolute -bottom-2 sm:-bottom-3 left-1/2 -translate-x-1/2 w-4 h-1 bg-indigo-500 rounded-full" />
+                    <div className="absolute -bottom-2 sm:-bottom-3 left-1/2 -translate-x-1/2 w-4 h-1 bg-blue-600 dark:bg-indigo-500 rounded-full" />
                   )}
                 </button>
               );
