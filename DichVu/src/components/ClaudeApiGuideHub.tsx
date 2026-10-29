@@ -316,15 +316,13 @@ export default function ClaudeApiGuideHub({
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <a
-                    href="https://app.notion.com/p/H-ng-d-n-s-d-ng-API-Claude-3cf1eac1481a804b98fdf95b65fc339a?source=copy_link"
-                    target="_blank"
-                    rel="noreferrer"
+                  <Link
+                    href="/huong-dan/api-claude"
                     className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 rounded-lg transition-colors"
                   >
-                    <span>Xem tài liệu gốc Notion</span>
+                    <span>Xem hướng dẫn chi tiết</span>
                     <ExternalLink className="h-3 w-3" />
-                  </a>
+                  </Link>
                 </div>
               </div>
 
@@ -1061,7 +1059,7 @@ export default function ClaudeApiGuideHub({
                       </button>
                     </div>
                     <p className="text-[11px] text-slate-500">
-                      (Hoặc nếu dùng gói Codex Credit: điền <code className="text-slate-300">https://modelapi.vn/v1</code> vào ô Override OpenAI Base URL).
+                      (Hoặc nếu dùng gói Codex AI: điền <code className="text-slate-300">https://modelapi.vn/v1</code> vào ô Override OpenAI Base URL).
                     </p>
                   </div>
                 </div>

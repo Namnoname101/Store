@@ -8,7 +8,7 @@ const INITIAL_TRANSACTIONS = [
   { phone: "dai****33", item: "Nạp +200.000đ vào ví tự động", time: "2 phút trước", type: "TOPUP" },
   { phone: "quang****88", item: "Tài khoản ChatGPT Plus 1 Tháng", time: "4 phút trước", type: "BUY" },
   { phone: "minh****01", item: "CapCut Pro 1 Năm Bản Quyền", time: "6 phút trước", type: "BUY" },
-  { phone: "hoang****92", item: "Cursor Pro 1 Tháng (API ModelAPI)", time: "8 phút trước", type: "BUY" },
+  { phone: "hoang****92", item: "Cursor Pro 1 Tháng (Codex AI)", time: "8 phút trước", type: "BUY" },
   { phone: "tuan****55", item: "Nạp +500.000đ (Nhận thưởng +5%)", time: "11 phút trước", type: "TOPUP" },
 ];
 

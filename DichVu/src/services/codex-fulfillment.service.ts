@@ -137,7 +137,7 @@ export async function fulfillCodexCreditOrder(
       });
 
       if (!createRes.success || !createRes.bindingId || !createRes.key) {
-        const errorMsg = createRes.error || "Không thể tự động tạo API Key mới trên ModelAPI";
+        const errorMsg = createRes.error || "Không thể tự động khởi tạo API Key Codex mới";
         await prisma.order.update({
           where: { id: orderId },
           data: { upstreamStatus: UpstreamStatus.FAILED, upstreamError: errorMsg },

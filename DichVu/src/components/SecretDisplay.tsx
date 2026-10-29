@@ -877,7 +877,7 @@ export default function SecretDisplay({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <h4 className="text-sm font-bold text-white flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-emerald-400" />
-              <span>{instructions.title || "Hướng dẫn cấu hình Codex API (ModelAPI)"}</span>
+              <span>{instructions.title || "Hướng dẫn cấu hình Codex AI"}</span>
             </h4>
             <Link
               href="/huong-dan/codex"

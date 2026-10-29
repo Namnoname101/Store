@@ -44,13 +44,13 @@ export default function GuidePreviewPage() {
     }
   > = {
     CODEX_API: {
-      name: "Codex / ModelAPI Key",
+      name: "Codex AI Key",
       desc: "API Key tốc độ cao cho Cursor & AI Agent",
       orderCode: "DEMO-CODEX",
       productTitle: "Gói Codex 10$ Credit (5.000.000 Quota Points)",
       productSlug: "codex-credit-10usd",
       productType: "LICENSE_KEY",
-      secretContent: "sk-modelapi-demo7455abcd1234efgh5678ijkl9012",
+      secretContent: "sk-cdx-demo7455abcd1234efgh5678ijkl9012",
     },
     TELEGRAM: {
       name: "Gói Dịch Vụ Telegram",

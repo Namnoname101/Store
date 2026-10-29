@@ -14,9 +14,9 @@ import {
 import CodexApiGuideHub from "@/components/CodexApiGuideHub";
 
 export const metadata: Metadata = {
-  title: "Hướng Dẫn Cấu Hình Codex API (ModelAPI) — DaiTruong Store",
+  title: "Hướng Dẫn Cấu Hình Codex AI — DaiTruong Store",
   description:
-    "Hướng dẫn kết nối Codex API (Base URL: https://modelapi.vn/v1) vào Cursor IDE, VS Code Cline / Roo Code và Terminal. Tự động tính quota, hỗ trợ Claude 3.5 Sonnet, GPT-4o.",
+    "Hướng dẫn kết nối Codex AI (Base URL: https://modelapi.vn/v1) vào Cursor IDE, VS Code Cline / Roo Code và Terminal. Tự động tính quota, hỗ trợ Claude 3.5 Sonnet, GPT-4o.",
 };
 
 export default function CodexApiGuidePage() {
@@ -26,13 +26,13 @@ export default function CodexApiGuidePage() {
       <div className="text-center space-y-3 sm:space-y-4">
         <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 backdrop-blur-sm">
           <Cpu className="h-4 w-4" />
-          <span>Tài Liệu Cấu Hình Codex API / ModelAPI</span>
+          <span>Tài Liệu Cấu Hình Codex AI</span>
         </div>
 
         <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
           Hướng Dẫn Cấu Hình{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-500">
-            Codex API (ModelAPI)
+            Codex AI
           </span>
         </h1>
 

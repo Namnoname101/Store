@@ -31,7 +31,7 @@ export default function CodexApiGuideHub({
   const [activeTab, setActiveTab] = useState<"cursor" | "vscode" | "cli">("cursor");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
-  const currentKey = customKey.trim() || apiKey || "sk-modelapi-demo-key-8888";
+  const currentKey = customKey.trim() || apiKey || "sk-cdx-demo-key-8888";
   const isRealKey = Boolean(customKey.trim() || apiKey);
 
   const handleCopy = (id: string, text: string) => {
@@ -140,16 +140,14 @@ export default function CodexApiGuideHub({
           </div>
 
           <div className="flex items-center gap-2">
-            <a
-              href="https://app.notion.com/p/H-NG-D-N-S-D-NG-CODEX-7941eac1481a823c8df601f79c282029?source=copy_link"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/huong-dan/codex"
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
             >
               <BookOpen className="h-3.5 w-3.5" />
-              <span>Tài liệu Notion gốc đối tác</span>
+              <span>Cẩm nang Codex AI chi tiết</span>
               <ExternalLink className="h-3 w-3" />
-            </a>
+            </Link>
           </div>
         </div>
 
