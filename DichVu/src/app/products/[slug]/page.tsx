@@ -10,9 +10,11 @@ import {
   Send,
   Sparkles,
   HelpCircle,
+  ExternalLink,
 } from "lucide-react";
 import { getProductBySlug } from "@/services/catalog.service";
 import ProductPurchaseBox from "@/components/ProductPurchaseBox";
+import ClaudeApiGuideHub from "@/components/ClaudeApiGuideHub";
 import { getProductTypeInfo, formatVND } from "@/lib/product-types";
 import { resolveProductInstruction } from "@/lib/product-guides";
 import { resolveProductThumbnail } from "@/lib/catalog-grouping";
@@ -87,6 +89,16 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     product.slug.toLowerCase().includes("codex") ||
     product.slug.toLowerCase().includes("cdx") ||
     titleLower.includes("codex");
+
+  const isApiKeyProduct =
+    product.slug.toLowerCase().includes("claude") ||
+    product.slug.toLowerCase().includes("codex") ||
+    product.slug.toLowerCase().includes("cdx") ||
+    product.slug.toLowerCase().includes("api") ||
+    titleLower.includes("claude") ||
+    titleLower.includes("codex") ||
+    titleLower.includes("api") ||
+    product.category?.slug === "ai-api";
 
   const deliveryFormat = isSMM
     ? "Hệ thống tự động khởi tạo theo link mục tiêu"
@@ -270,7 +282,28 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           </div>
 
           {/* Product Instruction Guide if available */}
-          {guide && guide.steps && guide.steps.length > 0 && (
+          {isApiKeyProduct ? (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
+                  <span>Hướng dẫn cấu hình & tương thích (Hỗ trợ 5 nền tảng)</span>
+                </h2>
+                <Link
+                  href="/huong-dan/api-claude"
+                  target="_blank"
+                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-semibold inline-flex items-center gap-1 transition-colors"
+                >
+                  <span>Mở trang hướng dẫn toàn màn hình</span>
+                  <ExternalLink className="h-3 w-3" />
+                </Link>
+              </div>
+              <ClaudeApiGuideHub
+                compactMode={false}
+                showKeyInput={true}
+              />
+            </div>
+          ) : guide && guide.steps && guide.steps.length > 0 ? (
             <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-6 sm:p-7 shadow-xs">
               <h2 className="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                 <HelpCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
@@ -319,7 +352,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
                 </div>
               )}
             </div>
-          )}
+          ) : null}
         </div>
 
         {/* Right column: Sticky Purchase Configuration Box */}
