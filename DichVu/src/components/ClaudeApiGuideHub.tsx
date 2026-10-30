@@ -43,23 +43,8 @@ function CursorIcon({ className = "h-7 w-7" }: { className?: string }) {
 
 function VscodeIcon({ className = "h-7 w-7" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M17.583 2.042a1.447 1.447 0 0 0-1.041.365L7.208 10.43 3.656 7.74a.965.965 0 0 0-1.344.208.97.97 0 0 0 .208 1.344l3.146 2.375-3.146 2.375a.97.97 0 0 0-.208 1.344c.323.438.938.52 1.344.208l3.552-2.698 9.334 8.02a1.436 1.436 0 0 0 2.375-1.093V3.167a1.436 1.436 0 0 0-.938-1.125z"
-        fill="#007ACC"
-      />
-      <path
-        d="M17.583 2.042c-.365 0-.719.125-1.041.365L7.208 10.43l3.417 2.583 6.958-5.354V3.167c0-.625-.396-1.125-.938-1.125z"
-        fill="#0065A9"
-      />
-      <path
-        d="M17.583 21.958c.542 0 .938-.5.938-1.125v-4.479l-6.958-5.354-3.417 2.583 9.334 8.01c.322.24.676.365 1.041.365z"
-        fill="#0065A9"
-      />
-      <path
-        d="M10.625 13.013l-3.417-2.583L3.656 7.74a.965.965 0 0 0-1.344.208.97.97 0 0 0 .208 1.344l3.146 2.375-3.146 2.375a.97.97 0 0 0-.208 1.344c.323.438.938.52 1.344.208l3.552-2.698 3.219 2.441.979-.744z"
-        fill="#1F9CF0"
-      />
+    <svg className={className} viewBox="0 0 24 24" fill="#007ACC" xmlns="http://www.w3.org/2000/svg">
+      <path d="M23.15 2.587L18.21.21a1.494 1.494 0 0 0-1.705.29l-9.46 8.63-4.12-3.128a.999.999 0 0 0-1.276.057L.327 7.261A1 1 0 0 0 .326 8.74L3.899 12 .326 15.26a1 1 0 0 0 .001 1.479L1.65 17.94a.999.999 0 0 0 1.276.057l4.12-3.128 9.46 8.63a1.492 1.492 0 0 0 1.704.29l4.942-2.377A1.5 1.5 0 0 0 24 20.06V3.939a1.5 1.5 0 0 0-.85-1.352zm-5.146 14.861L10.826 12l7.178-5.448v10.896z" />
     </svg>
   );
 }
@@ -67,20 +52,68 @@ function VscodeIcon({ className = "h-7 w-7" }: { className?: string }) {
 function WebDesignIcon({ className = "h-7 w-7" }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="24" height="24" rx="6" fill="#047857" />
-      <circle cx="6" cy="6" r="1.5" fill="#ffffff" fillOpacity="0.8" />
-      <circle cx="10" cy="6" r="1.5" fill="#ffffff" fillOpacity="0.8" />
-      <rect x="4" y="10" width="16" height="9" rx="2" fill="#ffffff" fillOpacity="0.2" />
-      <path d="M7 14h10M7 16h6" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
+      <rect width="24" height="24" rx="6" fill="#115E59" />
+      <rect x="4" y="5" width="16" height="14" rx="2" stroke="#2DD4BF" strokeWidth="1.5" />
+      <path d="M4 9h16M8 5v4" stroke="#2DD4BF" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="15.5" cy="13.5" r="1.5" fill="#5EEAD4" />
+      <path d="M7 15l2.5-2.5 2 2 3-3 2.5 2.5" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
 function OpenClawIcon({ className = "h-7 w-7" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="24" height="24" rx="6" fill="#6D28D9" />
-      <path d="M6 16l4-4-4-4M12 16h6" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <svg className={className} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="16" height="16" rx="4" fill="#1C1917" />
+      <g fill="#3a0a0d">
+        <rect x="1" y="5" width="1" height="3" />
+        <rect x="2" y="4" width="1" height="1" />
+        <rect x="2" y="8" width="1" height="1" />
+        <rect x="3" y="3" width="1" height="1" />
+        <rect x="3" y="9" width="1" height="1" />
+        <rect x="4" y="2" width="1" height="1" />
+        <rect x="4" y="10" width="1" height="1" />
+        <rect x="5" y="2" width="6" height="1" />
+        <rect x="11" y="2" width="1" height="1" />
+        <rect x="12" y="3" width="1" height="1" />
+        <rect x="12" y="9" width="1" height="1" />
+        <rect x="13" y="4" width="1" height="1" />
+        <rect x="13" y="8" width="1" height="1" />
+        <rect x="14" y="5" width="1" height="3" />
+        <rect x="5" y="11" width="6" height="1" />
+        <rect x="4" y="12" width="1" height="1" />
+        <rect x="11" y="12" width="1" height="1" />
+        <rect x="3" y="13" width="1" height="1" />
+        <rect x="12" y="13" width="1" height="1" />
+        <rect x="5" y="14" width="6" height="1" />
+      </g>
+      <g fill="#ff4f40">
+        <rect x="5" y="3" width="6" height="1" />
+        <rect x="4" y="4" width="8" height="1" />
+        <rect x="3" y="5" width="10" height="1" />
+        <rect x="3" y="6" width="10" height="1" />
+        <rect x="3" y="7" width="10" height="1" />
+        <rect x="4" y="8" width="8" height="1" />
+        <rect x="5" y="9" width="6" height="1" />
+        <rect x="5" y="12" width="6" height="1" />
+        <rect x="6" y="13" width="4" height="1" />
+      </g>
+      <g fill="#ff775f">
+        <rect x="1" y="6" width="2" height="1" />
+        <rect x="2" y="5" width="1" height="1" />
+        <rect x="2" y="7" width="1" height="1" />
+        <rect x="13" y="6" width="2" height="1" />
+        <rect x="13" y="5" width="1" height="1" />
+        <rect x="13" y="7" width="1" height="1" />
+      </g>
+      <g fill="#081016">
+        <rect x="6" y="5" width="1" height="1" />
+        <rect x="9" y="5" width="1" height="1" />
+      </g>
+      <g fill="#f5fbff">
+        <rect x="6" y="4" width="1" height="1" />
+        <rect x="9" y="4" width="1" height="1" />
+      </g>
     </svg>
   );
 }
