@@ -4,6 +4,7 @@ if (Test-Path $envFile) {
     Get-Content $envFile | ForEach-Object {
         if ($_ -match '^\s*FLY_API_TOKEN\s*=\s*["'']?(.*?)["'']?\s*$') {
             $env:FLY_API_TOKEN = $matches[1]
+            $env:FLY_ACCESS_TOKEN = $matches[1]
         }
     }
 }
