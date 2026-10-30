@@ -138,8 +138,8 @@ export default function Navbar() {
                 >
                   <Terminal className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                   <div className="flex flex-col">
-                    <span className="font-semibold text-xs">Kích Hoạt Codex API (1-Click)</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Tool KhoDee-helper & cấu hình Cursor, Cline</span>
+                    <span className="font-semibold text-xs">Kích Hoạt App ChatGPT (1-Click)</span>
+                    <span className="text-[10px] text-slate-400 font-normal">Tool KhoDee-helper cho ChatGPT Windows & IDE</span>
                   </div>
                 </Link>
                 <Link
@@ -311,7 +311,7 @@ export default function Navbar() {
               <span>📊 Kiểm Tra Dung Lượng API Claude / Cursor</span>
             </Link>
             <Link href="/huong-dan/codex" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2 text-emerald-500 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors col-span-2 font-bold">
-              <span>🚀 Hướng Dẫn Kích Hoạt Codex API (1-Click)</span>
+              <span>🚀 Kích Hoạt Ứng Dụng ChatGPT (1-Click KhoDee)</span>
             </Link>
             <Link href="/huong-dan/api-claude" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-2 text-indigo-500 dark:text-indigo-400 hover:bg-indigo-500/20 transition-colors col-span-2 font-bold">
               <span>📖 Hướng Dẫn Cấu Hình API Claude</span>

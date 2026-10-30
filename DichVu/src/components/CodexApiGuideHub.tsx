@@ -43,10 +43,10 @@ export default function CodexApiGuideHub({
   const tabs = [
     {
       id: "helper" as const,
-      name: "Tool 1-Click (KhoDee)",
-      badge: "Khuyên dùng - Nhanh nhất",
+      name: "Ứng Dụng ChatGPT",
+      badge: "KhoDee 1-Click (Khuyên dùng)",
       icon: Zap,
-      desc: "Tự động 100% cấu hình & mở ChatGPT Windows",
+      desc: "Kích hoạt tự động & mở app ChatGPT Windows trong 1 Click",
     },
     {
       id: "cursor" as const,
@@ -205,7 +205,7 @@ export default function CodexApiGuideHub({
           })}
         </div>
 
-        {/* Tab Content: Tool 1-Click (KhoDee-helper) */}
+        {/* Tab Content: Ứng Dụng ChatGPT qua KhoDee-helper */}
         {activeTab === "helper" && (
           <div className="space-y-6 pt-2">
             {/* Download Banner */}
@@ -215,28 +215,40 @@ export default function CodexApiGuideHub({
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
                       <Zap className="h-3 w-3" />
-                      Công cụ 1-Click tự động
+                      Dành Cho Ứng Dụng ChatGPT Windows
                     </span>
                     <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                       Windows 10 / 11 (64-bit)
                     </span>
                   </div>
                   <h4 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">
-                    KhoDee-helper — Kích Hoạt Tự Động Trong 1 Giây
+                    KhoDee-helper — Kích Hoạt Tự Động Cho App ChatGPT Trong 1 Giây
                   </h4>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 max-w-xl">
-                    Tự động tạo file cấu hình chuẩn xác cho OpenAI Codex & tích hợp thẳng vào app ChatGPT. Không cần gõ lệnh dòng lệnh phức tạp.
+                  <p className="text-xs text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
+                    Công cụ 1-Click độc quyền kết nối trực tiếp API Key Codex vào ứng dụng <strong>ChatGPT Desktop (Windows App)</strong>. Tự động thiết lập cấu hình và mở app ChatGPT với mô hình AI <strong>gpt-6.1-sol</strong> mà không cần gõ lệnh.
                   </p>
                 </div>
 
-                <a
-                  href="/downloads/KhoDee-helper.zip"
-                  download="KhoDee-helper.zip"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-4 py-2.5 text-xs font-bold shadow-md shadow-emerald-500/20 transition-all shrink-0 active:scale-95"
-                >
-                  <Download className="h-4 w-4" />
-                  <span>Tải KhoDee-helper.zip (59 KB)</span>
-                </a>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
+                  <a
+                    href="/downloads/KhoDee-helper.zip"
+                    download="KhoDee-helper.zip"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-4 py-2.5 text-xs font-bold shadow-md shadow-emerald-500/20 transition-all active:scale-95 text-center"
+                  >
+                    <Download className="h-4 w-4" />
+                    <span>Tải KhoDee-helper.zip (59 KB)</span>
+                  </a>
+
+                  <a
+                    href="https://openai.com/chatgpt/download/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 px-3 py-2.5 text-xs font-semibold transition text-center"
+                  >
+                    <span>Tải App ChatGPT</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -294,7 +306,7 @@ export default function CodexApiGuideHub({
                     <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Bước 3: Nhấn nút Kích hoạt Codex</h5>
                   </div>
                   <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                    Bấm nút <strong>&quot;Kích hoạt Codex&quot;</strong>. Công cụ tự động tạo file <code className="font-mono text-[11px]">config.toml</code> và <code className="font-mono text-[11px]">auth.json</code> chuẩn xác 100% trong 1 giây.
+                    Bấm nút <strong>&quot;Kích hoạt Codex&quot;</strong>. Công cụ tự động tạo file <code className="font-mono text-[11px]">config.toml</code> và <code className="font-mono text-[11px]">auth.json</code> chuẩn xác 100% cho ứng dụng ChatGPT trong 1 giây.
                   </p>
                 </div>
                 <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-950/40">
@@ -313,10 +325,10 @@ export default function CodexApiGuideHub({
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2">
                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white text-[11px] font-bold">4</span>
-                    <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Bước 4: Mở ứng dụng ChatGPT & Code ngay</h5>
+                    <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Bước 4: Bấm &quot;Mở ứng dụng ChatGPT&quot;</h5>
                   </div>
                   <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                    Nhấn nút <strong>&quot;Mở ứng dụng ChatGPT&quot;</strong> để bắt đầu sử dụng mô hình AI <code className="font-mono text-[11px]">gpt-6.1-sol</code> đỉnh cao.
+                    Nhấn nút <strong>&quot;Mở ứng dụng ChatGPT&quot;</strong> để khởi chạy trực tiếp ứng dụng ChatGPT trên Windows và bắt đầu lập trình cùng mô hình AI <code className="font-mono text-[11px]">gpt-6.1-sol</code> đỉnh cao.
                   </p>
                 </div>
                 <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-950/40">

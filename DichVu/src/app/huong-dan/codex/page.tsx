@@ -14,9 +14,9 @@ import {
 import CodexApiGuideHub from "@/components/CodexApiGuideHub";
 
 export const metadata: Metadata = {
-  title: "Hướng Dẫn Cấu Hình & Kích Hoạt Codex AI (1-Click & IDE) — DaiTruong Store",
+  title: "Hướng Dẫn Kích Hoạt Codex AI Cho Ứng Dụng ChatGPT (Windows) & IDE — DaiTruong Store",
   description:
-    "Hướng dẫn kích hoạt Codex AI tự động 1-Click bằng công cụ KhoDee-helper hoặc kết nối Base URL https://modelapi.vn/v1 vào Cursor IDE, VS Code Cline / Roo Code và Terminal.",
+    "Hướng dẫn kích hoạt Codex AI tự động 1-Click vào ứng dụng ChatGPT Windows App bằng công cụ KhoDee-helper hoặc kết nối Base URL https://modelapi.vn/v1 vào Cursor IDE, VS Code Cline.",
 };
 
 export default function CodexApiGuidePage() {
@@ -26,18 +26,18 @@ export default function CodexApiGuidePage() {
       <div className="text-center space-y-3 sm:space-y-4">
         <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 backdrop-blur-sm">
           <Cpu className="h-4 w-4" />
-          <span>Tài Liệu Cấu Hình & Kích Hoạt Codex AI</span>
+          <span>Tài Liệu Kích Hoạt Ứng Dụng ChatGPT & Codex AI</span>
         </div>
 
         <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-          Hướng Dẫn Kích Hoạt & Cấu Hình{" "}
+          Hướng Dẫn Kích Hoạt{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-500">
-            Codex AI
+            Ứng Dụng ChatGPT & Codex AI
           </span>
         </h1>
 
         <p className="max-w-2xl mx-auto text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-          Hỗ trợ 2 phương thức tiện lợi: Kích hoạt tự động chỉ trong <strong>1 Click</strong> bằng công cụ <strong>KhoDee-helper</strong> hoặc kết nối chuẩn OpenAI Compatible qua <strong>Base URL: https://modelapi.vn/v1</strong> vào Cursor IDE, Cline, Roo Code.
+          Kích hoạt tự động vào <strong>Ứng dụng ChatGPT (Desktop Windows)</strong> chỉ trong <strong>1 Click</strong> bằng công cụ <strong>KhoDee-helper</strong>, hoặc kết nối chuẩn OpenAI Compatible qua <strong>Base URL: https://modelapi.vn/v1</strong> vào Cursor IDE, Cline, Roo Code.
         </p>
 
         {/* Action Badges & Quick Links */}
@@ -93,10 +93,10 @@ export default function CodexApiGuidePage() {
           <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/40 space-y-2">
             <h3 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
               <span className="text-emerald-500">Q:</span>
-              <span>KhoDee-helper hoạt động như thế nào?</span>
+              <span>KhoDee-helper dùng cho ứng dụng ChatGPT (Windows) như thế nào?</span>
             </h3>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-              KhoDee-helper là công cụ nhẹ (59 KB) chạy trực tiếp trên Windows. Khi bạn dán key và bấm Kích hoạt, tool sẽ tự động cấu hình file <code className="font-mono">config.toml</code> và <code className="font-mono">auth.json</code> trong thư mục <code className="font-mono">%USERPROFILE%\.codex</code> để gắn vào ChatGPT app hoặc môi trường chạy AI của bạn ngay tức thì.
+              KhoDee-helper được tạo ra dành riêng cho <strong>Ứng dụng ChatGPT Desktop trên Windows</strong>. Bạn chỉ cần dán mã API Key Codex và bấm <strong>&quot;Kích hoạt Codex&quot;</strong>, tool sẽ tự động nạp model <strong>gpt-6.1-sol</strong> vào hệ thống. Sau đó bấm nút <strong>&quot;Mở ứng dụng ChatGPT&quot;</strong> trên tool là ứng dụng ChatGPT sẽ mở ra để bạn bắt đầu lập trình và trò chuyện ngay lập tức.
             </p>
           </div>
 

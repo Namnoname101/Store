@@ -126,7 +126,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/huong-dan/codex" className="hover:text-emerald-400 transition-colors flex items-center gap-1 font-semibold text-emerald-400">
-                  <span>Hướng Dẫn Kích Hoạt Codex API (1-Click)</span>
+                  <span>Kích Hoạt Ứng Dụng ChatGPT & Codex (1-Click)</span>
                   <ArrowUpRight className="h-3 w-3 text-emerald-400" />
                 </Link>
               </li>
