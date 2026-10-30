@@ -147,6 +147,7 @@ export default async function OrderSuccessPage({
           refundInfo={order.refundInfo}
           deliveredItems={order.deliveredItems}
           orderItems={order.orderItems}
+          accessToken={order.accessToken}
         />
       </div>
 

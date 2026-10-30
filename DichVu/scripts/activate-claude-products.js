@@ -117,7 +117,7 @@ async function activateInDb(dbUrl) {
             description: pkg.description,
             categoryId: cat.id,
             isActive: true,
-            fulfillmentType: "API_DROPSHIP",
+            fulfillmentType: "LOCAL_STOCK",
             type: "LICENSE_KEY",
             thumbnailUrl: "/images/brands/claude.svg",
           },
@@ -133,7 +133,7 @@ async function activateInDb(dbUrl) {
             description: pkg.description,
             categoryId: cat.id,
             isActive: true,
-            fulfillmentType: "API_DROPSHIP",
+            fulfillmentType: "LOCAL_STOCK",
             type: "LICENSE_KEY",
             thumbnailUrl: "/images/brands/claude.svg",
           },
@@ -141,29 +141,12 @@ async function activateInDb(dbUrl) {
         console.log(`✓ Created & Activated: ${product.title} (${product.slug})`);
       }
 
-      if (genzSupplier) {
-        await prisma.supplierProductMapping.upsert({
-          where: { productId: product.id },
-          update: {
-            supplierId: genzSupplier.id,
-            supplierProductCode: pkg.supplierCode,
-            supplierPrice: pkg.supplierPrice,
-            supplierStock: pkg.supplierStock,
-            markupType: "PERCENTAGE",
-            markupValue: 20,
-          },
-          create: {
-            productId: product.id,
-            supplierId: genzSupplier.id,
-            supplierProductCode: pkg.supplierCode,
-            supplierPrice: pkg.supplierPrice,
-            supplierStock: pkg.supplierStock,
-            markupType: "PERCENTAGE",
-            markupValue: 20,
-          },
-        });
-        console.log(`  └─ Mapped to ${genzSupplier.code} [${pkg.supplierCode}] with stock ${pkg.supplierStock}`);
-      }
+      // Option 1: Claude API products use LOCAL_STOCK (warehouse inventory).
+      // Remove any upstream supplier mapping so it sells from locally imported warehouse keys.
+      await prisma.supplierProductMapping.deleteMany({
+        where: { productId: product.id },
+      });
+      console.log(`  └─ Configured as LOCAL_STOCK (Kho hàng nội bộ sẵn có)`);
     }
 
     // 3. Deactivate old duplicate Codex products if present

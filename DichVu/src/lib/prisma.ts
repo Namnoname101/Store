@@ -55,6 +55,7 @@ export type MarkupType = (typeof MarkupType)[keyof typeof MarkupType];
 export const UpstreamStatus = {
   NOT_APPLICABLE: "NOT_APPLICABLE",
   PENDING_UPSTREAM: "PENDING_UPSTREAM",
+  PENDING_MANUAL: "PENDING_MANUAL",
   COMPLETED: "COMPLETED",
   FAILED: "FAILED",
   REFUNDED: "REFUNDED",

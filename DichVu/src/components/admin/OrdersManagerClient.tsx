@@ -205,6 +205,13 @@ export default function OrdersManagerClient({
 
   const getUpstreamStatusBadge = (upstreamStatus?: string) => {
     switch (upstreamStatus) {
+      case "PENDING_MANUAL":
+        return (
+          <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/20 px-2.5 py-0.5 text-xs font-bold text-rose-300 border border-rose-500/40 animate-pulse">
+            <AlertCircle className="h-3 w-3 text-rose-400" />
+            Cần cấp key thủ công (Hết kho)
+          </span>
+        );
       case "COMPLETED":
         return (
           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-400 border border-emerald-500/20">
@@ -312,20 +319,33 @@ export default function OrdersManagerClient({
         );
 
       const matchesStatus =
-        statusFilter === "ALL" || order.status === statusFilter;
+        statusFilter === "ALL"
+          ? true
+          : statusFilter === "PENDING_MANUAL"
+          ? order.status === "PAID" && (order.upstreamStatus === "PENDING_MANUAL" || (order.deliveredItems?.length || 0) === 0)
+          : order.status === statusFilter;
 
       return matchesSearch && matchesStatus;
     });
   }, [orders, searchQuery, statusFilter]);
 
+  const pendingManualCount = useMemo(() => {
+    return orders.filter(
+      (o) =>
+        o.status === "PAID" &&
+        (o.upstreamStatus === "PENDING_MANUAL" || (o.deliveredItems?.length || 0) === 0)
+    ).length;
+  }, [orders]);
+
   const statusCounts = useMemo(() => {
     return {
       ALL: orders.length,
+      PENDING_MANUAL: pendingManualCount,
       PAID: orders.filter((o) => o.status === "PAID").length,
       PENDING: orders.filter((o) => o.status === "PENDING").length,
       EXPIRED: orders.filter((o) => o.status === "EXPIRED").length,
     };
-  }, [orders]);
+  }, [orders, pendingManualCount]);
 
   return (
     <div className="space-y-6">
@@ -337,11 +357,48 @@ export default function OrdersManagerClient({
         </p>
       </div>
 
+      {/* Out-of-stock Manual Fulfillment Urgent Alert */}
+      {pendingManualCount > 0 && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-rose-300 shadow-lg">
+          <div className="flex items-center gap-3">
+            <span className="relative flex h-3 w-3 shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
+            </span>
+            <div>
+              <p className="text-sm font-bold text-white">
+                Có {pendingManualCount} đơn hàng đã thanh toán đang chờ cấp key thủ công!
+              </p>
+              <p className="text-xs text-rose-300/80 mt-0.5">
+                Khách hàng đang đợi tại màn hình nhận hàng. Bấm vào đơn và chọn <strong>+ Cấp thủ công</strong> để giao mã ngay cho khách!
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setStatusFilter("PENDING_MANUAL")}
+            className="rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold px-4 py-2 transition-all shadow-md shrink-0 active:scale-95"
+          >
+            Lọc {pendingManualCount} đơn cần cấp mã
+          </button>
+        </div>
+      )}
+
       {/* Filters and Search Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         {/* Status Filter Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           {[
+            ...(pendingManualCount > 0
+              ? [
+                  {
+                    key: "PENDING_MANUAL",
+                    label: "🚨 Cần cấp key ngay",
+                    count: statusCounts.PENDING_MANUAL,
+                    isUrgent: true,
+                  },
+                ]
+              : []),
             { key: "PAID", label: "Đã thanh toán", count: statusCounts.PAID },
             { key: "PENDING", label: "Chờ thanh toán", count: statusCounts.PENDING },
             { key: "EXPIRED", label: "Hết hạn / Khách thử", count: statusCounts.EXPIRED },

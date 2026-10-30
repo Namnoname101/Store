@@ -140,3 +140,26 @@ export function getProductBadgeLabel(
   return catName.toUpperCase() || "DỊCH VỤ SỐ";
 }
 
+export function isAllowManualFulfillmentProduct(product?: {
+  slug?: string;
+  title?: string;
+  category?: { slug?: string };
+  categorySlug?: string;
+}): boolean {
+  if (!product) return false;
+  const slug = (product.slug || "").toLowerCase();
+  const title = (product.title || "").toLowerCase();
+  const cat = (product.categorySlug || product.category?.slug || "").toLowerCase();
+
+  return (
+    slug.includes("claude") ||
+    slug.startsWith("cla-") ||
+    title.includes("claude") ||
+    slug.includes("codex") ||
+    title.includes("codex") ||
+    slug.includes("api") ||
+    title.includes("api") ||
+    cat === "ai-api"
+  );
+}
+

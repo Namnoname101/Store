@@ -6,7 +6,9 @@ import {
   WalletTransactionType,
   ReconciliationStatus,
   PaymentIntentStatus,
+  UpstreamStatus,
 } from "@/lib/prisma";
+import { notifyAdminOutOfStock } from "@/services/admin-alert.service";
 import { commitReservedItemsToSold, releaseExpiredReservations } from "@/services/inventory.service";
 import { parseOrderCodeFromMemo, parseDepositCodeFromMemo } from "@/lib/vietqr";
 import { fulfillOrderViaUpstream } from "@/services/upstream-fulfillment.service";
@@ -546,6 +548,46 @@ export async function handleIncomingTransaction(
           `Failed to automatically fulfill codex credit order ${order.id}:`,
           codexErr
         );
+      }
+    }
+
+    // Handle Local Stock order without items (out of stock, awaiting manual key assignment)
+    if (!hasDropshipItems && !hasCodexItems) {
+      try {
+        const refreshedOrder = await prisma.order.findUnique({
+          where: { id: order.id },
+          include: {
+            deliveredItems: true,
+            orderItems: {
+              include: { product: true },
+            },
+          },
+        });
+
+        if (refreshedOrder && refreshedOrder.deliveredItems.length === 0) {
+          await prisma.order.update({
+            where: { id: refreshedOrder.id },
+            data: {
+              upstreamStatus: UpstreamStatus.PENDING_MANUAL,
+              reconciliationNote: refreshedOrder.reconciliationNote
+                ? `${refreshedOrder.reconciliationNote} - [Hết kho: Chờ cấp mã]`
+                : "[Hết kho sẵn]: Chờ Admin cấp key thủ công",
+            },
+          });
+
+          const primaryItem = refreshedOrder.orderItems[0];
+          await notifyAdminOutOfStock({
+            orderCode: refreshedOrder.orderCode,
+            orderId: refreshedOrder.id,
+            productTitle: primaryItem?.product?.title || "Sản phẩm",
+            productSlug: primaryItem?.product?.slug,
+            quantity: primaryItem?.quantity || 1,
+            totalAmount: refreshedOrder.totalAmount,
+            customerEmail: refreshedOrder.customerEmail,
+          });
+        }
+      } catch (stockAlertErr) {
+        console.error("Failed to check or alert out-of-stock local order:", stockAlertErr);
       }
     }
 

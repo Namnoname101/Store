@@ -85,6 +85,7 @@ export interface SecretDisplayProps {
   orderCode?: string;
   upstreamStatus?: string;
   refundInfo?: string | null;
+  accessToken?: string | null;
   deliveredItems: Array<{
     id: string;
     productId: string;
@@ -104,6 +105,7 @@ export default function SecretDisplay({
   orderCode,
   upstreamStatus,
   refundInfo,
+  accessToken,
   deliveredItems,
   orderItems,
 }: SecretDisplayProps) {
@@ -177,12 +179,19 @@ export default function SecretDisplay({
     }
   }, [orderCode, orderItems]);
 
-  // Auto-polling when PENDING_UPSTREAM
+  // Auto-polling when PENDING_UPSTREAM, PENDING_MANUAL, or awaiting delivered items
   useEffect(() => {
-    if (currentUpstreamStatus === "PENDING_UPSTREAM" && orderCode) {
+    const isWaiting =
+      currentUpstreamStatus === "PENDING_UPSTREAM" ||
+      currentUpstreamStatus === "PENDING_MANUAL" ||
+      !validDeliveredItems ||
+      validDeliveredItems.length === 0;
+
+    if (isWaiting && orderCode) {
       const interval = setInterval(async () => {
         try {
-          const res = await fetch(`/api/orders/${orderCode}/status`);
+          const tokenQuery = accessToken ? `?token=${encodeURIComponent(accessToken)}` : "";
+          const res = await fetch(`/api/orders/${orderCode}/status${tokenQuery}`);
           if (res.ok) {
             const data = await res.json();
             if (
@@ -198,6 +207,7 @@ export default function SecretDisplay({
               data.upstreamStatus === "COMPLETED" ||
               (data.deliveredItems && data.deliveredItems.length > 0)
             ) {
+              playSuccessChime();
               window.location.reload();
             }
           }
@@ -207,7 +217,7 @@ export default function SecretDisplay({
       }, 3000);
       return () => clearInterval(interval);
     }
-  }, [currentUpstreamStatus, currentRefundInfo, orderCode]);
+  }, [currentUpstreamStatus, currentRefundInfo, orderCode, validDeliveredItems, accessToken]);
 
   const handleSubmitRefund = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -537,34 +547,103 @@ export default function SecretDisplay({
     );
   }
 
-  // Fallback if no delivered items yet
+  // Fallback if no delivered items yet (Waiting for manual key fulfillment or upstream generation)
   if (!validDeliveredItems || validDeliveredItems.length === 0) {
+    const isClaudeOrder = orderItems?.some((item) => {
+      const slug = (item.product?.slug || "").toLowerCase();
+      const title = (item.product?.title || "").toLowerCase();
+      return slug.includes("claude") || slug.startsWith("cla-") || title.includes("claude");
+    });
+
+    const isCodexOrder = orderItems?.some((item) => {
+      const slug = (item.product?.slug || "").toLowerCase();
+      const title = (item.product?.title || "").toLowerCase();
+      return slug.includes("codex") || slug.startsWith("cdx") || title.includes("codex");
+    });
+
     return (
       <div className="space-y-6">
         <BuffProgressCard orderCode={orderCode} />
         {!isBuffService && (
-          <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-6 text-center shadow-lg">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/20 text-amber-400">
-              <Clock className="h-6 w-6 animate-pulse" />
+          <div className="relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-b from-amber-500/10 via-zinc-950/90 to-zinc-950 p-6 sm:p-8 text-center shadow-2xl backdrop-blur-md">
+            {/* Top decorative accent */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-amber-400/60 blur-xs rounded-full" />
+
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 ring-8 ring-amber-500/10">
+              <Clock className="h-8 w-8 animate-pulse text-amber-300" />
             </div>
-            <h3 className="text-base font-bold text-white mb-1.5">
-              Đơn hàng đã thanh toán thành công!
+
+            <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/15 px-3.5 py-1 text-xs font-semibold text-amber-300 mb-3 shadow-xs">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+              </span>
+              <span>ĐÃ THANH TOÁN THÀNH CÔNG • ĐANG CẤP PHÁT MÃ</span>
+            </div>
+
+            <h3 className="text-xl sm:text-2xl font-extrabold text-white mb-2 tracking-tight">
+              Đang chuẩn bị mã riêng cho bạn... 🚀
             </h3>
-            <p className="text-xs sm:text-sm text-zinc-300 max-w-md mx-auto leading-relaxed">
-              Hệ thống đang chuẩn bị tài khoản / bản quyền riêng cho bạn. Thông tin bàn giao sẽ tự động cập nhật tại trang này ngay khi hoàn tất.
+
+            <p className="text-sm sm:text-base text-zinc-300 max-w-lg mx-auto leading-relaxed">
+              Bạn vui lòng đợi trong giây lát nha! Shop đang cập nhật key thủ công riêng cho đơn hàng này, cập nhật xong hệ thống sẽ <strong className="text-amber-300 font-semibold">tự động hiển thị mã ngay tại màn hình này</strong> mà không cần bấm tải lại trang!
             </p>
-            <div className="mt-4 pt-4 border-t border-amber-500/20 flex flex-wrap items-center justify-center gap-3 text-xs text-zinc-400">
-              <span>Mã đơn: <strong className="text-amber-300 font-mono">#{orderCode}</strong></span>
-              <span>•</span>
+
+            {/* Status pills */}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs">
+              <div className="flex items-center gap-2 rounded-xl bg-zinc-900/80 border border-zinc-800 px-3.5 py-2 text-zinc-300">
+                <span className="text-zinc-500">Mã đơn hàng:</span>
+                <strong className="text-amber-400 font-mono text-sm">#{orderCode}</strong>
+              </div>
+
+              <div className="flex items-center gap-2 rounded-xl bg-zinc-900/80 border border-zinc-800 px-3.5 py-2 text-emerald-400">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span>Tự động kiểm tra trực tiếp (Auto-live 3s)</span>
+              </div>
+
+              <div className="flex items-center gap-2 rounded-xl bg-zinc-900/80 border border-zinc-800 px-3.5 py-2 text-zinc-300">
+                <Clock className="h-3.5 w-3.5 text-zinc-400" />
+                <span>Thời gian xử lý: 1 - 5 phút</span>
+              </div>
+            </div>
+
+            {/* Telegram help link */}
+            <div className="mt-6 pt-5 border-t border-zinc-800/80 flex flex-wrap items-center justify-center gap-4 text-xs text-zinc-400">
+              <span>Cần nhận hỗ trợ gấp?</span>
               <a
-                href="https://t.me/daitruongstore"
+                href={`https://t.me/daitruongstore?text=${encodeURIComponent(`Chào shop, mình cần hỗ trợ đơn hàng #${orderCode}`)}`}
                 target="_blank"
                 rel="noreferrer"
-                className="text-blue-400 hover:underline font-medium inline-flex items-center gap-1"
+                className="text-blue-400 hover:text-blue-300 underline font-semibold inline-flex items-center gap-1.5 transition-colors"
               >
-                Hỗ trợ 24/7 qua Telegram
+                <Send className="h-3.5 w-3.5" />
+                <span>Nhắn tin qua Telegram Shop (Hỗ trợ 24/7)</span>
               </a>
             </div>
+          </div>
+        )}
+
+        {/* Preview guide while customer waits */}
+        {isClaudeOrder && (
+          <div className="mt-8 space-y-4 text-left">
+            <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
+              <Sparkles className="h-4 w-4 text-indigo-400" />
+              <span>Trong lúc đợi, bạn có thể xem trước hướng dẫn kết nối API Claude (Hỗ trợ 5 nền tảng):</span>
+            </div>
+            <ClaudeApiGuideHub compactMode={false} showKeyInput={false} />
+          </div>
+        )}
+
+        {isCodexOrder && (
+          <div className="mt-8 space-y-4 text-left">
+            <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
+              <Sparkles className="h-4 w-4 text-blue-400" />
+              <span>Trong lúc đợi, bạn có thể xem trước hướng dẫn cấu hình API Codex:</span>
+            </div>
+            <CodexApiGuideHub showKeyInput={false} />
           </div>
         )}
       </div>

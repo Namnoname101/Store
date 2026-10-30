@@ -54,7 +54,23 @@ export default function ProductPurchaseBox({
   const router = useRouter();
   const { addToCart } = useCart();
   const effectiveMin = Math.max(1, minQuantity);
-  const effectiveMax = maxQuantity ? Math.max(effectiveMin, maxQuantity) : stockCount;
+
+  const isClaudeProduct =
+    (slug || "").toLowerCase().includes("claude") ||
+    (slug || "").toLowerCase().startsWith("cla-") ||
+    productTitle.toLowerCase().includes("claude");
+
+  const allowsManualFulfillment =
+    isClaudeProduct ||
+    categorySlug === "ai-api" ||
+    (slug || "").toLowerCase().includes("api") ||
+    productTitle.toLowerCase().includes("api");
+
+  const effectiveMax = maxQuantity
+    ? Math.max(effectiveMin, maxQuantity)
+    : allowsManualFulfillment && stockCount === 0
+    ? 10
+    : stockCount;
 
   const [quantity, setQuantity] = useState<number>(isCustomQuantity ? effectiveMin : 1);
   const [targetLink, setTargetLink] = useState<string>("");
@@ -81,6 +97,7 @@ export default function ProductPurchaseBox({
   } | null>(null);
 
   const inStock = isCustomQuantity || stockCount > 0;
+  const canPurchase = inStock || allowsManualFulfillment;
   const totalPrice = price * (quantity || 0);
   const netTotal = appliedCoupon
     ? Math.max(1000, totalPrice - appliedCoupon.discountAmount)
@@ -227,7 +244,7 @@ export default function ProductPurchaseBox({
       return;
     }
 
-    if (!isCustomQuantity && (!inStock || stockCount < quantity)) {
+    if (!isCustomQuantity && !allowsManualFulfillment && (!inStock || stockCount < quantity)) {
       setErrorMessage("Số lượng sản phẩm trong kho không đủ để đáp ứng yêu cầu.");
       return;
     }
@@ -275,7 +292,7 @@ export default function ProductPurchaseBox({
       return;
     }
 
-    if (!isCustomQuantity && (!inStock || stockCount < quantity)) {
+    if (!isCustomQuantity && !allowsManualFulfillment && (!inStock || stockCount < quantity)) {
       setErrorMessage("Số lượng sản phẩm trong kho không đủ để đáp ứng yêu cầu.");
       return;
     }
@@ -363,9 +380,16 @@ export default function ProductPurchaseBox({
                 <>Dịch vụ tự động — Luôn có sẵn</>
               ) : (
                 <>
-                  Còn <strong>{stockCount}</strong> sản phẩm trong kho
+                  Kho sẵn: <strong>{stockCount}</strong> key (Giao tự động tức thì)
                 </>
               )}
+            </span>
+          </div>
+        ) : allowsManualFulfillment ? (
+          <div className="flex items-center gap-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-500/30 px-3 py-2 text-xs font-medium text-amber-800 dark:text-amber-300">
+            <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+            <span>
+              Kho sẵn tạm hết — <strong>Cấp mã thủ công trong 5 - 15 phút</strong> sau thanh toán
             </span>
           </div>
         ) : (
@@ -492,7 +516,7 @@ export default function ProductPurchaseBox({
               <div className="flex items-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-1">
                 <button
                   type="button"
-                  disabled={!inStock || quantity <= 1 || isLoading}
+                  disabled={!canPurchase || quantity <= 1 || isLoading}
                   onClick={() => handleQuantityChange(-1)}
                   className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-40"
                   aria-label="Giảm số lượng"
@@ -503,20 +527,20 @@ export default function ProductPurchaseBox({
                 <input
                   type="number"
                   min={1}
-                  max={stockCount}
+                  max={allowsManualFulfillment && stockCount === 0 ? 10 : stockCount}
                   value={quantity || 1}
-                  disabled={!inStock || isLoading}
+                  disabled={!canPurchase || isLoading}
                   onChange={(e) => {
                     const val = parseInt(e.target.value, 10);
                     if (isNaN(val)) setQuantity(1);
-                    else setQuantity(Math.max(1, Math.min(stockCount, val)));
+                    else setQuantity(Math.max(1, Math.min(allowsManualFulfillment && stockCount === 0 ? 10 : stockCount, val)));
                   }}
                   className="w-12 text-center text-sm font-bold bg-transparent text-slate-900 dark:text-white border-0 focus:outline-none"
                 />
 
                 <button
                   type="button"
-                  disabled={!inStock || quantity >= stockCount || isLoading}
+                  disabled={!canPurchase || quantity >= (allowsManualFulfillment && stockCount === 0 ? 10 : stockCount) || isLoading}
                   onClick={() => handleQuantityChange(1)}
                   className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-40"
                   aria-label="Tăng số lượng"
@@ -623,7 +647,7 @@ export default function ProductPurchaseBox({
                 type="text"
                 placeholder="Nhập mã giảm giá..."
                 value={couponCode}
-                disabled={isLoading || !inStock || appliedCoupon !== null}
+                disabled={isLoading || !canPurchase || appliedCoupon !== null}
                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                 className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2 pl-9 pr-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 uppercase focus:border-blue-600 focus:outline-none font-mono"
               />
@@ -643,7 +667,7 @@ export default function ProductPurchaseBox({
               <button
                 type="button"
                 onClick={handleApplyCoupon}
-                disabled={isValidatingCoupon || !couponCode.trim() || !inStock}
+                disabled={isValidatingCoupon || !couponCode.trim() || !canPurchase}
                 className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
               >
                 {isValidatingCoupon ? (
@@ -687,7 +711,7 @@ export default function ProductPurchaseBox({
 
         {/* Action Buttons: Add to cart + Buy Now */}
         <div>
-          {inStock ? (
+          {canPurchase ? (
             <div className="flex flex-col sm:flex-row gap-2.5">
               <button
                 type="button"
@@ -702,13 +726,19 @@ export default function ProductPurchaseBox({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 flex min-h-[46px] items-center justify-center gap-2 rounded-xl bg-blue-600 py-2.5 px-5 text-sm font-bold text-white shadow-md shadow-blue-600/20 hover:bg-blue-700 disabled:opacity-60 transition-all active:scale-[0.99]"
+                className={`flex-1 flex min-h-[46px] items-center justify-center gap-2 rounded-xl py-2.5 px-5 text-sm font-bold text-white shadow-md disabled:opacity-60 transition-all active:scale-[0.99] ${
+                  !inStock && allowsManualFulfillment
+                    ? "bg-amber-600 hover:bg-amber-700 shadow-amber-600/20"
+                    : "bg-blue-600 hover:bg-blue-700 shadow-blue-600/20"
+                }`}
               >
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span>Đang tạo đơn...</span>
                   </>
+                ) : !inStock && allowsManualFulfillment ? (
+                  <span>Mua ngay (Cấp mã thủ công)</span>
                 ) : (
                   <span>Mua ngay</span>
                 )}

@@ -4,7 +4,9 @@ import {
   ItemStatus,
   FulfillmentType,
   PaymentIntentStatus,
+  UpstreamStatus,
 } from "@/lib/prisma";
+import { isAllowManualFulfillmentProduct } from "@/lib/product-types";
 import {
   reserveItemsForOrder,
   releaseExpiredReservations,
@@ -243,13 +245,28 @@ export async function createOrder(data: CreateOrderInput) {
       for (const item of data.items) {
         const product = productMap.get(item.productId)!;
         if (product.fulfillmentType === FulfillmentType.LOCAL_STOCK) {
-          await reserveItemsForOrder(
-            item.productId,
-            item.quantity,
-            createdOrder.id,
-            QR_EXPIRY_MINUTES,
-            tx
-          );
+          try {
+            await reserveItemsForOrder(
+              item.productId,
+              item.quantity,
+              createdOrder.id,
+              QR_EXPIRY_MINUTES,
+              tx
+            );
+          } catch (stockError) {
+            if (isAllowManualFulfillmentProduct(product)) {
+              createdOrder.upstreamStatus = UpstreamStatus.PENDING_MANUAL;
+              await tx.order.update({
+                where: { id: createdOrder.id },
+                data: {
+                  upstreamStatus: UpstreamStatus.PENDING_MANUAL,
+                  reconciliationNote: "[Hết kho sẵn]: Chờ Admin cấp mã thủ công",
+                },
+              });
+            } else {
+              throw stockError;
+            }
+          }
         }
       }
 
