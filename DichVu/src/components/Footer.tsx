@@ -116,7 +116,18 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/developer/usage" className="hover:text-blue-400 transition-colors">
-                  Kiểm Tra Quota & Request Logs API
+                  Tra Cứu Quota Codex API
+                </Link>
+              </li>
+              <li>
+                <Link href="/check-usage" className="hover:text-blue-400 transition-colors">
+                  Kiểm Tra Dung Lượng Claude / Cursor
+                </Link>
+              </li>
+              <li>
+                <Link href="/huong-dan/codex" className="hover:text-emerald-400 transition-colors flex items-center gap-1 font-semibold text-emerald-400">
+                  <span>Hướng Dẫn Kích Hoạt Codex API (1-Click)</span>
+                  <ArrowUpRight className="h-3 w-3 text-emerald-400" />
                 </Link>
               </li>
               <li>

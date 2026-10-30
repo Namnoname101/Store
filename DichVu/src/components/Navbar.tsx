@@ -132,25 +132,25 @@ export default function Navbar() {
             {isGuidesOpen && (
               <div className="absolute top-full left-0 mt-1 w-64 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#0c1220]/95 backdrop-blur-xl shadow-2xl p-2 z-50 flex flex-col gap-1 animate-in fade-in slide-in-from-top-1 duration-150">
                 <Link
+                  href="/huong-dan/codex"
+                  onClick={() => setIsGuidesOpen(false)}
+                  className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
+                  <Terminal className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-xs">Kích Hoạt Codex API (1-Click)</span>
+                    <span className="text-[10px] text-slate-400 font-normal">Tool KhoDee-helper & cấu hình Cursor, Cline</span>
+                  </div>
+                </Link>
+                <Link
                   href="/huong-dan/api-claude"
                   onClick={() => setIsGuidesOpen(false)}
                   className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                 >
                   <BookOpen className="h-4 w-4 text-indigo-500 shrink-0 mt-0.5" />
                   <div className="flex flex-col">
-                    <span className="font-semibold text-xs">Cấu Hình API Claude & Codex</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Hướng dẫn cài đặt IDE, Cursor, Cline</span>
-                  </div>
-                </Link>
-                <Link
-                  href="/codex"
-                  onClick={() => setIsGuidesOpen(false)}
-                  className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
-                >
-                  <Terminal className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-xs">Tra Cứu Quota Codex</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Kiểm tra hạn mức & nạp thêm key</span>
+                    <span className="font-semibold text-xs">Cấu Hình API Claude</span>
+                    <span className="text-[10px] text-slate-400 font-normal">Cài đặt Cursor, Cline, Roo Code</span>
                   </div>
                 </Link>
                 <Link
@@ -160,8 +160,19 @@ export default function Navbar() {
                 >
                   <Activity className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
                   <div className="flex flex-col">
-                    <span className="font-semibold text-xs">Kiểm Tra Dung Lượng API</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Check quota Claude/Cursor tức thì</span>
+                    <span className="font-semibold text-xs">Kiểm Tra Dung Lượng Claude / Cursor</span>
+                    <span className="text-[10px] text-slate-400 font-normal">Check quota Claude tức thì</span>
+                  </div>
+                </Link>
+                <Link
+                  href="/developer/usage"
+                  onClick={() => setIsGuidesOpen(false)}
+                  className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
+                  <Terminal className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-xs">Tra Cứu Quota Codex</span>
+                    <span className="text-[10px] text-slate-400 font-normal">Kiểm tra hạn mức ModelAPI & nạp thêm</span>
                   </div>
                 </Link>
                 <Link
@@ -299,8 +310,11 @@ export default function Navbar() {
             <Link href="/check-usage" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200/60 dark:border-white/5 flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors col-span-2 text-blue-600 dark:text-blue-400">
               <span>📊 Kiểm Tra Dung Lượng API Claude / Cursor</span>
             </Link>
-            <Link href="/huong-dan/api-claude" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-2 text-indigo-400 hover:bg-indigo-500/20 transition-colors col-span-2 font-bold">
-              <span>📖 Hướng Dẫn Cấu Hình API Claude / Codex</span>
+            <Link href="/huong-dan/codex" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2 text-emerald-500 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors col-span-2 font-bold">
+              <span>🚀 Hướng Dẫn Kích Hoạt Codex API (1-Click)</span>
+            </Link>
+            <Link href="/huong-dan/api-claude" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-2 text-indigo-500 dark:text-indigo-400 hover:bg-indigo-500/20 transition-colors col-span-2 font-bold">
+              <span>📖 Hướng Dẫn Cấu Hình API Claude</span>
             </Link>
             <Link href="/tools/prompt-master" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200/60 dark:border-white/5 flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors col-span-2 text-purple-600 dark:text-purple-400">
               <span>✨ Prompt AI Master</span>

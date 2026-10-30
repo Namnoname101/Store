@@ -13,9 +13,7 @@ import {
   CheckCircle2,
   BookOpen,
   Layers,
-  ArrowRight,
-  ShieldCheck,
-  Info,
+  Download,
 } from "lucide-react";
 
 export interface CodexApiGuideHubProps {
@@ -28,7 +26,7 @@ export default function CodexApiGuideHub({
   showKeyInput = true,
 }: CodexApiGuideHubProps) {
   const [customKey, setCustomKey] = useState<string>(apiKey || "");
-  const [activeTab, setActiveTab] = useState<"cursor" | "vscode" | "cli">("cursor");
+  const [activeTab, setActiveTab] = useState<"helper" | "cursor" | "vscode" | "cli">("helper");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const currentKey = customKey.trim() || apiKey || "sk-cdx-demo-key-8888";
@@ -44,9 +42,16 @@ export default function CodexApiGuideHub({
 
   const tabs = [
     {
+      id: "helper" as const,
+      name: "Tool 1-Click (KhoDee)",
+      badge: "Khuyên dùng - Nhanh nhất",
+      icon: Zap,
+      desc: "Tự động 100% cấu hình & mở ChatGPT Windows",
+    },
+    {
       id: "cursor" as const,
       name: "Cursor IDE",
-      badge: "Khuyên dùng",
+      badge: "Lập trình",
       icon: Laptop,
       desc: "Dùng trực tiếp trên Cursor Composer & Tab Autocomplete",
     },
@@ -130,12 +135,12 @@ export default function CodexApiGuideHub({
 
       {/* Main Container */}
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-5 sm:p-6 shadow-xs">
-        {/* Navigation Tabs */}
+        {/* Navigation Tabs Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800/80">
           <div className="flex items-center gap-2">
             <Layers className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             <span className="text-sm font-bold text-slate-900 dark:text-white">
-              Hướng dẫn cấu hình theo công cụ:
+              Chọn cách cấu hình & kết nối:
             </span>
           </div>
 
@@ -152,7 +157,7 @@ export default function CodexApiGuideHub({
         </div>
 
         {/* Tab Buttons */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 my-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 my-4">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -163,14 +168,14 @@ export default function CodexApiGuideHub({
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-start gap-3 p-3 rounded-xl border text-left transition-all ${
                   isActive
-                    ? "border-blue-600 bg-blue-50/60 dark:border-blue-500 dark:bg-blue-950/30 text-blue-900 dark:text-blue-100 shadow-2xs"
+                    ? "border-emerald-600 bg-emerald-50/60 dark:border-emerald-500 dark:bg-emerald-950/30 text-emerald-950 dark:text-emerald-100 shadow-2xs ring-1 ring-emerald-500/30"
                     : "border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700"
                 }`}
               >
                 <div
                   className={`flex h-8 w-8 items-center justify-center rounded-lg shrink-0 ${
                     isActive
-                      ? "bg-blue-600 text-white"
+                      ? "bg-emerald-600 text-white"
                       : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                   }`}
                 >
@@ -179,17 +184,19 @@ export default function CodexApiGuideHub({
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs font-bold truncate">{tab.name}</span>
+                  </div>
+                  <div className="mt-0.5">
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded font-medium ${
+                      className={`text-[9px] px-1.5 py-0.2 rounded font-semibold inline-block truncate ${
                         isActive
-                          ? "bg-blue-200/80 dark:bg-blue-900/80 text-blue-800 dark:text-blue-200"
+                          ? "bg-emerald-200/80 dark:bg-emerald-900/80 text-emerald-900 dark:text-emerald-200"
                           : "bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                       }`}
                     >
                       {tab.badge}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-1">
                     {tab.desc}
                   </p>
                 </div>
@@ -197,6 +204,134 @@ export default function CodexApiGuideHub({
             );
           })}
         </div>
+
+        {/* Tab Content: Tool 1-Click (KhoDee-helper) */}
+        {activeTab === "helper" && (
+          <div className="space-y-6 pt-2">
+            {/* Download Banner */}
+            <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-blue-500/10 p-4 sm:p-5 shadow-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
+                      <Zap className="h-3 w-3" />
+                      Công cụ 1-Click tự động
+                    </span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                      Windows 10 / 11 (64-bit)
+                    </span>
+                  </div>
+                  <h4 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">
+                    KhoDee-helper — Kích Hoạt Tự Động Trong 1 Giây
+                  </h4>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 max-w-xl">
+                    Tự động tạo file cấu hình chuẩn xác cho OpenAI Codex & tích hợp thẳng vào app ChatGPT. Không cần gõ lệnh dòng lệnh phức tạp.
+                  </p>
+                </div>
+
+                <a
+                  href="/downloads/KhoDee-helper.zip"
+                  download="KhoDee-helper.zip"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-4 py-2.5 text-xs font-bold shadow-md shadow-emerald-500/20 transition-all shrink-0 active:scale-95"
+                >
+                  <Download className="h-4 w-4" />
+                  <span>Tải KhoDee-helper.zip (59 KB)</span>
+                </a>
+              </div>
+            </div>
+
+            {/* 4 Steps Grid with Images */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Bước 1 */}
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/40 p-4 space-y-3 flex flex-col justify-between">
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white text-[11px] font-bold">1</span>
+                    <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Bước 1: Mở công cụ KhoDee-helper.exe</h5>
+                  </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                    Tải về và giải nén <code className="font-semibold text-emerald-600 dark:text-emerald-400">KhoDee-helper.zip</code>, chạy file <code className="font-semibold">KhoDee-helper.exe</code> (không cần cài đặt).
+                  </p>
+                </div>
+                <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-950/40">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/guides/codex/step-1-open.png"
+                    alt="Bước 1: Mở công cụ KhoDee-helper"
+                    className="w-full object-cover hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+
+              {/* Bước 2 */}
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/40 p-4 space-y-3 flex flex-col justify-between">
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white text-[11px] font-bold">2</span>
+                    <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Bước 2: Dán mã API Key & Kiểm tra</h5>
+                  </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                    Dán mã API Key của bạn vào ô. Tool sẽ tự động kết nối ModelAPI xác thực token và hiển thị số dư Quota khả dụng.
+                  </p>
+                </div>
+                <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-950/40">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/guides/codex/step-2-key.png"
+                    alt="Bước 2: Dán mã API Key và kiểm tra tự động"
+                    className="w-full object-cover hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+
+              {/* Bước 3 */}
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/40 p-4 space-y-3 flex flex-col justify-between">
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white text-[11px] font-bold">3</span>
+                    <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Bước 3: Nhấn nút Kích hoạt Codex</h5>
+                  </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                    Bấm nút <strong>&quot;Kích hoạt Codex&quot;</strong>. Công cụ tự động tạo file <code className="font-mono text-[11px]">config.toml</code> và <code className="font-mono text-[11px]">auth.json</code> chuẩn xác 100% trong 1 giây.
+                  </p>
+                </div>
+                <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-950/40">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/guides/codex/step-3-activate.png"
+                    alt="Bước 3: Bấm nút Kích hoạt Codex"
+                    className="w-full object-cover hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+
+              {/* Bước 4 */}
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/40 p-4 space-y-3 flex flex-col justify-between">
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white text-[11px] font-bold">4</span>
+                    <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Bước 4: Mở ứng dụng ChatGPT & Code ngay</h5>
+                  </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                    Nhấn nút <strong>&quot;Mở ứng dụng ChatGPT&quot;</strong> để bắt đầu sử dụng mô hình AI <code className="font-mono text-[11px]">gpt-6.1-sol</code> đỉnh cao.
+                  </p>
+                </div>
+                <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-950/40">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/guides/codex/step-4-chatgpt.png"
+                    alt="Bước 4: Mở ứng dụng ChatGPT và code ngay"
+                    className="w-full object-cover hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Tab Content: Cursor */}
         {activeTab === "cursor" && (
@@ -351,7 +486,11 @@ export default function CodexApiGuideHub({
               <Link href="/codex" className="font-bold underline hover:text-emerald-950 dark:hover:text-white">
                 Trang nạp tự động Codex
               </Link>{" "}
-              để kiểm tra số dư quota còn lại và nạp thêm hạn mức thẳng vào key đang dùng 24/7.
+              hoặc kiểm tra lịch sử request tại{" "}
+              <Link href="/developer/usage" className="font-bold underline hover:text-emerald-950 dark:hover:text-white">
+                Kiểm tra Quota Codex
+              </Link>{" "}
+              để theo dõi token thời gian thực 24/7.
             </p>
           </div>
         </div>
