@@ -172,7 +172,7 @@ export default function Navbar() {
                   <Terminal className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                   <div className="flex flex-col">
                     <span className="font-semibold text-xs">Tra Cứu Quota Codex</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Kiểm tra hạn mức ModelAPI & nạp thêm</span>
+                    <span className="text-[10px] text-slate-400 font-normal">Kiểm tra hạn mức Codex API & nạp thêm</span>
                   </div>
                 </Link>
                 <Link

@@ -38,10 +38,11 @@ async function activateInDb(dbUrl) {
       console.log(`✓ Created category: ${cat.name} (${cat.slug})`);
     }
 
-    // 2. Define Claude API packages to activate
+    // 2. Define Claude API packages with clean brand slugs (no supplier SKU prefixes)
     const packagesToActivate = [
       {
-        slug: "cla-0036-api-claude-10-max-10-credit",
+        slug: "api-claude-10-max-10-credit",
+        oldSlug: "cla-0036-api-claude-10-max-10-credit",
         title: "API Claude 10$ Max (10$ Credit)",
         price: 18000,
         originalPrice: 22500,
@@ -52,7 +53,8 @@ async function activateInDb(dbUrl) {
         supplierStock: 25,
       },
       {
-        slug: "cla-0042-api-claude-30-max-30-credit",
+        slug: "api-claude-30-max-30-credit",
+        oldSlug: "cla-0042-api-claude-30-max-30-credit",
         title: "API Claude 30$ Max (30$ Credit)",
         price: 54000,
         originalPrice: 67500,
@@ -63,7 +65,8 @@ async function activateInDb(dbUrl) {
         supplierStock: 20,
       },
       {
-        slug: "cla-0044-api-claude-50-max-50-credit",
+        slug: "api-claude-50-max-50-credit",
+        oldSlug: "cla-0044-api-claude-50-max-50-credit",
         title: "API Claude 50$ Max (50$ Credit)",
         price: 90000,
         originalPrice: 112500,
@@ -74,7 +77,8 @@ async function activateInDb(dbUrl) {
         supplierStock: 15,
       },
       {
-        slug: "cla-0037-api-claude-100-max-100-credit",
+        slug: "api-claude-100-max-100-credit",
+        oldSlug: "cla-0037-api-claude-100-max-100-credit",
         title: "API Claude 100$ Max (100$ Credit)",
         price: 180000,
         originalPrice: 225000,
@@ -85,7 +89,8 @@ async function activateInDb(dbUrl) {
         supplierStock: 15,
       },
       {
-        slug: "cla-0083-api-claude-1-thang-max-5000-credit",
+        slug: "api-claude-1-thang-max-5000-credit",
+        oldSlug: "cla-0083-api-claude-1-thang-max-5000-credit",
         title: "API Claude 1 tháng Max (5000$ Credit)",
         price: 3000000,
         originalPrice: 3750000,
@@ -97,20 +102,19 @@ async function activateInDb(dbUrl) {
       },
     ];
 
-    // Find GenzShop supplier
-    const genzSupplier = await prisma.supplier.findFirst({
-      where: { code: "GENZSHOP" },
-    });
-
     for (const pkg of packagesToActivate) {
-      let product = await prisma.product.findUnique({
-        where: { slug: pkg.slug },
+      // Find either by clean slug or old supplier slug
+      let product = await prisma.product.findFirst({
+        where: {
+          OR: [{ slug: pkg.slug }, { slug: pkg.oldSlug }],
+        },
       });
 
       if (product) {
         product = await prisma.product.update({
           where: { id: product.id },
           data: {
+            slug: pkg.slug,
             title: pkg.title,
             price: pkg.price,
             originalPrice: pkg.originalPrice,
@@ -122,7 +126,7 @@ async function activateInDb(dbUrl) {
             thumbnailUrl: "/images/brands/claude.svg",
           },
         });
-        console.log(`✓ Updated & Activated: ${product.title} (${product.slug})`);
+        console.log(`✓ Updated & Migrated to clean slug: ${product.title} (${product.slug})`);
       } else {
         product = await prisma.product.create({
           data: {
@@ -142,7 +146,6 @@ async function activateInDb(dbUrl) {
       }
 
       // Option 1: Claude API products use LOCAL_STOCK (warehouse inventory).
-      // Remove any upstream supplier mapping so it sells from locally imported warehouse keys.
       await prisma.supplierProductMapping.deleteMany({
         where: { productId: product.id },
       });
@@ -161,35 +164,42 @@ async function activateInDb(dbUrl) {
       where: { slug: { in: oldCodexSlugs } },
       data: { isActive: false },
     });
-    if (deactRes.count > 0) {
-      console.log(`✓ Deactivated ${deactRes.count} legacy duplicate Codex products`);
-    }
+    console.log(`✓ Deactivated ${deactRes.count} old duplicate Codex products`);
 
-    console.log(`=== Done activating in ${dbUrl || "default DB"} ===`);
+    // Verify Claude count
+    const activeClaude = await prisma.product.findMany({
+      where: {
+        slug: { in: packagesToActivate.map((p) => p.slug) },
+        isActive: true,
+      },
+      select: { slug: true, title: true, price: true },
+    });
+    console.log(`\nActive Claude API products (${activeClaude.length}):`);
+    activeClaude.forEach((p) => console.log(` - ${p.title} (${p.slug}): ${p.price.toLocaleString("vi-VN")}đ`));
   } finally {
     await prisma.$disconnect();
   }
 }
 
 async function main() {
-  // If running in Docker production on Fly (/data/dev.db)
+  // Check if running on Fly.io production
   if (fs.existsSync("/data/dev.db")) {
     await activateInDb("file:/data/dev.db");
-    return;
-  }
+  } else {
+    // Run locally
+    const devDbPath = path.join(__dirname, "..", "prisma", "dev.db");
+    const rootDevDbPath = path.join(__dirname, "..", "dev.db");
 
-  // Local development
-  const rootDb = path.resolve(__dirname, "../dev.db");
-  const prismaDb = path.resolve(__dirname, "../prisma/dev.db");
-
-  if (fs.existsSync(rootDb)) {
-    await activateInDb(`file:${rootDb}`);
-  }
-  if (fs.existsSync(prismaDb)) {
-    await activateInDb(`file:${prismaDb}`);
+    if (fs.existsSync(rootDevDbPath)) {
+      await activateInDb(`file:${rootDevDbPath}`);
+    }
+    if (fs.existsSync(devDbPath)) {
+      await activateInDb(`file:${devDbPath}`);
+    }
   }
 }
 
-main().catch(console.error);
-
-module.exports = { activateInDb };
+main().catch((e) => {
+  console.error("Activation failed:", e);
+  process.exit(1);
+});

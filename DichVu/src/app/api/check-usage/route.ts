@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: `Máy chủ đối tác trả về mã lỗi ${upstreamResponse.status}. Vui lòng thử lại sau.`,
+          error: `Máy chủ kiểm tra trả về mã lỗi ${upstreamResponse.status}. Vui lòng thử lại sau.`,
         },
         { status: upstreamResponse.status || 502 }
       );

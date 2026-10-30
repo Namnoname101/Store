@@ -97,12 +97,23 @@ export async function getProductBySlug(
 ): Promise<ProductDetail | null> {
   if (!slug) return null;
 
-  const product = await prisma.product.findUnique({
+  let product = await prisma.product.findUnique({
     where: { slug },
     include: {
       category: true,
     },
   });
+
+  // Fallback: If slug starts with supplier SKU prefix (e.g. cla-0036-api-claude...), resolve clean slug
+  if (!product && /^cla-\d{4}-/i.test(slug)) {
+    const cleanSlug = slug.replace(/^cla-\d{4}-/i, "");
+    product = await prisma.product.findUnique({
+      where: { slug: cleanSlug },
+      include: {
+        category: true,
+      },
+    });
+  }
 
   if (
     !product ||

@@ -116,7 +116,7 @@ export default function ClaudeApiGuidePage() {
               <span>Gặp lỗi 401 Unauthorized hoặc Invalid Key thì làm sao?</span>
             </h3>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-              Vui lòng kiểm tra lại: (1) Bạn đã copy đúng toàn bộ chuỗi key chưa (bắt đầu bằng <code>sk-...</code>, không thừa dấu cách ở đầu/cuối), (2) Đã cấu hình chính xác Base URL <code>https://1gw.gwai.cloud</code> hoặc <code>https://modelapi.vn/v1</code> chưa.
+              Vui lòng kiểm tra lại: (1) Bạn đã copy đúng toàn bộ chuỗi key chưa (bắt đầu bằng <code>sk-...</code>, không thừa dấu cách ở đầu/cuối), (2) Đã cấu hình chính xác Base URL theo tài liệu hướng dẫn chưa.
             </p>
           </div>
 
