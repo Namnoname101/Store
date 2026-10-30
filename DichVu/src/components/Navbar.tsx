@@ -16,6 +16,7 @@ import {
   BookOpen,
   ShoppingBag,
   Sparkles,
+  Activity,
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { useCart } from "@/contexts/CartContext";

@@ -21,6 +21,7 @@ import {
   Code2,
   ArrowRight,
   Sparkles,
+  Activity,
 } from "lucide-react";
 import type { Product } from "@prisma/client";
 import { playSuccessChime } from "@/lib/sound";

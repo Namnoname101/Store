@@ -64,10 +64,7 @@ export default function Footer() {
                 <Mail className="h-3.5 w-3.5 text-blue-400" />
                 <span className="font-mono">Dai99133@gmail.com</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <Phone className="h-3.5 w-3.5 text-emerald-400" />
-                <span className="font-mono font-bold text-white">Hotline: 0774483215</span>
-              </div>
+
             </div>
           </div>
 

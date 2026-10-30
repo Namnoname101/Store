@@ -43,27 +43,59 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
   // 2. CÁC GÓI CODEX API / MODELAPI
   // ==========================================
   "codex-credit-10usd": {
-    title: "Hướng dẫn cấu hình Codex API (Gói 10$ - 5.000.000 Quota)",
+    title: "Hướng dẫn kích hoạt Codex API & ChatGPT bằng KhoDee-helper (1-Click)",
     steps: [
-      "Sao chép API Key ở trên (bắt đầu bằng 'sk-...').",
       {
-        text: "Trong Cursor: Settings > Models > OpenAI API Key > Đổi Base URL thành https://modelapi.vn/v1 và dán API Key.",
-        image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80",
-        caption: "Minh họa: Cài đặt Base URL và API Key trong Cursor Settings",
+        text: "Tải công cụ hỗ trợ cấu hình tự động KhoDee-helper.exe (dành cho Windows). Giải nén và mở file trực tiếp mà không cần cài đặt.",
+        image: "/images/guides/codex/step-1-open.png",
+        caption: "Bước 1: Khởi chạy KhoDee-helper.exe trên máy tính",
       },
-      "Trong VS Code / Cline / Roo Code: Chọn OpenAI Compatible > Điền Base URL và API Key.",
-      "Kiểm tra hạn mức & lịch sử request thực tế tại: https://daitruong-store.fly.dev/developer/usage",
+      {
+        text: "Sao chép mã API Key (sk-...) được bàn giao ở trên và dán vào ô nhập. Phần mềm tự động kiểm tra tên Token và số dư Quota khả dụng trực tiếp từ ModelAPI.",
+        image: "/images/guides/codex/step-2-key.png",
+        caption: "Bước 2: Dán mã API Key, hệ thống tự động xác thực số dư Quota",
+      },
+      {
+        text: "Bấm nút 'Kích hoạt Codex'. Công cụ sẽ tự động thiết lập 100% tệp cấu hình config.toml và auth.json chuẩn xác vào thư mục %USERPROFILE%\\.codex chỉ trong 1 giây.",
+        image: "/images/guides/codex/step-3-activate.png",
+        caption: "Bước 3: Bấm 'Kích hoạt Codex' để tự động cấu hình toàn bộ hệ thống",
+      },
+      {
+        text: "Bấm nút 'Mở ứng dụng ChatGPT' để khởi chạy ngay ứng dụng ChatGPT Windows App và bắt đầu lập trình cùng mô hình AI đỉnh cao gpt-6.1-sol.",
+        image: "/images/guides/codex/step-4-chatgpt.png",
+        caption: "Bước 4: Bấm 'Mở ứng dụng ChatGPT' để bắt đầu sử dụng ngay lập tức",
+      },
+      "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Đổi Base URL thành https://modelapi.vn/v1 và dán mã API Key này.",
+      "Kiểm tra hạn mức & lịch sử request thực tế thời gian thực tại: /developer/usage",
     ],
     note: "Hạn mức 5.000.000 quota points bảo lưu vĩnh viễn, sử dụng chung được cho Claude 3.5 Sonnet, Claude Opus 4.7, GPT-6 Astra, Gemini 4 Argon.",
     docsUrl: "/huong-dan/api-claude",
   },
   "codex-credit-50usd": {
-    title: "Hướng dẫn cấu hình Codex API (Gói 50$ - 25.000.000 Quota)",
+    title: "Hướng dẫn kích hoạt Codex API & ChatGPT bằng KhoDee-helper (1-Click)",
     steps: [
-      "Sao chép API Key ở trên (bắt đầu bằng 'sk-...').",
-      "Trong Cursor: Settings > Models > OpenAI API Key > Đổi Base URL thành https://modelapi.vn/v1 và dán API Key.",
-      "Trong VS Code / Cline / Roo Code: Chọn OpenAI Compatible > Điền Base URL và API Key.",
-      "Kiểm tra hạn mức & lịch sử request thực tế tại: https://daitruong-store.fly.dev/developer/usage",
+      {
+        text: "Tải công cụ hỗ trợ cấu hình tự động KhoDee-helper.exe (dành cho Windows). Giải nén và mở file trực tiếp mà không cần cài đặt.",
+        image: "/images/guides/codex/step-1-open.png",
+        caption: "Bước 1: Khởi chạy KhoDee-helper.exe trên máy tính",
+      },
+      {
+        text: "Sao chép mã API Key (sk-...) được bàn giao ở trên và dán vào ô nhập. Phần mềm tự động kiểm tra tên Token và số dư Quota khả dụng trực tiếp từ ModelAPI.",
+        image: "/images/guides/codex/step-2-key.png",
+        caption: "Bước 2: Dán mã API Key, hệ thống tự động xác thực số dư Quota",
+      },
+      {
+        text: "Bấm nút 'Kích hoạt Codex'. Công cụ sẽ tự động thiết lập 100% tệp cấu hình config.toml và auth.json chuẩn xác vào thư mục %USERPROFILE%\\.codex chỉ trong 1 giây.",
+        image: "/images/guides/codex/step-3-activate.png",
+        caption: "Bước 3: Bấm 'Kích hoạt Codex' để tự động cấu hình toàn bộ hệ thống",
+      },
+      {
+        text: "Bấm nút 'Mở ứng dụng ChatGPT' để khởi chạy ngay ứng dụng ChatGPT Windows App và bắt đầu lập trình cùng mô hình AI đỉnh cao gpt-6.1-sol.",
+        image: "/images/guides/codex/step-4-chatgpt.png",
+        caption: "Bước 4: Bấm 'Mở ứng dụng ChatGPT' để bắt đầu sử dụng ngay lập tức",
+      },
+      "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Đổi Base URL thành https://modelapi.vn/v1 và dán mã API Key này.",
+      "Kiểm tra hạn mức & lịch sử request thực tế thời gian thực tại: /developer/usage",
     ],
     note: "Gói 25.000.000 quota points tối ưu cho lập trình viên làm việc chuyên nghiệp hàng ngày với Cursor & Claude Code.",
     docsUrl: "/huong-dan/api-claude",
