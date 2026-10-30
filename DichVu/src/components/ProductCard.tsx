@@ -36,7 +36,17 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
     title.toLowerCase().includes("like") ||
     title.toLowerCase().includes("follow");
 
-  const inStock = isSMM || stockCount > 0;
+  const isApiKey =
+    product.category?.slug === "ai-api" ||
+    product.category?.slug === "ai" ||
+    title.toLowerCase().includes("api") ||
+    title.toLowerCase().includes("codex") ||
+    title.toLowerCase().includes("credit") ||
+    title.toLowerCase().includes("token") ||
+    title.toLowerCase().includes("key");
+
+  const hideExactStock = isSMM || isApiKey || stockCount >= 99999;
+  const inStock = hideExactStock || stockCount > 0;
 
   const discountPercent =
     originalPrice && originalPrice > price
@@ -126,7 +136,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
 
           {/* Live Stock Indicator */}
           <div className="shrink-0">
-            {isSMM || stockCount >= 99999 ? (
+            {hideExactStock ? (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 font-mono">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Sẵn kho

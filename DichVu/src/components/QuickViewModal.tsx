@@ -50,6 +50,18 @@ export default function QuickViewModal({
       product?.title.toLowerCase().includes("like") ||
       product?.title.toLowerCase().includes("follow"));
 
+  const isApiKey =
+    Boolean(product) &&
+    (product?.category?.slug === "ai-api" ||
+      product?.category?.slug === "ai" ||
+      product?.title.toLowerCase().includes("api") ||
+      product?.title.toLowerCase().includes("codex") ||
+      product?.title.toLowerCase().includes("credit") ||
+      product?.title.toLowerCase().includes("token") ||
+      product?.title.toLowerCase().includes("key"));
+
+  const hideExactStock = isSMM || isApiKey || (product?.stockCount ?? 0) >= 99999;
+
   const unitLabel = product?.title.toLowerCase().includes("follow")
     ? "follow"
     : product?.title.toLowerCase().includes("tim")
@@ -420,10 +432,10 @@ export default function QuickViewModal({
 
               {/* Stock indicator */}
               <div className="mt-2">
-                {isSMM || product.stockCount >= 99999 ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                    Có sẵn
+                {hideExactStock ? (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 font-mono">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Sẵn kho
                   </span>
                 ) : inStock ? (
                   <span className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 dark:text-blue-400">

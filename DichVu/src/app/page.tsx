@@ -30,9 +30,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             {/* Live Status Pill */}
             <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-3.5 py-1 text-xs font-medium text-blue-700 dark:text-blue-300 shadow-sm backdrop-blur-md">
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Hệ thống cấp phát tự động 24/7 qua VietQR</span>
-              <span className="text-zinc-400 dark:text-zinc-600">|</span>
-              <span className="text-emerald-600 dark:text-emerald-400 font-mono font-semibold">Bảo hành 1 đổi 1</span>
+              <span className="whitespace-nowrap font-semibold">Tự động 24/7 qua VietQR • Bảo hành 1 đổi 1</span>
             </div>
 
             {/* Headline */}
@@ -45,7 +43,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
             {/* Subtitle */}
             <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-300 max-w-2xl leading-relaxed">
-              API Claude 3.5 / 3.7, Cursor Pro, OpenAI, ChatGPT Plus, CapCut Pro và tài nguyên MMO. Cấp phát tức thì sau 3 giây quét mã, không cần chờ đợi.
+              API Claude, Cursor, ChatGPT, CapCut & Tài nguyên MMO tự động 24/7.
             </p>
 
             {/* Search Input Box */}

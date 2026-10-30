@@ -373,11 +373,11 @@ export default function ProductPurchaseBox({
             <span>Dịch vụ tự động — Khởi tạo sau khi thanh toán</span>
           </div>
         ) : inStock ? (
-          <div className="flex items-center gap-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-500/30 px-3 py-2 text-xs font-medium text-blue-800 dark:text-blue-300">
-            <span className="h-2 w-2 rounded-full bg-blue-500" />
+          <div className="flex items-center gap-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/30 px-3 py-2 text-xs font-medium text-emerald-800 dark:text-emerald-300">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>
-              {stockCount >= 99999 ? (
-                <>Dịch vụ tự động — Luôn có sẵn</>
+              {allowsManualFulfillment || categorySlug === "ai-api" || categorySlug === "ai" || productTitle.toLowerCase().includes("api") || productTitle.toLowerCase().includes("codex") || stockCount >= 99999 ? (
+                <>Dịch vụ tự động — Cấp phát 24/7 tức thì</>
               ) : (
                 <>
                   Kho sẵn: <strong>{stockCount}</strong> key (Giao tự động tức thì)
@@ -549,9 +549,9 @@ export default function ProductPurchaseBox({
                 </button>
               </div>
 
-              {stockCount > 1 && (
+              {(allowsManualFulfillment || categorySlug === "ai-api" || categorySlug === "ai" || productTitle.toLowerCase().includes("api") || productTitle.toLowerCase().includes("codex") || stockCount > 1) && (
                 <div className="flex items-center gap-1">
-                  {[1, 3, 5, 10].filter(n => n <= stockCount).map(n => (
+                  {[1, 3, 5, 10].filter(n => (allowsManualFulfillment || categorySlug === "ai-api" || categorySlug === "ai" || productTitle.toLowerCase().includes("api") || productTitle.toLowerCase().includes("codex")) ? true : n <= stockCount).map(n => (
                     <button
                       key={n}
                       type="button"
