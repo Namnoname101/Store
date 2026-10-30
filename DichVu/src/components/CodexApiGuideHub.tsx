@@ -377,10 +377,10 @@ export default function CodexApiGuideHub({
                     Base URL (Bắt buộc):
                   </span>
                   <div className="mt-1 flex items-center justify-between rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-1.5 text-xs font-mono text-blue-600 dark:text-blue-400">
-                    <span>https://daitruongstore.fly.dev/v1</span>
+                    <span>https://modelapi.vn/v1</span>
                     <button
                       type="button"
-                      onClick={() => handleCopy("base-url", "https://daitruongstore.fly.dev/v1")}
+                      onClick={() => handleCopy("base-url", "https://modelapi.vn/v1")}
                       className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                     >
                       {copiedKey === "base-url" ? (
@@ -443,7 +443,7 @@ export default function CodexApiGuideHub({
                 <li>Mở cài đặt extension (Cline hoặc Roo Code).</li>
                 <li>Chọn <strong>API Provider</strong> là <strong>OpenAI Compatible</strong>.</li>
                 <li>
-                  Điền Base URL: <code className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 font-mono text-blue-600 dark:text-blue-400">https://daitruongstore.fly.dev/v1</code>
+                  Điền Base URL: <code className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 font-mono text-blue-600 dark:text-blue-400">https://modelapi.vn/v1</code>
                 </li>
                 <li>Dán API Key của bạn vào mục API Key.</li>
                 <li>Điền Model ID tương ứng (ví dụ: <code className="font-mono">claude-3-5-sonnet-20241022</code>).</li>
@@ -465,7 +465,7 @@ export default function CodexApiGuideHub({
                   onClick={() =>
                     handleCopy(
                       "cli-cmd",
-                      `export OPENAI_BASE_URL="https://daitruongstore.fly.dev/v1"\nexport OPENAI_API_KEY="${currentKey}"`
+                      `export OPENAI_BASE_URL="https://modelapi.vn/v1"\nexport OPENAI_API_KEY="${currentKey}"`
                     )
                   }
                   className="absolute top-2 right-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 p-1.5 transition"
@@ -478,10 +478,10 @@ export default function CodexApiGuideHub({
                   )}
                 </button>
                 <p className="text-slate-400"># Linux / macOS / Git Bash</p>
-                <p>export OPENAI_BASE_URL="https://daitruongstore.fly.dev/v1"</p>
+                <p>export OPENAI_BASE_URL="https://modelapi.vn/v1"</p>
                 <p>export OPENAI_API_KEY="{currentKey}"</p>
                 <p className="mt-2 text-slate-400"># Windows PowerShell</p>
-                <p>$env:OPENAI_BASE_URL="https://daitruongstore.fly.dev/v1"</p>
+                <p>$env:OPENAI_BASE_URL="https://modelapi.vn/v1"</p>
                 <p>$env:OPENAI_API_KEY="{currentKey}"</p>
               </div>
             </div>

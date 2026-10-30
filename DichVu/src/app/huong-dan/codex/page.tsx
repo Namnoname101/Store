@@ -16,7 +16,7 @@ import CodexApiGuideHub from "@/components/CodexApiGuideHub";
 export const metadata: Metadata = {
   title: "Hướng Dẫn Kích Hoạt Codex AI Cho Ứng Dụng ChatGPT (Windows) & IDE — DaiTruong Store",
   description:
-    "Hướng dẫn kích hoạt Codex AI tự động 1-Click vào ứng dụng ChatGPT Windows App bằng công cụ KhoDee-helper hoặc kết nối Base URL https://daitruongstore.fly.dev/v1 vào Cursor IDE, VS Code Cline.",
+    "Hướng dẫn kích hoạt Codex AI tự động 1-Click vào ứng dụng ChatGPT Windows App bằng công cụ KhoDee-helper hoặc kết nối Base URL https://modelapi.vn/v1 vào Cursor IDE, VS Code Cline.",
 };
 
 export default function CodexApiGuidePage() {
@@ -37,7 +37,7 @@ export default function CodexApiGuidePage() {
         </h1>
 
         <p className="max-w-2xl mx-auto text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-          Kích hoạt tự động vào <strong>Ứng dụng ChatGPT (Desktop Windows)</strong> chỉ trong <strong>1 Click</strong> bằng công cụ <strong>KhoDee-helper</strong>, hoặc kết nối chuẩn OpenAI Compatible qua <strong>Base URL: https://daitruongstore.fly.dev/v1</strong> vào Cursor IDE, Cline, Roo Code.
+          Kích hoạt tự động vào <strong>Ứng dụng ChatGPT (Desktop Windows)</strong> chỉ trong <strong>1 Click</strong> bằng công cụ <strong>KhoDee-helper</strong>, hoặc kết nối chuẩn OpenAI Compatible qua <strong>Base URL: https://modelapi.vn/v1</strong> vào Cursor IDE, Cline, Roo Code.
         </p>
 
         {/* Action Badges & Quick Links */}
@@ -150,7 +150,7 @@ export default function CodexApiGuidePage() {
               <span>Base URL của Codex API là gì?</span>
             </h3>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed font-mono">
-              https://daitruongstore.fly.dev/v1
+              https://modelapi.vn/v1
             </p>
             <p className="text-slate-500 dark:text-slate-400">
               Hãy đảm bảo điền chính xác đường dẫn này vào mục Base URL / Endpoint của Cursor IDE hoặc extension VS Code.

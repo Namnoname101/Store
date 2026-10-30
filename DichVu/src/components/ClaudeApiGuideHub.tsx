@@ -63,7 +63,7 @@ export default function ClaudeApiGuideHub({
   const vscodeSettingsJson = `{
   "env": {
     "ANTHROPIC_AUTH_TOKEN": "${currentKey}",
-    "ANTHROPIC_BASE_URL": "https://daitruongstore.fly.dev/gw",
+    "ANTHROPIC_BASE_URL": "https://1gw.gwai.cloud",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5",
@@ -88,7 +88,7 @@ export default function ClaudeApiGuideHub({
     "mode": "replace",
     "providers": {
       "gwai": {
-        "baseUrl": "https://daitruongstore.fly.dev/gw",
+        "baseUrl": "https://1gw.gwai.cloud",
         "apiKey": "${currentKey}",
         "api": "anthropic-messages",
         "headers": {
@@ -528,7 +528,7 @@ export default function ClaudeApiGuideHub({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono mt-2">
                   <div className="p-2.5 rounded-lg bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-xs">
                     <span className="text-slate-500">Base URL: </span>
-                    <span className="text-emerald-700 dark:text-emerald-400 font-bold select-all">https://daitruongstore.fly.dev/gw</span>
+                    <span className="text-emerald-700 dark:text-emerald-400 font-bold select-all">https://1gw.gwai.cloud</span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-xs">
                     <span className="text-slate-500">API Key: </span>
@@ -655,11 +655,11 @@ export default function ClaudeApiGuideHub({
                       <span className="text-slate-600 dark:text-slate-400 font-medium sm:w-44">Gateway base URL:</span>
                       <div className="flex items-center gap-2 flex-1 justify-end">
                         <code className="text-emerald-700 dark:text-emerald-400 font-bold bg-slate-50 dark:bg-slate-900 px-2 py-1 rounded border border-slate-200 dark:border-slate-800 select-all">
-                          https://daitruongstore.fly.dev/gw
+                          https://1gw.gwai.cloud
                         </code>
                         <button
                           type="button"
-                          onClick={() => handleCopy("url-gw", "https://daitruongstore.fly.dev/gw")}
+                          onClick={() => handleCopy("url-gw", "https://1gw.gwai.cloud")}
                           className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-2 py-1 rounded text-[11px] flex items-center gap-1 transition-colors border border-slate-200 dark:border-slate-700"
                         >
                           {copiedKey === "url-gw" ? <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" /> : <Copy className="h-3 w-3" />}
@@ -1049,10 +1049,10 @@ export default function ClaudeApiGuideHub({
                   <div className="w-full space-y-2">
                     <div className="text-slate-900 dark:text-white font-bold">Cài đặt Base URL:</div>
                     <div className="flex items-center justify-between rounded-lg bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2 font-mono shadow-xs">
-                      <span className="text-emerald-700 dark:text-emerald-400 font-bold select-all">https://daitruongstore.fly.dev/gw</span>
+                      <span className="text-emerald-700 dark:text-emerald-400 font-bold select-all">https://1gw.gwai.cloud</span>
                       <button
                         type="button"
-                        onClick={() => handleCopy("cursor-url", "https://daitruongstore.fly.dev/gw")}
+                        onClick={() => handleCopy("cursor-url", "https://1gw.gwai.cloud")}
                         className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-2 py-1 rounded text-[11px] flex items-center gap-1 transition-colors border border-slate-200 dark:border-slate-700"
                       >
                         {copiedKey === "cursor-url" ? <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" /> : <Copy className="h-3 w-3" />}

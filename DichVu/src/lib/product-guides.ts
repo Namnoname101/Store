@@ -65,7 +65,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         image: "/images/guides/codex/step-4-chatgpt.png",
         caption: "Bước 4: Bấm 'Mở ứng dụng ChatGPT' để bắt đầu sử dụng ngay lập tức",
       },
-      "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Đổi Base URL thành https://daitruongstore.fly.dev/v1 và dán mã API Key này.",
+      "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Đổi Base URL thành https://modelapi.vn/v1 và dán mã API Key này.",
       "Kiểm tra hạn mức & lịch sử request thực tế thời gian thực tại: /developer/usage",
     ],
     note: "Hạn mức 5.000.000 quota points bảo lưu vĩnh viễn, sử dụng chung được cho Claude 3.5 Sonnet, Claude Opus 4.7, GPT-6 Astra, Gemini 4 Argon.",
@@ -94,7 +94,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         image: "/images/guides/codex/step-4-chatgpt.png",
         caption: "Bước 4: Bấm 'Mở ứng dụng ChatGPT' để bắt đầu sử dụng ngay lập tức",
       },
-      "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Đổi Base URL thành https://daitruongstore.fly.dev/v1 và dán mã API Key này.",
+      "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Đổi Base URL thành https://modelapi.vn/v1 và dán mã API Key này.",
       "Kiểm tra hạn mức & lịch sử request thực tế thời gian thực tại: /developer/usage",
     ],
     note: "Gói 25.000.000 quota points tối ưu cho lập trình viên làm việc chuyên nghiệp hàng ngày với Cursor & Claude Code.",
@@ -109,11 +109,11 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
     steps: [
       "Sao chép Claude API Key / Token ở trên (bắt đầu bằng 'sk-...'). Mã này dùng chung được cho cả 5 công cụ bên dưới.",
       {
-        text: "1. VS Code & Claude Code CLI: Cài npm install -g @anthropic-ai/claude-code, cấu hình file settings.json với Base URL https://daitruongstore.fly.dev/gw.",
+        text: "1. VS Code & Claude Code CLI: Cài npm install -g @anthropic-ai/claude-code, cấu hình file settings.json với Base URL https://1gw.gwai.cloud.",
         caption: "Tự động hóa lập trình trực tiếp trong Terminal của VS Code",
       },
       {
-        text: "2. Claude AI Desktop (Cowork): Tải app tại claude.com/download > Bật Developer Mode > Configure Third-Party Inference > Chọn Gateway với Base URL https://daitruongstore.fly.dev/gw và Auth schema x-api-key.",
+        text: "2. Claude AI Desktop (Cowork): Tải app tại claude.com/download > Bật Developer Mode > Configure Third-Party Inference > Chọn Gateway với Base URL https://1gw.gwai.cloud và Auth schema x-api-key.",
         caption: "Ứng dụng desktop chính thức của Claude trên PC/Mac",
       },
       {
