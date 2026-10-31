@@ -9,6 +9,8 @@ import {
   Download,
   ShieldCheck,
   ArrowRight,
+  ZoomIn,
+  X,
 } from "lucide-react";
 
 export interface CodexApiGuideHubProps {
@@ -64,6 +66,7 @@ export default function CodexApiGuideHub({
   const [customKey, setCustomKey] = useState<string>(apiKey || "");
   const [activeTab, setActiveTab] = useState<"helper" | "cursor" | "vscode" | "cli">("helper");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [lightboxImage, setLightboxImage] = useState<{ src: string; title: string } | null>(null);
 
   const currentKey = customKey.trim() || apiKey || "sk-cdx-demo-key-8888";
   const isCustomKeyEntered = Boolean(customKey.trim() || apiKey);
@@ -253,93 +256,121 @@ export default function CodexApiGuideHub({
                 </div>
               </div>
 
-              {/* 4 Clean Visual Steps */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* 4 Full-Width Visual Steps with Click-to-Enlarge */}
+              <div className="space-y-6">
                 {/* Step 1 */}
-                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 space-y-3 flex flex-col justify-between">
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-[11px] font-bold">1</span>
-                      <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Bước 1: Mở công cụ KhoDee-helper.exe</h5>
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 sm:p-6 space-y-3.5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold">1</span>
+                      <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Bước 1: Mở công cụ KhoDee-helper.exe</h5>
                     </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                      Tải về và giải nén <code className="font-semibold text-emerald-600 dark:text-emerald-400">KhoDee-helper.zip</code>, chạy file <code className="font-semibold text-slate-900 dark:text-white">KhoDee-helper.exe</code> (không cần cài đặt).
-                    </p>
+                    <span className="text-[11px] text-slate-500 font-medium">Bấm vào ảnh để xem kích thước đầy đủ</span>
                   </div>
-                  <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-950/40">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-8">
+                    Tải về và giải nén file <code className="font-semibold text-emerald-600 dark:text-emerald-400 font-mono">KhoDee-helper.zip</code>, sau đó chạy file <code className="font-semibold text-slate-900 dark:text-white font-mono">KhoDee-helper.exe</code> (không cần cài đặt).
+                  </p>
+                  <div
+                    onClick={() => setLightboxImage({ src: "/images/guides/codex/step-1-open.png", title: "Bước 1: Mở công cụ KhoDee-helper.exe" })}
+                    className="relative group cursor-zoom-in overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-950 shadow-md"
+                  >
                     <img
                       src="/images/guides/codex/step-1-open.png"
                       alt="Bước 1: Mở công cụ KhoDee-helper"
-                      className="w-full object-cover hover:scale-102 transition-transform duration-300"
+                      className="w-full h-auto object-contain transition duration-300 group-hover:scale-[1.01]"
                       loading="lazy"
                     />
+                    <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-semibold backdrop-blur-2xs">
+                      <ZoomIn className="h-4 w-4" />
+                      <span>Xem ảnh phóng to đầy đủ (1720 x 980)</span>
+                    </div>
                   </div>
                 </div>
 
                 {/* Step 2 */}
-                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 space-y-3 flex flex-col justify-between">
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-[11px] font-bold">2</span>
-                      <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Bước 2: Dán mã API Key & Kiểm tra</h5>
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 sm:p-6 space-y-3.5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold">2</span>
+                      <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Bước 2: Dán mã API Key &amp; Kiểm tra số dư Quota</h5>
                     </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                      Dán mã API Key của bạn vào ô. Tool sẽ tự động kết nối máy chủ xác thực token và hiển thị số dư Quota khả dụng.
-                    </p>
+                    <span className="text-[11px] text-slate-500 font-medium">Bấm vào ảnh để xem kích thước đầy đủ</span>
                   </div>
-                  <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-950/40">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-8">
+                    Dán mã API Key của bạn vào ô nhập. Tool sẽ tự động kết nối máy chủ xác thực mã token và hiển thị số dư Quota khả dụng trực tiếp.
+                  </p>
+                  <div
+                    onClick={() => setLightboxImage({ src: "/images/guides/codex/step-2-key.png", title: "Bước 2: Dán mã API Key & Kiểm tra số dư Quota" })}
+                    className="relative group cursor-zoom-in overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-950 shadow-md"
+                  >
                     <img
                       src="/images/guides/codex/step-2-key.png"
                       alt="Bước 2: Dán mã API Key và kiểm tra tự động"
-                      className="w-full object-cover hover:scale-102 transition-transform duration-300"
+                      className="w-full h-auto object-contain transition duration-300 group-hover:scale-[1.01]"
                       loading="lazy"
                     />
+                    <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-semibold backdrop-blur-2xs">
+                      <ZoomIn className="h-4 w-4" />
+                      <span>Xem ảnh phóng to đầy đủ (1720 x 980)</span>
+                    </div>
                   </div>
                 </div>
 
                 {/* Step 3 */}
-                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 space-y-3 flex flex-col justify-between">
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-[11px] font-bold">3</span>
-                      <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Bước 3: Nhấn nút Kích hoạt Codex</h5>
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 sm:p-6 space-y-3.5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold">3</span>
+                      <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Bước 3: Nhấn nút &quot;Kích hoạt Codex&quot;</h5>
                     </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                      Bấm nút <strong>&quot;Kích hoạt Codex&quot;</strong>. Tool tự động nạp cấu hình hệ thống chuẩn xác 100% cho ứng dụng ChatGPT trong 1 giây.
-                    </p>
+                    <span className="text-[11px] text-slate-500 font-medium">Bấm vào ảnh để xem kích thước đầy đủ</span>
                   </div>
-                  <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-950/40">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-8">
+                    Bấm nút <strong>&quot;Kích hoạt Codex&quot;</strong>. Công cụ sẽ tự động nạp cấu hình hệ thống chuẩn xác 100% cho ứng dụng ChatGPT trên Windows chỉ trong 1 giây.
+                  </p>
+                  <div
+                    onClick={() => setLightboxImage({ src: "/images/guides/codex/step-3-activate.png", title: "Bước 3: Nhấn nút Kích hoạt Codex" })}
+                    className="relative group cursor-zoom-in overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-950 shadow-md"
+                  >
                     <img
                       src="/images/guides/codex/step-3-activate.png"
                       alt="Bước 3: Bấm nút Kích hoạt Codex"
-                      className="w-full object-cover hover:scale-102 transition-transform duration-300"
+                      className="w-full h-auto object-contain transition duration-300 group-hover:scale-[1.01]"
                       loading="lazy"
                     />
+                    <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-semibold backdrop-blur-2xs">
+                      <ZoomIn className="h-4 w-4" />
+                      <span>Xem ảnh phóng to đầy đủ (1720 x 980)</span>
+                    </div>
                   </div>
                 </div>
 
                 {/* Step 4 */}
-                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 space-y-3 flex flex-col justify-between">
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-[11px] font-bold">4</span>
-                      <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Bước 4: Bấm &quot;Mở ứng dụng ChatGPT&quot;</h5>
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 sm:p-6 space-y-3.5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold">4</span>
+                      <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Bước 4: Bấm &quot;Mở ứng dụng ChatGPT&quot; &amp; Bắt đầu sử dụng</h5>
                     </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                      Nhấn nút <strong>&quot;Mở ứng dụng ChatGPT&quot;</strong> để mở app và bắt đầu lập trình cùng mô hình AI <code className="font-mono text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">gpt-6.1-sol</code> đỉnh cao.
-                    </p>
+                    <span className="text-[11px] text-slate-500 font-medium">Bấm vào ảnh để xem kích thước đầy đủ</span>
                   </div>
-                  <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-950/40">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-8">
+                    Nhấn nút <strong>&quot;Mở ứng dụng ChatGPT&quot;</strong> để mở ngay ứng dụng ChatGPT Desktop và bắt đầu lập trình với mô hình AI đỉnh cao <code className="font-mono text-xs text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">gpt-6.1-sol</code>.
+                  </p>
+                  <div
+                    onClick={() => setLightboxImage({ src: "/images/guides/codex/step-4-chatgpt.png", title: "Bước 4: Mở ứng dụng ChatGPT & Bắt đầu sử dụng" })}
+                    className="relative group cursor-zoom-in overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-950 shadow-md"
+                  >
                     <img
                       src="/images/guides/codex/step-4-chatgpt.png"
                       alt="Bước 4: Mở ứng dụng ChatGPT và code ngay"
-                      className="w-full object-cover hover:scale-102 transition-transform duration-300"
+                      className="w-full h-auto object-contain transition duration-300 group-hover:scale-[1.01]"
                       loading="lazy"
                     />
+                    <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-semibold backdrop-blur-2xs">
+                      <ZoomIn className="h-4 w-4" />
+                      <span>Xem ảnh phóng to đầy đủ (1720 x 980)</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -535,7 +566,33 @@ export default function CodexApiGuideHub({
             </Link>
           </div>
         </div>
-      </div>
+
+      {/* Fullscreen Lightbox Modal */}
+      {lightboxImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 cursor-zoom-out"
+          onClick={() => setLightboxImage(null)}
+        >
+          <div className="relative max-w-6xl w-full max-h-[92vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between w-full pb-2.5 text-white text-xs font-semibold px-1">
+              <span className="truncate mr-4">{lightboxImage.title}</span>
+              <button
+                type="button"
+                onClick={() => setLightboxImage(null)}
+                className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-white font-medium transition cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+                <span>Đóng (Esc)</span>
+              </button>
+            </div>
+            <img
+              src={lightboxImage.src}
+              alt={lightboxImage.title}
+              className="max-h-[85vh] w-auto max-w-full rounded-xl object-contain shadow-2xl border border-slate-700 bg-slate-950"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
