@@ -11,7 +11,7 @@ import CodexApiGuideHub from "@/components/CodexApiGuideHub";
 export const metadata: Metadata = {
   title: "Hướng Dẫn Kích Hoạt Codex AI Cho Ứng Dụng ChatGPT (Windows) & IDE — DaiTruong Store",
   description:
-    "Hướng dẫn kích hoạt Codex AI tự động 1-Click vào ứng dụng ChatGPT Windows App bằng công cụ KhoDee-helper hoặc kết nối Base URL https://modelapi.vn/v1 vào Cursor IDE, VS Code Cline.",
+    "Hướng dẫn kích hoạt Codex AI tự động 1-Click vào ứng dụng ChatGPT Windows App bằng công cụ KhoDee-helper hoặc kết nối OpenAI Compatible vào Cursor IDE, VS Code Cline.",
 };
 
 export default function CodexApiGuidePage() {

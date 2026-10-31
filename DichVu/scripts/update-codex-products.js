@@ -1,6 +1,14 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+const thumbnails = {
+  'cdx-0055-api-codex-ai-toc-o-nhanh-10-credit': '/images/products/product_1787638230_52272f23.png',
+  'cdx-0056-api-codex-ai-toc-o-nhanh-50-credit': '/images/products/product_1787638234_863b284a.png',
+  'cdx-0057-api-codex-ai-toc-o-nhanh-100-credit': '/images/products/product_1787638249_4d06fb88.png',
+  'cdx-0058-api-codex-ai-toc-o-nhanh-200-credit': '/images/products/product_1787638239_4581ea3c.png',
+  'cdx-0060-api-codex-ai-toc-o-nhanh-500-credit': '/images/products/product_1787638243_e841fb78.png',
+};
+
 const codexData = [
   {
     slug: 'cdx-0055-api-codex-ai-toc-o-nhanh-10-credit',
@@ -41,33 +49,44 @@ const codexData = [
 
 function buildDescription(item) {
   return `${item.vndHeader}
-🎯 GIÁ TRỊ GÓI NẠP:
-• Hạn mức: ${item.creditUsd}$ Credit (${item.quota} Quota Points).
-• Thời hạn: Bảo lưu vĩnh viễn, không hết hạn cho đến khi dùng hết hạn mức.
 
-💡 DÙNG ĐƯỢC CHO CÔNG CỤ NÀO?
-• Cursor IDE, Claude Code CLI, Cline, Roo Code, VS Code, Continue.dev, Chatbox, NextChat...
-• Tương thích 100% chuẩn OpenAI Compatible (Base URL: https://modelapi.vn/v1).
-• Sử dụng chung được cho tất cả các mô hình AI: Claude 3.5 Sonnet, Claude Opus, GPT-4o, Gemini 1.5 Pro...
-
-⚡ HÌNH THỨC NHẬN HÀNG:
-• ĐÃ CÓ API Key: Hạn mức tự động cộng dồn trực tiếp vào Key của bạn sau khi thanh toán.
-• CHƯA CÓ API Key: Hệ thống tự động tạo mới 1 API Key riêng biệt và bàn giao tức thì trên trang đơn hàng kèm hướng dẫn.
-
-📖 Hướng dẫn chi tiết: Mở Cursor > Settings > Models > Bật OpenAI Compatible > Điền Base URL https://modelapi.vn/v1 và dán API Key.`;
+• Hạn mức: ${item.creditUsd}$ Credit (${item.quota} Quota Points)
+• Thời hạn: Bảo lưu vĩnh viễn, không giới hạn thời gian sử dụng
+• Chuẩn API: Tương thích 100% chuẩn OpenAI Compatible (Cursor IDE, VS Code, Cline, ChatGPT App)
+• Mô hình AI: Hỗ trợ đầy đủ Claude 3.5 Sonnet, GPT-4o, Gemini 1.5 Pro, DeepSeek...
+• Bàn giao: Tự động nạp vào Key có sẵn hoặc cấp Key mới tức thì 24/7`;
 }
 
 async function run() {
+  const cat = await prisma.category.findFirst({
+    where: { slug: { in: ['ai-api', 'codex-credit'] } }
+  });
+  if (!cat) throw new Error("No AI category found");
+
   console.log('Updating 5 canonical Codex products...');
   for (const item of codexData) {
     const desc = buildDescription(item);
-    await prisma.product.update({
+    const thumb = thumbnails[item.slug];
+    await prisma.product.upsert({
       where: { slug: item.slug },
-      data: {
+      update: {
         title: item.title,
         description: desc,
+        thumbnailUrl: thumb,
         isActive: true,
       },
+      create: {
+        slug: item.slug,
+        title: item.title,
+        description: desc,
+        thumbnailUrl: thumb,
+        price: item.creditUsd === 10 ? 22000 : item.creditUsd === 50 ? 110000 : item.creditUsd === 100 ? 220000 : item.creditUsd === 200 ? 440000 : 990000,
+        originalPrice: item.creditUsd === 10 ? 45000 : item.creditUsd === 50 ? 190000 : item.creditUsd === 100 ? 360000 : item.creditUsd === 200 ? 750000 : 1490000,
+        type: "LICENSE_KEY",
+        fulfillmentType: "API_DROPSHIP",
+        categoryId: cat.id,
+        isActive: true,
+      }
     });
     console.log(`✓ Updated: ${item.title}`);
   }
@@ -91,4 +110,4 @@ async function run() {
   console.log('Done!');
 }
 
-run().catch(console.error);
+run().catch(console.error).finally(() => prisma.$disconnect());

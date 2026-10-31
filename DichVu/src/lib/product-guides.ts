@@ -65,11 +65,11 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         image: "/images/guides/codex/step-4-chatgpt.png",
         caption: "Bước 4: Bấm 'Mở ứng dụng ChatGPT' để bắt đầu sử dụng ngay lập tức",
       },
-      "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Đổi Base URL thành https://modelapi.vn/v1 và dán mã API Key này.",
+      "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Dán mã API Key này theo hướng dẫn tại /huong-dan/codex.",
       "Kiểm tra hạn mức & lịch sử request thực tế thời gian thực tại: /developer/usage",
     ],
     note: "Hạn mức 5.000.000 quota points bảo lưu vĩnh viễn, sử dụng chung được cho Claude 3.5 Sonnet, Claude Opus 4.7, GPT-6 Astra, Gemini 4 Argon.",
-    docsUrl: "/huong-dan/api-claude",
+    docsUrl: "/huong-dan/codex",
   },
   "codex-credit-50usd": {
     title: "Hướng dẫn kích hoạt Codex API & ChatGPT bằng KhoDee-helper (1-Click)",
@@ -94,11 +94,11 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         image: "/images/guides/codex/step-4-chatgpt.png",
         caption: "Bước 4: Bấm 'Mở ứng dụng ChatGPT' để bắt đầu sử dụng ngay lập tức",
       },
-      "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Đổi Base URL thành https://modelapi.vn/v1 và dán mã API Key này.",
+      "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Dán mã API Key này theo hướng dẫn tại /huong-dan/codex.",
       "Kiểm tra hạn mức & lịch sử request thực tế thời gian thực tại: /developer/usage",
     ],
     note: "Gói 25.000.000 quota points tối ưu cho lập trình viên làm việc chuyên nghiệp hàng ngày với Cursor & Claude Code.",
-    docsUrl: "/huong-dan/api-claude",
+    docsUrl: "/huong-dan/codex",
   },
 
   // ==========================================

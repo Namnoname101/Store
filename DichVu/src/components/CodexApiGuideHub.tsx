@@ -9,7 +9,6 @@ import {
   Download,
   ShieldCheck,
   ArrowRight,
-  ZoomIn,
   X,
 } from "lucide-react";
 
@@ -260,12 +259,9 @@ export default function CodexApiGuideHub({
               <div className="space-y-6">
                 {/* Step 1 */}
                 <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 sm:p-6 space-y-3.5">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold">1</span>
-                      <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Bước 1: Mở công cụ KhoDee-helper.exe</h5>
-                    </div>
-                    <span className="text-[11px] text-slate-500 font-medium">Bấm vào ảnh để xem kích thước đầy đủ</span>
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold">1</span>
+                    <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Bước 1: Mở công cụ KhoDee-helper.exe</h5>
                   </div>
                   <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-8">
                     Tải về và giải nén file <code className="font-semibold text-emerald-600 dark:text-emerald-400 font-mono">KhoDee-helper.zip</code>, sau đó chạy file <code className="font-semibold text-slate-900 dark:text-white font-mono">KhoDee-helper.exe</code> (không cần cài đặt).
@@ -280,21 +276,14 @@ export default function CodexApiGuideHub({
                       className="w-full h-auto object-contain transition duration-300 group-hover:scale-[1.01]"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-semibold backdrop-blur-2xs">
-                      <ZoomIn className="h-4 w-4" />
-                      <span>Xem ảnh phóng to đầy đủ (1720 x 980)</span>
-                    </div>
                   </div>
                 </div>
 
                 {/* Step 2 */}
                 <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 sm:p-6 space-y-3.5">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold">2</span>
-                      <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Bước 2: Dán mã API Key &amp; Kiểm tra số dư Quota</h5>
-                    </div>
-                    <span className="text-[11px] text-slate-500 font-medium">Bấm vào ảnh để xem kích thước đầy đủ</span>
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold">2</span>
+                    <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Bước 2: Dán mã API Key &amp; Kiểm tra số dư Quota</h5>
                   </div>
                   <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-8">
                     Dán mã API Key của bạn vào ô nhập. Tool sẽ tự động kết nối máy chủ xác thực mã token và hiển thị số dư Quota khả dụng trực tiếp.
@@ -309,21 +298,14 @@ export default function CodexApiGuideHub({
                       className="w-full h-auto object-contain transition duration-300 group-hover:scale-[1.01]"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-semibold backdrop-blur-2xs">
-                      <ZoomIn className="h-4 w-4" />
-                      <span>Xem ảnh phóng to đầy đủ (1720 x 980)</span>
-                    </div>
                   </div>
                 </div>
 
                 {/* Step 3 */}
                 <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 sm:p-6 space-y-3.5">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold">3</span>
-                      <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Bước 3: Nhấn nút &quot;Kích hoạt Codex&quot;</h5>
-                    </div>
-                    <span className="text-[11px] text-slate-500 font-medium">Bấm vào ảnh để xem kích thước đầy đủ</span>
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold">3</span>
+                    <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Bước 3: Nhấn nút &quot;Kích hoạt Codex&quot;</h5>
                   </div>
                   <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-8">
                     Bấm nút <strong>&quot;Kích hoạt Codex&quot;</strong>. Công cụ sẽ tự động nạp cấu hình hệ thống chuẩn xác 100% cho ứng dụng ChatGPT trên Windows chỉ trong 1 giây.
@@ -338,21 +320,14 @@ export default function CodexApiGuideHub({
                       className="w-full h-auto object-contain transition duration-300 group-hover:scale-[1.01]"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-semibold backdrop-blur-2xs">
-                      <ZoomIn className="h-4 w-4" />
-                      <span>Xem ảnh phóng to đầy đủ (1720 x 980)</span>
-                    </div>
                   </div>
                 </div>
 
                 {/* Step 4 */}
                 <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 sm:p-6 space-y-3.5">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold">4</span>
-                      <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Bước 4: Bấm &quot;Mở ứng dụng ChatGPT&quot; &amp; Bắt đầu sử dụng</h5>
-                    </div>
-                    <span className="text-[11px] text-slate-500 font-medium">Bấm vào ảnh để xem kích thước đầy đủ</span>
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold">4</span>
+                    <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Bước 4: Bấm &quot;Mở ứng dụng ChatGPT&quot; &amp; Bắt đầu sử dụng</h5>
                   </div>
                   <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-8">
                     Nhấn nút <strong>&quot;Mở ứng dụng ChatGPT&quot;</strong> để mở ngay ứng dụng ChatGPT Desktop và bắt đầu lập trình với mô hình AI đỉnh cao <code className="font-mono text-xs text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">gpt-6.1-sol</code>.
@@ -367,10 +342,6 @@ export default function CodexApiGuideHub({
                       className="w-full h-auto object-contain transition duration-300 group-hover:scale-[1.01]"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-semibold backdrop-blur-2xs">
-                      <ZoomIn className="h-4 w-4" />
-                      <span>Xem ảnh phóng to đầy đủ (1720 x 980)</span>
-                    </div>
                   </div>
                 </div>
               </div>

@@ -34,7 +34,7 @@ describe("Claude API & Codex Guide Hub", () => {
     });
 
     expect(guide).toBeDefined();
-    expect(guide.docsUrl).toBe("/huong-dan/api-claude");
+    expect(guide.docsUrl).toBe("/huong-dan/codex");
   });
 
   it("exports ClaudeApiGuideHub as a React functional component", () => {
