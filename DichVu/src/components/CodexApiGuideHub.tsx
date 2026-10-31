@@ -566,6 +566,7 @@ export default function CodexApiGuideHub({
             </Link>
           </div>
         </div>
+      </div>
 
       {/* Fullscreen Lightbox Modal */}
       {lightboxImage && (
