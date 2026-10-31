@@ -419,7 +419,7 @@ export default function CodexApiGuideHub({
                     <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Chọn Model & Code ngay</span>
                   </div>
                   <p className="text-xs text-slate-600 dark:text-slate-400 pl-7 leading-relaxed">
-                    Bạn có thể thêm các model AI ưa thích như <code className="font-mono text-slate-900 dark:text-white bg-white dark:bg-slate-950 px-1 py-0.5 rounded border">claude-3-5-sonnet-20241022</code>, <code className="font-mono text-slate-900 dark:text-white bg-white dark:bg-slate-950 px-1 py-0.5 rounded border">gpt-4o</code>. Hệ thống trừ quota tự động theo token thực tế.
+                    Bạn có thể chọn hoặc thêm các model OpenAI GPT như <code className="font-mono text-slate-900 dark:text-white bg-white dark:bg-slate-950 px-1 py-0.5 rounded border">gpt-4o</code>, <code className="font-mono text-slate-900 dark:text-white bg-white dark:bg-slate-950 px-1 py-0.5 rounded border">o1</code>, <code className="font-mono text-slate-900 dark:text-white bg-white dark:bg-slate-950 px-1 py-0.5 rounded border">gpt-6.1-sol</code>. Hệ thống trừ quota tự động theo token thực tế.
                   </p>
                 </div>
               </div>

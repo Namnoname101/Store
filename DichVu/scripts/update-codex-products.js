@@ -53,7 +53,7 @@ function buildDescription(item) {
 • Hạn mức: ${item.creditUsd}$ Credit (${item.quota} Quota Points)
 • Thời hạn: Bảo lưu vĩnh viễn, không giới hạn thời gian sử dụng
 • Chuẩn API: Tương thích 100% chuẩn OpenAI Compatible (Cursor IDE, VS Code, Cline, ChatGPT App)
-• Mô hình AI: Hỗ trợ đầy đủ Claude 3.5 Sonnet, GPT-4o, Gemini 1.5 Pro, DeepSeek...
+• Mô hình AI: Chuyên dụng cho các mô hình OpenAI GPT (GPT-4o, GPT-4o mini, o1, o3-mini, Codex gpt-6.1-sol...)
 • Bàn giao: Tự động nạp vào Key có sẵn hoặc cấp Key mới tức thì 24/7`;
 }
 

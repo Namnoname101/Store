@@ -68,7 +68,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
       "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Dán mã API Key này theo hướng dẫn tại /huong-dan/codex.",
       "Kiểm tra hạn mức & lịch sử request thực tế thời gian thực tại: /developer/usage",
     ],
-    note: "Hạn mức 5.000.000 quota points bảo lưu vĩnh viễn, sử dụng chung được cho Claude 3.5 Sonnet, Claude Opus 4.7, GPT-6 Astra, Gemini 4 Argon.",
+    note: "Hạn mức 5.000.000 quota points bảo lưu vĩnh viễn, tối ưu cho lập trình và ứng dụng ChatGPT qua các mô hình OpenAI GPT (GPT-4o, o1, gpt-6.1-sol).",
     docsUrl: "/huong-dan/codex",
   },
   "codex-credit-50usd": {
@@ -97,7 +97,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
       "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Dán mã API Key này theo hướng dẫn tại /huong-dan/codex.",
       "Kiểm tra hạn mức & lịch sử request thực tế thời gian thực tại: /developer/usage",
     ],
-    note: "Gói 25.000.000 quota points tối ưu cho lập trình viên làm việc chuyên nghiệp hàng ngày với Cursor & Claude Code.",
+    note: "Gói 25.000.000 quota points tối ưu cho lập trình viên làm việc chuyên nghiệp hàng ngày với Cursor & ChatGPT Desktop qua mô hình GPT.",
     docsUrl: "/huong-dan/codex",
   },
 
