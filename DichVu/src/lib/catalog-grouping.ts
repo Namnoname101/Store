@@ -399,8 +399,10 @@ export function processSectionProducts(
   if (selectedBrandKey && selectedBrandKey !== "all") {
     filtered = tagged.filter((item) => item.brand?.key === selectedBrandKey);
 
+    // Ensure packages are sorted strictly ascending by price from left to right
+    const sortedFiltered = [...filtered].sort((a, b) => a.product.price - b.product.price);
     // If user explicitly filtered a specific brand (e.g. Claude), render individual cards
-    const items: ProcessedCatalogItem[] = filtered.map((item) => ({
+    const items: ProcessedCatalogItem[] = sortedFiltered.map((item) => ({
       type: "single",
       singleProduct: item.product,
     }));
@@ -497,6 +499,8 @@ export function processSectionProducts(
     }
   });
 
+  // Sort singles ascending by price
+  singles.sort((a, b) => (a.singleProduct?.price || 0) - (b.singleProduct?.price || 0));
   // Combine grouped items and singles
   return {
     items: [...groupedItems, ...singles],

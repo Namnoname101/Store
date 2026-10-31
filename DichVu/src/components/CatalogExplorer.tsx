@@ -355,10 +355,15 @@ export default function CatalogExplorer({
     });
 
     // 3. Return only sections that have at least 1 product
-    return SECTION_DEFINITIONS.map((def) => ({
-      ...def,
-      products: map.get(def.id) || [],
-    })).filter((sec) => sec.products.length > 0);
+    return SECTION_DEFINITIONS.map((def) => {
+      const sectionProducts = map.get(def.id) || [];
+      // Guarantee products are sorted ascending by price
+      sectionProducts.sort((a, b) => a.price - b.price);
+      return {
+        ...def,
+        products: sectionProducts,
+      };
+    }).filter((sec) => sec.products.length > 0);
   }, [allProducts, searchQuery]);
 
   const isManualScrollingRef = useRef(false);

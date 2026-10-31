@@ -55,7 +55,7 @@ export async function getCategoriesWithProducts(
         include: {
           supplierMapping: true,
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: { price: "asc" },
       },
     },
     orderBy: { createdAt: "asc" },
