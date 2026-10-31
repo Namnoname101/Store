@@ -288,16 +288,16 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           {/* Product Instruction Guide if available */}
           {isCodex ? (
             <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  <span>Hướng dẫn cấu hình API Codex (Cursor & OpenAI Compatible)</span>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1">
+                <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                  Hướng Dẫn Cấu Hình API Codex
                 </h2>
                 <Link
-                  href="/codex"
-                  className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold inline-flex items-center gap-1 transition-colors"
+                  href="/huong-dan/codex"
+                  target="_blank"
+                  className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline font-semibold inline-flex items-center gap-1 transition"
                 >
-                  <span>Mở trang nạp hạn mức tự động</span>
+                  <span>Mở trang hướng dẫn chi tiết</span>
                   <ExternalLink className="h-3 w-3" />
                 </Link>
               </div>
@@ -305,17 +305,16 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             </div>
           ) : isClaude ? (
             <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
-                  <span>Hướng dẫn cấu hình & tương thích (Hỗ trợ 5 nền tảng)</span>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1">
+                <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                  Hướng Dẫn Cấu Hình API Claude (5 Nền Tảng)
                 </h2>
                 <Link
                   href="/huong-dan/api-claude"
                   target="_blank"
-                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-semibold inline-flex items-center gap-1 transition-colors"
+                  className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline font-semibold inline-flex items-center gap-1 transition"
                 >
-                  <span>Mở trang hướng dẫn toàn màn hình</span>
+                  <span>Mở trang hướng dẫn chi tiết</span>
                   <ExternalLink className="h-3 w-3" />
                 </Link>
               </div>
