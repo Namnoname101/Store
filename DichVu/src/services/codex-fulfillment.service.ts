@@ -193,18 +193,7 @@ export async function fulfillCodexCreditOrder(
 
     // If new key was created, record delivery and complete order
     if (deliveredRawKey) {
-      const secretContent = `🎉 API Key mới của bạn đã được khởi tạo thành công!
-
-• Tên Key (Username): ${customKeyName}
-• API Key: ${deliveredRawKey}
-• Hạn mức ban đầu: $${creditUsd} (${quotaUnits.toLocaleString("vi-VN")} Quota Points)
-• Base URL: https://modelapi.vn/v1
-
-📖 Hướng dẫn kết nối nhanh vào Cursor IDE:
-1. Mở Cursor > Cài đặt (Settings) > Models
-2. Bật công tắc "OpenAI Compatible"
-3. Điền Base URL: https://modelapi.vn/v1
-4. Dán API Key ở trên và bắt đầu sử dụng!`;
+      const secretContent = deliveredRawKey;
 
       await prisma.productItem.create({
         data: {

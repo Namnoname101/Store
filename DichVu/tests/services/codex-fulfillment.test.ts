@@ -336,8 +336,7 @@ describe("Codex Auto-Fulfillment Pipeline Tests", () => {
       });
 
       expect(updatedOrder?.deliveredItems.length).toBe(1);
-      expect(updatedOrder?.deliveredItems[0].secretContent).toContain(customUsername);
-      expect(updatedOrder?.deliveredItems[0].secretContent).toContain("sk-mock-custom-named-key-9999");
+      expect(updatedOrder?.deliveredItems[0].secretContent).toBe("sk-mock-custom-named-key-9999");
     } finally {
       await prisma.orderItem.deleteMany({ where: { orderId: customUserOrder.id } }).catch(() => {});
       await prisma.productItem.deleteMany({ where: { orderId: customUserOrder.id } }).catch(() => {});

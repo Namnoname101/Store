@@ -293,7 +293,7 @@ export default function CodexTopupClient() {
                     Username đặt tên cho API Key <span className="text-rose-500">*</span>
                   </label>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 mb-2">
-                    Tên này sẽ được gán làm tên hiển thị của API Key trên hệ thống ModelAPI để bạn dễ quản lý.
+                    Tên này sẽ được gán làm tên hiển thị của API Key để bạn dễ quản lý.
                   </p>
                   <div className="relative">
                     <input
