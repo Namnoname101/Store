@@ -17,6 +17,8 @@ import {
   createPaymentIntentForOrder,
   QR_EXPIRY_MINUTES,
 } from "@/services/payment-intent.service";
+import { isCodexProduct } from "@/services/codex-fulfillment.service";
+import { ModelApiService } from "@/services/modelapi/modelapi.service";
 import type { Order, OrderItem, Product } from "@prisma/client";
 
 export interface OrderItemInput {
@@ -128,6 +130,27 @@ export async function createOrder(data: CreateOrderInput) {
     }
     if (product.maxQuantity && item.quantity > product.maxQuantity) {
       throw new Error(`Số lượng đặt tối đa cho "${product.title}" là ${product.maxQuantity}`);
+    }
+  }
+
+  // Validate existing Codex API key if provided by customer
+  const hasCodexProductItem = products.some((p) => isCodexProduct(p));
+  if (hasCodexProductItem) {
+    const combinedNotes = [
+      data.customerNote || "",
+      ...data.items.map((i) => i.customerNote || ""),
+      ...data.items.map((i) => i.targetLink || ""),
+    ].join(" ");
+
+    const keyMatch = combinedNotes.match(/sk-[a-zA-Z0-9_\-]{10,}/);
+    if (keyMatch) {
+      const candidateKey = keyMatch[0].trim();
+      const verifyRes = await ModelApiService.verifyCustomerKey(candidateKey);
+      if (!verifyRes.valid) {
+        throw new Error(
+          `API Key nạp tiền không hợp lệ trên hệ thống (${verifyRes.error || "Key không tồn tại hoặc đã bị vô hiệu hóa"}). Vui lòng kiểm tra lại chính xác API Key hoặc để trống để tạo key mới.`
+        );
+      }
     }
   }
 

@@ -79,10 +79,67 @@ export default function ProductPurchaseBox({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Codex API Key verification state
+  const [isVerifyingKey, setIsVerifyingKey] = useState<boolean>(false);
+  const [verifiedKeyData, setVerifiedKeyData] = useState<{
+    rawKey: string;
+    maskedKey: string;
+    keyName: string;
+    currentQuotaUsd: number;
+  } | null>(null);
+  const [keyVerifyError, setKeyVerifyError] = useState<string | null>(null);
+
   const isCodexProduct =
     (slug || "").toLowerCase().includes("codex") ||
     (slug || "").toLowerCase().includes("cdx") ||
     productTitle.toLowerCase().includes("codex");
+
+  const handleVerifyCodexKey = async (
+    keyInput?: string
+  ): Promise<{ valid: boolean; keyName?: string; error?: string } | null> => {
+    const raw = (keyInput !== undefined ? keyInput : customerApiKey).trim();
+    if (!raw) {
+      setKeyVerifyError("Vui lòng nhập API Key bắt đầu bằng 'sk-'");
+      return null;
+    }
+    if (!raw.startsWith("sk-") || raw.length < 10) {
+      setKeyVerifyError("API Key không đúng định dạng (phải bắt đầu bằng 'sk-' và có ít nhất 10 ký tự)");
+      return null;
+    }
+
+    setIsVerifyingKey(true);
+    setKeyVerifyError(null);
+
+    try {
+      const res = await fetch("/api/codex/verify-key", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ apiKey: raw }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.valid) {
+        const errMsg = data.error || "API Key không hợp lệ hoặc đã bị vô hiệu hóa trên upstream";
+        setKeyVerifyError(errMsg);
+        setVerifiedKeyData(null);
+        return { valid: false, error: errMsg };
+      }
+      const result = {
+        rawKey: raw,
+        maskedKey: data.maskedKey,
+        keyName: data.keyName || "API Key của bạn",
+        currentQuotaUsd: data.currentQuotaUsd || 0,
+      };
+      setVerifiedKeyData(result);
+      return { valid: true, keyName: result.keyName };
+    } catch (err: any) {
+      const errMsg = err.message || "Lỗi mạng khi kiểm tra API Key. Vui lòng thử lại.";
+      setKeyVerifyError(errMsg);
+      setVerifiedKeyData(null);
+      return { valid: false, error: errMsg };
+    } finally {
+      setIsVerifyingKey(false);
+    }
+  };
 
   // Coupon state
   const [couponCode, setCouponCode] = useState<string>("");
@@ -225,13 +282,29 @@ export default function ProductPurchaseBox({
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     setErrorMessage(null);
     if (requiresLink) {
       const linkErr = validateTargetLink(targetLink);
       if (linkErr) {
         setErrorMessage(linkErr);
         return;
+      }
+    }
+
+    if (isCodexProduct && customerApiKey.trim()) {
+      const raw = customerApiKey.trim();
+      if (!raw.startsWith("sk-") || raw.length < 10) {
+        setErrorMessage("API Key không đúng định dạng (phải bắt đầu bằng 'sk-' và có ít nhất 10 ký tự).");
+        return;
+      }
+      const alreadyVerified = verifiedKeyData && verifiedKeyData.rawKey === raw;
+      if (!alreadyVerified) {
+        const checkRes = await handleVerifyCodexKey(raw);
+        if (!checkRes?.valid) {
+          setErrorMessage(checkRes?.error || "API Key không hợp lệ hoặc không tồn tại. Vui lòng kiểm tra lại trước khi thêm vào giỏ hàng.");
+          return;
+        }
       }
     }
 
@@ -280,6 +353,22 @@ export default function ProductPurchaseBox({
       if (linkErr) {
         setErrorMessage(linkErr);
         return;
+      }
+    }
+
+    if (isCodexProduct && customerApiKey.trim()) {
+      const raw = customerApiKey.trim();
+      if (!raw.startsWith("sk-") || raw.length < 10) {
+        setErrorMessage("API Key không đúng định dạng (phải bắt đầu bằng 'sk-' và có ít nhất 10 ký tự).");
+        return;
+      }
+      const alreadyVerified = verifiedKeyData && verifiedKeyData.rawKey === raw;
+      if (!alreadyVerified) {
+        const checkRes = await handleVerifyCodexKey(raw);
+        if (!checkRes?.valid) {
+          setErrorMessage(checkRes?.error || "API Key không hợp lệ hoặc không tồn tại. Vui lòng kiểm tra lại trước khi thanh toán.");
+          return;
+        }
       }
     }
 
@@ -610,28 +699,116 @@ export default function ProductPurchaseBox({
         {isCodexProduct && (
           <div className="space-y-3">
             <div>
-              <label
-                htmlFor="customerApiKey"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
-              >
-                API Key cần nạp thêm <span className="text-slate-400 font-normal lowercase">(để trống nếu muốn tạo key mới)</span>
-              </label>
-              <div className="relative">
+              <div className="flex items-center justify-between mb-1.5">
+                <label
+                  htmlFor="customerApiKey"
+                  className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+                >
+                  API Key cần nạp thêm
+                </label>
+                <span className="text-[11px] text-slate-400">
+                  (để trống nếu muốn tạo key mới)
+                </span>
+              </div>
+              <div className="relative flex items-center">
                 <input
                   id="customerApiKey"
                   type="text"
-                  placeholder="sk-... (tùy chọn)"
+                  placeholder="sk-... (nhập key đã có để nạp thêm)"
                   value={customerApiKey}
-                  disabled={isLoading}
-                  onChange={(e) => setCustomerApiKey(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2.5 px-3.5 text-xs font-mono text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
+                  disabled={isLoading || isVerifyingKey}
+                  onBlur={() => {
+                    const trimmed = customerApiKey.trim();
+                    if (trimmed.startsWith("sk-") && (!verifiedKeyData || verifiedKeyData.rawKey !== trimmed)) {
+                      handleVerifyCodexKey(trimmed);
+                    }
+                  }}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setCustomerApiKey(val);
+                    if (verifiedKeyData && verifiedKeyData.rawKey !== val.trim()) {
+                      setVerifiedKeyData(null);
+                    }
+                    if (keyVerifyError) {
+                      setKeyVerifyError(null);
+                    }
+                  }}
+                  className={`w-full rounded-xl border bg-slate-50 dark:bg-slate-800 py-2.5 pl-3.5 pr-24 text-xs font-mono text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 disabled:opacity-50 transition-all ${
+                    keyVerifyError
+                      ? "border-rose-500/50 focus:border-rose-500 focus:ring-rose-500/20"
+                      : verifiedKeyData && verifiedKeyData.rawKey === customerApiKey.trim()
+                      ? "border-emerald-500/50 focus:border-emerald-500 focus:ring-emerald-500/20"
+                      : "border-slate-200 dark:border-slate-700 focus:border-blue-600 focus:ring-blue-500/20"
+                  }`}
                 />
+
+                {customerApiKey.trim() && (
+                  <button
+                    type="button"
+                    disabled={isVerifyingKey || isLoading}
+                    onClick={() => handleVerifyCodexKey(customerApiKey.trim())}
+                    className={`absolute right-1.5 top-1.5 bottom-1.5 px-3 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all disabled:opacity-50 ${
+                      verifiedKeyData && verifiedKeyData.rawKey === customerApiKey.trim()
+                        ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                        : "bg-blue-600 text-white hover:bg-blue-700 shadow-xs"
+                    }`}
+                  >
+                    {isVerifyingKey ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : verifiedKeyData && verifiedKeyData.rawKey === customerApiKey.trim() ? (
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                    ) : (
+                      <ShieldCheck className="h-3.5 w-3.5" />
+                    )}
+                    <span>
+                      {isVerifyingKey
+                        ? "Đang check..."
+                        : verifiedKeyData && verifiedKeyData.rawKey === customerApiKey.trim()
+                        ? "Đã check"
+                        : "Kiểm tra"}
+                    </span>
+                  </button>
+                )}
               </div>
-              <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-                {customerApiKey.trim()
-                  ? "✨ Hạn mức sẽ được nạp trực tiếp vào API Key này."
-                  : "💡 Nếu chưa có key, bạn có thể nhập Username bên dưới để tạo key mới mang tên mình."}
-              </p>
+
+              {/* Verified badge */}
+              {verifiedKeyData && verifiedKeyData.rawKey === customerApiKey.trim() && (
+                <div className="mt-2 flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 p-2.5 text-xs text-emerald-800 dark:text-emerald-200 animate-in fade-in">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <div>
+                      <p className="font-semibold text-emerald-900 dark:text-emerald-100">
+                        Key hợp lệ: {verifiedKeyData.keyName}
+                      </p>
+                      <p className="text-[11px] text-emerald-700/90 dark:text-emerald-300/90">
+                        Hạn mức hiện tại: ${verifiedKeyData.currentQuotaUsd.toFixed(2)} USD • Sẵn sàng nạp cộng dồn
+                      </p>
+                    </div>
+                  </div>
+                  <span className="rounded-md bg-emerald-600/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 shrink-0">
+                    SẴN SÀNG
+                  </span>
+                </div>
+              )}
+
+              {/* Verify error */}
+              {keyVerifyError && (
+                <div className="mt-2 flex items-start gap-2 rounded-xl border border-rose-500/30 bg-rose-50 dark:bg-rose-950/40 p-2.5 text-xs text-rose-700 dark:text-rose-300 animate-in fade-in">
+                  <AlertCircle className="h-4 w-4 text-rose-500 shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-medium">{keyVerifyError}</p>
+                    <p className="mt-0.5 text-[11px] text-rose-600/80 dark:text-rose-400/80">
+                      Vui lòng kiểm tra lại key hoặc xóa trắng ô này để hệ thống tạo key mới mang tên bạn.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {!customerApiKey.trim() && (
+                <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                  💡 Nếu chưa có key, bạn có thể nhập Username bên dưới để tạo key mới mang tên mình.
+                </p>
+              )}
             </div>
 
             {!customerApiKey.trim() && (

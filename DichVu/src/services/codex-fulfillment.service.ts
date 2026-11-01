@@ -123,6 +123,12 @@ export async function fulfillCodexCreditOrder(
           });
         }
         resolvedBindingId = binding.id;
+      } else {
+        return {
+          success: false,
+          status: "FAILED",
+          error: `API Key khách hàng không hợp lệ trên upstream: ${verifyRes.error || "Không tìm thấy hoặc đã bị vô hiệu hóa"}`,
+        };
       }
     }
 

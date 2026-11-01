@@ -122,11 +122,13 @@ export default function CodexTopupClient() {
   }, [orderResult, paymentStatus]);
 
   // Handle Verify Key
-  const handleVerifyKey = async (keyToVerify?: string) => {
+  const handleVerifyKey = async (
+    keyToVerify?: string
+  ): Promise<{ valid: boolean; bindingId?: string; error?: string }> => {
     const key = (keyToVerify !== undefined ? keyToVerify : apiKeyInput).trim();
     if (!key) {
       setVerifyError("Vui lòng nhập API Key bắt đầu bằng 'sk-'");
-      return;
+      return { valid: false, error: "Vui lòng nhập API Key" };
     }
 
     setIsVerifying(true);
@@ -142,21 +144,26 @@ export default function CodexTopupClient() {
       const data = await res.json();
 
       if (!res.ok || !data.valid) {
-        setVerifyError(
-          data.error || "API Key không hợp lệ hoặc đã bị gắn với tài khoản khác"
-        );
+        const msg =
+          data.error || "API Key không hợp lệ hoặc đã bị gắn với tài khoản khác";
+        setVerifyError(msg);
         setVerifiedKey(null);
+        return { valid: false, error: msg };
       } else {
-        setVerifiedKey({
+        const verifiedInfo = {
           bindingId: data.bindingId,
           maskedKey: data.maskedKey,
           keyName: data.keyName || "API Key của bạn",
           currentQuotaUsd: data.currentQuotaUsd || 0,
-        });
+        };
+        setVerifiedKey(verifiedInfo);
         setApiKeyInput("");
+        return { valid: true, bindingId: data.bindingId };
       }
     } catch (err: any) {
-      setVerifyError(err.message || "Lỗi mạng khi kiểm tra API Key");
+      const msg = err.message || "Lỗi mạng khi kiểm tra API Key";
+      setVerifyError(msg);
+      return { valid: false, error: msg };
     } finally {
       setIsVerifying(false);
     }
@@ -165,9 +172,23 @@ export default function CodexTopupClient() {
   // Handle Checkout Submit
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (hasKeyMode === "has_key" && !verifiedKey) {
-      setCheckoutError("Vui lòng kiểm tra và xác nhận API Key trước khi thanh toán");
-      return;
+
+    let targetBindingId = verifiedKey?.bindingId;
+
+    if (hasKeyMode === "has_key" && !targetBindingId) {
+      if (apiKeyInput.trim()) {
+        const verifyRes = await handleVerifyKey(apiKeyInput.trim());
+        if (!verifyRes.valid || !verifyRes.bindingId) {
+          setCheckoutError(
+            verifyRes.error || "API Key không hợp lệ. Vui lòng kiểm tra lại trước khi thanh toán"
+          );
+          return;
+        }
+        targetBindingId = verifyRes.bindingId;
+      } else {
+        setCheckoutError("Vui lòng kiểm tra và xác nhận API Key trước khi thanh toán");
+        return;
+      }
     }
 
     if (hasKeyMode === "no_key" && !keyUsername.trim()) {
@@ -185,7 +206,7 @@ export default function CodexTopupClient() {
         body: JSON.stringify({
           isNewKey: hasKeyMode === "no_key",
           username: hasKeyMode === "no_key" ? keyUsername.trim() : undefined,
-          bindingId: hasKeyMode === "has_key" ? verifiedKey?.bindingId : undefined,
+          bindingId: hasKeyMode === "has_key" ? targetBindingId : undefined,
           packageId: selectedPackage.id,
           email: email || undefined,
           couponCode: couponCode || undefined,
@@ -357,7 +378,17 @@ export default function CodexTopupClient() {
                       type="password"
                       placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx"
                       value={apiKeyInput}
-                      onChange={(e) => setApiKeyInput(e.target.value)}
+                      onChange={(e) => {
+                        setApiKeyInput(e.target.value);
+                        if (verifyError) setVerifyError(null);
+                        if (checkoutError) setCheckoutError(null);
+                      }}
+                      onBlur={() => {
+                        const trimmed = apiKeyInput.trim();
+                        if (trimmed.startsWith("sk-")) {
+                          handleVerifyKey(trimmed);
+                        }
+                      }}
                       className="flex-1 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-3.5 py-2.5 text-xs sm:text-sm font-mono text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:border-blue-600 focus:outline-none"
                     />
                     <button
