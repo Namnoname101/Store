@@ -6,6 +6,7 @@ import {
   UpstreamStatus,
 } from "@/lib/prisma";
 import { getSupplierAdapter } from "@/services/suppliers/adapter.registry";
+import { isCodexProduct } from "@/services/codex-fulfillment.service";
 
 export interface UpstreamFulfillmentResult {
   success: boolean;
@@ -60,7 +61,9 @@ export async function fulfillOrderViaUpstream(
   }
 
   const dropshipItems = order.orderItems.filter(
-    (item) => item.product?.fulfillmentType === FulfillmentType.API_DROPSHIP
+    (item) =>
+      item.product?.fulfillmentType === FulfillmentType.API_DROPSHIP &&
+      !isCodexProduct(item.product)
   );
 
   if (dropshipItems.length === 0) {

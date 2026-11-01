@@ -409,14 +409,21 @@ body {
   margin-top: 10px; padding: 0 10px;
 }
 /* ── Spinner ── */
-@-ms-keyframes spin { to { -ms-transform: rotate(360deg); transform: rotate(360deg); } }
-@keyframes spin { to { transform: rotate(360deg); } }
+@-ms-keyframes spin {
+  0% { -ms-transform: rotate(0deg); }
+  100% { -ms-transform: rotate(360deg); }
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 .spinner {
-  display: inline-block; width: 16px; height: 16px;
-  border: 2px solid rgba(255,255,255,0.3);
+  display: inline-block; width: 15px; height: 15px;
+  border: 2px solid rgba(255,255,255,0.25);
   border-top-color: #fff; border-radius: 50%;
-  -ms-animation: spin 0.7s linear infinite;
-  animation: spin 0.7s linear infinite;
+  -ms-animation: spin 0.8s linear infinite;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle; margin-right: 6px;
 }
 </style>
 </head>
@@ -536,10 +543,21 @@ function addLog(text, type) {
   updateScrollThumb();
 }
 
+var spinTimer = null;
 function setBtn(state) {
+  if (spinTimer) { clearInterval(spinTimer); spinTimer = null; }
   if (state === 'busy') {
     cfgBtn.disabled = true;
-    cfgBtn.innerHTML = '<span class="spinner"></span> Dang cau hinh...';
+    cfgBtn.innerHTML = '<span id="spinIcon" class="spinner"></span> Dang kiem tra & cau hinh...';
+    var deg = 0;
+    spinTimer = setInterval(function() {
+      deg = (deg + 25) % 360;
+      var s = document.getElementById('spinIcon');
+      if (s) {
+        s.style.msTransform = 'rotate(' + deg + 'deg)';
+        s.style.transform = 'rotate(' + deg + 'deg)';
+      }
+    }, 30);
   } else if (state === 'done') {
     cfgBtn.disabled = true;
     cfgBtn.className = 'btn-main done';
@@ -627,12 +645,134 @@ function Invoke-JsSetBtn([string]$state) {
   } catch {}
 }
 
+function Test-KeyUsage([string]$key) {
+  try {
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    $payload = @{ apiKey = $key.Trim() } | ConvertTo-Json
+    
+    $wc = New-Object System.Net.WebClient
+    $wc.Headers.Add('Content-Type', 'application/json')
+    $wc.Headers.Add('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+    $wc.Headers.Add('Accept', 'application/json')
+
+    $task = $wc.UploadStringTaskAsync('https://genzshop.vn/api/check-usage.php', 'POST', $payload)
+
+    # Non-blocking wait loop: keeps UI thread pumping events so the spinner rotates continuously!
+    $timeoutAt = (Get-Date).AddSeconds(12)
+    while (-not $task.IsCompleted -and (Get-Date) -lt $timeoutAt) {
+      [System.Windows.Forms.Application]::DoEvents()
+      Start-Sleep -Milliseconds 25
+    }
+
+    if (-not $task.IsCompleted) {
+      try { $wc.CancelAsync() } catch {}
+      return @{ ok = $false; error = 'Kiem tra key qua thoi gian cho (12s). Vui long thu lai.' }
+    }
+
+    if ($task.IsFaulted) {
+      $ex = $task.Exception.InnerException
+      if ($null -ne $ex) {
+        $msg = $ex.Message
+        if ($null -ne $ex.Response) {
+          try {
+            $stream = $ex.Response.GetResponseStream()
+            $reader = New-Object System.IO.StreamReader($stream)
+            $body = $reader.ReadToEnd() | ConvertFrom-Json
+            if ($body.error) { return @{ ok = $false; error = $body.error } }
+          } catch {}
+        }
+        return @{ ok = $false; error = ('Loi kiem tra key: ' + $msg) }
+      }
+    }
+
+    $rawJson = $task.Result
+    $res = $rawJson | ConvertFrom-Json
+
+    if ($null -eq $res) {
+      return @{ ok = $false; error = 'May chu kiem tra khong phan hoi.' }
+    }
+
+    if ($res.success -eq $false -or $null -ne $res.error) {
+      $err = if ($res.error) { $res.error } else { 'API Key khong hop le hoac chua duoc kich hoat.' }
+      return @{ ok = $false; error = $err }
+    }
+
+    # Kiem tra han muc
+    $totalCost  = 0.0
+    $costLimit  = 0.0
+    $dailyUsed  = 0.0
+    $dailyLimit = 0.0
+
+    if ($null -ne $res.usage) {
+      if ($null -ne $res.usage.totalCost)      { $totalCost  = [double]$res.usage.totalCost }
+      if ($null -ne $res.usage.costLimit)      { $costLimit  = [double]$res.usage.costLimit }
+      if ($null -ne $res.usage.dailyCostUsed)  { $dailyUsed  = [double]$res.usage.dailyCostUsed }
+      if ($null -ne $res.usage.dailyCostLimit) { $dailyLimit = [double]$res.usage.dailyCostLimit }
+    }
+
+    # 1. Kiem tra het han muc tong
+    if ($costLimit -gt 0 -and $totalCost -ge $costLimit) {
+      $errMsg = ('API Key da HET HAN MUC! (Da dung {0:N2} / {1:N2} USD)' -f $totalCost, $costLimit)
+      return @{ ok = $false; error = $errMsg }
+    }
+
+    # 2. Kiem tra het han muc ngay
+    if ($dailyLimit -gt 0 -and $dailyUsed -ge $dailyLimit) {
+      $errMsg = ('API Key da HET HAN MUC TRONG NGAY! (Da dung {0:N2} / {1:N2} USD)' -f $dailyUsed, $dailyLimit)
+      return @{ ok = $false; error = $errMsg }
+    }
+
+    # 3. Kiem tra fallback remain
+    if ($null -ne $res.usage.fallbackRemainPercent) {
+      $fb = [double]$res.usage.fallbackRemainPercent
+      if ($fb -le 0) {
+        return @{ ok = $false; error = 'API Key da HET HAN MUC (Con lai 0%)!' }
+      }
+    }
+
+    $remUsd = 0.0
+    $remPct = 100.0
+    if ($costLimit -gt 0) {
+      $remUsd = [math]::Max(0.0, [math]::Round($costLimit - $totalCost, 2))
+      $remPct = [math]::Max(0.0, [math]::Round((($costLimit - $totalCost) / $costLimit) * 100, 1))
+    }
+
+    return @{
+      ok        = $true
+      costLimit = $costLimit
+      totalCost = $totalCost
+      remUsd    = $remUsd
+      remPct    = $remPct
+    }
+  } catch {
+    return @{ ok = $false; error = ('Loi kiem tra key: ' + $_.Exception.Message) }
+  }
+}
+
 function Handle-Configure([string]$key) {
   $backupPath = $null
   try {
     if ($key.Contains("`r") -or $key.Contains("`n")) { throw 'API key phai la 1 dong.' }
     $url = $script:defaults.gatewayUrl.TrimEnd('/')
     Assert-NoMachinePolicy
+
+    # 1. Kiem tra API key tren he thong check-usage
+    Invoke-JsLog 'Dang kiem tra API Key tren he thong...' 'info'
+    [System.Windows.Forms.Application]::DoEvents()
+
+    $check = Test-KeyUsage $key
+    if ($check.ok -eq $false) {
+      Invoke-JsLog $check.error 'error'
+      Invoke-JsSetBtn 'ready'
+      return
+    }
+
+    if ($check.costLimit -gt 0) {
+      Invoke-JsLog ("API Key hop le! (Con lai: {0:N2} USD - {1:N1}%)" -f $check.remUsd, $check.remPct) 'success'
+    } else {
+      Invoke-JsLog 'API Key hop le & con han muc!' 'success'
+    }
+    [System.Windows.Forms.Application]::DoEvents()
 
     Invoke-JsLog 'Tao backup DPAPI...' 'info'
     [System.Windows.Forms.Application]::DoEvents()
