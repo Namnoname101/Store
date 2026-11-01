@@ -246,7 +246,7 @@ export class ModelApiService {
       const controller1 = new AbortController();
       const timer1 = setTimeout(() => controller1.abort(), this.getTimeoutMs());
 
-      const probeRes = await fetch(`${this.getBaseUrl()}/api/usage/token`, {
+      const probeRes = await fetch(`${this.getBaseUrl()}/api/usage/token/`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${apiKey.trim()}`,
