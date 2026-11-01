@@ -150,6 +150,12 @@ function Restart-ClaudeApp {
     } elseif (Test-Path "$env:LOCALAPPDATA\Programs\Claude\Claude.exe") {
       Start-Process "$env:LOCALAPPDATA\Programs\Claude\Claude.exe" -ErrorAction SilentlyContinue
       $restarted = $true
+    } elseif (Test-Path "$env:ProgramFiles\Claude\Claude.exe") {
+      Start-Process "$env:ProgramFiles\Claude\Claude.exe" -ErrorAction SilentlyContinue
+      $restarted = $true
+    } elseif (Test-Path "${env:ProgramFiles(x86)}\Claude\Claude.exe") {
+      Start-Process "${env:ProgramFiles(x86)}\Claude\Claude.exe" -ErrorAction SilentlyContinue
+      $restarted = $true
     } elseif (Get-Command 'claude-desktop' -ErrorAction SilentlyContinue) {
       Start-Process 'claude-desktop' -ErrorAction SilentlyContinue
       $restarted = $true
