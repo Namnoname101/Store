@@ -5,6 +5,7 @@ import prisma, {
 } from "@/lib/prisma";
 import { commitReservedItemsToSold } from "@/services/inventory.service";
 import { fulfillOrderViaUpstream } from "@/services/upstream-fulfillment.service";
+import { fulfillCodexCreditOrder, isCodexProduct } from "@/services/codex-fulfillment.service";
 import { processAffiliateCommission } from "@/services/affiliate.service";
 
 export interface WalletPaymentResult {
@@ -25,7 +26,7 @@ export async function payOrderWithWallet(
       orderItems: {
         include: {
           product: {
-            select: { id: true, fulfillmentType: true },
+            select: { id: true, fulfillmentType: true, slug: true, title: true, type: true },
           },
         },
       },
@@ -105,12 +106,21 @@ export async function payOrderWithWallet(
   const hasLocalStock = order.orderItems.some(
     (item) => item.product.fulfillmentType === FulfillmentType.LOCAL_STOCK
   );
+  const hasCodexItems = order.orderItems.some((item) => isCodexProduct(item.product));
   const hasApiDropship = order.orderItems.some(
-    (item) => item.product.fulfillmentType === FulfillmentType.API_DROPSHIP
+    (item) => item.product.fulfillmentType === FulfillmentType.API_DROPSHIP && !isCodexProduct(item.product)
   );
 
   if (hasLocalStock) {
     await commitReservedItemsToSold(order.id);
+  }
+
+  if (hasCodexItems) {
+    try {
+      await fulfillCodexCreditOrder(order.id);
+    } catch (codexErr) {
+      console.error(`[Wallet Fulfill Codex Error]: ${order.id}:`, codexErr);
+    }
   }
 
   if (hasApiDropship) {

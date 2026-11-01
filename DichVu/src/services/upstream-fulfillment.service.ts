@@ -6,7 +6,7 @@ import {
   UpstreamStatus,
 } from "@/lib/prisma";
 import { getSupplierAdapter } from "@/services/suppliers/adapter.registry";
-import { isCodexProduct } from "@/services/codex-fulfillment.service";
+import { fulfillCodexCreditOrder, isCodexProduct } from "@/services/codex-fulfillment.service";
 
 export interface UpstreamFulfillmentResult {
   success: boolean;
@@ -67,6 +67,17 @@ export async function fulfillOrderViaUpstream(
   );
 
   if (dropshipItems.length === 0) {
+    const hasCodexItems = order.orderItems.some((item) => isCodexProduct(item.product));
+    if (hasCodexItems) {
+      const codexResult = await fulfillCodexCreditOrder(order.id);
+      return {
+        success: codexResult.success,
+        status: codexResult.status,
+        error: codexResult.error,
+        itemsDelivered: codexResult.deliveredKey ? 1 : 0,
+      };
+    }
+
     await prisma.order.update({
       where: { id: order.id },
       data: {
@@ -340,7 +351,9 @@ export async function retryUpstreamFulfillment(
 ): Promise<UpstreamFulfillmentResult> {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    select: { id: true, upstreamStatus: true },
+    include: {
+      orderItems: { include: { product: true } },
+    },
   });
 
   if (!order) {
@@ -348,6 +361,16 @@ export async function retryUpstreamFulfillment(
       success: false,
       status: UpstreamStatus.FAILED,
       error: `Order not found: ${orderId}`,
+    };
+  }
+
+  if (order.orderItems.some((item) => isCodexProduct(item.product))) {
+    const codexRes = await fulfillCodexCreditOrder(order.id);
+    return {
+      success: codexRes.success,
+      status: codexRes.status,
+      error: codexRes.error,
+      itemsDelivered: codexRes.deliveredKey ? 1 : 0,
     };
   }
 

@@ -1,4 +1,5 @@
 # Deploy script for daitruongstore
+Set-Location $PSScriptRoot
 $envFile = Join-Path $PSScriptRoot ".env"
 if (Test-Path $envFile) {
     Get-Content $envFile | ForEach-Object {
