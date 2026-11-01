@@ -7,10 +7,13 @@ import {
   Check,
   ExternalLink,
   ChevronRight,
+  ChevronDown,
   ShieldCheck,
   ArrowRight,
   Download,
   Terminal,
+  X,
+  Sparkles,
 } from "lucide-react";
 
 export interface ClaudeApiGuideHubProps {
@@ -130,6 +133,8 @@ export default function ClaudeApiGuideHub({
   >(initialTab);
   const [osTab, setOsTab] = useState<"windows" | "mac">("windows");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [lightboxImage, setLightboxImage] = useState<{ src: string; title: string } | null>(null);
+  const [showManualSetup, setShowManualSetup] = useState<boolean>(false);
 
   const currentKey = customKey.trim() || apiKey || "sk-ant-api03-khodee-demo-key-8888";
   const isCustomKeyEntered = Boolean(customKey.trim() || apiKey);
@@ -343,163 +348,318 @@ export default function ClaudeApiGuideHub({
           {/* ======================================================== */}
           {activeTab === "desktop" && (
             <div className="space-y-6">
-              <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
-                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-                  Cấu hình Claude Desktop App (Ứng dụng chính thức)
-                </h3>
-                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
-                  Dành cho máy tính Windows và macOS. Trò chuyện trực tiếp với Claude Opus 4.7 và Claude 3.5 Sonnet tốc độ cao qua Gateway.
-                </p>
+              <div className="pb-4 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                      Cấu hình Claude Desktop App (Tự động 1-Click với Khodee Gateway)
+                    </h3>
+                    <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-[#D97757] bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-800/60 px-2 py-0.5 rounded-full">
+                      <Sparkles className="h-3 w-3" />
+                      v0.3.3 Mới nhất
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                    Dành cho Windows &amp; macOS. Trò chuyện trực tiếp với Claude Opus 4.7 &amp; Sonnet 3.7 qua Gateway, tự động mở sẵn tính năng Import chat từ Claude.ai.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <a
+                    href="https://drive.google.com/file/d/1lOjC5O7QGW7P5eOmPhAkXU3QyZIxOGAX/view?usp=sharing"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-[#D97757] hover:bg-[#c26547] text-white px-3.5 py-2 text-xs font-bold transition shadow-xs active:scale-95"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    <span>Tải KhodeeGateway.exe (94 KB)</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+
+                  <a
+                    href="https://claude.com/download"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-2 text-xs font-medium transition"
+                  >
+                    <span>Tải App Claude Desktop</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
               </div>
 
-              <div className="space-y-4">
-                {/* Step 1 */}
-                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4">
+              {/* Step 1: Tool 1-Click */}
+              <div className="space-y-6">
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 sm:p-6 space-y-3.5">
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center gap-2.5">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold text-xs">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#D97757] text-white text-xs font-bold">
                         1
                       </span>
-                      <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
-                        Tải & Cài đặt ứng dụng Claude Desktop
-                      </span>
+                      <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                        Bước 1: Mở Khodee Gateway &amp; Bấm START (1-Click cấu hình)
+                      </h5>
                     </div>
-
-                    <a
-                      href="https://claude.com/download"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 px-3 py-1.5 text-xs font-semibold text-white transition"
-                    >
-                      <Download className="h-3.5 w-3.5" />
-                      <span>Tải Claude Desktop (claude.com/download)</span>
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
+                    <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
+                      Tự động 100% trong 5 giây
+                    </span>
                   </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 pl-7.5">
-                    Tải phiên bản dành cho Windows hoặc macOS từ trang chủ Anthropic và cài đặt như ứng dụng thông thường.
+
+                  <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-8 space-y-1.5">
+                    <p>
+                      Mở file <code className="font-mono font-bold text-slate-900 dark:text-white">KhodeeGateway.exe</code> (chọn <em>Yes</em> nếu Windows hỏi quyền Administrator). Dán mã API Key được cấp vào ô duy nhất rồi nhấn nút <strong className="text-blue-600 dark:text-blue-400 font-bold">⚡ START</strong>.
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      • <strong>Tự động kiểm tra Key:</strong> Hệ thống kết nối kiểm tra hạn mức API thời gian thực, báo số dư còn lại (ví dụ: <code className="font-mono text-emerald-600 dark:text-emerald-400 font-semibold">Còn $9.99/$10.00</code>).<br />
+                      • <strong>Tự động nạp Gateway &amp; Mở khóa Import chat:</strong> Ghi cấu hình bảo mật vào máy và tự động khởi động lại Claude Desktop trong 1-2 giây.
+                    </p>
+                  </div>
+
+                  <div
+                    onClick={() =>
+                      setLightboxImage({
+                        src: "/images/guides/claude/step-1-tool.png",
+                        title: "Bước 1: Giao diện Khodee Gateway v0.3.3 One-Click",
+                      })
+                    }
+                    className="relative group cursor-zoom-in overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-950 shadow-md"
+                  >
+                    <img
+                      src="/images/guides/claude/step-1-tool.png"
+                      alt="Bước 1: Giao diện Khodee Gateway One-Click"
+                      className="w-full h-auto object-contain transition duration-300 group-hover:scale-[1.01]"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+
+                {/* Import Chat Guide Header */}
+                <div className="pt-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="h-2 w-2 rounded-full bg-[#D97757]" />
+                    <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                      Đồng bộ (Import) toàn bộ lịch sử Chat &amp; Projects từ Claude.ai về máy
+                    </h4>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Sau khi bấm START, quyền Import đã được mở khóa sẵn. Hãy làm theo 4 bước trực quan bên dưới để kéo toàn bộ lịch sử chat cũ về Claude Desktop (chỉ cần làm 1 lần duy nhất):
                   </p>
                 </div>
 
                 {/* Step 2 */}
-                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4">
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 sm:p-6 space-y-3.5">
                   <div className="flex items-center gap-2.5">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold text-xs">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold">
                       2
                     </span>
-                    <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
-                      Bật Chế Độ Nhà Phát Triển (Developer Mode)
-                    </span>
+                    <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                      Bước 2: Mở Cài đặt (Settings) trên Claude Desktop
+                    </h5>
                   </div>
-                  <div className="pl-7.5 mt-2 space-y-2 text-xs text-slate-600 dark:text-slate-400">
-                    <p>Mở ứng dụng Claude Desktop, trên thanh menu trên cùng chọn lần lượt:</p>
-                    <div className="flex items-center gap-2 flex-wrap font-mono text-[11px]">
-                      <span className="px-2 py-1 rounded bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300">
-                        Help
-                      </span>
-                      <ChevronRight className="h-3 w-3 text-slate-400" />
-                      <span className="px-2 py-1 rounded bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300">
-                        Troubleshooting
-                      </span>
-                      <ChevronRight className="h-3 w-3 text-slate-400" />
-                      <span className="px-2 py-1 rounded bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300 font-bold">
-                        Enable Developer Mode
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500">Ứng dụng Claude sẽ tự động khởi động lại trong 2 giây.</p>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-8">
+                    Tại góc dưới cùng bên trái cửa sổ Claude Desktop, <strong>nhấp chuột vào Avatar / Tên tài khoản</strong> của bạn, hoặc bấm tổ hợp phím tắt <kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 font-mono text-[11px]">Ctrl + ,</kbd> (phím Ctrl và dấu phẩy).
+                  </p>
+                  <div
+                    onClick={() =>
+                      setLightboxImage({
+                        src: "/images/guides/claude/step-2-settings.png",
+                        title: "Bước 2: Mở Cài đặt trên Claude Desktop từ Avatar hoặc Ctrl + ,",
+                      })
+                    }
+                    className="relative group cursor-zoom-in overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-950 shadow-md"
+                  >
+                    <img
+                      src="/images/guides/claude/step-2-settings.png"
+                      alt="Bước 2: Mở Cài đặt từ góc dưới bên trái"
+                      className="w-full h-auto object-contain transition duration-300 group-hover:scale-[1.01]"
+                      loading="lazy"
+                    />
                   </div>
                 </div>
 
                 {/* Step 3 */}
-                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 space-y-3">
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 sm:p-6 space-y-3.5">
                   <div className="flex items-center gap-2.5">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold text-xs">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold">
                       3
                     </span>
-                    <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
-                      Nhập thông tin kết nối Gateway
-                    </span>
+                    <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                      Bước 3: Chọn mục &quot;Import &amp; export&quot; trong danh mục cài đặt
+                    </h5>
                   </div>
-
-                  <div className="pl-7.5 space-y-3 text-xs">
-                    <p className="text-slate-600 dark:text-slate-400">
-                      Trên menu trên cùng, chọn: <strong>Developer</strong> → <strong>Configure Third-Party Inference...</strong>
-                      <br />
-                      Tại mục <strong>Connection</strong>, chọn <strong>Gateway</strong> và điền 3 thông số sau:
-                    </p>
-
-                    <div className="space-y-2 bg-white dark:bg-slate-950 p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 font-mono">
-                      {/* URL */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                        <span className="text-slate-500 font-sans text-xs">Gateway base URL:</span>
-                        <div className="flex items-center gap-2">
-                          <code className="text-slate-900 dark:text-emerald-400 font-bold select-all">
-                            https://1gw.gwai.cloud
-                          </code>
-                          <button
-                            type="button"
-                            onClick={() => handleCopy("gw-url", "https://1gw.gwai.cloud")}
-                            className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[11px] text-slate-700 dark:text-slate-300 transition"
-                          >
-                            {copiedKey === "gw-url" ? "Đã chép" : "Chép"}
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Key */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pt-2 border-t border-slate-100 dark:border-slate-900">
-                        <span className="text-slate-500 font-sans text-xs">Gateway API key:</span>
-                        <div className="flex items-center gap-2">
-                          <code className="text-slate-900 dark:text-emerald-400 font-bold select-all truncate max-w-[220px]">
-                            {currentKey}
-                          </code>
-                          <button
-                            type="button"
-                            onClick={() => handleCopy("gw-key", currentKey)}
-                            className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[11px] text-slate-700 dark:text-slate-300 transition"
-                          >
-                            {copiedKey === "gw-key" ? "Đã chép" : "Chép"}
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Schema */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pt-2 border-t border-slate-100 dark:border-slate-900">
-                        <span className="text-slate-500 font-sans text-xs">Gateway auth schema:</span>
-                        <div className="flex items-center gap-2">
-                          <code className="text-slate-900 dark:text-emerald-400 font-bold select-all">
-                            x-api-key
-                          </code>
-                          <button
-                            type="button"
-                            onClick={() => handleCopy("gw-schema", "x-api-key")}
-                            className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[11px] text-slate-700 dark:text-slate-300 transition"
-                          >
-                            {copiedKey === "gw-schema" ? "Đã chép" : "Chép"}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <p className="text-slate-500">
-                      Bấm nút <strong>Apply locally</strong> để lưu cấu hình.
-                    </p>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-8">
+                    Trong cột menu bên trái của cửa sổ Cài đặt, tìm và nhấp chọn mục <strong className="text-slate-900 dark:text-white font-semibold">Import &amp; export</strong> (có biểu tượng mũi tên tải xuống).
+                  </p>
+                  <div
+                    onClick={() =>
+                      setLightboxImage({
+                        src: "/images/guides/claude/step-3-import-tab.png",
+                        title: "Bước 3: Chọn mục Import & export ở thanh danh mục bên trái",
+                      })
+                    }
+                    className="relative group cursor-zoom-in overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-950 shadow-md"
+                  >
+                    <img
+                      src="/images/guides/claude/step-3-import-tab.png"
+                      alt="Bước 3: Chọn Import & export trong menu Cài đặt"
+                      className="w-full h-auto object-contain transition duration-300 group-hover:scale-[1.01]"
+                      loading="lazy"
+                    />
                   </div>
                 </div>
 
                 {/* Step 4 */}
-                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4">
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 sm:p-6 space-y-3.5">
                   <div className="flex items-center gap-2.5">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white font-bold text-xs">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold">
                       4
                     </span>
-                    <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
-                      Hoàn thành & Bắt đầu sử dụng
-                    </span>
+                    <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                      Bước 4: Nhấp vào nút màu cam &quot;Import...&quot;
+                    </h5>
                   </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 pl-7.5 leading-relaxed">
-                    Sau khi ứng dụng khởi động lại, chọn <strong>Continue with Gateway</strong>. Toàn bộ tin nhắn sẽ chạy trực tiếp qua API với tốc độ tối đa và không giới hạn số lượng câu hỏi.
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-8">
+                    Tại phần <strong>Import</strong> bên phải, nhấp vào nút màu cam đất <strong className="text-[#D97757]">Import...</strong> (nút này đã được Khodee Gateway mở khóa sẵn sàng thay vì bị mờ).
                   </p>
+                  <div
+                    onClick={() =>
+                      setLightboxImage({
+                        src: "/images/guides/claude/step-4-import-btn.png",
+                        title: "Bước 4: Nhấp vào nút Import... màu cam đất",
+                      })
+                    }
+                    className="relative group cursor-zoom-in overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-950 shadow-md"
+                  >
+                    <img
+                      src="/images/guides/claude/step-4-import-btn.png"
+                      alt="Bước 4: Nhấp vào nút Import màu cam"
+                      className="w-full h-auto object-contain transition duration-300 group-hover:scale-[1.01]"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+
+                {/* Step 5 */}
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 sm:p-6 space-y-3.5">
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-white text-xs font-bold">
+                      5
+                    </span>
+                    <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                      Bước 5: Đăng nhập để đồng bộ chat tự động từ Claude.ai
+                    </h5>
+                  </div>
+                  <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-8 space-y-1.5">
+                    <p>
+                      Cửa sổ <em>Import from Claude</em> sẽ xuất hiện với 2 cách thức:
+                    </p>
+                    <p>
+                      👉 <strong>Cách 1 (Khuyên dùng - Nhanh nhất):</strong> Bấm nút màu đen <code className="font-semibold text-slate-900 dark:text-white bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">Sign In to claude.ai...</code> ➔ Trình duyệt sẽ mở ra trang Claude.ai. Bạn đăng nhập tài khoản bình thường. Ngay sau khi đăng nhập thành công, toàn bộ cuộc trò chuyện &amp; Projects sẽ tự động tải về Claude Desktop!
+                    </p>
+                    <p>
+                      👉 <strong>Cách 2 (Chọn file .zip):</strong> Nếu bạn đã có sẵn file export dữ liệu từ web Claude.ai trước đó (vào <em>Settings &gt; Privacy &gt; Export data</em>), bấm <code className="font-semibold text-slate-900 dark:text-white bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">Choose file...</code> và chọn file <code>.zip</code> đó.
+                    </p>
+                  </div>
+                  <div
+                    onClick={() =>
+                      setLightboxImage({
+                        src: "/images/guides/claude/step-5-signin-sync.png",
+                        title: "Bước 5: Cửa sổ Import Wizard - Bấm Sign In to claude.ai hoặc chọn file zip",
+                      })
+                    }
+                    className="relative group cursor-zoom-in overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-950 shadow-md"
+                  >
+                    <img
+                      src="/images/guides/claude/step-5-signin-sync.png"
+                      alt="Bước 5: Cửa sổ Import from Claude"
+                      className="w-full h-auto object-contain transition duration-300 group-hover:scale-[1.01]"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+
+                {/* Important Alert Box for Changing Keys */}
+                <div className="rounded-2xl border-2 border-amber-300/80 dark:border-amber-700/60 bg-amber-50/80 dark:bg-amber-950/30 p-4 sm:p-6 space-y-3">
+                  <div className="flex items-center gap-2.5 text-amber-900 dark:text-amber-200 font-bold text-sm sm:text-base">
+                    <ShieldCheck className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0" />
+                    <span>Lưu ý quan trọng: Khi hết hạn mức hoặc muốn đổi Key mới thì làm thế nào?</span>
+                  </div>
+
+                  <div className="space-y-2 text-xs sm:text-sm text-amber-900/90 dark:text-amber-200/90 pl-7 leading-relaxed">
+                    <p>
+                      🛡️ <strong>HOÀN TOÀN KHÔNG BỊ MẤT CHAT:</strong> Tất cả các đoạn chat cũ, lịch sử hội thoại và project đã import hoặc vừa trò chuyện đều được lưu vĩnh viễn trên máy tính của bạn (tại <code>AppData</code>). Việc đổi Key chỉ là thay đổi &quot;chìa khóa kết nối mạng&quot;, tuyệt đối không làm mất bất kỳ tin nhắn nào của bạn.
+                    </p>
+                    <p>
+                      ⚡ <strong>KHÔNG CẦN IMPORT LẠI - ĐỔI KEY CHỈ TRONG 10 GIÂY:</strong> Bạn không cần phải thao tác Import lại từ đầu. Khi mua key mới, bạn chỉ việc mở lại file <code className="font-bold">KhodeeGateway.exe</code>, dán Key mới vào ô và bấm <strong className="text-blue-600 dark:text-blue-400 font-bold">⚡ START</strong>. Tool sẽ tự kiểm tra key, nạp vào hệ thống và khởi động lại Claude Desktop. Bạn tiếp tục chat bình thường ngay lập tức!
+                    </p>
+                  </div>
+                </div>
+
+                {/* Optional Manual Setup Accordion */}
+                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setShowManualSetup(!showManualSetup)}
+                    className="w-full flex items-center justify-between p-4 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Terminal className="h-4 w-4 text-slate-500" />
+                      <span>Xem cấu hình thủ công (Dành cho macOS / Linux hoặc Developer nâng cao)</span>
+                    </div>
+                    <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${showManualSetup ? "rotate-180" : ""}`} />
+                  </button>
+
+                  {showManualSetup && (
+                    <div className="p-4 pt-0 space-y-3 text-xs border-t border-slate-100 dark:border-slate-800/60 mt-1">
+                      <p className="text-slate-600 dark:text-slate-400">
+                        Nếu sử dụng macOS/Linux hoặc không muốn dùng tool tự động, bạn có thể nạp các thông số Gateway sau vào cấu hình Claude Desktop:
+                      </p>
+
+                      <div className="space-y-2 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 font-mono text-[11px]">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                          <span className="text-slate-500 font-sans text-xs">Gateway Base URL:</span>
+                          <div className="flex items-center gap-2">
+                            <code className="text-slate-900 dark:text-emerald-400 font-bold select-all">https://1gw.gwai.cloud</code>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy("gw-url", "https://1gw.gwai.cloud")}
+                              className="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] text-slate-700 dark:text-slate-300"
+                            >
+                              {copiedKey === "gw-url" ? "Đã chép" : "Chép"}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pt-2 border-t border-slate-200 dark:border-slate-800">
+                          <span className="text-slate-500 font-sans text-xs">Gateway API Key:</span>
+                          <div className="flex items-center gap-2">
+                            <code className="text-slate-900 dark:text-emerald-400 font-bold select-all truncate max-w-[200px]">{currentKey}</code>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy("gw-key", currentKey)}
+                              className="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] text-slate-700 dark:text-slate-300"
+                            >
+                              {copiedKey === "gw-key" ? "Đã chép" : "Chép"}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pt-2 border-t border-slate-200 dark:border-slate-800">
+                          <span className="text-slate-500 font-sans text-xs">Gateway Auth Scheme:</span>
+                          <div className="flex items-center gap-2">
+                            <code className="text-slate-900 dark:text-emerald-400 font-bold select-all">x-api-key</code>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy("gw-schema", "x-api-key")}
+                              className="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] text-slate-700 dark:text-slate-300"
+                            >
+                              {copiedKey === "gw-schema" ? "Đã chép" : "Chép"}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -869,6 +1029,33 @@ export default function ClaudeApiGuideHub({
           </Link>
         </div>
       </div>
+
+      {/* Fullscreen Lightbox Modal */}
+      {lightboxImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 cursor-zoom-out"
+          onClick={() => setLightboxImage(null)}
+        >
+          <div className="relative max-w-6xl w-full max-h-[92vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between w-full pb-2.5 text-white text-xs font-semibold px-1">
+              <span className="truncate mr-4">{lightboxImage.title}</span>
+              <button
+                type="button"
+                onClick={() => setLightboxImage(null)}
+                className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-white font-medium transition cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+                <span>Đóng (Esc)</span>
+              </button>
+            </div>
+            <img
+              src={lightboxImage.src}
+              alt={lightboxImage.title}
+              className="max-h-[85vh] w-auto max-w-full rounded-xl object-contain shadow-2xl border border-slate-700 bg-slate-950"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
