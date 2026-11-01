@@ -286,4 +286,63 @@ describe("Codex Auto-Fulfillment Pipeline Tests", () => {
       await prisma.order.delete({ where: { id: newOrder.id } }).catch(() => {});
     }
   });
+
+  it("should create new key using custom username provided in customerNote", async () => {
+    const customUsername = "nam_pro_coder";
+    const customUserOrder = await prisma.order.create({
+      data: {
+        orderCode: `ORD_CUSTOM_USER_${Date.now()}`,
+        totalAmount: 110000,
+        customerNote: `CREATE_NEW_KEY:${customUsername}`,
+        status: "PAID",
+        paidAt: new Date(),
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        orderItems: {
+          create: {
+            productId: testProductId,
+            price: 110000,
+            quantity: 1,
+          },
+        },
+      },
+    });
+
+    const createKeySpy = vi.spyOn(ModelApiService, "createCustomerKey").mockResolvedValue({
+      success: true,
+      key: "sk-mock-custom-named-key-9999",
+      maskedKey: "sk-mock...9999",
+      bindingId: testBindingId,
+      upstreamTokenId: 777111,
+      remainQuota: 5000000,
+    });
+
+    try {
+      const result = await fulfillCodexCreditOrder(customUserOrder.id);
+
+      expect(result.success).toBe(true);
+      expect(result.status).toBe("COMPLETED");
+
+      // Verify createCustomerKey was called with customUsername as name
+      expect(createKeySpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: customUsername,
+        })
+      );
+
+      // Verify delivered item contains both username and key
+      const updatedOrder = await prisma.order.findUnique({
+        where: { id: customUserOrder.id },
+        include: { deliveredItems: true },
+      });
+
+      expect(updatedOrder?.deliveredItems.length).toBe(1);
+      expect(updatedOrder?.deliveredItems[0].secretContent).toContain(customUsername);
+      expect(updatedOrder?.deliveredItems[0].secretContent).toContain("sk-mock-custom-named-key-9999");
+    } finally {
+      await prisma.orderItem.deleteMany({ where: { orderId: customUserOrder.id } }).catch(() => {});
+      await prisma.productItem.deleteMany({ where: { orderId: customUserOrder.id } }).catch(() => {});
+      await prisma.creditTopupOrder.deleteMany({ where: { orderId: customUserOrder.id } }).catch(() => {});
+      await prisma.order.delete({ where: { id: customUserOrder.id } }).catch(() => {});
+    }
+  });
 });

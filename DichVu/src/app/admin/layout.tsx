@@ -109,6 +109,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           icon: Users,
           current: pathname.startsWith("/admin/users"),
         },
+        {
+          name: "Cộng tác viên (CTV)",
+          href: "/admin/affiliates",
+          icon: Sparkles,
+          current: pathname.startsWith("/admin/affiliates"),
+        },
       ],
     },
     {

@@ -37,7 +37,8 @@ export function calculateDiscount(coupon: Coupon, cartTotal: number): number {
 
 export async function validateCoupon(
   rawCode: string,
-  cartTotal: number
+  cartTotal: number,
+  userId?: string
 ): Promise<CouponValidationResult> {
   if (!rawCode || typeof rawCode !== "string") {
     return {
@@ -97,6 +98,16 @@ export async function validateCoupon(
       discountAmount: 0,
       finalTotal: cartTotal,
       message: `Mã "${code}" chỉ áp dụng cho đơn hàng tối thiểu từ ${formattedMin}đ`,
+    };
+  }
+
+  // Prevent CTV from applying their own coupon
+  if (userId && coupon.affiliateUserId && coupon.affiliateUserId === userId) {
+    return {
+      valid: false,
+      discountAmount: 0,
+      finalTotal: cartTotal,
+      message: "Bạn không thể áp dụng mã giới thiệu của chính mình",
     };
   }
 

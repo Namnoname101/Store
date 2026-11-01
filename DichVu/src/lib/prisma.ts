@@ -81,8 +81,24 @@ export const WalletTransactionType = {
   ORDER_PAYMENT: "ORDER_PAYMENT",
   REFUND: "REFUND",
   ADMIN_ADJUST: "ADMIN_ADJUST",
+  AFFILIATE_COMMISSION: "AFFILIATE_COMMISSION",
+  WITHDRAWAL: "WITHDRAWAL",
 } as const;
 export type WalletTransactionType = (typeof WalletTransactionType)[keyof typeof WalletTransactionType];
+
+export const WithdrawalStatus = {
+  PENDING: "PENDING",
+  APPROVED: "APPROVED",
+  REJECTED: "REJECTED",
+} as const;
+export type WithdrawalStatus = (typeof WithdrawalStatus)[keyof typeof WithdrawalStatus];
+
+export const AffiliateTier = {
+  NEWBIE: "NEWBIE",
+  PRO: "PRO",
+  MASTER: "MASTER",
+} as const;
+export type AffiliateTier = (typeof AffiliateTier)[keyof typeof AffiliateTier];
 
 export const PaymentIntentStatus = {
   ACTIVE: "ACTIVE",

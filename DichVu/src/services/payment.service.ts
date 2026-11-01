@@ -13,6 +13,7 @@ import { commitReservedItemsToSold, releaseExpiredReservations } from "@/service
 import { parseOrderCodeFromMemo, parseDepositCodeFromMemo } from "@/lib/vietqr";
 import { fulfillOrderViaUpstream } from "@/services/upstream-fulfillment.service";
 import { fulfillCodexCreditOrder, isCodexProduct } from "@/services/codex-fulfillment.service";
+import { processAffiliateCommission } from "@/services/affiliate.service";
 
 export interface BankTransactionPayload {
   transactionId: string;
@@ -589,6 +590,13 @@ export async function handleIncomingTransaction(
       } catch (stockAlertErr) {
         console.error("Failed to check or alert out-of-stock local order:", stockAlertErr);
       }
+    }
+
+    // Process affiliate commission if affiliate coupon applied
+    try {
+      await processAffiliateCommission(order.id);
+    } catch (commErr) {
+      console.error(`[Affiliate Commission Error]: Order ${order.id}:`, commErr);
     }
 
     return {

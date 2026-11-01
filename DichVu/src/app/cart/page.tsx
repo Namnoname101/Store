@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -44,6 +44,15 @@ export default function CartPage() {
   // Guest checkout form state
   const [customerNote, setCustomerNote] = useState("");
   const [couponCode, setCouponCode] = useState("");
+
+  useEffect(() => {
+    try {
+      const savedCode = localStorage.getItem("khodee_auto_coupon");
+      if (savedCode && typeof savedCode === "string" && savedCode.trim()) {
+        setCouponCode(savedCode.trim());
+      }
+    } catch {}
+  }, []);
   const [appliedCoupon, setAppliedCoupon] = useState<{
     code: string;
     discountAmount: number;

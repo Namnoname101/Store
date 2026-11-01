@@ -26,6 +26,16 @@ model User {
   depositOrders      DepositOrder[]
   walletTransactions WalletTransaction[]
   codexBindings      CustomerApiKeyBinding[]
+  isAffiliate        Boolean             @default(false)      // Đã kích hoạt CTV chưa
+  affiliateCode      String?             @unique              // Mã CTV (VD: CTV_NAM)
+  affiliateTier      String              @default("NEWBIE")   // NEWBIE, PRO, MASTER
+  totalCommission    Int                 @default(0)          // Tổng hoa hồng đã nhận lũy kế
+  totalAffOrders     Int                 @default(0)          // Tổng đơn giới thiệu thành công
+  bankName           String?                                  // Tên ngân hàng rút tiền
+  bankAccountNumber  String?                                  // Số tài khoản ngân hàng
+  bankAccountName    String?                                  // Tên chủ thẻ
+  affiliateCoupons   Coupon[]            @relation("AffiliateCoupons")
+  withdrawals        WithdrawalRequest[]
 }
 
 model Category {
@@ -106,6 +116,9 @@ model Order {
   transactions        PaymentTransaction[]
   paymentIntents      PaymentIntent[]
   creditTopupOrder    CreditTopupOrder?
+  affiliateUserId     String?              // User ID của CTV
+  affiliateCommission Int                  @default(0) // Số tiền hoa hồng tính cho đơn
+  isCommissionPaid    Boolean              @default(false) // Trạng thái đã cộng tiền vào ví CTV chưa
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 }
@@ -133,10 +146,14 @@ model Coupon {
   usageLimit    Int?      // Max total uses
   usedCount     Int       @default(0)
   expiresAt     DateTime?
-  isActive      Boolean   @default(true)
-  orders        Order[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  isActive        Boolean   @default(true)
+  affiliateUserId String?   // CTV sở hữu mã này
+  affiliateUser   User?     @relation("AffiliateCoupons", fields: [affiliateUserId], references: [id], onDelete: SetNull)
+  affiliateRate   Float?    @default(15.0) // % hoa hồng mặc định
+  affiliateFixed  Int?      @default(0)    // Thưởng cố định VND mỗi đơn
+  orders          Order[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 model Supplier {
@@ -346,3 +363,21 @@ model ModelApiSyncSnapshot {
   createdAt        DateTime @default(now())
 }
 
+model WithdrawalRequest {
+  id             String    @id @default(uuid())
+  withdrawalCode String    @unique // Mã rút tiền: WTHxxxxxx
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount         Int       // Số tiền yêu cầu rút (VND, tối thiểu 50.000)
+  bankName       String
+  accountNumber  String
+  accountName    String
+  status         String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  adminNote      String?
+  paidAt         DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}

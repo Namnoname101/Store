@@ -190,6 +190,14 @@ export default function Navbar() {
             )}
           </div>
 
+          <Link
+            href="/ctv"
+            className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all flex items-center gap-1 whitespace-nowrap shrink-0 text-xs font-semibold"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+            <span>Kiếm tiền CTV</span>
+          </Link>
+
           {user?.role === "ADMIN" && (
             <Link href="/admin" className="px-2.5 py-1.5 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/20 transition-all flex items-center gap-1 whitespace-nowrap shrink-0">
               <Shield className="h-3.5 w-3.5 shrink-0" />
@@ -300,6 +308,9 @@ export default function Navbar() {
             </Link>
             <Link href="/topup" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200/60 dark:border-white/5 flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
               <span>🎁 Nạp Ví (+5%)</span>
+            </Link>
+            <Link href="/ctv" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors col-span-2 font-bold">
+              <span>💸 Kiếm Tiền CTV Sinh Viên (0đ Vốn)</span>
             </Link>
             <Link href="/lookup" onClick={() => setIsMobileMenuOpen(false)} className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200/60 dark:border-white/5 flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
               <span>🔍 Tra Cứu Đơn</span>

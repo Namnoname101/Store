@@ -1,0 +1,2 @@
+e8cd6318c7bd5c2d6ea6278a61e4a8a08b6d7f26993f60cf44d866e99ed6602c  ClaudeGatewayOneClick.exe
+95ddc20222528c8058aa98ab9fa26245f15a6507cef53cddd228cbdde4de7435  ClaudeGatewayOneClick_ARM64.exe

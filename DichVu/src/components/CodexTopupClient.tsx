@@ -40,6 +40,9 @@ export default function CodexTopupClient() {
   const [verifyError, setVerifyError] = useState<string | null>(null);
   const [verifiedKey, setVerifiedKey] = useState<VerifiedKeyData | null>(null);
 
+  // New key username state
+  const [keyUsername, setKeyUsername] = useState("");
+
   // Saved keys for authenticated users
   const [savedKeys, setSavedKeys] = useState<any[]>([]);
   const [isLoadingSavedKeys, setIsLoadingSavedKeys] = useState(false);
@@ -167,6 +170,11 @@ export default function CodexTopupClient() {
       return;
     }
 
+    if (hasKeyMode === "no_key" && !keyUsername.trim()) {
+      setCheckoutError("Vui lòng nhập Username để đặt tên cho API Key mới của bạn");
+      return;
+    }
+
     setIsSubmitting(true);
     setCheckoutError(null);
 
@@ -176,6 +184,7 @@ export default function CodexTopupClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           isNewKey: hasKeyMode === "no_key",
+          username: hasKeyMode === "no_key" ? keyUsername.trim() : undefined,
           bindingId: hasKeyMode === "has_key" ? verifiedKey?.bindingId : undefined,
           packageId: selectedPackage.id,
           email: email || undefined,
@@ -262,18 +271,41 @@ export default function CodexTopupClient() {
               </button>
             </div>
 
-            {/* If No Key: Auto-creation note */}
+            {/* If No Key: Auto-creation note & Username Input */}
             {hasKeyMode === "no_key" && (
-              <div className="mt-5 rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/60 dark:bg-blue-950/20 p-4">
-                <div className="flex items-start gap-3">
-                  <Zap className="h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400 mt-0.5" />
-                  <div className="text-xs sm:text-sm text-blue-950 dark:text-blue-200">
-                    <p className="font-semibold">
-                      Chưa có API Key? Cửa hàng sẽ tự động tạo Key mới cho bạn!
-                    </p>
-                    <p className="mt-1 text-blue-800/90 dark:text-blue-300/90 leading-relaxed">
-                      Bạn không cần phải chuẩn bị key trước. Hãy chọn gói hạn mức bên dưới và thanh toán, hệ thống sẽ tự động khởi tạo 1 API Key mới kèm toàn bộ hạn mức bạn mua và hiển thị ngay trên màn hình đơn hàng!
-                    </p>
+              <div className="mt-5 space-y-4">
+                <div className="rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/60 dark:bg-blue-950/20 p-4">
+                  <div className="flex items-start gap-3">
+                    <Zap className="h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400 mt-0.5" />
+                    <div className="text-xs sm:text-sm text-blue-950 dark:text-blue-200">
+                      <p className="font-semibold">
+                        Tự động khởi tạo API Key theo Username của bạn!
+                      </p>
+                      <p className="mt-1 text-blue-800/90 dark:text-blue-300/90 leading-relaxed">
+                        Nhập Username bên dưới và chọn gói hạn mức. Hệ thống sẽ tự động tạo một API Key mới với tên Username này cùng hạn mức bạn đã mua và bàn giao tức thì sau khi thanh toán.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 p-4">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Username đặt tên cho API Key <span className="text-rose-500">*</span>
+                  </label>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 mb-2">
+                    Tên này sẽ được gán làm tên hiển thị của API Key trên hệ thống ModelAPI để bạn dễ quản lý.
+                  </p>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="VD: thang_dev, cursor_user, team_ai..."
+                      value={keyUsername}
+                      onChange={(e) => {
+                        setKeyUsername(e.target.value);
+                        if (checkoutError) setCheckoutError(null);
+                      }}
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-xs sm:text-sm font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20 transition"
+                    />
                   </div>
                 </div>
               </div>
@@ -504,7 +536,7 @@ export default function CodexTopupClient() {
                 <span className="font-mono font-medium text-slate-800 dark:text-slate-200">
                   {hasKeyMode === "has_key"
                     ? (verifiedKey ? verifiedKey.maskedKey : "Chưa chọn")
-                    : "Khởi tạo Key mới tự động"}
+                    : (keyUsername.trim() ? `Tạo mới: ${keyUsername.trim()}` : "Chờ nhập Username")}
                 </span>
               </div>
 
@@ -527,7 +559,11 @@ export default function CodexTopupClient() {
             {/* Action Checkout Button */}
             <button
               type="button"
-              disabled={isSubmitting || (hasKeyMode === "has_key" && !verifiedKey)}
+              disabled={
+                isSubmitting ||
+                (hasKeyMode === "has_key" && !verifiedKey) ||
+                (hasKeyMode === "no_key" && !keyUsername.trim())
+              }
               onClick={handleCheckout}
               className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/25 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >

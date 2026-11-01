@@ -7,6 +7,8 @@ import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import FloatingSupport from "@/components/FloatingSupport";
 import LiveOrderTicker from "@/components/LiveOrderTicker";
+import AffiliateTracker from "@/components/AffiliateTracker";
+import { Suspense } from "react";
 
 export default function StorefrontShell({
   children,
@@ -22,6 +24,9 @@ export default function StorefrontShell({
 
   return (
     <>
+      <Suspense fallback={null}>
+        <AffiliateTracker />
+      </Suspense>
       <LiveOrderTicker />
       <Navbar />
       <main className="flex-1 relative">

@@ -19,10 +19,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { bindingId, packageId, email, customerNote, couponCode, isNewKey } = body || {};
+    const { bindingId, packageId, email, customerNote, couponCode, isNewKey, username } = body || {};
 
     let binding: any = null;
-    if (!isNewKey) {
+    let keyUsername: string | null = null;
+
+    if (isNewKey) {
+      const rawUser = typeof username === "string" ? username.trim() : "";
+      if (!rawUser) {
+        return NextResponse.json(
+          { error: "Vui lòng nhập Username để đặt tên cho API Key mới của bạn" },
+          { status: 400 }
+        );
+      }
+      if (rawUser.length > 50) {
+        return NextResponse.json(
+          { error: "Username không được vượt quá 50 ký tự" },
+          { status: 400 }
+        );
+      }
+      keyUsername = rawUser;
+    } else {
       if (!bindingId || typeof bindingId !== "string") {
         return NextResponse.json(
           { error: "Vui lòng chọn hoặc kiểm tra API Key hợp lệ" },
@@ -122,12 +139,18 @@ export async function POST(req: NextRequest) {
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
 
     // 7. Atomic Order Creation
+    let resolvedCustomerNote = customerNote && typeof customerNote === "string" ? customerNote.trim() : "";
+    if (isNewKey) {
+      const keyTag = `CREATE_NEW_KEY:${keyUsername}`;
+      resolvedCustomerNote = resolvedCustomerNote ? `${keyTag} | ${resolvedCustomerNote}` : keyTag;
+    }
+
     const order = await prisma.$transaction(async (tx) => {
       const createdOrder = await tx.order.create({
         data: {
           orderCode,
           customerEmail: email ? email.trim() : binding?.guestEmail || null,
-          customerNote: customerNote ? customerNote.trim() : (isNewKey ? "CREATE_NEW_KEY" : null),
+          customerNote: resolvedCustomerNote || null,
           userId,
           totalAmount,
           subtotalAmount,
@@ -203,10 +226,15 @@ export async function POST(req: NextRequest) {
         quotaUnits: selectedPkg.quotaUnits,
         vietQrUrl,
         expiresAt: order.expiresAt,
-        binding: {
-          maskedKey: binding.maskedKey,
-          keyName: binding.keyName,
-        },
+        binding: binding
+          ? {
+              maskedKey: binding.maskedKey,
+              keyName: binding.keyName,
+            }
+          : {
+              maskedKey: "Sẽ khởi tạo sau khi thanh toán",
+              keyName: keyUsername,
+            },
       },
       { status: 201 }
     );

@@ -128,12 +128,28 @@ export async function fulfillCodexCreditOrder(
 
     // If still no binding, customer requested a brand new key -> create on ModelAPI
     let deliveredRawKey: string | null = null;
+    let customKeyName = `KhoDEE_${order.orderCode}`;
+
     if (!resolvedBindingId) {
+      if (order.customerNote) {
+        const usernameMatch =
+          order.customerNote.match(/(?:CREATE_NEW_KEY|NEW_KEY_USER|KEY_USERNAME|USERNAME):\s*([^\r\n|]+)/i);
+        if (usernameMatch && usernameMatch[1]?.trim()) {
+          customKeyName = usernameMatch[1].trim();
+        } else {
+          const trimmedNote = order.customerNote.trim();
+          if (trimmedNote && trimmedNote !== "CREATE_NEW_KEY" && !trimmedNote.startsWith("http")) {
+            customKeyName = trimmedNote;
+          }
+        }
+      }
+      customKeyName = customKeyName.replace(/[\r\n\t]/g, "").trim().slice(0, 60);
+
       const createRes = await ModelApiService.createCustomerKey({
         creditUsd,
         guestEmail: order.customerEmail,
         userId: order.userId,
-        name: `KhoDEE_${order.orderCode}`,
+        name: customKeyName,
       });
 
       if (!createRes.success || !createRes.bindingId || !createRes.key) {
@@ -179,6 +195,7 @@ export async function fulfillCodexCreditOrder(
     if (deliveredRawKey) {
       const secretContent = `🎉 API Key mới của bạn đã được khởi tạo thành công!
 
+• Tên Key (Username): ${customKeyName}
 • API Key: ${deliveredRawKey}
 • Hạn mức ban đầu: $${creditUsd} (${quotaUnits.toLocaleString("vi-VN")} Quota Points)
 • Base URL: https://modelapi.vn/v1

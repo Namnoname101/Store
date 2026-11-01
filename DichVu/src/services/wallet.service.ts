@@ -5,6 +5,7 @@ import prisma, {
 } from "@/lib/prisma";
 import { commitReservedItemsToSold } from "@/services/inventory.service";
 import { fulfillOrderViaUpstream } from "@/services/upstream-fulfillment.service";
+import { processAffiliateCommission } from "@/services/affiliate.service";
 
 export interface WalletPaymentResult {
   success: boolean;
@@ -118,6 +119,13 @@ export async function payOrderWithWallet(
     } catch (err) {
       console.error(`[Wallet Fulfill Upstream Error]: ${order.id}:`, err);
     }
+  }
+
+  // Process affiliate commission if affiliate coupon applied
+  try {
+    await processAffiliateCommission(order.id);
+  } catch (commErr) {
+    console.error(`[Wallet Affiliate Commission Error]: Order ${order.id}:`, commErr);
   }
 
   return {

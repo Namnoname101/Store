@@ -170,7 +170,7 @@ export async function createOrder(data: CreateOrderInput) {
   let discountAmount = 0;
   let couponId: string | null = null;
   if (data.couponCode && data.couponCode.trim()) {
-    const validation = await validateCoupon(data.couponCode, subtotalAmount);
+    const validation = await validateCoupon(data.couponCode, subtotalAmount, data.userId);
     if (!validation.valid || !validation.coupon) {
       throw new Error(validation.message || "Mã giảm giá không hợp lệ");
     }

@@ -75,6 +75,7 @@ export default function ProductPurchaseBox({
   const [quantity, setQuantity] = useState<number>(isCustomQuantity ? effectiveMin : 1);
   const [targetLink, setTargetLink] = useState<string>("");
   const [customerApiKey, setCustomerApiKey] = useState<string>("");
+  const [customerKeyUsername, setCustomerKeyUsername] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -302,8 +303,9 @@ export default function ProductPurchaseBox({
     try {
       const finalCustomerNote = requiresLink
         ? targetLink.trim()
-        : isCodexProduct && customerApiKey.trim()
-        ? customerApiKey.trim()
+        : isCodexProduct
+        ? customerApiKey.trim() ||
+          (customerKeyUsername.trim() ? `CREATE_NEW_KEY:${customerKeyUsername.trim()}` : "CREATE_NEW_KEY")
         : undefined;
 
       const res = await fetch("/api/orders", {
@@ -606,29 +608,56 @@ export default function ProductPurchaseBox({
 
         {/* Optional Customer API Key for Codex */}
         {isCodexProduct && (
-          <div>
-            <label
-              htmlFor="customerApiKey"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
-            >
-              API Key cần nạp thêm <span className="text-slate-400 font-normal lowercase">(để trống nếu muốn tạo key mới)</span>
-            </label>
-            <div className="relative">
-              <input
-                id="customerApiKey"
-                type="text"
-                placeholder="sk-... (tùy chọn)"
-                value={customerApiKey}
-                disabled={isLoading}
-                onChange={(e) => setCustomerApiKey(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2.5 px-3.5 text-xs font-mono text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
-              />
+          <div className="space-y-3">
+            <div>
+              <label
+                htmlFor="customerApiKey"
+                className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
+              >
+                API Key cần nạp thêm <span className="text-slate-400 font-normal lowercase">(để trống nếu muốn tạo key mới)</span>
+              </label>
+              <div className="relative">
+                <input
+                  id="customerApiKey"
+                  type="text"
+                  placeholder="sk-... (tùy chọn)"
+                  value={customerApiKey}
+                  disabled={isLoading}
+                  onChange={(e) => setCustomerApiKey(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2.5 px-3.5 text-xs font-mono text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
+                />
+              </div>
+              <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                {customerApiKey.trim()
+                  ? "✨ Hạn mức sẽ được nạp trực tiếp vào API Key này."
+                  : "💡 Nếu chưa có key, bạn có thể nhập Username bên dưới để tạo key mới mang tên mình."}
+              </p>
             </div>
-            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-              {customerApiKey.trim()
-                ? "✨ Hạn mức sẽ được nạp trực tiếp vào API Key này."
-                : "💡 Nếu chưa có key, hệ thống sẽ tự động tạo 1 key mới và bàn giao ngay sau khi thanh toán."}
-            </p>
+
+            {!customerApiKey.trim() && (
+              <div>
+                <label
+                  htmlFor="customerKeyUsername"
+                  className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
+                >
+                  Username đặt tên cho Key mới
+                </label>
+                <div className="relative">
+                  <input
+                    id="customerKeyUsername"
+                    type="text"
+                    placeholder="VD: thang_dev, cursor_user..."
+                    value={customerKeyUsername}
+                    disabled={isLoading}
+                    onChange={(e) => setCustomerKeyUsername(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2.5 px-3.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
+                  />
+                </div>
+                <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                  Tên này sẽ được đặt làm tên đại diện của API Key mới trên hệ thống.
+                </p>
+              </div>
+            )}
           </div>
         )}
 
