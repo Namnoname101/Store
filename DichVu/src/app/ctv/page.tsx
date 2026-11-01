@@ -222,7 +222,7 @@ export default function AffiliateLandingPage() {
                   <td className="py-3.5 pl-4 font-medium text-emerald-400">+3.000đ – 15.000đ / đơn</td>
                 </tr>
                 <tr className="hover:bg-slate-800/30 transition-colors">
-                  <td className="py-3.5 pr-4 font-semibold text-white">API AI & Tool Code (GenzShop)</td>
+                  <td className="py-3.5 pr-4 font-semibold text-white">API AI & Công Cụ Lập Trình (Dev Tools)</td>
                   <td className="py-3.5 px-4 text-xs text-slate-400">Claude AI, Cursor IDE, Codex AI, DeepSeek, Grok...</td>
                   <td className="py-3.5 px-4">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">

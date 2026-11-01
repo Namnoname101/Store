@@ -600,6 +600,77 @@ describe("ModelApiService & TokenMutex Tests", () => {
       }
     });
 
+    it("should handle New-API format (no data in POST response, lookup via search, fetch unmasked key, and set codex_không_lag group)", async () => {
+      let sentGroup = "";
+      globalThis.fetch = vi.fn().mockImplementation((url: string, init?: RequestInit) => {
+        const urlStr = url.toString();
+        const method = init?.method || "GET";
+
+        if (urlStr.endsWith("/api/token/") && method === "POST") {
+          const body = JSON.parse(init?.body as string);
+          sentGroup = body.group;
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            json: async () => ({
+              success: true,
+              message: "",
+            }),
+          });
+        }
+
+        if (urlStr.includes("/api/token/search?keyword=custom_user_codex") && method === "GET") {
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            json: async () => ({
+              success: true,
+              data: {
+                items: [
+                  {
+                    id: 998877,
+                    name: "custom_user_codex",
+                    key: "abc1**********xyz9",
+                    group: "codex_không_lag",
+                    remain_quota: 5000000,
+                  },
+                ],
+              },
+            }),
+          });
+        }
+
+        if (urlStr.includes("/api/token/998877/key") && method === "POST") {
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            json: async () => ({
+              success: true,
+              data: {
+                key: "unmasked_secret_key_1234567890",
+              },
+            }),
+          });
+        }
+
+        return Promise.reject(new Error("Unexpected endpoint: " + method + " " + urlStr));
+      });
+
+      const res = await ModelApiService.createCustomerKey({
+        creditUsd: 10,
+        name: "custom_user_codex",
+      });
+
+      expect(res.success).toBe(true);
+      expect(sentGroup).toBe("codex_không_lag");
+      expect(res.key).toBe("sk-unmasked_secret_key_1234567890");
+      expect(res.upstreamTokenId).toBe(998877);
+
+      if (res.bindingId) {
+        createdBindingIds.push(res.bindingId);
+      }
+    });
+
     it("should return error when upstream token creation fails", async () => {
       globalThis.fetch = vi.fn().mockResolvedValue({
         ok: false,

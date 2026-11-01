@@ -113,7 +113,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Tự động hóa lập trình trực tiếp trong Terminal của VS Code",
       },
       {
-        text: "2. Claude AI Desktop (Cowork): Tải app tại claude.com/download > Bật Developer Mode > Configure Third-Party Inference > Chọn Gateway với Base URL https://1gw.gwai.cloud và Auth schema x-api-key.",
+        text: "2. Claude AI Desktop (1-Click Khodee Gateway): Tải KhodeeGateway.exe (Google Drive) > Dán API Key > Bấm START. Tool tự động kiểm tra hạn mức, cấu hình và tự mở khóa tính năng Import chat từ Claude.ai. Xem hướng dẫn tại /huong-dan/api-claude.",
         caption: "Ứng dụng desktop chính thức của Claude trên PC/Mac",
       },
       {

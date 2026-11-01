@@ -70,6 +70,10 @@ export class ModelApiService {
     return Number(process.env.MODELAPI_TIMEOUT_MS) || 10000;
   }
 
+  private static getDefaultGroup(): string {
+    return process.env.MODELAPI_DEFAULT_GROUP || "codex_không_lag";
+  }
+
   /**
    * Converts USD to upstream ModelAPI quota units.
    * Default: 1 USD = 500,000 quota units.
@@ -448,6 +452,7 @@ export class ModelApiService {
           ...tokenData,
           id: resolvedTokenId,
           remain_quota: targetQuota,
+          group: tokenData.group || this.getDefaultGroup(),
         }),
         signal: putController.signal,
       });
@@ -660,6 +665,7 @@ export class ModelApiService {
   ): Promise<CreateCustomerKeyResult> {
     const quotaUnits = this.usdToQuota(params.creditUsd);
     const tokenName = params.name || `KhoDEE_${Date.now()}`;
+    const defaultGroup = this.getDefaultGroup();
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.getTimeoutMs());
@@ -676,6 +682,7 @@ export class ModelApiService {
           remain_quota: quotaUnits,
           expired_time: -1,
           unlimited_quota: false,
+          group: defaultGroup,
         }),
         signal: controller.signal,
       });
@@ -684,21 +691,93 @@ export class ModelApiService {
 
       const json = await res.json().catch(() => null);
 
-      if (!res.ok || !json?.success || !json?.data) {
+      if (!res.ok || !json?.success) {
         return {
           success: false,
           error: json?.message || `Failed to create token upstream (HTTP ${res.status})`,
         };
       }
 
-      const tokenData = json.data;
-      const rawKey = tokenData.key;
-      const upstreamTokenId = tokenData.id;
+      let upstreamTokenId: number | undefined = json?.data?.id;
+      let tokenData = json?.data;
+      let rawKey: string | undefined =
+        tokenData?.key && typeof tokenData.key === "string" && !tokenData.key.includes("*")
+          ? tokenData.key
+          : undefined;
+
+      // In New-API (v1.0.0-rc.25+), POST /api/token/ returns { success: true, message: "" } without data.
+      // Search for the newly created token by name:
+      if (!upstreamTokenId) {
+        try {
+          const searchController = new AbortController();
+          const searchTimer = setTimeout(() => searchController.abort(), this.getTimeoutMs());
+          const searchRes = await fetch(
+            `${this.getBaseUrl()}/api/token/search?keyword=${encodeURIComponent(tokenName)}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${this.getSystemToken()}`,
+              },
+              signal: searchController.signal,
+            }
+          );
+          clearTimeout(searchTimer);
+
+          if (searchRes.ok) {
+            const searchJson = await searchRes.json().catch(() => null);
+            const items = Array.isArray(searchJson?.data?.items)
+              ? searchJson.data.items
+              : Array.isArray(searchJson?.data)
+              ? searchJson.data
+              : [];
+            const found = items.find((t: any) => t.name === tokenName) || items[0];
+            if (found?.id) {
+              upstreamTokenId = found.id;
+              tokenData = found;
+            }
+          }
+        } catch {
+          // Ignore search error, fallback check below
+        }
+      }
+
+      if (!upstreamTokenId) {
+        return {
+          success: false,
+          error: "Upstream created token successfully but could not resolve token ID",
+        };
+      }
+
+      // If key is not returned unmasked in tokenData, fetch full key via POST /api/token/{id}/key
+      if (!rawKey) {
+        try {
+          const keyController = new AbortController();
+          const keyTimer = setTimeout(() => keyController.abort(), this.getTimeoutMs());
+          const keyRes = await fetch(`${this.getBaseUrl()}/api/token/${upstreamTokenId}/key`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${this.getSystemToken()}`,
+            },
+            signal: keyController.signal,
+          });
+          clearTimeout(keyTimer);
+
+          if (keyRes.ok) {
+            const keyJson = await keyRes.json().catch(() => null);
+            const fetchedKey = keyJson?.data?.key;
+            if (fetchedKey && typeof fetchedKey === "string") {
+              rawKey = fetchedKey.startsWith("sk-") ? fetchedKey : `sk-${fetchedKey}`;
+            }
+          }
+        } catch {
+          // Ignore key fetch error, handled below
+        }
+      }
 
       if (!rawKey || typeof rawKey !== "string") {
         return {
           success: false,
-          error: "Upstream created token but did not return raw key string",
+          error: "Upstream created token but could not retrieve raw key string",
         };
       }
 
@@ -711,7 +790,7 @@ export class ModelApiService {
           upstreamTokenId,
           keyFingerprint,
           maskedKey,
-          keyName: tokenData.name || tokenName,
+          keyName: tokenData?.name || tokenName,
           status: "ACTIVE",
           totalCreditUsd: params.creditUsd,
           userId: params.userId || null,
@@ -726,7 +805,7 @@ export class ModelApiService {
         maskedKey,
         bindingId: binding.id,
         upstreamTokenId,
-        remainQuota: tokenData.remain_quota ?? quotaUnits,
+        remainQuota: tokenData?.remain_quota ?? quotaUnits,
       };
     } catch (err: any) {
       clearTimeout(timer);
