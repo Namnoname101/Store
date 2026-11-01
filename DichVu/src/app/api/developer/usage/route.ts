@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
       const verifyResult = await ModelApiService.verifyCustomerKey(apiKey);
       if (!verifyResult.valid) {
         return NextResponse.json(
-          { error: "API Key không thuộc hệ thống DaiTruong Store hoặc không hợp lệ" },
+          { error: "API Key không thuộc hệ thống KhoDEE hoặc không hợp lệ" },
           { status: 404 }
         );
       }

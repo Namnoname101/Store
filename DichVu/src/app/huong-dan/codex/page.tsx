@@ -9,7 +9,7 @@ import {
 import CodexApiGuideHub from "@/components/CodexApiGuideHub";
 
 export const metadata: Metadata = {
-  title: "Hướng Dẫn Kích Hoạt Codex AI Cho Ứng Dụng ChatGPT (Windows) & IDE — DaiTruong Store",
+  title: "Hướng Dẫn Kích Hoạt Codex AI Cho Ứng Dụng ChatGPT (Windows) & IDE — KhoDEE",
   description:
     "Hướng dẫn kích hoạt Codex AI tự động 1-Click vào ứng dụng ChatGPT Windows App bằng công cụ KhoDee-helper hoặc kết nối OpenAI Compatible vào Cursor IDE, VS Code Cline.",
 };
@@ -153,7 +153,7 @@ export default function CodexApiGuidePage() {
               Quota trong key có bị hết hạn theo tháng không?
             </h3>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-              <strong>Không!</strong> Hạn mức nạp qua DaiTruong Store được bảo lưu vĩnh viễn đến khi bạn dùng hết token, không bị reset hàng tháng như các gói thuê bao cố định.
+              <strong>Không!</strong> Hạn mức nạp qua KhoDEE được bảo lưu vĩnh viễn đến khi bạn dùng hết token, không bị reset hàng tháng như các gói thuê bao cố định.
             </p>
           </div>
         </div>

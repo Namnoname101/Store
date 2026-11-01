@@ -31,12 +31,12 @@ export async function generateMetadata({
   const product = await getProductBySlug(slug);
   if (!product) {
     return {
-      title: "Không tìm thấy sản phẩm - Daitruong Store",
+      title: "Không tìm thấy sản phẩm - KhoDEE",
     };
   }
 
   return {
-    title: `${product.title} - Daitruong Store`,
+    title: `${product.title} - KhoDEE`,
     description: product.description.slice(0, 160),
   };
 }

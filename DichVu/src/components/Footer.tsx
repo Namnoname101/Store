@@ -46,11 +46,11 @@ export default function Footer() {
           <div className="md:col-span-5 space-y-4">
             <Link href="/" className="flex items-center gap-2.5 group">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-extrabold text-white shadow-lg shadow-blue-500/30 text-base">
-                D
+                K
               </div>
               <div className="font-extrabold tracking-tight text-white flex items-center gap-1.5 text-base">
-                <span>DaiTruong</span>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Store</span>
+                <span>Kho</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">DEE</span>
                 <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">MMO HUB</span>
               </div>
             </Link>
@@ -154,7 +154,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="mt-10 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
           <div>
-            © {new Date().getFullYear()} DaiTruongStore. Bản quyền thuộc về hệ thống cung cấp tài nguyên MMO.
+            © {new Date().getFullYear()} KhoDEE. Bản quyền thuộc về hệ thống cung cấp tài nguyên MMO.
           </div>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1 text-emerald-500 font-mono">

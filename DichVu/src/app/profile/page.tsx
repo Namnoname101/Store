@@ -1,7 +1,7 @@
 import ProfileClient from "@/components/ProfileClient";
 
 export const metadata = {
-  title: "Tài khoản & Ví số dư - DigiStore",
+  title: "Tài khoản & Ví số dư - KhoDEE",
   description: "Quản lý số dư ví, theo dõi lịch sử biến động số dư và các đơn hàng đã mua",
 };
 

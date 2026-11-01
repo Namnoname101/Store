@@ -145,7 +145,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <Shield className="h-4 w-4 text-white" />
           </div>
           <div>
-            <span className="font-extrabold text-white text-sm tracking-tight">DaiTruong</span>
+            <span className="font-extrabold text-white text-sm tracking-tight">KhoDEE</span>
             <span className="ml-1 text-[10px] font-bold text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20">STUDIO</span>
           </div>
         </div>
@@ -173,7 +173,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <h2 className="text-sm font-extrabold text-white truncate">DaiTruong</h2>
+                  <h2 className="text-sm font-extrabold text-white truncate">KhoDEE</h2>
                   <span className="text-[9px] font-bold tracking-wider text-blue-400 bg-blue-500/20 px-1.5 py-0.2 rounded border border-blue-400/30">
                     STUDIO
                   </span>
@@ -241,7 +241,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <header className="hidden md:flex h-14 items-center justify-between border-b border-white/5 bg-slate-950/40 backdrop-blur-md px-6 sticky top-0 z-30">
           {/* Breadcrumb or Current Area */}
           <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span className="text-slate-300 font-medium">DaiTruong Studio</span>
+            <span className="text-slate-300 font-medium">KhoDEE Studio</span>
             <span>/</span>
             <span className="text-white font-semibold capitalize">
               {pathname === "/admin" ? "Dashboard Tổng Quan" : pathname.replace("/admin/", "").replace("-", " ")}

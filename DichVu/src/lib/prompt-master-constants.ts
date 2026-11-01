@@ -248,7 +248,7 @@ TỐI ƯU HÓA ĐẶC BIỆT DÀNH RIÊNG CHO CURSOR, WINDSURF & CLAUDE CODE (AI
 
     case "codex":
       targetAiGuide = `
-TỐI ƯU HÓA ĐẶC BIỆT DÀNH RIÊNG CHO CODEX AI API (DaiTruong Developer Gateway):
+TỐI ƯU HÓA ĐẶC BIỆT DÀNH RIÊNG CHO CODEX AI API (KhoDEE Developer Gateway):
 - Định dạng JSON/Markdown tiêu chuẩn, tối ưu token payload để tiết kiệm chi phí gọi API.
 - Chuẩn hóa prompt để đạt độ trễ thấp nhất (Low-latency) và độ chính xác cao nhất trên hệ thống Codex AI.`;
       break;

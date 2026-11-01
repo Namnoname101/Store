@@ -131,7 +131,7 @@ export default function ClaudeApiGuideHub({
   const [osTab, setOsTab] = useState<"windows" | "mac">("windows");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
-  const currentKey = customKey.trim() || apiKey || "sk-ant-api03-daitruong-demo-key-8888";
+  const currentKey = customKey.trim() || apiKey || "sk-ant-api03-khodee-demo-key-8888";
   const isCustomKeyEntered = Boolean(customKey.trim() || apiKey);
 
   const handleCopy = (id: string, text: string) => {

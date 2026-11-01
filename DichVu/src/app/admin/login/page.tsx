@@ -55,7 +55,7 @@ function AdminLoginForm() {
             <Shield className="w-7 h-7" />
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight">
-            DigiStore Admin
+            KhoDEE Admin
           </h1>
           <p className="text-sm text-slate-400 mt-1">
             Khu vực quản trị hệ thống bán tự động

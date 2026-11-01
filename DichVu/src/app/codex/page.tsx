@@ -3,7 +3,7 @@ import CodexTopupClient from "@/components/CodexTopupClient";
 import CodexApiGuideHub from "@/components/CodexApiGuideHub";
 
 export const metadata: Metadata = {
-  title: "Nạp Tự Động Codex API Credit — DaiTruong Store",
+  title: "Nạp Tự Động Codex API Credit — KhoDEE",
   description:
     "Nạp hạn mức API Credit cho Cursor, Claude Code, OpenAI & AI Agent. Quota tự động cộng vào API Key của bạn qua VietQR 24/7.",
 };

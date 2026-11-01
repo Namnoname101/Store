@@ -95,7 +95,7 @@ export default function GuidePreviewPage() {
       productTitle: "Tài khoản ChatGPT Plus 1 Tháng Riêng Tư",
       productSlug: "chatgpt-plus",
       productType: "ACCOUNT",
-      secretContent: "user.daitruong2026@gmail.com | MatKhauBaoMat@888",
+      secretContent: "user.khodee2026@gmail.com | MatKhauBaoMat@888",
     },
     COURSE_LINK: {
       name: "Link Khóa Học / Dịch Vụ",
@@ -104,7 +104,7 @@ export default function GuidePreviewPage() {
       productTitle: "Khóa học Fullstack Next.js & AI Agent Masterclass",
       productSlug: "khoa-hoc-nextjs",
       productType: "COURSE_LINK",
-      secretContent: "https://daitruong-store.vn/access-course/token_xyz888",
+      secretContent: "https://khodee.vn/access-course/token_xyz888",
     },
   };
 

@@ -108,7 +108,7 @@ describe("Buff Progress Service", () => {
     expect(result.progressPercent).toBe(70);
     expect(result.status).toBe("IN_PROGRESS");
     expect(result.targetLink).toBe("https://facebook.com/profile.php?id=100012345678");
-    expect(result.providerName).toBe("Máy chủ cấp phát DigiStore");
+    expect(result.providerName).toBe("Máy chủ cấp phát KhoDEE");
     expect(result.serverOrderId).toBe("998877");
     // Ensure 100% white-label (no upstream mentions)
     const jsonStr = JSON.stringify(result).toLowerCase();

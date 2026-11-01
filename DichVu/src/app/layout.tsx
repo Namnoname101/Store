@@ -5,9 +5,9 @@ import { CartProvider } from "@/contexts/CartContext";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Daitruong Store - Hệ Thống cung cấp tài khoản giá rẻ.Uy tín, thanh toán nhanh gọn 24/7.",
+  title: "KhoDEE - Kho Tài Khoản & Dịch Vụ Số. Uy tín, thanh toán nhanh gọn 24/7.",
   description:
-    "Cung cấp tài khoản AI, API AI, dịch vụ mạng xã hội . . . . Thanh toán tự động nhanh chóng Uy Tín 24/7.",
+    "KhoDEE - Cung cấp tài khoản AI, API AI, tài nguyên và dịch vụ MMO tự động uy tín 24/7.",
 };
 
 export default function RootLayout({

@@ -8,6 +8,8 @@ import {
   PackageX,
   LayoutGrid,
   ArrowUp,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import ProductCard, { ProductCardProps } from "@/components/ProductCard";
 import GroupedProductCard from "@/components/GroupedProductCard";
@@ -250,6 +252,14 @@ export default function CatalogExplorer({
   const [quickViewProduct, setQuickViewProduct] = useState<ProductCardProps["product"] | null>(null);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState<boolean>(false);
   const [selectedSubBrands, setSelectedSubBrands] = useState<Record<string, string>>({});
+  const [expandedMobileGroups, setExpandedMobileGroups] = useState<Record<string, boolean>>({});
+
+  const toggleMobileGroup = (groupKey: string) => {
+    setExpandedMobileGroups((prev) => ({
+      ...prev,
+      [groupKey]: !prev[groupKey],
+    }));
+  };
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -677,14 +687,18 @@ export default function CatalogExplorer({
                           ? "API Anthropic Claude 3.5 Sonnet & Opus chính hãng tốc độ cao"
                           : "Cấp phát tự động 24/7";
 
+                        const groupKey = `subbrand-${b.key}`;
+                        const isExpanded = !!expandedMobileGroups[groupKey];
+                        const remainingCount = brandItems.length - 3;
+
                         return (
                           <div
                             key={b.key}
-                            id={`subbrand-${b.key}`}
+                            id={groupKey}
                             className="space-y-3"
                           >
                             {/* Sub-brand Header Bar */}
-                            <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100 dark:border-white/5">
+                            <div className="flex items-center justify-between gap-2 pb-2 border-b border-slate-100 dark:border-white/5">
                               <div className="flex items-center gap-2 sm:gap-2.5">
                                 <span
                                   className={`w-2.5 h-2.5 rounded-full shadow-xs ${dotColor}`}
@@ -701,55 +715,164 @@ export default function CatalogExplorer({
                                   • {subtitle}
                                 </span>
                               </div>
+
+                              {brandItems.length > 3 && (
+                                <button
+                                  type="button"
+                                  onClick={() => toggleMobileGroup(groupKey)}
+                                  className="md:hidden inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-500/20 active:scale-95 transition-all"
+                                >
+                                  <span>{isExpanded ? "Thu gọn" : `Xem thêm (${b.count})`}</span>
+                                  {isExpanded ? (
+                                    <ChevronUp className="h-3 w-3" />
+                                  ) : (
+                                    <ChevronDown className="h-3 w-3" />
+                                  )}
+                                </button>
+                              )}
                             </div>
 
                             {/* Products Grid for this Brand */}
                             <div className="grid grid-cols-2 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3.5">
                               {brandItems.map((item, idx) => {
-                                if (item.type === "grouped" && item.groupedData) {
-                                  return (
-                                    <GroupedProductCard
-                                      key={`group-${item.groupKey}-${idx}`}
-                                      {...item.groupedData}
-                                      onQuickView={handleOpenQuickView}
-                                    />
-                                  );
-                                }
+                                const isHiddenOnMobile = idx >= 3 && !isExpanded;
                                 return (
-                                  <ProductCard
-                                    key={item.singleProduct.id}
-                                    product={item.singleProduct}
-                                    onQuickView={handleOpenQuickView}
-                                  />
+                                  <div
+                                    key={item.type === "grouped" && item.groupedData ? `group-${item.groupKey}-${idx}` : item.singleProduct.id}
+                                    className={isHiddenOnMobile ? "hidden md:block" : "block"}
+                                  >
+                                    {item.type === "grouped" && item.groupedData ? (
+                                      <GroupedProductCard
+                                        {...item.groupedData}
+                                        onQuickView={handleOpenQuickView}
+                                      />
+                                    ) : (
+                                      <ProductCard
+                                        product={item.singleProduct}
+                                        onQuickView={handleOpenQuickView}
+                                      />
+                                    )}
+                                  </div>
                                 );
                               })}
+
+                              {/* 4th slot on mobile: Show "Xem thêm" card if collapsed */}
+                              {brandItems.length > 3 && !isExpanded && (
+                                <button
+                                  type="button"
+                                  onClick={() => toggleMobileGroup(groupKey)}
+                                  className="md:hidden flex flex-col items-center justify-center p-3.5 rounded-2xl border-2 border-dashed border-blue-500/30 dark:border-blue-400/20 bg-gradient-to-b from-blue-50/70 to-indigo-50/70 dark:from-blue-950/20 dark:to-indigo-950/20 hover:border-blue-500 active:scale-[0.98] transition-all text-center min-h-[190px]"
+                                  aria-label={`Xem thêm ${remainingCount} gói ${b.name}`}
+                                >
+                                  <div className="w-10 h-10 rounded-full bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-2 shadow-xs group-hover:scale-110 transition-transform">
+                                    <ChevronDown className="w-5 h-5 animate-bounce" />
+                                  </div>
+                                  <span className="text-xs font-black text-slate-800 dark:text-white">
+                                    +{remainingCount} gói khác
+                                  </span>
+                                  <span className="text-[11px] text-blue-600 dark:text-blue-400 font-bold mt-1 flex items-center gap-0.5">
+                                    <span>Xem tất cả {b.name}</span>
+                                    <span>→</span>
+                                  </span>
+                                </button>
+                              )}
                             </div>
+
+                            {/* Expanded footer button on mobile */}
+                            {brandItems.length > 3 && isExpanded && (
+                              <div className="md:hidden pt-1 flex justify-center">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    toggleMobileGroup(groupKey);
+                                    const el = document.getElementById(groupKey);
+                                    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                                  }}
+                                  className="w-full py-2 px-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/80 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] transition-all"
+                                >
+                                  <span>Thu gọn danh sách {b.name}</span>
+                                  <ChevronUp className="w-3.5 h-3.5 text-slate-400" />
+                                </button>
+                              </div>
+                            )}
                           </div>
                         );
                       })}
                     </div>
                   ) : (
-                    /* Dense Product Grid: Grouped Service Cards or Single Products */
-                    <div className="grid grid-cols-2 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3.5">
-                      {items.map((item, idx) => {
-                        if (item.type === "grouped" && item.groupedData) {
-                          return (
-                            <GroupedProductCard
-                              key={`group-${item.groupKey}-${idx}`}
-                              {...item.groupedData}
-                              onQuickView={handleOpenQuickView}
-                            />
-                          );
-                        }
-                        return (
-                          <ProductCard
-                            key={item.singleProduct.id}
-                            product={item.singleProduct}
-                            onQuickView={handleOpenQuickView}
-                          />
-                        );
-                      })}
-                    </div>
+                    /* Dense Product Grid: Grouped Service Cards or Single Products with Mobile Collapsible */
+                    (() => {
+                      const sectionGroupKey = `section-${sec.id}`;
+                      const isSectionExpanded = !!expandedMobileGroups[sectionGroupKey];
+                      const remainingSectionCount = items.length - 3;
+
+                      return (
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-2 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3.5">
+                            {items.map((item, idx) => {
+                              const isHiddenOnMobile = idx >= 3 && !isSectionExpanded;
+                              return (
+                                <div
+                                  key={item.type === "grouped" && item.groupedData ? `group-${item.groupKey}-${idx}` : item.singleProduct.id}
+                                  className={isHiddenOnMobile ? "hidden md:block" : "block"}
+                                >
+                                  {item.type === "grouped" && item.groupedData ? (
+                                    <GroupedProductCard
+                                      {...item.groupedData}
+                                      onQuickView={handleOpenQuickView}
+                                    />
+                                  ) : (
+                                    <ProductCard
+                                      product={item.singleProduct}
+                                      onQuickView={handleOpenQuickView}
+                                    />
+                                  )}
+                                </div>
+                              );
+                            })}
+
+                            {/* 4th slot on mobile: Show "Xem thêm" card if collapsed */}
+                            {items.length > 3 && !isSectionExpanded && (
+                              <button
+                                type="button"
+                                onClick={() => toggleMobileGroup(sectionGroupKey)}
+                                className="md:hidden flex flex-col items-center justify-center p-3.5 rounded-2xl border-2 border-dashed border-blue-500/30 dark:border-blue-400/20 bg-gradient-to-b from-blue-50/70 to-indigo-50/70 dark:from-blue-950/20 dark:to-indigo-950/20 hover:border-blue-500 active:scale-[0.98] transition-all text-center min-h-[190px]"
+                                aria-label={`Xem thêm ${remainingSectionCount} dịch vụ ${sec.shortLabel}`}
+                              >
+                                <div className="w-10 h-10 rounded-full bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-2 shadow-xs group-hover:scale-110 transition-transform">
+                                  <ChevronDown className="w-5 h-5 animate-bounce" />
+                                </div>
+                                <span className="text-xs font-black text-slate-800 dark:text-white">
+                                  +{remainingSectionCount} dịch vụ khác
+                                </span>
+                                <span className="text-[11px] text-blue-600 dark:text-blue-400 font-bold mt-1 flex items-center gap-0.5">
+                                  <span>Xem tất cả {sec.shortLabel}</span>
+                                  <span>→</span>
+                                </span>
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Expanded footer button on mobile */}
+                          {items.length > 3 && isSectionExpanded && (
+                            <div className="md:hidden pt-1 flex justify-center">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  toggleMobileGroup(sectionGroupKey);
+                                  const el = document.getElementById(`section-${sec.id}`);
+                                  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                                }}
+                                className="w-full py-2 px-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/80 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] transition-all"
+                              >
+                                <span>Thu gọn danh sách {sec.shortLabel}</span>
+                                <ChevronUp className="w-3.5 h-3.5 text-slate-400" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()
                   )}
                 </section>
               );

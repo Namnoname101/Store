@@ -133,7 +133,7 @@ export async function fulfillCodexCreditOrder(
         creditUsd,
         guestEmail: order.customerEmail,
         userId: order.userId,
-        name: `DaiTruong_${order.orderCode}`,
+        name: `KhoDEE_${order.orderCode}`,
       });
 
       if (!createRes.success || !createRes.bindingId || !createRes.key) {

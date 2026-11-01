@@ -17,7 +17,7 @@ export async function generateMetadata({
 }: CheckoutPageProps): Promise<Metadata> {
   const { orderCode } = await Promise.resolve(params);
   return {
-    title: `Thanh toán đơn hàng #${orderCode} - Daitruong Store`,
+    title: `Thanh toán đơn hàng #${orderCode} - KhoDEE`,
     description: `Quét mã VietQR chuyển khoản tự động cho đơn hàng #${orderCode}. Bàn giao mã kích hoạt tức thì.`,
   };
 }

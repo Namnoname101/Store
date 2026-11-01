@@ -262,7 +262,7 @@ export default function BuffProgressCard({
             )}
 
             <span className="text-xs text-slate-400 font-medium">
-              {progress?.providerName || "Máy chủ cấp phát DigiStore"}
+              {progress?.providerName || "Máy chủ cấp phát KhoDEE"}
             </span>
           </div>
 

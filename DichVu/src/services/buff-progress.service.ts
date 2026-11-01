@@ -235,7 +235,7 @@ export async function getBuffProgress(orderCode: string): Promise<BuffProgressRe
 
   const totalQuantity = buffItem.quantity;
   const serviceName = buffItem.product.title;
-  const providerName = "Máy chủ cấp phát DigiStore";
+  const providerName = "Máy chủ cấp phát KhoDEE";
   const targetLink = order.customerNote || undefined;
   const serverOrderId = order.upstreamOrderId || undefined;
   const createdAt = order.createdAt.toISOString();

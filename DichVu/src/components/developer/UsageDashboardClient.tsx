@@ -67,12 +67,12 @@ export default function UsageDashboardClient() {
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
       const paramKey = urlParams.get("apiKey") || urlParams.get("key");
-      const storedKey = localStorage.getItem("daitruong_dev_api_key");
+      const storedKey = localStorage.getItem("khodee_dev_api_key") || localStorage.getItem("daitruong_dev_api_key");
 
       if (paramKey) {
         setApiKey(paramKey);
         setInputKey(paramKey);
-        localStorage.setItem("daitruong_dev_api_key", paramKey);
+        localStorage.setItem("khodee_dev_api_key", paramKey);
       } else if (storedKey) {
         setApiKey(storedKey);
         setInputKey(storedKey);
@@ -97,7 +97,7 @@ export default function UsageDashboardClient() {
         setUsage(null);
       } else {
         setUsage(data);
-        localStorage.setItem("daitruong_dev_api_key", key);
+        localStorage.setItem("khodee_dev_api_key", key);
       }
     } catch (err: any) {
       setError(err.message || "Lỗi mạng khi tải thông tin usage");
@@ -164,7 +164,7 @@ export default function UsageDashboardClient() {
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1 text-xs font-mono font-medium text-zinc-300 shadow-2xs">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>DaiTruong Developer Portal</span>
+            <span>KhoDEE Developer Portal</span>
           </div>
           <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             API Usage & Real-time Logs

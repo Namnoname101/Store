@@ -325,7 +325,7 @@ export default function CheckUsageClient() {
         </h1>
 
         <p className="max-w-2xl mx-auto text-xs sm:text-sm text-slate-400">
-          Tra cứu số dư credit, hạn mức ngày, nhật ký request và tình trạng hoạt động của API Key mua tại DaiTruong Store hoặc đối tác.
+          Tra cứu số dư credit, hạn mức ngày, nhật ký request và tình trạng hoạt động của API Key mua tại KhoDEE hoặc đối tác.
         </p>
       </div>
 

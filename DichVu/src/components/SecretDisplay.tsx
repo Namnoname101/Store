@@ -292,7 +292,7 @@ export default function SecretDisplay({
 
     const handleDownloadTxt = () => {
     let content = "========================================\n";
-    content += "DAITRUONG STORE - THÔNG TIN ĐƠN HÀNG #" + (orderCode || "ONLINE") + "\n";
+    content += "KHODEE - THÔNG TIN ĐƠN HÀNG #" + (orderCode || "ONLINE") + "\n";
     content += "Thời gian xuất: " + new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) + "\n";
     content += "========================================\n\n";
 
@@ -1094,7 +1094,7 @@ export default function SecretDisplay({
               <span>Bảo hành 1-đổi-1 & Hỗ trợ kỹ thuật 24/7</span>
             </h4>
             <p className="text-xs text-zinc-400 mt-1">
-              Đội ngũ kỹ thuật viên DaiTruong Store sẵn sàng hỗ trợ bạn qua Zalo & Telegram.
+              Đội ngũ kỹ thuật viên KhoDEE sẵn sàng hỗ trợ bạn qua Zalo & Telegram.
             </p>
           </div>
 

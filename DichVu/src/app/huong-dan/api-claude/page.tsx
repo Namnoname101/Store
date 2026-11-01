@@ -4,7 +4,7 @@ import { HelpCircle, ArrowRight } from "lucide-react";
 import ClaudeApiGuideHub from "@/components/ClaudeApiGuideHub";
 
 export const metadata: Metadata = {
-  title: "Hướng Dẫn Cấu Hình & Sử Dụng API Claude — DaiTruong Store",
+  title: "Hướng Dẫn Cấu Hình & Sử Dụng API Claude — KhoDEE",
   description:
     "Hướng dẫn chi tiết từng bước kết nối API Claude với Claude Desktop App (Cowork), Cursor AI, VS Code Claude Code CLI và Open Design Gateway.",
 };

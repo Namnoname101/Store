@@ -109,7 +109,7 @@ export default function TopupClient() {
             Nạp tiền vào tài khoản
           </h1>
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-            Hệ thống nạp tiền tự động qua VietQR 24/7, cộng số dư ví Daitruong Store tức thì trong 3-5 giây để thanh toán 1 chạm.
+            Hệ thống nạp tiền tự động qua VietQR 24/7, cộng số dư ví KhoDEE tức thì trong 3-5 giây để thanh toán 1 chạm.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -154,7 +154,7 @@ export default function TopupClient() {
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-1 font-mono">
               <Wallet className="h-3.5 w-3.5" />
-              <span>Ví Thành Viên DaiTruong Store</span>
+              <span>Ví Thành Viên KhoDEE</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-white">
               Xin chào, <span className="text-indigo-400">{user?.username}</span>

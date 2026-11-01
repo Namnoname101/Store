@@ -85,15 +85,15 @@ export default function Navbar() {
         <div className="flex items-center gap-3 shrink-0">
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-extrabold text-white shadow-lg shadow-blue-500/30 text-base sm:text-lg group-hover:scale-105 transition-all shrink-0">
-              D
+              K
             </div>
             <div className="flex flex-col">
               <div className="font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5 text-base leading-tight">
-                <span>DaiTruong</span>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Store</span>
+                <span>Kho</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">DEE</span>
                 <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-500/30">MMO HUB</span>
               </div>
-              <span className="hidden xl:block text-[10px] text-slate-500 dark:text-slate-400 font-medium">Chợ Tài Nguyên Số & Key Tự Động 24/7</span>
+              <span className="hidden xl:block text-[10px] text-slate-500 dark:text-slate-400 font-medium">Kho Tài Khoản & Dịch Vụ Số 24/7</span>
             </div>
           </Link>
         </div>
@@ -332,7 +332,7 @@ export default function Navbar() {
                 Đăng nhập tài khoản →
               </Link>
             )}
-            <span className="text-[10px] text-slate-400 font-mono">Daitruong Store</span>
+            <span className="text-[10px] text-slate-400 font-mono">KhoDEE</span>
           </div>
         </div>
       )}

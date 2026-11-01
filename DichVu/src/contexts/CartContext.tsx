@@ -42,7 +42,8 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-const CART_STORAGE_KEY = "daitruong_cart_items";
+const CART_STORAGE_KEY = "khodee_cart_items";
+const LEGACY_CART_STORAGE_KEY = "daitruong_cart_items";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -52,7 +53,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // Load from LocalStorage once on client mount
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(CART_STORAGE_KEY);
+      const saved = localStorage.getItem(CART_STORAGE_KEY) || localStorage.getItem(LEGACY_CART_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {

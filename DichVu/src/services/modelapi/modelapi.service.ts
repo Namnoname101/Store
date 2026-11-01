@@ -659,7 +659,7 @@ export class ModelApiService {
     params: CreateCustomerKeyParams
   ): Promise<CreateCustomerKeyResult> {
     const quotaUnits = this.usdToQuota(params.creditUsd);
-    const tokenName = params.name || `DaiTruong_${Date.now()}`;
+    const tokenName = params.name || `KhoDEE_${Date.now()}`;
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.getTimeoutMs());

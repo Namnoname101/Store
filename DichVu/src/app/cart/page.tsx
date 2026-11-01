@@ -225,7 +225,7 @@ export default function CartPage() {
           <span>Tiếp tục mua hàng</span>
         </Link>
         <span className="text-xs text-slate-400">
-          Daitruong Store / Giỏ hàng & Thanh toán
+          KhoDEE / Giỏ hàng & Thanh toán
         </span>
       </div>
 

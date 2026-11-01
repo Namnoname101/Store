@@ -210,7 +210,7 @@ export default function CodexTopupClient() {
       <div className="mb-10 text-center">
         <div className="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1 text-xs font-mono font-medium text-zinc-300 shadow-2xs">
           <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span>DaiTruong Codex API Quota Platform</span>
+          <span>KhoDEE Codex API Quota Platform</span>
         </div>
         <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
           Nạp Tự Động API Credit & Quota

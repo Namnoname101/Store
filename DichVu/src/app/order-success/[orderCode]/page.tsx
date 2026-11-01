@@ -29,7 +29,7 @@ export async function generateMetadata({
 }: OrderSuccessPageProps): Promise<Metadata> {
   const { orderCode } = await Promise.resolve(params);
   return {
-    title: `Đơn hàng hoàn tất #${orderCode} - Daitruong Store`,
+    title: `Đơn hàng hoàn tất #${orderCode} - KhoDEE`,
     description: `Thanh toán thành công đơn hàng #${orderCode}. Nhận mã bản quyền / tài khoản tự động tức thì.`,
   };
 }
