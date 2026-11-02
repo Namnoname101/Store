@@ -116,6 +116,7 @@ export async function syncProductFromSupplier(
     prisma.supplierProductMapping.update({
       where: { id: mappingId },
       data: {
+        supplierProductCode: info.supplierProductCode || mapping.supplierProductCode,
         supplierPrice: info.price,
         supplierStock: Math.max(0, info.inStock),
         lastSyncAt: new Date(),

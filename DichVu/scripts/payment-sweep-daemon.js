@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 const SWEEP_INTERVAL_SECONDS = parseInt(process.env.SWEEP_INTERVAL_SECONDS || "60", 10);
 const SUPPLIER_SYNC_INTERVAL_SECONDS = parseInt(
-  process.env.SUPPLIER_SYNC_INTERVAL_SECONDS || "21600",
+  process.env.SUPPLIER_SYNC_INTERVAL_SECONDS || "900",
   10
 );
 const CRON_SECRET = process.env.CRON_SECRET || "internal_sync_secret_token";
@@ -132,7 +132,10 @@ async function main() {
   // Periodic sweep loop
   setInterval(runSweepCycle, SWEEP_INTERVAL_SECONDS * 1000);
 
-  // Periodic supplier sync loop (throttled in background, no immediate boot trigger)
+  // Initial supplier sync after 10s boot grace period
+  setTimeout(triggerSupplierSync, 10000);
+
+  // Periodic supplier sync loop (every 15 mins by default)
   setInterval(triggerSupplierSync, SUPPLIER_SYNC_INTERVAL_SECONDS * 1000);
 
   // Graceful shutdown

@@ -83,7 +83,7 @@ async function main() {
 4. (Tùy chọn): Vào Google One bật tính năng "Chia sẻ với gia đình" để mời tối đa 5 thành viên dùng chung bộ nhớ 5TB.
 
 ⚠️ LƯU Ý QUAN TRỌNG:
-• Thời hạn kích hoạt: Link chỉ có hiệu lực trong vòng 12 giờ kể từ thời điểm giao đơn. Sau 12 giờ link sẽ tự động hết hạn, shop xin phép từ chối xử lý và không hỗ trợ các trường hợp kích hoạt trễ.
+• Thời hạn kích hoạt: Link chỉ có hiệu lực trong vòng 60 PHÚT kể từ thời điểm giao đơn. Sau 60 phút link sẽ tự động hết hạn, shop xin phép từ chối xử lý và không hỗ trợ các trường hợp kích hoạt trễ.
 • Vui lòng kích hoạt link ngay sau khi nhận hàng để đảm bảo quyền lợi.`;
 
   let gemini = await prisma.product.findUnique({
@@ -97,7 +97,7 @@ async function main() {
         description: geminiDescription,
         type: "ACCOUNT",
         fulfillmentType: "API_DROPSHIP",
-        // preserved price
+        price: 59999,
         originalPrice: 150000,
         isActive: true,
         thumbnailUrl: "/images/brands/gemini.svg",
@@ -108,11 +108,10 @@ async function main() {
       update: {
         supplierId: supplier.id,
         supplierProductCode: "70",
-        supplierPrice: 21800,
-        supplierStock: 56,
+
         markupType: "PERCENTAGE",
         markupValue: 42,
-        isAutoSync: true,
+        isAutoSync: false,
         customConfig: JSON.stringify({
           alternativeSuppliers: [
             {
@@ -127,11 +126,10 @@ async function main() {
         productId: gemini.id,
         supplierId: supplier.id,
         supplierProductCode: "70",
-        supplierPrice: 21800,
-        supplierStock: 56,
+
         markupType: "PERCENTAGE",
         markupValue: 42,
-        isAutoSync: true,
+        isAutoSync: false,
         customConfig: JSON.stringify({
           alternativeSuppliers: [
             {

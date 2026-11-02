@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -50,6 +50,7 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [user, setUser] = useState<{ id: string; username: string; balance: number; role?: string } | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const guidesTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
   const { openCart, itemCount } = useCart();
@@ -66,7 +67,22 @@ export default function Navbar() {
       })
       .catch(() => setUser(null))
       .finally(() => setIsLoadingUser(false));
+
+    return () => {
+      if (guidesTimeoutRef.current) clearTimeout(guidesTimeoutRef.current);
+    };
   }, []);
+
+  const handleGuidesEnter = () => {
+    if (guidesTimeoutRef.current) clearTimeout(guidesTimeoutRef.current);
+    setIsGuidesOpen(true);
+  };
+
+  const handleGuidesLeave = () => {
+    guidesTimeoutRef.current = setTimeout(() => {
+      setIsGuidesOpen(false);
+    }, 200); // 200ms grace period prevents accidental closing
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,140 +96,145 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-2 z-40 w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 pt-2">
-      <div className="rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white/90 dark:bg-[#070b14]/90 backdrop-blur-xl px-2.5 sm:px-3.5 lg:px-4 py-2 sm:py-2.5 flex items-center justify-between shadow-lg shadow-slate-900/5 dark:shadow-2xl transition-all min-w-0">
-        {/* Brand Logo with MMO HUB Tag */}
+      <div className="rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white/90 dark:bg-[#070b14]/90 backdrop-blur-xl px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between shadow-lg shadow-slate-900/5 dark:shadow-2xl transition-all">
+        {/* Brand Logo */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 xl:w-10 xl:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-extrabold text-white shadow-lg shadow-blue-500/30 text-sm sm:text-base xl:text-lg group-hover:scale-105 transition-all shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-extrabold text-white shadow-lg shadow-blue-500/30 text-sm sm:text-base group-hover:scale-105 transition-all shrink-0">
               K
             </div>
-            <div className="flex flex-col">
-              <div className="font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-1 sm:gap-1.5 text-sm sm:text-base leading-tight">
-                <span>Kho</span>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">DEE</span>
-                <span className="text-[9px] sm:text-[10px] font-mono font-bold px-1 sm:px-1.5 py-0.5 rounded bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-500/30">MMO HUB</span>
-              </div>
-              <span className="hidden 2xl:block text-[10px] text-slate-500 dark:text-slate-400 font-medium">Kho Tài Khoản & Dịch Vụ Số 24/7</span>
+            <div className="font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5 text-sm sm:text-base leading-tight">
+              <span>Kho</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">DEE</span>
+              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-500/30">MMO HUB</span>
             </div>
           </Link>
         </div>
 
         {/* Center Navigation Links - Desktop Tiered System */}
-        <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 min-w-0">
-          <Link href="/#catalog" className="px-2 xl:px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 hover:text-blue-600 dark:hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
-            <span className="hidden xl:inline">Kho Tài Nguyên</span>
-            <span className="inline xl:hidden">Kho Hàng</span>
+        <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 shrink-0">
+          <Link
+            href="/#catalog"
+            className="px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 hover:text-blue-600 dark:hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0"
+          >
+            <span>Kho Hàng</span>
             <span className="px-1.5 py-0.5 rounded-full bg-blue-500/10 dark:bg-blue-500/20 text-[10px] text-blue-600 dark:text-blue-300 font-bold">124</span>
           </Link>
-          <Link href="/topup" className="px-2 xl:px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
-            <span className="hidden xl:inline">Nạp Ví Tự Động</span>
-            <span className="inline xl:hidden">Nạp Ví</span>
+          <Link
+            href="/topup"
+            className="px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0"
+          >
+            <span>Nạp Ví</span>
             <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-[10px] text-emerald-600 dark:text-emerald-300 font-mono font-bold">+5%</span>
           </Link>
-          <Link href="/lookup" className="px-2 xl:px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1 whitespace-nowrap shrink-0">
+          <Link
+            href="/lookup"
+            className="px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1 whitespace-nowrap shrink-0"
+          >
             <ReceiptText className="h-3.5 w-3.5 text-indigo-500 dark:text-indigo-400 shrink-0" />
-            <span className="hidden xl:inline">Tra Cứu Đơn</span>
-            <span className="inline xl:hidden">Tra Cứu</span>
+            <span>Tra Cứu</span>
           </Link>
 
-          {/* Grouped Guides & Tools Dropdown */}
+          {/* Grouped Guides & Tools Dropdown with Hover Bridge Protection */}
           <div
             className="relative"
-            onMouseEnter={() => setIsGuidesOpen(true)}
-            onMouseLeave={() => setIsGuidesOpen(false)}
+            onMouseEnter={handleGuidesEnter}
+            onMouseLeave={handleGuidesLeave}
           >
             <button
               type="button"
-              onClick={() => setIsGuidesOpen(!isGuidesOpen)}
-              className="px-2 xl:px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all flex items-center gap-1 whitespace-nowrap shrink-0 text-slate-700 dark:text-slate-300"
+              onClick={() => setIsGuidesOpen((prev) => !prev)}
+              aria-expanded={isGuidesOpen}
+              className={`px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 whitespace-nowrap shrink-0 text-slate-700 dark:text-slate-300 ${
+                isGuidesOpen
+                  ? "bg-slate-100 dark:bg-white/10 text-indigo-600 dark:text-indigo-400"
+                  : "hover:bg-slate-100 dark:hover:bg-white/5 hover:text-indigo-600 dark:hover:text-indigo-400"
+              }`}
             >
               <BookOpen className="h-3.5 w-3.5 text-indigo-500 dark:text-indigo-400 shrink-0" />
               <span>Hướng Dẫn</span>
-              <ChevronDown className={`h-3 w-3 text-slate-400 transition-transform ${isGuidesOpen ? "rotate-180" : ""}`} />
+              <ChevronDown className={`h-3 w-3 text-slate-400 transition-transform duration-200 ${isGuidesOpen ? "rotate-180" : ""}`} />
             </button>
 
             {isGuidesOpen && (
-              <div className="absolute top-full left-0 mt-1 w-64 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#0c1220]/95 backdrop-blur-xl shadow-2xl p-2 z-50 flex flex-col gap-1 animate-in fade-in slide-in-from-top-1 duration-150">
-                <Link
-                  href="/ctv"
-                  onClick={() => setIsGuidesOpen(false)}
-                  className="flex items-start gap-2.5 px-3 py-2 rounded-xl bg-emerald-500/5 hover:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 transition-colors"
-                >
-                  <Sparkles className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-xs">Kiếm Tiền CTV (0đ Vốn)</span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Chính sách hoa hồng hấp dẫn</span>
-                  </div>
-                </Link>
-                <Link
-                  href="/huong-dan/codex"
-                  onClick={() => setIsGuidesOpen(false)}
-                  className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
-                >
-                  <Terminal className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-xs">Kích Hoạt App ChatGPT (1-Click)</span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Tool KhoDee-helper cho ChatGPT Windows & IDE</span>
-                  </div>
-                </Link>
-                <Link
-                  href="/huong-dan/api-claude"
-                  onClick={() => setIsGuidesOpen(false)}
-                  className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-                >
-                  <BookOpen className="h-4 w-4 text-indigo-500 shrink-0 mt-0.5" />
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-xs">Cấu Hình API Claude</span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Cài đặt Cursor, Cline, Roo Code</span>
-                  </div>
-                </Link>
-                <Link
-                  href="/check-usage"
-                  onClick={() => setIsGuidesOpen(false)}
-                  className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  <Activity className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-xs">Kiểm Tra Dung Lượng Claude / Cursor</span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Check quota Claude tức thì</span>
-                  </div>
-                </Link>
-                <Link
-                  href="/developer/usage"
-                  onClick={() => setIsGuidesOpen(false)}
-                  className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
-                >
-                  <Terminal className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-xs">Tra Cứu Quota Codex</span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Kiểm tra hạn mức Codex API & nạp thêm</span>
-                  </div>
-                </Link>
-                <Link
-                  href="/tools/prompt-master"
-                  onClick={() => setIsGuidesOpen(false)}
-                  className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-                >
-                  <Sparkles className="h-4 w-4 text-purple-500 shrink-0 mt-0.5" />
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-xs">Prompt AI Master</span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Công cụ tạo prompt chuẩn kỹ thuật</span>
-                  </div>
-                </Link>
+              <div className="absolute top-full left-0 pt-1.5 w-64 sm:w-72 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#0c1220]/95 backdrop-blur-xl shadow-2xl p-2 flex flex-col gap-1">
+                  <Link
+                    href="/ctv"
+                    onClick={() => setIsGuidesOpen(false)}
+                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl bg-emerald-500/5 hover:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 transition-colors"
+                  >
+                    <Sparkles className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-xs">Kiếm Tiền CTV (0đ Vốn)</span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Chính sách hoa hồng hấp dẫn</span>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/huong-dan/codex"
+                    onClick={() => setIsGuidesOpen(false)}
+                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                  >
+                    <Terminal className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-xs">Kích Hoạt App ChatGPT (1-Click)</span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Tool KhoDee-helper cho ChatGPT Windows & IDE</span>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/huong-dan/api-claude"
+                    onClick={() => setIsGuidesOpen(false)}
+                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                  >
+                    <BookOpen className="h-4 w-4 text-indigo-500 shrink-0 mt-0.5" />
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-xs">Cấu Hình API Claude</span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Cài đặt Cursor, Cline, Roo Code</span>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/check-usage"
+                    onClick={() => setIsGuidesOpen(false)}
+                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  >
+                    <Activity className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-xs">Kiểm Tra Dung Lượng Claude / Cursor</span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Check quota Claude tức thì</span>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/developer/usage"
+                    onClick={() => setIsGuidesOpen(false)}
+                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                  >
+                    <Terminal className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-xs">Tra Cứu Quota Codex</span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Kiểm tra hạn mức Codex API & nạp thêm</span>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/tools/prompt-master"
+                    onClick={() => setIsGuidesOpen(false)}
+                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                  >
+                    <Sparkles className="h-4 w-4 text-purple-500 shrink-0 mt-0.5" />
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-xs">Prompt AI Master</span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Công cụ tạo prompt chuẩn kỹ thuật</span>
+                    </div>
+                  </Link>
+                </div>
               </div>
             )}
           </div>
 
-          <Link
-            href="/ctv"
-            className="hidden xl:flex px-2.5 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all items-center gap-1 whitespace-nowrap shrink-0 text-xs font-semibold"
-          >
-            <Sparkles className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-            <span>Kiếm tiền CTV</span>
-          </Link>
-
           {user?.role === "ADMIN" && (
-            <Link href="/admin" className="px-2 xl:px-2.5 py-1.5 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/20 transition-all flex items-center gap-1 whitespace-nowrap shrink-0">
+            <Link
+              href="/admin"
+              className="px-2.5 py-1.5 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/20 transition-all flex items-center gap-1 whitespace-nowrap shrink-0"
+            >
               <Shield className="h-3.5 w-3.5 shrink-0" />
               <span>Admin</span>
             </Link>
@@ -221,15 +242,15 @@ export default function Navbar() {
         </nav>
 
         {/* Right Actions: Search / Wallet / Cart / Login */}
-        <div className="flex items-center gap-1 sm:gap-1.5 xl:gap-2 shrink-0">
-          {/* Quick Search form */}
-          <form onSubmit={handleSearch} className="hidden md:flex relative items-center">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Quick Search form (Desktop XL+) */}
+          <form onSubmit={handleSearch} className="hidden xl:flex relative items-center">
             <input
               type="text"
               placeholder="Tìm kiếm..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-20 md:w-24 lg:w-28 xl:w-36 2xl:w-44 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100/90 dark:bg-slate-800/60 py-1.5 pl-7 pr-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:w-36 xl:focus:w-52 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none transition-all shadow-xs"
+              className="w-28 xl:w-36 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100/90 dark:bg-slate-800/60 py-1.5 pl-7 pr-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:w-44 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none transition-all shadow-xs"
             />
             <Search className="absolute left-2 h-3.5 w-3.5 text-slate-400" />
           </form>
@@ -239,9 +260,9 @@ export default function Navbar() {
             <Link
               href="/topup"
               title="Số dư ví"
-              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[11px] sm:text-xs font-semibold shadow-xs hover:bg-emerald-500/20 transition-all font-mono whitespace-nowrap shrink-0"
+              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold shadow-xs hover:bg-emerald-500/20 transition-all font-mono whitespace-nowrap shrink-0"
             >
-              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse shrink-0" />
               <span>Ví: {user.balance.toLocaleString("vi-VN")}đ</span>
             </Link>
           )}
@@ -253,7 +274,7 @@ export default function Navbar() {
             className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md shadow-blue-600/30 transition-all active:scale-95 shrink-0 whitespace-nowrap"
           >
             <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
-            <span className="hidden xl:inline">Giỏ hàng</span>
+            <span className="hidden 2xl:inline">Giỏ hàng</span>
             {itemCount > 0 && (
               <span className="w-4 h-4 rounded-full bg-white text-blue-700 text-[10px] font-extrabold flex items-center justify-center shrink-0">
                 {itemCount > 99 ? "99+" : itemCount}
@@ -266,18 +287,18 @@ export default function Navbar() {
             user ? (
               <Link
                 href="/profile"
-                className="hidden sm:flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100/90 dark:bg-slate-800/80 text-xs font-medium text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-600 transition-all whitespace-nowrap shrink-0"
+                className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100/90 dark:bg-slate-800/80 text-xs font-medium text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-600 transition-all whitespace-nowrap shrink-0"
               >
                 <User className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
-                <span className="max-w-[50px] sm:max-w-[65px] xl:max-w-[85px] truncate">{user.username}</span>
+                <span className="hidden xl:inline max-w-[70px] xl:max-w-[90px] truncate">{user.username}</span>
               </Link>
             ) : (
               <Link
                 href="/login"
-                className="hidden sm:flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100/90 dark:bg-slate-800/60 hover:bg-slate-200 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-all whitespace-nowrap shrink-0"
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100/90 dark:bg-slate-800/60 hover:bg-slate-200 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-all whitespace-nowrap shrink-0"
               >
                 <User className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
-                <span className="whitespace-nowrap">Đăng nhập</span>
+                <span className="hidden xl:inline whitespace-nowrap">Đăng nhập</span>
               </Link>
             )
           )}
@@ -286,7 +307,7 @@ export default function Navbar() {
           <button
             onClick={toggleTheme}
             aria-label="Đổi giao diện sáng/tối"
-            className="flex h-7.5 w-7.5 sm:h-8 sm:w-8 items-center justify-center rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100/90 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors shrink-0"
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100/90 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors shrink-0"
           >
             {theme === "dark" ? <Sun className="h-3.5 w-3.5 text-amber-400" /> : <Moon className="h-3.5 w-3.5 text-slate-600" />}
           </button>

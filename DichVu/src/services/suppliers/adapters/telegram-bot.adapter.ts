@@ -318,11 +318,21 @@ export class TelegramBotAdapter implements ISupplierAdapter {
       // 1. Try live parsed catalog first
       try {
         const liveCatalog = await this.getLiveCatalog(creds, botUsername);
-        const effectiveCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierProductCode;
-        const liveItem = liveCatalog[effectiveCode] || liveCatalog[supplierProductCode];
+const effectiveCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierProductCode;
+        let liveItem = liveCatalog[effectiveCode] || liveCatalog[supplierProductCode];
+        if (!liveItem) {
+          const isGemini = supplierProductCode === "51" || supplierProductCode === "70";
+          for (const item of Object.values(liveCatalog)) {
+            const lowerName = item.name.toLowerCase();
+            if (isGemini && lowerName.includes("gemini") && (lowerName.includes("18") || lowerName.includes("5tb"))) {
+              liveItem = item;
+              break;
+            }
+          }
+        }
         if (liveItem) {
           return {
-            supplierProductCode,
+            supplierProductCode: liveItem.code,
             name: liveItem.name,
             price: liveItem.price,
             inStock: liveItem.inStock,
@@ -377,7 +387,6 @@ export class TelegramBotAdapter implements ISupplierAdapter {
     orderCode: string
   ): Promise<SupplierOrderResult> {
     try {
-      const targetCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierProductCode;
       const qty = quantity > 0 ? quantity : 1;
 
       // 1. Send /buy to get catalog
@@ -394,7 +403,40 @@ export class TelegramBotAdapter implements ISupplierAdapter {
         };
       }
 
-      // 2. Click product:view:<id>
+// 2. Locate target product button (exact code match, alias or smart keyword fallback)
+      let targetCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierProductCode;
+      let targetBtnFound = false;
+      if (msg?.replyMarkup && (msg.replyMarkup as any).rows) {
+        for (const row of (msg.replyMarkup as any).rows) {
+          for (const btn of row.buttons) {
+            const dataStr = btn.data ? Buffer.from(btn.data).toString("utf-8") : "";
+            if (dataStr === `product:view:${targetCode}`) {
+              targetBtnFound = true;
+              break;
+            }
+          }
+          if (targetBtnFound) break;
+        }
+        if (!targetBtnFound) {
+          const isGemini = targetCode === "51" || targetCode === "70";
+          for (const row of (msg.replyMarkup as any).rows) {
+            for (const btn of row.buttons) {
+              const dataStr = btn.data ? Buffer.from(btn.data).toString("utf-8") : "";
+              const btnText = (btn.text || "").toLowerCase();
+              if (isGemini && btnText.includes("gemini") && (btnText.includes("18") || btnText.includes("5tb"))) {
+                const match = dataStr.match(/product:view:(\d+)/);
+                if (match) {
+                  targetCode = match[1];
+                  targetBtnFound = true;
+                  console.log(`[buyXoaiNon] Auto-remapped Gemini product code from ${supplierProductCode} to ${targetCode}`);
+                  break;
+                }
+              }
+            }
+            if (targetBtnFound) break;
+          }
+        }
+      }
       await msg.click({ data: Buffer.from(`product:view:${targetCode}`) });
       await new Promise((r) => setTimeout(r, 2000));
 
