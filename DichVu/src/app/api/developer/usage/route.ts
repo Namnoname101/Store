@@ -3,6 +3,8 @@ import prisma from "@/lib/prisma";
 import { computeKeyFingerprint, maskApiKey, getAuthenticatedUser } from "@/lib/key-security";
 import { ModelApiService } from "@/services/modelapi/modelapi.service";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const authHeader = req.headers.get("authorization");

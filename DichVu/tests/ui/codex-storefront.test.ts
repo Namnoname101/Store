@@ -44,7 +44,7 @@ describe("Codex Credit Storefront & Checkout API Tests", () => {
     // Check 10 USD package: 5M quota
     const p10 = CODEX_PACKAGES.find((p) => p.creditUsd === 10);
     expect(p10?.quotaUnits).toBe(5000000);
-    expect(p10?.priceVnd).toBe(12000);
+    expect(p10?.priceVnd).toBe(22000);
   });
 
   it("should reject checkout if bindingId is missing or invalid", async () => {
@@ -98,7 +98,7 @@ describe("Codex Credit Storefront & Checkout API Tests", () => {
     expect(data.success).toBe(true);
     expect(data.orderCode).toMatch(/^ORD/);
     expect(data.vietQrUrl).toContain("https://img.vietqr.io");
-    expect(data.totalAmount).toBe(12000);
+    expect(data.totalAmount).toBe(22000);
     expect(data.creditUsd).toBe(10);
     expect(data.quotaUnits).toBe(5000000);
 
