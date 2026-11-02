@@ -10,6 +10,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        slate: {
+          750: "#293548",
+          850: "#151e2e",
+        },
+        zinc: {
+          850: "#1f1f23",
+        },
         primary: {
           50: "#eff6ff",
           100: "#dbeafe",

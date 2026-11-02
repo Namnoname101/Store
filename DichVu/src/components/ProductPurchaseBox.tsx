@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Zap,
@@ -72,6 +72,27 @@ export default function ProductPurchaseBox({
     ? 10
     : stockCount;
 
+  const [liveStock, setLiveStock] = useState<number>(stockCount);
+  const [isLiveChecked, setIsLiveChecked] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!slug) return;
+    let isMounted = true;
+    fetch(`/api/products/${slug}/live-stock`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isMounted && data && typeof data.stockCount === "number") {
+          setLiveStock(data.stockCount);
+          setIsLiveChecked(true);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, [slug]);
+
+  const effectiveStock = isLiveChecked ? liveStock : stockCount;
   const [quantity, setQuantity] = useState<number>(isCustomQuantity ? effectiveMin : 1);
   const [targetLink, setTargetLink] = useState<string>("");
   const [customerApiKey, setCustomerApiKey] = useState<string>("");
@@ -154,7 +175,7 @@ export default function ProductPurchaseBox({
     message: string;
   } | null>(null);
 
-  const inStock = isCustomQuantity || stockCount > 0;
+  const inStock = isCustomQuantity || effectiveStock > 0;
   const canPurchase = inStock || allowsManualFulfillment;
   const totalPrice = price * (quantity || 0);
   const netTotal = appliedCoupon
@@ -464,17 +485,23 @@ export default function ProductPurchaseBox({
             <span>Dịch vụ tự động — Khởi tạo sau khi thanh toán</span>
           </div>
         ) : inStock ? (
-          <div className="flex items-center gap-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/30 px-3 py-2 text-xs font-medium text-emerald-800 dark:text-emerald-300">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>
-              {allowsManualFulfillment || categorySlug === "ai-api" || categorySlug === "ai" || productTitle.toLowerCase().includes("api") || productTitle.toLowerCase().includes("codex") || stockCount >= 99999 ? (
-                <>Dịch vụ tự động — Cấp phát 24/7 tức thì</>
-              ) : (
-                <>
-                  Kho sẵn: <strong>{stockCount}</strong> key (Giao tự động tức thì)
-                </>
-              )}
-            </span>
+          <div className="flex items-center justify-between rounded-xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-500/30 px-3.5 py-2 text-xs font-medium text-emerald-800 dark:text-emerald-300">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span>
+                {allowsManualFulfillment || categorySlug === "ai-api" || categorySlug === "ai" || productTitle.toLowerCase().includes("api") || productTitle.toLowerCase().includes("codex") || effectiveStock >= 99999 ? (
+                  <>Dịch vụ tự động — Cấp phát 24/7 tức thì</>
+                ) : (
+                  <>
+                    Kho sẵn: <strong>{effectiveStock}</strong> slot {isLiveChecked ? "(Live Telegram)" : ""}
+                  </>
+                )}
+              </span>
+            </div>
+            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold uppercase">Sẵn sàng</span>
           </div>
         ) : allowsManualFulfillment ? (
           <div className="flex items-center gap-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-500/30 px-3 py-2 text-xs font-medium text-amber-800 dark:text-amber-300">
@@ -484,9 +511,12 @@ export default function ProductPurchaseBox({
             </span>
           </div>
         ) : (
-          <div className="flex items-center gap-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-500/20 px-3 py-2 text-xs font-medium text-rose-700 dark:text-rose-400">
-            <span className="h-2 w-2 rounded-full bg-rose-500" />
-            <span>Tạm hết hàng</span>
+          <div className="flex items-center justify-between rounded-xl bg-rose-50/90 dark:bg-rose-950/40 border border-rose-500/30 px-3.5 py-2 text-xs font-medium text-rose-700 dark:text-rose-400">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-rose-500" />
+              <span>Tạm hết hàng tại nhà cung cấp</span>
+            </div>
+            <span className="text-xs text-rose-600 dark:text-rose-400 font-semibold uppercase">Hết slot</span>
           </div>
         )}
       </div>
@@ -503,7 +533,7 @@ export default function ProductPurchaseBox({
               >
                 Số lượng đặt ({unitLabel}) <span className="text-rose-500">*</span>
               </label>
-              <span className="text-[11px] text-slate-500">
+              <span className="text-xs text-slate-500">
                 Min: {effectiveMin.toLocaleString("vi-VN")}
                 {maxQuantity ? ` - Max: ${maxQuantity.toLocaleString("vi-VN")}` : ""}
               </span>
@@ -552,7 +582,7 @@ export default function ProductPurchaseBox({
 
             {/* Quick chips */}
             <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
-              <span className="text-[11px] text-slate-500 mr-1">Chọn nhanh:</span>
+              <span className="text-xs text-slate-500 mr-1">Chọn nhanh:</span>
               {quickChips.map((chip) => (
                 <button
                   key={chip}
@@ -565,7 +595,7 @@ export default function ProductPurchaseBox({
                       return next;
                     })
                   }
-                  className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 transition-all"
+                  className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 transition-all"
                 >
                   +{chip.toLocaleString("vi-VN")}
                 </button>
@@ -574,7 +604,7 @@ export default function ProductPurchaseBox({
                 type="button"
                 disabled={isLoading}
                 onClick={() => setQuantity(effectiveMin)}
-                className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-850 px-2 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-colors"
+                className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-colors"
               >
                 Min
               </button>
@@ -597,7 +627,7 @@ export default function ProductPurchaseBox({
                 Số lượng mua
               </label>
               {quantity >= 5 && (
-                <span className="text-[10px] font-bold text-amber-500 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                <span className="text-xs font-bold text-amber-500 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
                   ⚡ Mua sỉ ≥ 5
                 </span>
               )}
@@ -689,7 +719,7 @@ export default function ProductPurchaseBox({
               />
               <Globe className="absolute left-3.5 top-3 h-4 w-4 text-blue-600 dark:text-blue-400" />
             </div>
-            <p className="mt-1 text-[11px] text-slate-500">
+            <p className="mt-1 text-xs text-slate-500">
               {targetLinkHelper}
             </p>
           </div>
@@ -706,7 +736,7 @@ export default function ProductPurchaseBox({
                 >
                   API Key cần nạp thêm
                 </label>
-                <span className="text-[11px] text-slate-400">
+                <span className="text-xs text-slate-400">
                   (để trống nếu muốn tạo key mới)
                 </span>
               </div>
@@ -750,7 +780,7 @@ export default function ProductPurchaseBox({
                     className={`absolute right-1.5 top-1.5 bottom-1.5 px-3 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all disabled:opacity-50 ${
                       verifiedKeyData && verifiedKeyData.rawKey === customerApiKey.trim()
                         ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                        : "bg-blue-600 text-white hover:bg-blue-700 shadow-xs"
+                        : "bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 shadow-xs"
                     }`}
                   >
                     {isVerifyingKey ? (
@@ -780,12 +810,12 @@ export default function ProductPurchaseBox({
                       <p className="font-semibold text-emerald-900 dark:text-emerald-100">
                         Key hợp lệ: {verifiedKeyData.keyName}
                       </p>
-                      <p className="text-[11px] text-emerald-700/90 dark:text-emerald-300/90">
+                      <p className="text-xs text-emerald-700/90 dark:text-emerald-300/90">
                         Hạn mức hiện tại: ${verifiedKeyData.currentQuotaUsd.toFixed(2)} USD • Sẵn sàng nạp cộng dồn
                       </p>
                     </div>
                   </div>
-                  <span className="rounded-md bg-emerald-600/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 shrink-0">
+                  <span className="rounded-md bg-emerald-600/15 border border-emerald-500/30 px-2 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 shrink-0">
                     SẴN SÀNG
                   </span>
                 </div>
@@ -797,7 +827,7 @@ export default function ProductPurchaseBox({
                   <AlertCircle className="h-4 w-4 text-rose-500 shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <p className="font-medium">{keyVerifyError}</p>
-                    <p className="mt-0.5 text-[11px] text-rose-600/80 dark:text-rose-400/80">
+                    <p className="mt-0.5 text-xs text-rose-600/80 dark:text-rose-400/80">
                       Vui lòng kiểm tra lại key hoặc xóa trắng ô này để hệ thống tạo key mới mang tên bạn.
                     </p>
                   </div>
@@ -805,7 +835,7 @@ export default function ProductPurchaseBox({
               )}
 
               {!customerApiKey.trim() && (
-                <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                   💡 Nếu chưa có key, bạn có thể nhập Username bên dưới để tạo key mới mang tên mình.
                 </p>
               )}
@@ -830,7 +860,7 @@ export default function ProductPurchaseBox({
                     className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2.5 px-3.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
                   />
                 </div>
-                <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                   Tên này sẽ được đặt làm tên đại diện của API Key mới trên hệ thống.
                 </p>
               </div>
@@ -874,7 +904,7 @@ export default function ProductPurchaseBox({
                 type="button"
                 onClick={handleApplyCoupon}
                 disabled={isValidatingCoupon || !couponCode.trim() || !canPurchase}
-                className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+                className="px-3.5 py-2 rounded-xl bg-zinc-900 dark:bg-white disabled:opacity-50 text-white dark:text-zinc-950 text-xs font-semibold hover:bg-zinc-800 dark:hover:bg-zinc-100 flex items-center gap-1.5 transition-all shadow-sm"
               >
                 {isValidatingCoupon ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -935,7 +965,7 @@ export default function ProductPurchaseBox({
                 className={`flex-1 flex min-h-[46px] items-center justify-center gap-2 rounded-xl py-2.5 px-5 text-sm font-bold text-white shadow-md disabled:opacity-60 transition-all active:scale-[0.99] ${
                   !inStock && allowsManualFulfillment
                     ? "bg-amber-600 hover:bg-amber-700 shadow-amber-600/20"
-                    : "bg-blue-600 hover:bg-blue-700 shadow-blue-600/20"
+                    : "bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 shadow-sm active:scale-[0.98]"
                 }`}
               >
                 {isLoading ? (

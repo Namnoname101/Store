@@ -122,7 +122,7 @@ export default function TopupClient() {
             </Link>
             <Link
               href="/register?callbackUrl=/topup"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-6 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-750 transition-colors"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-6 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
             >
               <span>Đăng ký tài khoản</span>
             </Link>
@@ -148,7 +148,7 @@ export default function TopupClient() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       {/* Balance Banner */}
-      <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-950 p-6 sm:p-8 shadow-xl mb-8">
+      <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white/95 dark:bg-gradient-to-r dark:from-slate-900 dark:via-slate-900/95 dark:to-slate-950 p-6 sm:p-8 shadow-lg mb-8 transition-colors">
         <div className="absolute top-0 right-0 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -156,20 +156,20 @@ export default function TopupClient() {
               <Wallet className="h-3.5 w-3.5" />
               <span>Ví Thành Viên KhoDEE</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
               Xin chào, <span className="text-indigo-400">{user?.username}</span>
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
               Nạp tiền qua VietQR tự động cộng số dư trong 3 giây. Mua mọi dịch vụ 1 chạm.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 bg-slate-950/70 border border-slate-800 rounded-xl px-4 py-3">
+          <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3">
             <div className="h-10 w-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
               <Wallet className="h-5 w-5" />
             </div>
             <div>
-              <div className="text-[11px] text-slate-400 uppercase font-medium">Số dư khả dụng</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Số dư khả dụng</div>
               <div className="text-lg sm:text-xl font-bold text-emerald-300">
                 {user?.balance.toLocaleString("vi-VN")}đ
               </div>
@@ -179,14 +179,14 @@ export default function TopupClient() {
       </div>
 
       {/* Topup Form Card */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 sm:p-8 shadow-xl backdrop-blur-md">
-        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800">
+      <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white/95 dark:bg-slate-900/80 p-6 sm:p-8 shadow-lg backdrop-blur-md transition-colors">
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
           <div className="h-9 w-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
             <CreditCard className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white">Nạp tiền vào ví qua VietQR</h2>
-            <p className="text-xs text-slate-400">Chuyển khoản 24/7 từ mọi ngân hàng hoặc ví MoMo/ZaloPay</p>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Nạp tiền vào ví qua VietQR</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Chuyển khoản 24/7 từ mọi ngân hàng hoặc ví MoMo/ZaloPay</p>
           </div>
         </div>
 
@@ -200,7 +200,7 @@ export default function TopupClient() {
         <form onSubmit={handleCreateDeposit} className="space-y-6">
           {/* Preset Buttons */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-3">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-3">
               Chọn nhanh số tiền nạp
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
@@ -214,7 +214,7 @@ export default function TopupClient() {
                     className={`flex items-center justify-center py-3 px-4 rounded-xl border text-sm font-semibold transition-all cursor-pointer ${
                       isSelected
                         ? "border-indigo-500 bg-indigo-600/20 text-white shadow-md shadow-indigo-500/20 ring-1 ring-indigo-500"
-                        : "border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700 hover:bg-slate-900"
+                        : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-slate-700 dark:text-slate-300 hover:border-indigo-400 dark:hover:border-slate-700 hover:bg-white dark:hover:bg-slate-900"
                     }`}
                   >
                     {amt.toLocaleString("vi-VN")}đ
@@ -226,7 +226,7 @@ export default function TopupClient() {
 
           {/* Custom Amount Input */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
               Hoặc nhập số tiền khác (Tối thiểu 20.000đ)
             </label>
             <div className="relative">
@@ -235,7 +235,7 @@ export default function TopupClient() {
                 value={customAmount ? parseInt(customAmount, 10).toLocaleString("vi-VN") : ""}
                 onChange={handleCustomChange}
                 placeholder="Ví dụ: 75.000"
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 py-3 pl-4 pr-12 text-base font-bold text-white placeholder-slate-600 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 py-3 pl-4 pr-12 text-base font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
               <span className="absolute right-4 top-3.5 text-sm font-semibold text-slate-400">
                 VND
@@ -244,7 +244,7 @@ export default function TopupClient() {
           </div>
 
           {/* Value Summary Box */}
-          <div className="rounded-xl border border-slate-800/80 bg-slate-950/60 p-4 space-y-2 text-xs text-slate-300">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-950/60 p-4 space-y-2 text-xs text-slate-700 dark:text-slate-300">
             <div className="flex justify-between items-center">
               <span className="text-slate-400">Số tiền nạp vào ví:</span>
               <span className="text-base font-bold text-emerald-400">

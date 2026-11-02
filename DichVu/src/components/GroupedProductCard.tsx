@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Eye, ArrowRight, Layers, ChevronDown } from "lucide-react";
+import { Eye, ArrowRight } from "lucide-react";
 import type { Product } from "@prisma/client";
 import { formatVND } from "@/lib/product-types";
 import BrandLogo from "@/components/BrandLogo";
@@ -77,51 +77,51 @@ export default function GroupedProductCard({
   }, [displayThumbnail]);
 
   return (
-    <div className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-950 p-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-zinc-400 dark:hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-950/5 dark:hover:shadow-zinc-950/30">
+    <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-950 p-3.5 transition-all duration-300 hover:-translate-y-1 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-xl hover:shadow-zinc-950/5 dark:hover:shadow-zinc-950/40">
       <div>
         {/* Compact 16:10 Thumbnail */}
-        <div className="relative mb-2.5 flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-lg border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-900/60">
+        <div className="relative mb-3 flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-xl border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-900/60">
           <img
             key={displayThumbnail}
             ref={imgRef}
             src={displayThumbnail}
             alt={activeVariant.title || title}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={() => setImgError(true)}
           />
 
           {/* Official Brand Badge with SVG logo */}
-          <div className="absolute top-2 left-2">
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200/80 dark:border-zinc-700/80 bg-white/95 dark:bg-zinc-900/95 px-2 py-0.5 text-[10px] font-semibold text-zinc-800 dark:text-zinc-200 shadow-xs backdrop-blur-md">
-              <BrandLogo brandName={brandName} size={12} className="w-3 h-3 text-zinc-700 dark:text-zinc-300" />
+          <div className="absolute top-2.5 left-2.5">
+            <span className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200/80 dark:border-zinc-700/80 bg-white/95 dark:bg-zinc-900/95 px-2.5 py-1 text-xs font-semibold text-zinc-800 dark:text-zinc-200 shadow-xs backdrop-blur-md">
+              <BrandLogo brandName={brandName} size={14} className="w-3.5 h-3.5 text-zinc-700 dark:text-zinc-300" />
               {brandName}
             </span>
           </div>
 
           {/* Variants Count Badge */}
-          <div className="absolute top-2 right-2">
-            <span className="rounded-md bg-zinc-900/85 dark:bg-zinc-800/90 px-1.5 py-0.5 text-[10px] font-medium text-zinc-300 shadow-xs backdrop-blur-md">
+          <div className="absolute top-2.5 right-2.5">
+            <span className="rounded-lg bg-zinc-900/85 dark:bg-zinc-800/90 border border-zinc-700/50 px-2 py-0.5 text-xs font-medium font-mono text-zinc-200 shadow-xs backdrop-blur-md">
               {sortedVariants.length} gói
             </span>
           </div>
         </div>
 
         {/* Category Header Label */}
-        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 truncate">
+        <p className="mb-1 text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400 truncate">
           {category?.name || badgeLabel}
         </p>
 
         {/* Title synced with active variant */}
         <Link href={`/products/${activeVariant.slug}`} className="block">
-          <h3 className="line-clamp-2 text-xs sm:text-[13px] font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug min-h-[2.1rem]">
+          <h3 className="line-clamp-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug min-h-[2.5rem]">
             {activeVariant.title || title}
           </h3>
         </Link>
 
         {/* Interactive Credit / Variant Selector Pills */}
-        <div className="mt-2.5 pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
+        <div className="mt-3 pt-2.5 border-t border-zinc-100 dark:border-zinc-850">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
+            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
               Chọn mức gói:
             </span>
           </div>
@@ -135,7 +135,7 @@ export default function GroupedProductCard({
                   key={variant.id}
                   type="button"
                   onClick={() => setSelectedIndex(index)}
-                  className={`rounded-md px-2 py-1 text-[10px] font-semibold transition-all ${
+                  className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
                     isSelected
                       ? "bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 shadow-xs ring-1 ring-zinc-700 dark:ring-zinc-300 scale-[1.02]"
                       : "bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white border border-transparent dark:border-zinc-800"
@@ -150,21 +150,21 @@ export default function GroupedProductCard({
         </div>
       </div>
 
-      <div className="mt-3 pt-2.5 border-t border-zinc-100 dark:border-zinc-800">
+      <div className="mt-3.5 pt-3 border-t border-zinc-100 dark:border-zinc-850">
         {/* Price & Stock Row */}
-        <div className="flex items-center justify-between gap-1 mb-2">
+        <div className="flex items-center justify-between gap-1 mb-3">
           <div className="min-w-0">
             <div className="flex items-baseline gap-1.5 flex-wrap">
-              <span className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white tracking-tight">
+              <span className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white tracking-tight whitespace-nowrap font-mono">
                 {formatVND(activeVariant.price)}
               </span>
-              <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
+              <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
                 ({activeVariant.variantLabel})
               </span>
             </div>
             {activeVariant.originalPrice &&
               activeVariant.originalPrice > activeVariant.price && (
-                <div className="text-[10px] text-zinc-400 line-through">
+                <div className="text-xs text-zinc-400 dark:text-zinc-500 line-through font-mono">
                   {formatVND(activeVariant.originalPrice)}
                 </div>
               )}
@@ -173,12 +173,12 @@ export default function GroupedProductCard({
           {/* Stock Status */}
           <div className="shrink-0">
             {inStock ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-950/30 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[11px] sm:text-xs font-medium text-emerald-700 dark:text-emerald-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 Có sẵn
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/20 bg-rose-50/60 dark:bg-rose-950/30 px-2 py-0.5 text-[10px] font-medium text-rose-600 dark:text-rose-400">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/20 bg-rose-500/10 px-2.5 py-0.5 text-xs font-medium text-rose-600 dark:text-rose-400">
                 Hết hàng
               </span>
             )}
@@ -186,38 +186,40 @@ export default function GroupedProductCard({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           {onQuickView ? (
             <button
               type="button"
               onClick={() => onQuickView(activeVariant)}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
               title="Xem nhanh gói này"
+              aria-label="Xem nhanh gói này"
             >
-              <Eye className="h-3.5 w-3.5" />
+              <Eye className="h-4 w-4" />
             </button>
           ) : (
             <Link
               href={`/products/${activeVariant.slug}`}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
               title="Chi tiết"
+              aria-label="Xem chi tiết gói này"
             >
-              <Eye className="h-3.5 w-3.5" />
+              <Eye className="h-4 w-4" />
             </Link>
           )}
 
           {inStock ? (
             <Link
               href={`/products/${activeVariant.slug}`}
-              className="flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg bg-zinc-900 dark:bg-white px-2 text-[11px] sm:text-xs font-bold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 shadow-xs transition-all active:scale-[0.98]"
+              className="flex h-9 flex-1 items-center justify-center gap-2 rounded-xl bg-zinc-900 dark:bg-white px-3 text-xs sm:text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 shadow-sm transition-all duration-200 active:scale-[0.98]"
             >
               <span>Mua ngay</span>
-              <ArrowRight className="h-3 w-3" />
+              <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           ) : (
             <button
               disabled
-              className="flex h-8 flex-1 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-900 text-[11px] sm:text-xs font-medium text-zinc-400 dark:text-zinc-600 cursor-not-allowed"
+              className="flex h-9 flex-1 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-900 text-xs sm:text-sm font-medium text-zinc-400 dark:text-zinc-600 cursor-not-allowed"
             >
               Hết hàng
             </button>
@@ -225,13 +227,13 @@ export default function GroupedProductCard({
         </div>
 
         {cleanBrand === "CODEX" && (
-          <div className="mt-2 pt-1.5 border-t border-zinc-100 dark:border-zinc-800/80 text-center">
+          <div className="mt-2.5 pt-2 border-t border-zinc-100 dark:border-zinc-850 text-center">
             <Link
               href="/codex"
-              className="inline-flex items-center gap-1 text-[10px] font-medium text-blue-600 dark:text-blue-400 hover:underline"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
             >
               <span>Đã có Key? Nạp thêm Credit tại đây</span>
-              <ArrowRight className="h-2.5 w-2.5" />
+              <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
         )}

@@ -3,17 +3,17 @@ import { Mail, Phone, Store, ShieldCheck, Zap, Headphones, ArrowUpRight } from "
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-[#070b14] text-slate-400 text-xs transition-colors">
+    <footer className="border-t border-slate-200/90 dark:border-white/10 bg-slate-50 dark:bg-[#070b14] text-slate-600 dark:text-slate-400 text-xs transition-colors">
       {/* Top MMO Trust Pillars Bar */}
-      <div className="border-b border-white/5 bg-slate-900/40 py-6">
+      <div className="border-b border-slate-200/80 dark:border-white/5 bg-white/70 dark:bg-slate-900/40 py-6">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
           <div className="flex items-center justify-center sm:justify-start gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
               <Zap className="h-5 w-5" />
             </div>
             <div>
-              <div className="font-bold text-white text-sm">Giao Hàng Tự Động 24/7</div>
-              <div className="text-[11px] text-slate-400 mt-0.5">Nhận mã tức thì sau khi quét mã VietQR</div>
+              <div className="font-bold text-slate-900 dark:text-white text-sm">Giao Hàng Tự Động 24/7</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Nhận mã tức thì sau khi quét mã VietQR</div>
             </div>
           </div>
 
@@ -22,8 +22,8 @@ export default function Footer() {
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
-              <div className="font-bold text-white text-sm">Bảo Hành 1 Đổi 1 Chuẩn Chỉ</div>
-              <div className="text-[11px] text-slate-400 mt-0.5">Đổi mới ngay lập tức nếu phát sinh lỗi</div>
+              <div className="font-bold text-slate-900 dark:text-white text-sm">Bảo Hành 1 Đổi 1 Chuẩn Chỉ</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Đổi mới ngay lập tức nếu phát sinh lỗi</div>
             </div>
           </div>
 
@@ -32,8 +32,8 @@ export default function Footer() {
               <Headphones className="h-5 w-5" />
             </div>
             <div>
-              <div className="font-bold text-white text-sm">Hỗ Trợ Kỹ Thuật MMO</div>
-              <div className="text-[11px] text-slate-400 mt-0.5">Zalo & Hotline trực tuyến hỗ trợ nhanh</div>
+              <div className="font-bold text-slate-900 dark:text-white text-sm">Hỗ Trợ Kỹ Thuật MMO</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Zalo & Hotline trực tuyến hỗ trợ nhanh</div>
             </div>
           </div>
         </div>
@@ -48,7 +48,7 @@ export default function Footer() {
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-extrabold text-white shadow-lg shadow-blue-500/30 text-base">
                 K
               </div>
-              <div className="font-extrabold tracking-tight text-white flex items-center gap-1.5 text-base">
+              <div className="font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5 text-base">
                 <span>Kho</span>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">DEE</span>
                 <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">MMO HUB</span>
@@ -70,7 +70,7 @@ export default function Footer() {
 
           {/* Quick links: Catalog (3 cols) */}
           <div className="md:col-span-3 space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
               Kho Tài Nguyên
             </h3>
             <ul className="space-y-2 text-xs">
@@ -99,7 +99,7 @@ export default function Footer() {
 
           {/* Quick links: Services & Tools (4 cols) */}
           <div className="md:col-span-4 space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
               Tiện Ích & Hỗ Trợ
             </h3>
             <ul className="space-y-2 text-xs">
@@ -152,7 +152,7 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-10 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
+        <div className="mt-10 pt-6 border-t border-slate-200 dark:border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
           <div>
             © {new Date().getFullYear()} KhoDEE. Bản quyền thuộc về hệ thống cung cấp tài nguyên MMO.
           </div>

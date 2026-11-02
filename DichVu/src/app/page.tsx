@@ -63,7 +63,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 />
                 <button
                   type="submit"
-                  className="absolute right-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-semibold text-white transition-all shadow-md shadow-blue-600/30"
+                  className="absolute right-2 rounded-xl bg-zinc-900 dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-100 px-4 py-2 text-xs font-semibold text-white dark:text-zinc-950 transition-all shadow-xs active:scale-[0.98]"
                 >
                   Tìm kiếm
                 </button>
@@ -122,7 +122,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       {/* Flagship Bento Highlights & Topup Bonus */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full space-y-6">
         {/* Wallet Bonus Banner */}
-        <div className="rounded-2xl p-4 sm:p-5 bg-gradient-to-r from-blue-900/25 via-indigo-900/20 to-purple-900/25 border border-blue-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="rounded-2xl p-4 sm:p-5 bg-gradient-to-r from-emerald-50/80 via-teal-50/50 to-emerald-50/80 dark:from-emerald-950/30 dark:via-zinc-900/40 dark:to-teal-950/30 border border-emerald-200/80 dark:border-emerald-500/20 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 text-left">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-xl shrink-0">
               🎁
@@ -132,7 +132,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white">
                   Ưu đãi nạp số dư ví tự động
                 </h3>
-                <span className="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-bold">
+                <span className="px-2 py-0.5 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-bold font-mono">
                   +5% THƯỞNG
                 </span>
               </div>
@@ -143,7 +143,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           </div>
           <Link
             href="/topup"
-            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all shrink-0"
+            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-sm transition-all shrink-0 active:scale-[0.98]"
           >
             Nạp tiền vào ví →
           </Link>

@@ -235,44 +235,44 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           </div>
 
           {/* Standardized Product Specification Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 sm:p-5 shadow-xs">
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800/80">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 shrink-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white/95 dark:bg-slate-900/60 p-4 sm:p-5 shadow-xs">
+            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 shrink-0">
                 <Send className="h-4 w-4" />
               </div>
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Hình thức nhận hàng</span>
-                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">{deliveryFormat}</p>
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Hình thức nhận hàng</span>
+                <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 mt-0.5 leading-snug">{deliveryFormat}</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800/80">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 shrink-0">
+            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
                 <Clock className="h-4 w-4" />
               </div>
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Thời hạn sử dụng</span>
-                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">{durationLabel}</p>
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Thời hạn sử dụng</span>
+                <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 mt-0.5 leading-snug">{durationLabel}</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800/80">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 shrink-0">
+            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
                 <ShieldCheck className="h-4 w-4" />
               </div>
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Chính sách bảo hành</span>
-                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">{warrantyLabel}</p>
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Chính sách bảo hành</span>
+                <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 mt-0.5 leading-snug">{warrantyLabel}</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800/80">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 shrink-0">
+            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 shrink-0">
                 <Headphones className="h-4 w-4" />
               </div>
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Hỗ trợ kỹ thuật</span>
-                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">Đồng hành 24/7 qua Zalo & Telegram</p>
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Hỗ trợ kỹ thuật</span>
+                <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 mt-0.5 leading-snug">Đồng hành 24/7 qua Zalo & Telegram</p>
               </div>
             </div>
           </div>

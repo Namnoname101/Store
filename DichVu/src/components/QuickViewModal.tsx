@@ -362,7 +362,7 @@ export default function QuickViewModal({
               Xem nhanh & Cấu hình
             </span>
             {isAdminPreview && (
-              <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-600 dark:text-amber-400 border border-amber-500/20">
+              <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400 border border-amber-500/20">
                 Preview Mode
               </span>
             )}
@@ -381,7 +381,7 @@ export default function QuickViewModal({
           {/* Product Overview Header */}
           <div className="flex flex-col sm:flex-row gap-4 items-start">
             {/* 4:3 image container */}
-            <div className="relative aspect-[4/3] w-full sm:w-44 shrink-0 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-850 flex items-center justify-center">
+            <div className="relative aspect-[4/3] w-full sm:w-44 shrink-0 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
               {!imgError ? (
                 <img
                   src={resolveProductThumbnail(
@@ -397,17 +397,17 @@ export default function QuickViewModal({
               ) : (
                 <div className="flex flex-col items-center justify-center text-slate-400">
                   <TypeIcon className="h-10 w-10 text-blue-500" />
-                  <span className="text-[11px] font-medium mt-1">{typeInfo.shortLabel}</span>
+                  <span className="text-xs font-medium mt-1">{typeInfo.shortLabel}</span>
                 </div>
               )}
             </div>
 
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                <span className="rounded-md border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                <span className="rounded-md border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-300">
                   {product.category?.name || "Dịch vụ số"}
                 </span>
-                <span className="rounded-md border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+                <span className="rounded-md border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 text-xs font-semibold text-blue-600 dark:text-blue-400">
                   {typeInfo.label}
                 </span>
               </div>
@@ -461,7 +461,7 @@ export default function QuickViewModal({
                   <label className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Số lượng đặt ({unitLabel}) <span className="text-rose-500">*</span>
                   </label>
-                  <span className="text-[11px] text-slate-500">
+                  <span className="text-xs text-slate-500">
                     Min: {effectiveMin.toLocaleString("vi-VN")}
                   </span>
                 </div>
@@ -501,14 +501,14 @@ export default function QuickViewModal({
 
                 {/* Quick Chips */}
                 <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                  <span className="text-[11px] text-slate-500 mr-1">Chọn nhanh:</span>
+                  <span className="text-xs text-slate-500 mr-1">Chọn nhanh:</span>
                   {quickChips.map((chip) => (
                     <button
                       key={chip}
                       type="button"
                       disabled={isLoading}
                       onClick={() => setQuantity((prev) => (prev || 0) + chip)}
-                      className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 transition-colors"
+                      className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 transition-colors"
                     >
                       +{chip.toLocaleString("vi-VN")}
                     </button>
@@ -628,7 +628,7 @@ export default function QuickViewModal({
                   Tổng thanh toán:
                 </span>
                 {appliedCoupon && (
-                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400">
+                  <span className="text-xs text-emerald-600 dark:text-emerald-400">
                     Đã giảm -{formatVND(appliedCoupon.discountAmount)}
                   </span>
                 )}

@@ -126,7 +126,7 @@ export default function OrderLookupPage() {
       </div>
 
       {/* Search Input Box */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 sm:p-6 backdrop-blur-md shadow-2xl mb-10">
+      <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white/95 dark:bg-slate-900/80 p-5 sm:p-6 backdrop-blur-md shadow-lg mb-10 transition-colors">
         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <input
@@ -135,7 +135,7 @@ export default function OrderLookupPage() {
               placeholder="Nhập email mua hàng hoặc mã đơn (ví dụ: ORD123456)..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-800/90 py-3.5 pl-11 pr-4 text-sm text-white placeholder-slate-500 focus:border-indigo-500 focus:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/90 py-3.5 pl-11 pr-4 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-indigo-500 focus:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all"
             />
             <Search className="absolute left-4 top-4 h-4 w-4 text-slate-400" />
           </div>
@@ -178,7 +178,7 @@ export default function OrderLookupPage() {
           </div>
 
           {orders.length === 0 ? (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-8 text-center">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-8 text-center">
               <AlertCircle className="mx-auto h-10 w-10 text-slate-500 mb-3" />
               <h3 className="text-base font-semibold text-slate-200">
                 Không tìm thấy đơn hàng nào
@@ -360,7 +360,7 @@ export default function OrderLookupPage() {
       )}
 
       {/* Guarantees info footer */}
-      <div className="mt-12 rounded-2xl border border-slate-800/60 bg-slate-900/30 p-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-400">
+      <div className="mt-12 rounded-2xl border border-slate-200 dark:border-slate-800/60 bg-white/80 dark:bg-slate-900/30 p-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-600 dark:text-slate-400 shadow-sm">
         <div className="flex items-center gap-3">
           <ShieldCheck className="h-5 w-5 text-indigo-400 shrink-0" />
           <span>Bảo mật 100% dữ liệu đơn hàng và thông tin khách hàng</span>

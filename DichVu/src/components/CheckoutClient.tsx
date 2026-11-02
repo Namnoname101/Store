@@ -460,7 +460,7 @@ export default function CheckoutClient({
                 : "border-slate-800 text-slate-400"
             }`}
           >
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600/20 text-[10px] font-bold">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold">
               1
             </span>
             <span>1. Chờ thanh toán</span>
@@ -473,7 +473,7 @@ export default function CheckoutClient({
                 : "border-slate-800 text-slate-400"
             }`}
           >
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-600/20 text-[10px] font-bold">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-600/20 text-xs font-bold">
               2
             </span>
             <span>2. Đang xác minh</span>
@@ -486,7 +486,7 @@ export default function CheckoutClient({
                 : "border-slate-800 text-slate-400"
             }`}
           >
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600/20 text-[10px] font-bold">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600/20 text-xs font-bold">
               3
             </span>
             <span>3. Đang xử lý</span>
@@ -499,7 +499,7 @@ export default function CheckoutClient({
                 : "border-slate-800 text-slate-400"
             }`}
           >
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600/20 text-[10px] font-bold">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600/20 text-xs font-bold">
               4
             </span>
             <span>4. Hoàn thành</span>
@@ -589,7 +589,7 @@ export default function CheckoutClient({
                     <Check className="h-4 w-4 shrink-0" />
                     <span>1. Nhận chuyển khoản</span>
                   </div>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-xs text-slate-400">
                     Giao dịch VietQR hợp lệ đã khớp
                   </p>
                 </div>
@@ -599,7 +599,7 @@ export default function CheckoutClient({
                     <Loader2 className="h-4 w-4 animate-spin shrink-0 text-indigo-400" />
                     <span>2. Khởi tạo mã tự động</span>
                   </div>
-                  <p className="text-[11px] text-slate-300">
+                  <p className="text-xs text-slate-300">
                     Máy chủ cấp phát mã đang xử lý
                   </p>
                 </div>
@@ -609,7 +609,7 @@ export default function CheckoutClient({
                     <ShieldCheck className="h-4 w-4 shrink-0 text-slate-500" />
                     <span>3. Bàn giao mã tức thì</span>
                   </div>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-xs text-slate-500">
                     Tự động chuyển trang nhận key
                   </p>
                 </div>
@@ -639,7 +639,7 @@ export default function CheckoutClient({
                     <p className="font-medium text-white truncate">
                       {item.product?.title || "Sản phẩm số"}
                     </p>
-                    <p className="text-[11px] text-slate-500">
+                    <p className="text-xs text-slate-500">
                       Số lượng: <strong>{item.quantity}</strong>
                     </p>
                   </div>
@@ -839,7 +839,7 @@ export default function CheckoutClient({
                 <h4 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
                   <span>Cần hỗ trợ trực tiếp từ đội ngũ kỹ thuật?</span>
                 </h4>
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-xs text-slate-400 mt-1">
                   Đội ngũ chăm sóc khách hàng và kỹ thuật viên sẵn sàng giải đáp 24/7.
                 </p>
               </div>
@@ -946,7 +946,7 @@ export default function CheckoutClient({
                 </div>
                 <div>
                   <div className="text-sm font-bold">Chuyển khoản VietQR</div>
-                  <div className="text-[11px] text-slate-400">Quét mã QR từ mọi ngân hàng</div>
+                  <div className="text-xs text-slate-400">Quét mã QR từ mọi ngân hàng</div>
                 </div>
               </div>
               <div className={`h-4 w-4 rounded-full border flex items-center justify-center ${selectedMethod === "VIETQR" ? "border-indigo-500 bg-indigo-500 text-white" : "border-slate-600"}`}>
@@ -976,7 +976,7 @@ export default function CheckoutClient({
                         ({currentUser.balance.toLocaleString("vi-VN")}đ)
                       </span>
                     </div>
-                    <div className="text-[11px] text-slate-400">Thanh toán tức thì 1-click</div>
+                    <div className="text-xs text-slate-400">Thanh toán tức thì 1-click</div>
                   </div>
                 </div>
                 <div className={`h-4 w-4 rounded-full border flex items-center justify-center ${selectedMethod === "WALLET" ? "border-emerald-500 bg-emerald-500 text-white" : "border-slate-600"}`}>
@@ -994,7 +994,7 @@ export default function CheckoutClient({
                   </div>
                   <div>
                     <div className="text-sm font-medium">Thanh toán bằng số dư ví?</div>
-                    <div className="text-[11px] text-indigo-400 font-semibold">Đăng nhập để dùng ví & nhận key 1-click →</div>
+                    <div className="text-xs text-indigo-400 font-semibold">Đăng nhập để dùng ví & nhận key 1-click →</div>
                   </div>
                 </div>
               </Link>
@@ -1093,7 +1093,7 @@ export default function CheckoutClient({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left column: QR Code Scan & instructions */}
           <div className="lg:col-span-5 flex flex-col gap-6">
-            <div className="rounded-3xl border border-slate-800 bg-gradient-to-b from-slate-900 via-slate-850 to-slate-900 p-6 backdrop-blur-md shadow-2xl text-center">
+            <div className="rounded-3xl border border-slate-800 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 p-6 backdrop-blur-md shadow-2xl text-center">
               <div className="flex items-center justify-center gap-2 mb-3">
                 <QrCode className="h-5 w-5 text-indigo-400" />
                 <h2 className="text-base font-bold text-white">
@@ -1110,7 +1110,7 @@ export default function CheckoutClient({
                   <div className="flex h-64 w-64 flex-col items-center justify-center rounded-lg bg-slate-900/95 p-4 text-center">
                     <AlertCircle className="h-10 w-10 text-rose-400 mb-2" />
                     <span className="text-xs font-bold text-white mb-1">Mã QR đã hết hạn</span>
-                    <span className="text-[11px] text-slate-400 mb-4">
+                    <span className="text-xs text-slate-400 mb-4">
                       Thời gian hiệu lực 10 phút đã kết thúc
                     </span>
                     <button
@@ -1146,7 +1146,7 @@ export default function CheckoutClient({
               </div>
 
               {/* Security Note under QR */}
-              <div className="mt-6 flex items-center justify-center gap-2 text-[11px] text-slate-400">
+              <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-400">
                 <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
                 <span>Chuyển khoản liên ngân hàng Napas 24/7 tức thì</span>
               </div>
@@ -1171,7 +1171,7 @@ export default function CheckoutClient({
                       <p className="font-medium text-white truncate">
                         {item.product?.title || "Sản phẩm số"}
                       </p>
-                      <p className="text-[11px] text-slate-500">
+                      <p className="text-xs text-slate-500">
                         Số lượng: <strong>{item.quantity}</strong>
                       </p>
                     </div>
@@ -1226,7 +1226,7 @@ export default function CheckoutClient({
                 <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 transition-all hover:border-slate-700">
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
                         <Building2 className="h-3.5 w-3.5 text-indigo-400" />
                         <span>Ngân hàng & Chủ tài khoản</span>
                       </div>
@@ -1244,7 +1244,7 @@ export default function CheckoutClient({
                       className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-medium transition-all ${
                         copiedField === "bank"
                           ? "bg-emerald-500/20 text-emerald-300"
-                          : "bg-slate-850 hover:bg-slate-800 text-slate-300 hover:text-white"
+                          : "bg-slate-800 hover:bg-slate-800 text-slate-300 hover:text-white"
                       }`}
                     >
                       {copiedField === "bank" ? (
@@ -1266,7 +1266,7 @@ export default function CheckoutClient({
                 <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 transition-all hover:border-slate-700">
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
                         <CreditCard className="h-3.5 w-3.5 text-indigo-400" />
                         <span>Số tài khoản thụ hưởng</span>
                       </div>
@@ -1281,7 +1281,7 @@ export default function CheckoutClient({
                       className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-medium transition-all ${
                         copiedField === "accountNo"
                           ? "bg-emerald-500/20 text-emerald-300"
-                          : "bg-slate-850 hover:bg-slate-800 text-slate-300 hover:text-white"
+                          : "bg-slate-800 hover:bg-slate-800 text-slate-300 hover:text-white"
                       }`}
                     >
                       {copiedField === "accountNo" ? (
@@ -1303,7 +1303,7 @@ export default function CheckoutClient({
                 <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 transition-all hover:border-slate-700">
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
                         <CreditCard className="h-3.5 w-3.5 text-indigo-400" />
                         <span>Số tiền chính xác</span>
                       </div>
@@ -1311,7 +1311,7 @@ export default function CheckoutClient({
                         {formatVND(currentTotal)}
                       </div>
                       {order.discountAmount && order.discountAmount > 0 ? (
-                        <div className="text-[11px] text-emerald-400 font-medium mt-0.5">
+                        <div className="text-xs text-emerald-400 font-medium mt-0.5">
                           ✓ Đã áp dụng ưu đãi -{formatVND(order.discountAmount)}
                         </div>
                       ) : null}
@@ -1323,7 +1323,7 @@ export default function CheckoutClient({
                       className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-medium transition-all ${
                         copiedField === "amount"
                           ? "bg-emerald-500/20 text-emerald-300"
-                          : "bg-slate-850 hover:bg-slate-800 text-slate-300 hover:text-white"
+                          : "bg-slate-800 hover:bg-slate-800 text-slate-300 hover:text-white"
                       }`}
                     >
                       {copiedField === "amount" ? (
@@ -1345,7 +1345,7 @@ export default function CheckoutClient({
                 <div className="rounded-2xl border-2 border-indigo-500/40 bg-indigo-950/20 p-4 shadow-lg shadow-indigo-950/40">
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-300 mb-1">
+                      <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-300 mb-1">
                         <Hash className="h-3.5 w-3.5 text-amber-400" />
                         <span>Nội dung chuyển khoản (BẮT BUỘC ĐÚNG)</span>
                       </div>
@@ -1376,7 +1376,7 @@ export default function CheckoutClient({
                       )}
                     </button>
                   </div>
-                  <p className="mt-2 text-[11px] text-amber-300/90 leading-tight">
+                  <p className="mt-2 text-xs text-amber-300/90 leading-tight">
                     ⚠️ <strong>Quan trọng:</strong> Vui lòng giữ nguyên mã <strong>{order.orderCode}</strong> trong nội dung chuyển khoản để hệ thống tự động nhận diện và bàn giao mã kích hoạt sau 10-30 giây.
                   </p>
                 </div>
@@ -1404,7 +1404,7 @@ export default function CheckoutClient({
                 </button>
 
                 {verificationNotice && (
-                  <div className="mt-3 flex items-start gap-2 rounded-xl border border-slate-700/60 bg-slate-850 p-3 text-xs text-slate-300">
+                  <div className="mt-3 flex items-start gap-2 rounded-xl border border-slate-700/60 bg-slate-800 p-3 text-xs text-slate-300">
                     <AlertCircle className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
                     <span>{verificationNotice}</span>
                   </div>

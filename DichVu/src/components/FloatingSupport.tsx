@@ -44,7 +44,7 @@ export default function FloatingSupport() {
     >
       {/* Expanded Support Card */}
       {isOpen && (
-        <div className="mb-3 w-[300px] sm:w-[330px] rounded-2xl bg-slate-900/95 border border-indigo-500/30 p-4 shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div className="mb-3 w-[300px] sm:w-[330px] rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-indigo-500/30 p-4 shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-5 duration-200">
           <div className="flex items-center justify-between pb-3 border-b border-slate-800">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
@@ -52,7 +52,7 @@ export default function FloatingSupport() {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-white">Hỗ Trợ Khách Hàng</h4>
-                <div className="flex items-center gap-1.5 text-[11px] text-emerald-400">
+                <div className="flex items-center gap-1.5 text-xs text-emerald-500 dark:text-emerald-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   <span>Trực tuyến 24/7</span>
                 </div>
@@ -87,7 +87,7 @@ export default function FloatingSupport() {
                   <div className="text-xs font-semibold text-white group-hover:text-blue-300 transition-colors">
                     Facebook Cá Nhân / Fanpage
                   </div>
-                  <div className="text-[10px] text-slate-400">
+                  <div className="text-xs text-slate-500 dark:text-slate-400">
                     Phản hồi nhanh trong 1-5 phút
                   </div>
                 </div>
@@ -100,7 +100,7 @@ export default function FloatingSupport() {
               href="https://m.me/2k2.2k6"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-800/60 border border-slate-700 hover:border-slate-600 text-slate-200 transition-all group"
+              className="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-800 dark:text-slate-200 transition-all group"
             >
               <div className="flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-white">
