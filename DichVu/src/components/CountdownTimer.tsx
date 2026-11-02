@@ -85,7 +85,7 @@ export default function CountdownTimer({
   if (isExpired) {
     return (
       <div
-        className={`inline-flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-400 ${className}`}
+        className={`inline-flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-700 dark:text-rose-400 ${className}`}
       >
         <AlertCircle className="h-4 w-4 shrink-0" />
         <span>Đơn hàng đã hết hạn thanh toán</span>
@@ -97,8 +97,8 @@ export default function CountdownTimer({
     <div
       className={`inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors ${
         isUrgent
-          ? "border-amber-500/40 bg-amber-500/10 text-amber-300 animate-pulse"
-          : "border-indigo-500/30 bg-indigo-500/10 text-indigo-300"
+          ? "border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-300 animate-pulse"
+          : "border-indigo-500/30 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300"
       } ${className}`}
     >
       {isUrgent ? (

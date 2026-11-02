@@ -143,7 +143,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#070b14] text-white flex flex-col md:flex-row antialiased selection:bg-blue-600 selection:text-white">
+    <div className="dark min-h-screen bg-[#070b14] text-white flex flex-col md:flex-row antialiased selection:bg-blue-600 selection:text-white">
       {/* Mobile Top Header */}
       <div className="md:hidden flex items-center justify-between border-b border-white/10 bg-slate-950/80 backdrop-blur-xl px-4 py-3 sticky top-0 z-50">
         <div className="flex items-center gap-2">

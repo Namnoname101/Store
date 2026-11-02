@@ -117,10 +117,10 @@ export default function OrderLookupPage() {
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
           Tra cứu đơn hàng
         </h1>
-        <p className="mt-2 text-sm text-slate-400 max-w-lg mx-auto">
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 max-w-lg mx-auto">
           Nhập <strong>email</strong> hoặc <strong>mã đơn hàng (ORD...)</strong> để kiểm tra trạng thái và xem lại thông tin sản phẩm.
         </p>
       </div>
@@ -171,7 +171,7 @@ export default function OrderLookupPage() {
       {hasSearched && (
         <div className="mb-12">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <ShoppingBag className="h-5 w-5 text-indigo-400" />
               <span>Kết quả tra cứu ({orders.length})</span>
             </h2>
@@ -294,11 +294,11 @@ export default function OrderLookupPage() {
         <div className="mt-10 pt-8 border-t border-slate-800/80">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Clock className="h-4 w-4 text-indigo-400" />
                 <span>Đơn hàng gần đây trên thiết bị này</span>
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
                 Tự động ghi nhớ trên máy của bạn không cần đăng nhập
               </p>
             </div>

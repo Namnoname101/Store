@@ -536,12 +536,21 @@ describe("Supplier Adapter Engine", () => {
       const adapter = getSupplierAdapter(SupplierType.TELEGRAM_BOT);
       const infoGemini = await adapter.fetchProductInfo(
         { baseUrl: "@shopxoainon_bot", apiKey: "test" },
-        "51"
+        "70"
       );
-      expect(infoGemini.supplierProductCode).toBe("51");
+      expect(infoGemini.supplierProductCode).toBe("70");
       expect(infoGemini.name).toContain("Gemini Pro");
-      expect(infoGemini.price).toBe(13800);
-      expect(infoGemini.inStock).toBe(68);
+      expect(infoGemini.price).toBe(21800);
+      expect(infoGemini.inStock).toBe(56);
+ 
+       // Backward-compatible alias "51"
+       const infoGeminiAlias = await adapter.fetchProductInfo(
+         { baseUrl: "@shopxoainon_bot", apiKey: "test" },
+         "51"
+       );
+       expect(infoGeminiAlias.name).toContain("Gemini Pro");
+       expect(infoGeminiAlias.price).toBe(21800);
+       expect(infoGeminiAlias.inStock).toBe(56);
 
       const infoDuo = await adapter.fetchProductInfo(
         { baseUrl: "shopxoainon_bot", apiKey: "test" },

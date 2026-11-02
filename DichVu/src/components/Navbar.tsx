@@ -142,7 +142,7 @@ export default function Navbar() {
                   <Sparkles className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                   <div className="flex flex-col">
                     <span className="font-semibold text-xs">Kiếm Tiền CTV (0đ Vốn)</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Chính sách hoa hồng hấp dẫn</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Chính sách hoa hồng hấp dẫn</span>
                   </div>
                 </Link>
                 <Link
@@ -153,7 +153,7 @@ export default function Navbar() {
                   <Terminal className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                   <div className="flex flex-col">
                     <span className="font-semibold text-xs">Kích Hoạt App ChatGPT (1-Click)</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Tool KhoDee-helper cho ChatGPT Windows & IDE</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Tool KhoDee-helper cho ChatGPT Windows & IDE</span>
                   </div>
                 </Link>
                 <Link
@@ -164,7 +164,7 @@ export default function Navbar() {
                   <BookOpen className="h-4 w-4 text-indigo-500 shrink-0 mt-0.5" />
                   <div className="flex flex-col">
                     <span className="font-semibold text-xs">Cấu Hình API Claude</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Cài đặt Cursor, Cline, Roo Code</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Cài đặt Cursor, Cline, Roo Code</span>
                   </div>
                 </Link>
                 <Link
@@ -175,7 +175,7 @@ export default function Navbar() {
                   <Activity className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
                   <div className="flex flex-col">
                     <span className="font-semibold text-xs">Kiểm Tra Dung Lượng Claude / Cursor</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Check quota Claude tức thì</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Check quota Claude tức thì</span>
                   </div>
                 </Link>
                 <Link
@@ -186,7 +186,7 @@ export default function Navbar() {
                   <Terminal className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                   <div className="flex flex-col">
                     <span className="font-semibold text-xs">Tra Cứu Quota Codex</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Kiểm tra hạn mức Codex API & nạp thêm</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Kiểm tra hạn mức Codex API & nạp thêm</span>
                   </div>
                 </Link>
                 <Link
@@ -197,7 +197,7 @@ export default function Navbar() {
                   <Sparkles className="h-4 w-4 text-purple-500 shrink-0 mt-0.5" />
                   <div className="flex flex-col">
                     <span className="font-semibold text-xs">Prompt AI Master</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Công cụ tạo prompt chuẩn kỹ thuật</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Công cụ tạo prompt chuẩn kỹ thuật</span>
                   </div>
                 </Link>
               </div>

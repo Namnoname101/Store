@@ -9,14 +9,23 @@ import { TelegramClient, sessions } from "telegram";
 const { StringSession } = sessions;
 
 // Known product catalog from @shopxoainon_bot
-const XOAINON_KNOWN_PRODUCTS: Record<
+export const XOAINON_PRODUCT_ALIASES: Record<string, string> = {
+  "51": "70",
+};
+
+export const XOAINON_KNOWN_PRODUCTS: Record<
   string,
   { name: string; price: number; inStock: number }
 > = {
+  "70": {
+    name: "Gói Jio Gemini Pro & Drive 5TB 18 thg chính chủ",
+    price: 21800,
+    inStock: 56,
+  },
   "51": {
-    name: "Gói Gemini Pro & Drive 5TB 18 Tháng Chính chủ",
-    price: 13800,
-    inStock: 68,
+    name: "Gói Jio Gemini Pro & Drive 5TB 18 thg chính chủ",
+    price: 21800,
+    inStock: 56,
   },
   "60": {
     name: "Duolingo Super 12 Tháng Chính Chủ",
@@ -309,7 +318,8 @@ export class TelegramBotAdapter implements ISupplierAdapter {
       // 1. Try live parsed catalog first
       try {
         const liveCatalog = await this.getLiveCatalog(creds, botUsername);
-        const liveItem = liveCatalog[supplierProductCode];
+        const effectiveCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierProductCode;
+        const liveItem = liveCatalog[effectiveCode] || liveCatalog[supplierProductCode];
         if (liveItem) {
           return {
             supplierProductCode,
@@ -367,6 +377,7 @@ export class TelegramBotAdapter implements ISupplierAdapter {
     orderCode: string
   ): Promise<SupplierOrderResult> {
     try {
+      const targetCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierProductCode;
       const qty = quantity > 0 ? quantity : 1;
 
       // 1. Send /buy to get catalog
@@ -384,21 +395,21 @@ export class TelegramBotAdapter implements ISupplierAdapter {
       }
 
       // 2. Click product:view:<id>
-      await msg.click({ data: Buffer.from(`product:view:${supplierProductCode}`) });
+      await msg.click({ data: Buffer.from(`product:view:${targetCode}`) });
       await new Promise((r) => setTimeout(r, 2000));
 
       msgs = await client.getMessages(botUsername, { limit: 1 });
       msg = msgs[0];
 
       // 3. Click buyqty:<id>:<quantity>
-      await msg.click({ data: Buffer.from(`buyqty:${supplierProductCode}:${qty}`) });
+      await msg.click({ data: Buffer.from(`buyqty:${targetCode}:${qty}`) });
       await new Promise((r) => setTimeout(r, 2000));
 
       msgs = await client.getMessages(botUsername, { limit: 1 });
       msg = msgs[0];
 
       // 4. Click pay:wallet:<id>:<quantity>
-      await msg.click({ data: Buffer.from(`pay:wallet:${supplierProductCode}:${qty}`) });
+      await msg.click({ data: Buffer.from(`pay:wallet:${targetCode}:${qty}`) });
       await new Promise((r) => setTimeout(r, 4000));
 
       // 5. Check response messages

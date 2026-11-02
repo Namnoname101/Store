@@ -223,17 +223,20 @@ export async function getAvailableStockCount(
     return 0;
   }
 
-  if (product.fulfillmentType === FulfillmentType.API_DROPSHIP) {
-    if (!product.supplierMapping || !product.supplierMapping.supplier?.isActive) {
-      return 0;
-    }
-    return Math.max(0, product.supplierMapping.supplierStock);
-  }
-
-  return await prisma.productItem.count({
+  const localWarehouseStock = await prisma.productItem.count({
     where: {
       productId,
       status: ItemStatus.AVAILABLE,
     },
   });
+
+  if (product.fulfillmentType === FulfillmentType.API_DROPSHIP) {
+    const supplierStock =
+      product.supplierMapping?.supplier?.isActive
+        ? Math.max(0, product.supplierMapping.supplierStock)
+        : 0;
+    return localWarehouseStock + supplierStock;
+  }
+
+  return localWarehouseStock;
 }

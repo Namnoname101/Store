@@ -651,7 +651,7 @@ export default function ProductPurchaseBox({
                       className={`h-7 px-2 rounded-lg text-xs font-semibold border transition-all ${
                         quantity === n
                           ? "border-blue-500 bg-blue-500/10 text-blue-500"
-                          : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-white"
+                          : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700"
                       }`}
                     >
                       {n}

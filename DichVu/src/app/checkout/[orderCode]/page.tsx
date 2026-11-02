@@ -32,10 +32,10 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 mb-4">
           <AlertCircle className="h-8 w-8" />
         </div>
-        <h1 className="text-xl font-bold text-white mb-2">
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
           Không tìm thấy đơn hàng
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 mb-6">
+        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-6">
           Mã đơn hàng <strong>{orderCode}</strong> không tồn tại trong hệ thống hoặc đã quá hạn và bị hủy.
         </p>
         <Link

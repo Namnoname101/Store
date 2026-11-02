@@ -107,9 +107,9 @@ async function main() {
       where: { productId: gemini.id },
       update: {
         supplierId: supplier.id,
-        supplierProductCode: "51",
-        supplierPrice: 14800,
-        supplierStock: 52,
+        supplierProductCode: "70",
+        supplierPrice: 21800,
+        supplierStock: 56,
         markupType: "PERCENTAGE",
         markupValue: 42,
         isAutoSync: true,
@@ -126,9 +126,9 @@ async function main() {
       create: {
         productId: gemini.id,
         supplierId: supplier.id,
-        supplierProductCode: "51",
-        supplierPrice: 14800,
-        supplierStock: 52,
+        supplierProductCode: "70",
+        supplierPrice: 21800,
+        supplierStock: 56,
         markupType: "PERCENTAGE",
         markupValue: 42,
         isAutoSync: true,
@@ -143,7 +143,7 @@ async function main() {
         }),
       },
     });
-    console.log("✓ Updated and Mapped Gemini Advanced 18 Tháng: Xoai Non (#51, 14.8k) with fallback to Nghien Trick (#19, 14.5k)");
+    console.log("✓ Updated and Mapped Gemini Advanced 18 Tháng: Xoai Non (#70, 21.8k) with fallback to Nghien Trick (#19, 14.5k)");
   }
 
   // 4. Map Duolingo Super 12 Thang: Xoai Non (#60, 19.8k)

@@ -1,6 +1,7 @@
 import {
   prisma,
   OrderStatus,
+  ItemStatus,
   FulfillmentType,
   DepositStatus,
   WalletTransactionType,
@@ -524,21 +525,45 @@ export async function handleIncomingTransaction(
       Boolean(order.creditTopupOrder) ||
       order.orderItems.some((item) => isCodexProduct(item.product));
 
-    const hasDropshipItems = order.orderItems.some(
+    const dropshipItems = order.orderItems.filter(
       (item) =>
         item.product?.fulfillmentType === FulfillmentType.API_DROPSHIP &&
         !isCodexProduct(item.product) &&
         !order.creditTopupOrder
     );
 
-    if (hasDropshipItems) {
-      try {
-        await fulfillOrderViaUpstream(order.id);
-      } catch (upstreamErr) {
-        console.error(
-          `Failed to automatically fulfill dropship order ${order.id} via upstream:`,
-          upstreamErr
-        );
+    if (dropshipItems.length > 0) {
+      let needsUpstream = false;
+      for (const item of dropshipItems) {
+        const fulfilledCount = await prisma.productItem.count({
+          where: {
+            orderId: order.id,
+            productId: item.productId,
+            status: ItemStatus.SOLD,
+          },
+        });
+        if (fulfilledCount < item.quantity) {
+          needsUpstream = true;
+          break;
+        }
+      }
+
+      if (needsUpstream) {
+        try {
+          await fulfillOrderViaUpstream(order.id);
+        } catch (upstreamErr) {
+          console.error(
+            `Failed to automatically fulfill dropship order ${order.id} via upstream:`,
+            upstreamErr
+          );
+        }
+      } else {
+        await prisma.order.update({
+          where: { id: order.id },
+          data: {
+            upstreamStatus: UpstreamStatus.COMPLETED,
+          },
+        });
       }
     }
 
@@ -555,7 +580,7 @@ export async function handleIncomingTransaction(
     }
 
     // Handle Local Stock order without items (out of stock, awaiting manual key assignment)
-    if (!hasDropshipItems && !hasCodexItems) {
+    if (dropshipItems.length === 0 && !hasCodexItems) {
       try {
         const refreshedOrder = await prisma.order.findUnique({
           where: { id: order.id },

@@ -630,7 +630,7 @@ export default function SecretDisplay({
         {/* Preview guide while customer waits */}
         {isClaudeOrder && (
           <div className="mt-8 space-y-4 text-left">
-            <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
+            <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-100">
               <Sparkles className="h-4 w-4 text-indigo-400" />
               <span>Trong lúc đợi, bạn có thể xem trước hướng dẫn kết nối API Claude (Hỗ trợ 5 nền tảng):</span>
             </div>
@@ -640,7 +640,7 @@ export default function SecretDisplay({
 
         {isCodexOrder && (
           <div className="mt-8 space-y-4 text-left">
-            <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
+            <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-100">
               <Sparkles className="h-4 w-4 text-blue-400" />
               <span>Trong lúc đợi, bạn có thể xem trước hướng dẫn cấu hình API Codex:</span>
             </div>
@@ -955,7 +955,7 @@ export default function SecretDisplay({
       {isCodexProduct ? (
         <div className="space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <h4 className="text-sm font-bold text-white flex items-center gap-2">
+            <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-emerald-400" />
               <span>{instructions.title || "Hướng dẫn cấu hình Codex AI"}</span>
             </h4>
@@ -973,7 +973,7 @@ export default function SecretDisplay({
       ) : isApiKeyProduct ? (
         <div className="space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <h4 className="text-sm font-bold text-white flex items-center gap-2">
+            <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-indigo-400" />
               <span>{instructions.title}</span>
             </h4>

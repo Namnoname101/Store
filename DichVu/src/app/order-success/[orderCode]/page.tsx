@@ -47,10 +47,10 @@ export default async function OrderSuccessPage({
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 mb-4">
           <AlertCircle className="h-8 w-8" />
         </div>
-        <h1 className="text-xl font-bold text-white mb-2">
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
           Không tìm thấy đơn hàng
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 mb-6">
+        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-6">
           Mã đơn hàng <strong>{orderCode}</strong> không tồn tại trong hệ thống.
         </p>
         <Link
@@ -78,10 +78,10 @@ export default async function OrderSuccessPage({
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 mb-4">
           <AlertCircle className="h-8 w-8" />
         </div>
-        <h1 className="text-xl font-bold text-white mb-2">
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
           Liên kết đơn hàng đã hết hạn
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 mb-6">
+        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-6">
           Đơn hàng <strong>#{orderCode}</strong> đã được tạo hơn 30 ngày. Vì lý do an toàn bảo mật, liên kết truy cập mã đã hết hiệu lực.
         </p>
         <Link
@@ -100,10 +100,10 @@ export default async function OrderSuccessPage({
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 mb-4">
           <AlertCircle className="h-8 w-8" />
         </div>
-        <h1 className="text-xl font-bold text-white mb-2">
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
           Yêu cầu mã xác thực truy cập
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 mb-6">
+        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-6">
           Đơn hàng <strong>#{orderCode}</strong> là đơn mua của khách vãng lai. Để bảo mật mã bàn giao, vui lòng sử dụng liên kết chính xác có chứa mã bảo mật truy cập.
         </p>
         <Link

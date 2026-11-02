@@ -126,6 +126,52 @@ export async function fulfillOrderViaUpstream(
   const MAX_RETRIES = 3;
 
   for (const item of dropshipItems) {
+    // Check if this item was already delivered in a previous attempt or committed from reservation
+    const alreadyFulfilledCount = await prisma.productItem.count({
+      where: {
+        orderId: order.id,
+        productId: item.productId,
+      },
+    });
+
+    let quantityNeeded = item.quantity - alreadyFulfilledCount;
+    if (quantityNeeded <= 0) {
+      continue;
+    }
+
+    // Check if there are available warehouse items that can fulfill the remaining needed
+    const availableWarehouseItems = await prisma.productItem.findMany({
+      where: {
+        productId: item.productId,
+        status: ItemStatus.AVAILABLE,
+      },
+      take: quantityNeeded,
+      orderBy: { createdAt: "asc" },
+    });
+
+    if (availableWarehouseItems.length > 0) {
+      const itemIds = availableWarehouseItems.map((ai) => ai.id);
+      const updateResult = await prisma.productItem.updateMany({
+        where: {
+          id: { in: itemIds },
+          status: ItemStatus.AVAILABLE,
+        },
+        data: {
+          status: ItemStatus.SOLD,
+          orderId: order.id,
+          reservedUntil: null,
+        },
+      });
+
+      totalKeysDelivered += updateResult.count;
+      quantityNeeded -= updateResult.count;
+    }
+
+    // If completely fulfilled from warehouse, skip calling external supplier
+    if (quantityNeeded <= 0) {
+      continue;
+    }
+
     const mapping = item.product?.supplierMapping;
     if (!mapping || !mapping.supplier || !mapping.supplier.isActive) {
       const errorMsg = "Cần Chủ sở hữu xử lý: Cấu hình nhà cung cấp chưa khả dụng (supplier mapping missing or inactive).";
@@ -142,19 +188,6 @@ export async function fulfillOrderViaUpstream(
         status: UpstreamStatus.FAILED,
         error: errorMsg,
       };
-    }
-
-    // Check if this item was already delivered in a previous attempt (for retries)
-    const alreadyFulfilledCount = await prisma.productItem.count({
-      where: {
-        orderId: order.id,
-        productId: item.productId,
-      },
-    });
-
-    const quantityNeeded = item.quantity - alreadyFulfilledCount;
-    if (quantityNeeded <= 0) {
-      continue;
     }
 
     // Extract item-specific targetLink, or customerNote, or order customerNote
@@ -312,7 +345,7 @@ export async function fulfillOrderViaUpstream(
           await prisma.supplierProductMapping.update({
             where: { id: mapping.id },
             data: {
-              supplierStock: Math.max(0, mapping.supplierStock - (item.quantity || 1)),
+              supplierStock: Math.max(0, mapping.supplierStock - quantityNeeded),
             },
           });
         }

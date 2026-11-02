@@ -264,11 +264,18 @@ export async function createOrder(data: CreateOrderInput) {
         });
       }
 
-      // Reserve stock only for LOCAL_STOCK items in the order
+      // Reserve stock: prioritize available warehouse stock for all items
       for (const item of data.items) {
         const product = productMap.get(item.productId)!;
+        const availCount = await tx.productItem.count({
+          where: {
+            productId: item.productId,
+            status: ItemStatus.AVAILABLE,
+          },
+        });
+
         if (product.fulfillmentType === FulfillmentType.LOCAL_STOCK) {
-          try {
+          if (availCount >= item.quantity) {
             await reserveItemsForOrder(
               item.productId,
               item.quantity,
@@ -276,18 +283,46 @@ export async function createOrder(data: CreateOrderInput) {
               QR_EXPIRY_MINUTES,
               tx
             );
-          } catch (stockError) {
+          } else {
             if (isAllowManualFulfillmentProduct(product)) {
+              if (availCount > 0) {
+                await reserveItemsForOrder(
+                  item.productId,
+                  availCount,
+                  createdOrder.id,
+                  QR_EXPIRY_MINUTES,
+                  tx
+                );
+              }
               createdOrder.upstreamStatus = UpstreamStatus.PENDING_MANUAL;
               await tx.order.update({
                 where: { id: createdOrder.id },
                 data: {
                   upstreamStatus: UpstreamStatus.PENDING_MANUAL,
-                  reconciliationNote: "[Hết kho sẵn]: Chờ Admin cấp mã thủ công",
+                  reconciliationNote:
+                    availCount > 0
+                      ? `[Thiếu kho sẵn]: Đã giữ ${availCount}/${item.quantity}, chờ Admin cấp phần còn lại`
+                      : "[Hết kho sẵn]: Chờ Admin cấp mã thủ công",
                 },
               });
             } else {
-              throw stockError;
+              throw new Error("Insufficient stock available");
+            }
+          }
+        } else {
+          // Dropship or external items: reserve available warehouse items first
+          if (availCount > 0) {
+            const reserveQty = Math.min(item.quantity, availCount);
+            try {
+              await reserveItemsForOrder(
+                item.productId,
+                reserveQty,
+                createdOrder.id,
+                QR_EXPIRY_MINUTES,
+                tx
+              );
+            } catch {
+              // Concurrently claimed by another order; proceed with full upstream dropship
             }
           }
         }

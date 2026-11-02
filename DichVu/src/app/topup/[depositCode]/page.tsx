@@ -105,8 +105,8 @@ export default function DepositCheckoutPage() {
     return (
       <div className="max-w-md mx-auto my-12 p-6 rounded-2xl border border-red-500/30 bg-red-500/10 text-center">
         <AlertCircle className="h-10 w-10 text-red-400 mx-auto mb-3" />
-        <h2 className="text-lg font-bold text-white mb-2">Không tìm thấy lệnh nạp tiền</h2>
-        <p className="text-sm text-slate-400 mb-6">{error || "Lệnh nạp không tồn tại hoặc đã bị hủy"}</p>
+        <h2 className="text-lg font-bold text-rose-800 dark:text-white mb-2">Không tìm thấy lệnh nạp tiền</h2>
+        <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">{error || "Lệnh nạp không tồn tại hoặc đã bị hủy"}</p>
         <Link
           href="/topup"
           className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500"
@@ -174,8 +174,8 @@ export default function DepositCheckoutPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold text-white">Quét mã VietQR để nạp tiền</h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Quét mã VietQR để nạp tiền</h1>
+        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
           Hệ thống sẽ tự động cộng số dư vào ví ngay khi nhận được chuyển khoản
         </p>
       </div>
@@ -263,12 +263,12 @@ export default function DepositCheckoutPage() {
               </div>
 
               {/* Nội dung bắt buộc */}
-              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs text-amber-300">
+              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs text-amber-800 dark:text-amber-300 font-medium">
                 <div className="font-bold mb-1 flex items-center justify-between">
                   <span>NỘI DUNG CHUYỂN KHOẢN (BẮT BUỘC):</span>
                   <button
                     onClick={() => copyToClipboard(deposit.depositCode, "memo")}
-                    className="flex items-center gap-1 rounded bg-amber-500/20 px-2 py-0.5 text-amber-200 hover:bg-amber-500/30"
+                    className="flex items-center gap-1 rounded bg-amber-500/20 px-2 py-0.5 text-amber-800 dark:text-amber-200 hover:bg-amber-500/30 font-semibold"
                   >
                     {copiedField === "memo" ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                     <span>Sao chép</span>
@@ -277,7 +277,7 @@ export default function DepositCheckoutPage() {
                 <div className="font-mono text-base font-black text-amber-400 tracking-wider">
                   {deposit.depositCode}
                 </div>
-                <div className="text-[11px] text-amber-200/80 mt-1">
+                <div className="text-[11px] text-amber-800 dark:text-amber-200 mt-1 font-semibold">
                   * Vui lòng giữ nguyên nội dung trên để hệ thống tự động cộng tiền sau 3 giây.
                 </div>
               </div>

@@ -1,5 +1,7 @@
 import prisma, {
   OrderStatus,
+  ItemStatus,
+  UpstreamStatus,
   FulfillmentType,
   WalletTransactionType,
 } from "@/lib/prisma";
@@ -102,18 +104,15 @@ export async function payOrderWithWallet(
     throw err;
   }
 
-  // Post-transaction fulfillment
-  const hasLocalStock = order.orderItems.some(
-    (item) => item.product.fulfillmentType === FulfillmentType.LOCAL_STOCK
-  );
+  // Post-transaction fulfillment: Commit any reserved warehouse items for this order
+  await commitReservedItemsToSold(order.id);
+
   const hasCodexItems = order.orderItems.some((item) => isCodexProduct(item.product));
   const hasApiDropship = order.orderItems.some(
-    (item) => item.product.fulfillmentType === FulfillmentType.API_DROPSHIP && !isCodexProduct(item.product)
+    (item) =>
+      item.product.fulfillmentType === FulfillmentType.API_DROPSHIP &&
+      !isCodexProduct(item.product)
   );
-
-  if (hasLocalStock) {
-    await commitReservedItemsToSold(order.id);
-  }
 
   if (hasCodexItems) {
     try {
@@ -124,10 +123,40 @@ export async function payOrderWithWallet(
   }
 
   if (hasApiDropship) {
-    try {
-      await fulfillOrderViaUpstream(order.id);
-    } catch (err) {
-      console.error(`[Wallet Fulfill Upstream Error]: ${order.id}:`, err);
+    const dropshipItems = order.orderItems.filter(
+      (item) =>
+        item.product.fulfillmentType === FulfillmentType.API_DROPSHIP &&
+        !isCodexProduct(item.product)
+    );
+
+    let needsUpstream = false;
+    for (const item of dropshipItems) {
+      const fulfilledCount = await prisma.productItem.count({
+        where: {
+          orderId: order.id,
+          productId: item.productId,
+          status: ItemStatus.SOLD,
+        },
+      });
+      if (fulfilledCount < item.quantity) {
+        needsUpstream = true;
+        break;
+      }
+    }
+
+    if (needsUpstream) {
+      try {
+        await fulfillOrderViaUpstream(order.id);
+      } catch (err) {
+        console.error(`[Wallet Fulfill Upstream Error]: ${order.id}:`, err);
+      }
+    } else {
+      await prisma.order.update({
+        where: { id: order.id },
+        data: {
+          upstreamStatus: UpstreamStatus.COMPLETED,
+        },
+      });
     }
   }
 
