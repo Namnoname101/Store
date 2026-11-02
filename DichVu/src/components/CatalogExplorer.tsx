@@ -549,7 +549,7 @@ export default function CatalogExplorer({
           <LayoutGrid className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           <span>Tất cả</span>
           <span
-            className={`ml-0.5 rounded-full px-1.5 py-0.2 text-[10px] ${
+            className={`ml-0.5 rounded-full px-1.5 py-0.5 text-[10px] ${
               selectedCategoryTab === "all"
                 ? "bg-white/20 text-white font-bold"
                 : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
@@ -580,7 +580,7 @@ export default function CatalogExplorer({
               <span>{def.shortLabel}</span>
               {count > 0 && (
                 <span
-                  className={`ml-0.5 rounded-full px-1.5 py-0.2 text-[10px] ${
+                  className={`ml-0.5 rounded-full px-1.5 py-0.5 text-[10px] ${
                     isSelected
                       ? "bg-white/20 text-white font-bold"
                       : "bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400"

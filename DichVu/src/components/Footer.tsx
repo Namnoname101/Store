@@ -106,7 +106,7 @@ export default function Footer() {
               <li>
                 <Link href="/topup" className="hover:text-emerald-400 transition-colors flex items-center gap-1.5">
                   <span>Nạp Số Dư Ví Tự Động</span>
-                  <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold">+5%</span>
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold">+5%</span>
                 </Link>
               </li>
               <li>

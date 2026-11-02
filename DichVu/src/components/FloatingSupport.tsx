@@ -10,11 +10,6 @@ export default function FloatingSupport() {
   const [showTooltip, setShowTooltip] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Automatically hide on admin routes
-  if (pathname.startsWith("/admin")) {
-    return null;
-  }
-
   // Dismiss popup on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -36,6 +31,11 @@ export default function FloatingSupport() {
     }, 8000);
     return () => clearTimeout(timer);
   }, []);
+
+  // Automatically hide on admin routes (placed after hooks to respect Rules of Hooks)
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <div

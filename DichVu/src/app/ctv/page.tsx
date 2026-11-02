@@ -132,7 +132,7 @@ export default function AffiliateLandingPage() {
             )}
             <a
               href="#commission-table"
-              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl font-medium text-sm bg-slate-900/80 hover:bg-slate-850 text-slate-300 border border-slate-800 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl font-medium text-sm bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-800 transition-colors"
             >
               <span>Xem bảng hoa hồng chi tiết</span>
             </a>

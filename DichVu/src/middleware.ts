@@ -17,10 +17,10 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Allow internal daemon / cron workers with secret header
+  // Allow internal daemon / cron workers with secret header only when securely configured
   const internalSecret = req.headers.get("x-internal-secret") || req.headers.get("x-cron-secret");
-  const expectedSecret = process.env.CRON_SECRET || "internal_sync_secret_token";
-  if (internalSecret && internalSecret === expectedSecret) {
+  const expectedSecret = process.env.CRON_SECRET;
+  if (expectedSecret && expectedSecret.trim().length >= 16 && internalSecret === expectedSecret) {
     return NextResponse.next();
   }
 

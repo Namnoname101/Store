@@ -15,7 +15,7 @@ const INITIAL_TRANSACTIONS = [
 export default function LiveOrderTicker() {
   return (
     <div className="bg-slate-100/90 dark:bg-[#0b1222] border-b border-slate-200/80 dark:border-white/5 py-1.5 sm:py-2 overflow-hidden text-xs text-slate-600 dark:text-slate-300 print:hidden select-none transition-colors">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 flex items-center gap-3">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 flex items-center gap-2.5 sm:gap-3">
         {/* Badge */}
         <div className="flex items-center gap-1.5 font-bold text-amber-600 dark:text-amber-400 shrink-0 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/30 dark:border-amber-500/20 text-[11px]">
           <span className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-400 animate-pulse" />

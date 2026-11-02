@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getOrderDetails } from "@/services/order.service";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limiter";
+import { getUserSession } from "@/lib/user-auth";
 
 interface RouteParams {
   params: {
@@ -58,15 +59,27 @@ export async function GET(
       _request.headers.get("x-order-token") ||
       undefined;
 
-    const isGuest = !order.userId;
     const isTokenExpired = Boolean(
       order.createdAt &&
         Date.now() - new Date(order.createdAt).getTime() >
           30 * 24 * 60 * 60 * 1000
     );
 
+    // Verify ownership: if order belongs to registered user, user must be logged in as owner
+    let isUserOwner = false;
+    if (order.userId) {
+      try {
+        const session = await getUserSession(_request);
+        if (session && session.userId === order.userId) {
+          isUserOwner = true;
+        }
+      } catch {
+        isUserOwner = false;
+      }
+    }
+
     const isTokenValid =
-      !isGuest ||
+      isUserOwner ||
       (Boolean(token) && token === order.accessToken && !isTokenExpired);
 
     return NextResponse.json({
