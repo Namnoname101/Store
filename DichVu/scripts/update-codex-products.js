@@ -15,45 +15,38 @@ const codexData = [
     title: 'API Codex AI - tốc độ nhanh (10$ Credit)',
     creditUsd: 10,
     quota: '5.000.000',
-    vndHeader: '10.000 VNĐ = 10$ Credit',
   },
   {
     slug: 'cdx-0056-api-codex-ai-toc-o-nhanh-50-credit',
     title: 'API Codex AI - tốc độ nhanh (50$ Credit)',
     creditUsd: 50,
     quota: '25.000.000',
-    vndHeader: '50.000 VNĐ = 50$ Credit',
   },
   {
     slug: 'cdx-0057-api-codex-ai-toc-o-nhanh-100-credit',
     title: 'API Codex AI - tốc độ nhanh (100$ Credit)',
     creditUsd: 100,
     quota: '50.000.000',
-    vndHeader: '100.000 VNĐ = 100$ Credit',
   },
   {
     slug: 'cdx-0058-api-codex-ai-toc-o-nhanh-200-credit',
     title: 'API Codex AI - tốc độ nhanh (200$ Credit)',
     creditUsd: 200,
     quota: '100.000.000',
-    vndHeader: '200.000 VNĐ = 200$ Credit',
   },
   {
     slug: 'cdx-0060-api-codex-ai-toc-o-nhanh-500-credit',
     title: 'API Codex AI - tốc độ nhanh (500$ Credit)',
     creditUsd: 500,
     quota: '250.000.000',
-    vndHeader: '450.000 VNĐ = 500$ Credit',
   },
 ];
 
 function buildDescription(item) {
-  return `${item.vndHeader}
-
-• Hạn mức: ${item.creditUsd}$ Credit (${item.quota} Quota Points)
+  return `• Hạn mức: ${item.creditUsd}$ Credit (${item.quota} Quota Points)
 • Thời hạn: Bảo lưu vĩnh viễn, không giới hạn thời gian sử dụng
 • Chuẩn API: Tương thích 100% chuẩn OpenAI Compatible (Cursor IDE, VS Code, Cline, ChatGPT App)
-• Mô hình AI: Chuyên dụng cho các mô hình OpenAI GPT (GPT-4o, GPT-4o mini, o1, o3-mini, Codex gpt-6.1-sol...)
+• Mô hình AI: Hỗ trợ đầy đủ GPT 6.1, Astra 5.1, Sol (gpt-6.1-sol), GPT-4o, o1, o3-mini...
 • Bàn giao: Tự động nạp vào Key có sẵn hoặc cấp Key mới tức thì 24/7`;
 }
 
@@ -99,15 +92,17 @@ async function run() {
     'cdx-0058-api-codex-ai-toc-o-nhanh',
     'cdx-0060-api-codex-ai-toc-o-nhanh',
   ];
-
   console.log('Deactivating old duplicates...');
-  for (const s of oldSlugs) {
-    await prisma.product.updateMany({
-      where: { slug: s },
-      data: { isActive: false },
-    });
-  }
+  await prisma.product.updateMany({
+    where: { slug: { in: oldSlugs } },
+    data: { isActive: false }
+  });
+
   console.log('Done!');
+  await prisma.$disconnect();
 }
 
-run().catch(console.error).finally(() => prisma.$disconnect());
+run().catch(err => {
+  console.error(err);
+  process.exit(1);
+});
