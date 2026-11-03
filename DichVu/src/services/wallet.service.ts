@@ -9,6 +9,7 @@ import { commitReservedItemsToSold } from "@/services/inventory.service";
 import { fulfillOrderViaUpstream } from "@/services/upstream-fulfillment.service";
 import { fulfillCodexCreditOrder, isCodexProduct } from "@/services/codex-fulfillment.service";
 import { processAffiliateCommission } from "@/services/affiliate.service";
+import { notifyOrderPaid } from "@/services/telegram-assistant/notification-dispatcher";
 
 export interface WalletPaymentResult {
   success: boolean;
@@ -106,6 +107,17 @@ export async function payOrderWithWallet(
 
   // Post-transaction fulfillment: Commit any reserved warehouse items for this order
   await commitReservedItemsToSold(order.id);
+
+  // Dispatch Telegram notification to Admin
+  notifyOrderPaid({
+    orderCode: order.orderCode,
+    totalAmount: order.totalAmount,
+    customerEmail: order.customerEmail || (order as any).user?.email,
+    items: order.orderItems.map((item) => ({
+      title: item.product?.title || "Sản phẩm",
+      quantity: item.quantity,
+    })),
+  }).catch((err) => console.error("[TelegramAssistant] wallet notifyOrderPaid err:", err));
 
   const hasCodexItems = order.orderItems.some((item) => isCodexProduct(item.product));
   const hasApiDropship = order.orderItems.some(

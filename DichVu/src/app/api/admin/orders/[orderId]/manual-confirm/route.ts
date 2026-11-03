@@ -10,6 +10,7 @@ import {
 } from "@/lib/prisma";
 import { commitReservedItemsToSold, reserveItemsForOrder } from "@/services/inventory.service";
 import { fulfillOrderViaUpstream } from "@/services/upstream-fulfillment.service";
+import { notifyOrderPaid } from "@/services/telegram-assistant/notification-dispatcher";
 
 interface RouteParams {
   params: {
@@ -128,6 +129,17 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
         },
       });
     });
+
+    // Notify Admin via Telegram Assistant
+    notifyOrderPaid({
+      orderCode: order.orderCode,
+      totalAmount: order.totalAmount,
+      customerEmail: order.customerEmail || (order as any).user?.email,
+      items: order.orderItems.map((item) => ({
+        title: item.product?.title || "Sản phẩm",
+        quantity: item.quantity,
+      })),
+    }).catch((err) => console.error("[TelegramAssistant] manual confirm notify err:", err));
 
     // 6. Upstream dropship fulfillment if applicable
     const hasDropship = order.orderItems.some(

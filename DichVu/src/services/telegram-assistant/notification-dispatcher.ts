@@ -1,22 +1,30 @@
 import { telegramBot } from "./telegram-bot-client";
 
-const ADMIN_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID || "";
+function getAdminChatId(): string {
+  return (
+    process.env.TELEGRAM_ADMIN_CHAT_ID ||
+    process.env.TELEGRAM_CHAT_ID ||
+    ""
+  ).trim();
+}
 
 export async function sendAdminNotification(
   htmlText: string,
   replyMarkup?: any
 ): Promise<boolean> {
-  if (!ADMIN_CHAT_ID) {
+  const adminChatId = getAdminChatId();
+  if (!adminChatId) {
     console.warn("[NotificationDispatcher] TELEGRAM_ADMIN_CHAT_ID is not configured. Notification dropped.");
     return false;
   }
 
   try {
-    const res = await telegramBot.sendMessage(ADMIN_CHAT_ID, htmlText, {
+    const res = await telegramBot.sendMessage(adminChatId, htmlText, {
       parse_mode: "HTML",
       reply_markup: replyMarkup,
     });
-    return Boolean(res.ok);
+    console.log("[NotificationDispatcher] Send result:", res?.ok ? "OK" : JSON.stringify(res));
+    return Boolean(res?.ok);
   } catch (err: any) {
     console.error("[NotificationDispatcher] Failed to send notification:", err?.message || err);
     return false;

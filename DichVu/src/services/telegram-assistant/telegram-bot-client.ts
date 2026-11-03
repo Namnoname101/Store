@@ -57,19 +57,27 @@ export interface TelegramUpdate {
 }
 
 export class TelegramBotClient {
-  private readonly baseUrl: string;
-  private readonly botToken: string;
+  private explicitToken?: string;
 
   constructor(token?: string) {
-    this.botToken = token || process.env.TELEGRAM_ASSISTANT_BOT_TOKEN || "";
-    if (!this.botToken) {
-      console.warn("[TelegramBotClient] TELEGRAM_ASSISTANT_BOT_TOKEN is not configured.");
-    }
-    this.baseUrl = `https://api.telegram.org/bot${this.botToken}`;
+    this.explicitToken = token;
+  }
+
+  public getBotToken(): string {
+    return (
+      this.explicitToken ||
+      process.env.TELEGRAM_ASSISTANT_BOT_TOKEN ||
+      process.env.TELEGRAM_BOT_TOKEN ||
+      ""
+    ).trim();
+  }
+
+  private get baseUrl(): string {
+    return `https://api.telegram.org/bot${this.getBotToken()}`;
   }
 
   public isConfigured(): boolean {
-    return Boolean(this.botToken);
+    return Boolean(this.getBotToken());
   }
 
   public async getMe(): Promise<any> {
@@ -147,7 +155,8 @@ export class TelegramBotClient {
     text?: string,
     showAlert: boolean = false
   ): Promise<any> {
-    if (!this.isConfigured()) return;
+    if (!this.isConfigured()) return { ok: false, error: "Bot token not configured" };
+
     try {
       await fetch(`${this.baseUrl}/answerCallbackQuery`, {
         method: "POST",
@@ -158,35 +167,37 @@ export class TelegramBotClient {
           show_alert: showAlert,
         }),
       });
+      return { ok: true };
     } catch (err: any) {
-      console.error("[TelegramBotClient] answerCallbackQuery error:", err?.message);
+      return { ok: false, error: err?.message };
     }
   }
 
   public async getUpdates(offset: number = 0, timeout: number = 25): Promise<TelegramUpdate[]> {
     if (!this.isConfigured()) return [];
+
     try {
       const res = await fetch(
         `${this.baseUrl}/getUpdates?offset=${offset}&timeout=${timeout}&allowed_updates=["message","callback_query"]`
       );
       const data = await res.json();
       if (data.ok && Array.isArray(data.result)) {
-        return data.result as TelegramUpdate[];
+        return data.result;
       }
       return [];
     } catch (err: any) {
-      console.warn("[TelegramBotClient] getUpdates network error (retrying):", err?.message);
+      console.error("[TelegramBotClient] getUpdates failed:", err?.message || err);
       return [];
     }
   }
 
   public async deleteWebhook(): Promise<any> {
-    if (!this.isConfigured()) return;
+    if (!this.isConfigured()) return { ok: false };
     try {
       const res = await fetch(`${this.baseUrl}/deleteWebhook`);
       return await res.json();
     } catch (err: any) {
-      console.warn("[TelegramBotClient] deleteWebhook error:", err?.message);
+      return { ok: false, error: err?.message };
     }
   }
 }
