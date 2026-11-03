@@ -248,6 +248,7 @@ describe("Dynamic Pricing & Auto Stock Sync Engine", () => {
       registerSupplierAdapter(SupplierType.GENZSHOP, mockAdapter);
       registerSupplierAdapter(SupplierType.TAPHOAMMO, mockAdapter);
       registerSupplierAdapter(SupplierType.TRUMTHE, mockAdapter);
+      registerSupplierAdapter(SupplierType.TELEGRAM_BOT, mockAdapter);
     });
 
     afterEach(() => {

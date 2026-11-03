@@ -1,48 +1,121 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#141416" />
-      <stop offset="100%" stop-color="#060608" />
-    </linearGradient>
-    <radialGradient id="glow" cx="50%" cy="45%" r="45%">
-      <stop offset="0%" stop-color="#00a4ef" stop-opacity="0.25" />
-      <stop offset="100%" stop-color="#00a4ef" stop-opacity="0" />
+    <radialGradient id="msBg" cx="50%" cy="38%" r="65%">
+      <stop offset="0%" stop-color="#0a192f"/>
+      <stop offset="55%" stop-color="#050d1a"/>
+      <stop offset="100%" stop-color="#010308"/>
     </radialGradient>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.03" />
-    </pattern>
+    <filter id="msGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="35" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <linearGradient id="msCard" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="msBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00a4ef"/>
+      <stop offset="100%" stop-color="#0078d4"/>
+    </linearGradient>
   </defs>
 
   <!-- Background -->
-  <rect width="800" height="500" fill="url(#bg)" />
-  <rect width="800" height="500" fill="url(#grid)" />
-  <circle cx="400" cy="220" r="280" fill="url(#glow)" />
+  <rect width="1200" height="800" fill="url(#msBg)"/>
 
-  <!-- Center Emblem Container -->
-  <g transform="translate(400, 210)">
-    <!-- Ambient Ring -->
-    <circle cx="0" cy="0" r="85" fill="#18181b" fill-opacity="0.7" stroke="#27272a" stroke-width="1.5" />
-    <circle cx="0" cy="0" r="75" fill="#09090b" fill-opacity="0.9" stroke="#00a4ef" stroke-width="1" stroke-opacity="0.4" />
-    
-    <!-- Icon -->
-    <g transform="translate(-40, -40) scale(3.33)">
-      <g>
-      <rect x="3" y="3" width="8.5" height="8.5" rx="1" fill="#f25022" />
-      <rect x="12.5" y="3" width="8.5" height="8.5" rx="1" fill="#7fba00" />
-      <rect x="3" y="12.5" width="8.5" height="8.5" rx="1" fill="#00a4ef" />
-      <rect x="12.5" y="12.5" width="8.5" height="8.5" rx="1" fill="#ffb900" />
-    </g>
-    </g>
+  <!-- Subtle grid lines -->
+  <g opacity="0.1" stroke="#00a4ef" stroke-width="1">
+    <line x1="0" y1="200" x2="1200" y2="200"/>
+    <line x1="0" y1="400" x2="1200" y2="400"/>
+    <line x1="0" y1="600" x2="1200" y2="600"/>
+    <line x1="300" y1="0" x2="300" y2="800"/>
+    <line x1="600" y1="0" x2="600" y2="800"/>
+    <line x1="900" y1="0" x2="900" y2="800"/>
   </g>
 
-  <!-- Text Badges -->
-  <g transform="translate(400, 385)" text-anchor="middle">
-    <!-- Brand Title -->
-    <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="1">MICROSOFT 365</text>
-    
-    <!-- Subtitle Pill -->
-    <g transform="translate(0, 32)">
-      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#00a4ef" letter-spacing="1.5">OFFICE APPS • 1TB ONEDRIVE CLOUD</text>
+  <!-- Glow Aura -->
+  <circle cx="600" cy="285" r="240" fill="#00a4ef" opacity="0.2" filter="url(#msGlow)"/>
+
+  <!-- Center Card -->
+  <rect x="220" y="80" width="760" height="640" rx="44" fill="url(#msCard)" stroke="#00a4ef" stroke-opacity="0.35" stroke-width="2"/>
+
+  <!-- Feature Tags -->
+  <g transform="translate(290, 140)">
+    <rect width="160" height="38" rx="19" fill="#00a4ef" fill-opacity="0.2" stroke="#00a4ef" stroke-width="1.5"/>
+    <text x="80" y="24" fill="#38bdf8" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" text-anchor="middle">💻 CÀI ĐẶT 5 THIẾT BỊ</text>
+  </g>
+  <g transform="translate(750, 140)">
+    <rect width="160" height="38" rx="19" fill="#0078d4" fill-opacity="0.2" stroke="#0078d4" stroke-width="1.5"/>
+    <text x="80" y="24" fill="#38bdf8" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" text-anchor="middle">☁️ 1TB ONEDRIVE CLOUD</text>
+  </g>
+
+  <!-- ================= AUTHENTIC MICROSOFT & OFFICE SUITE ================= -->
+  <g transform="translate(600, 285)">
+    <!-- Outer ambient ring -->
+    <circle cx="0" cy="0" r="110" fill="#030b14" stroke="#00a4ef" stroke-width="3" filter="url(#msGlow)"/>
+
+    <!-- Central Official Microsoft 4-Color Grid Logo -->
+    <g transform="translate(-40, -40)">
+      <!-- Red (Office/PowerPoint) -->
+      <rect x="0" y="0" width="37" height="37" rx="4" fill="#f25022"/>
+      <!-- Green (Excel) -->
+      <rect x="43" y="0" width="37" height="37" rx="4" fill="#7fba00"/>
+      <!-- Blue (Word/Windows) -->
+      <rect x="0" y="43" width="37" height="37" rx="4" fill="#00a4ef"/>
+      <!-- Yellow/Orange (Outlook/Access) -->
+      <rect x="43" y="43" width="37" height="37" rx="4" fill="#ffb900"/>
+    </g>
+
+    <!-- Orbiting Official App Badges (W, X, P, Cloud) -->
+    <!-- Word -->
+    <g transform="translate(-135, -45)">
+      <circle cx="0" cy="0" r="26" fill="#005a9e" stroke="#ffffff" stroke-width="1.5"/>
+      <text x="0" y="9" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="900" text-anchor="middle">W</text>
+    </g>
+    <!-- Excel -->
+    <g transform="translate(135, -45)">
+      <circle cx="0" cy="0" r="26" fill="#107c41" stroke="#ffffff" stroke-width="1.5"/>
+      <text x="0" y="9" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="900" text-anchor="middle">X</text>
+    </g>
+    <!-- PowerPoint -->
+    <g transform="translate(-135, 45)">
+      <circle cx="0" cy="0" r="26" fill="#d83b01" stroke="#ffffff" stroke-width="1.5"/>
+      <text x="0" y="9" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="900" text-anchor="middle">P</text>
+    </g>
+    <!-- OneDrive -->
+    <g transform="translate(135, 45)">
+      <circle cx="0" cy="0" r="26" fill="#0078d4" stroke="#ffffff" stroke-width="1.5"/>
+      <path d="M-10,4 a7,7 0 0,1 12,-4 a6,6 0 0,1 8,4 a5,5 0 0,1 -2,5 h-18 a4,4 0 0,1 0,-5 z" fill="#ffffff"/>
     </g>
   </g>
+  <!-- ================= END MICROSOFT ================= -->
+
+  <!-- Brand Typography -->
+  <g transform="translate(600, 480)" text-anchor="middle">
+    <!-- Blue Badge -->
+    <rect x="-115" y="-18" width="230" height="34" rx="17" fill="url(#msBlue)"/>
+    <text x="0" y="6" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-size="17" font-weight="900" letter-spacing="3">BẢN QUYỀN 1 NĂM</text>
+
+    <!-- Main Title -->
+    <text x="0" y="58" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="900" letter-spacing="1">
+      MICROSOFT OFFICE 365
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="94" fill="#38bdf8" font-family="'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="700" letter-spacing="2">
+      WORD • EXCEL • POWERPOINT • ONEDRIVE
+    </text>
+  </g>
+
+  <!-- Bottom CTA Strip -->
+  <g transform="translate(380, 615)">
+    <rect width="440" height="54" rx="27" fill="url(#msBlue)"/>
+    <text x="220" y="34" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="900" text-anchor="middle">
+      CHỈ 45.000đ • GIAO TÀI KHOẢN TỨC THÌ
+    </text>
+  </g>
+
+  <!-- Store Footer -->
+  <text x="600" y="760" fill="#00a4ef" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" letter-spacing="2" text-anchor="middle" opacity="0.8">
+    KHODEE MMO HUB — PHẦN MỀM VĂN PHÒNG CHÍNH HÃNG 24/7
+  </text>
 </svg>

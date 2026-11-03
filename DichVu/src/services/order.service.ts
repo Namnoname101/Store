@@ -1,3 +1,4 @@
+import { getLiveProductStock } from "@/services/live-stock.service";
 import {
   prisma,
   OrderStatus,
@@ -113,6 +114,7 @@ export async function createOrder(data: CreateOrderInput) {
   const productIds = Array.from(new Set(data.items.map((i) => i.productId)));
   const products = await prisma.product.findMany({
     where: { id: { in: productIds } },
+    include: { category: true },
   });
 
   const productMap = new Map(products.map((p) => [p.id, p]));
@@ -219,6 +221,29 @@ export async function createOrder(data: CreateOrderInput) {
   }
 
   const expiresAt = new Date(Date.now() + QR_EXPIRY_MINUTES * 60 * 1000);
+
+  // Pre-flight JIT Stock Verification for active dropship products
+  for (const item of data.items) {
+    const product = productMap.get(item.productId)!;
+    const isSMM =
+      product.category?.slug === "dich-vu-mxh" ||
+      Boolean(item.targetLink) ||
+      product.title.toLowerCase().includes("tiktok") ||
+      product.title.toLowerCase().includes("facebook");
+
+    if (
+      product.fulfillmentType === FulfillmentType.API_DROPSHIP &&
+      product.supplierMapping &&
+      !isSMM
+    ) {
+      const live = await getLiveProductStock(product.id, true);
+      if (live.stockCount < item.quantity) {
+        throw new Error(
+          `Sản phẩm "${product.title}" hiện chỉ còn ${live.stockCount} slot khả dụng trong kho (Insufficient stock), không đủ đáp ứng số lượng ${item.quantity}.`
+        );
+      }
+    }
+  }
 
   // Database transaction: create order, order items, and reserve stock
   const order = await prisma.$transaction(

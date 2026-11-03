@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getAvailableStockCount } from "@/services/inventory.service";
+import { getLiveProductStock } from "@/services/live-stock.service";
 
 interface ValidateCartItemInput {
   productId: string;
@@ -68,11 +68,11 @@ export async function POST(request: Request) {
 
         const isSMM =
           dbProduct.category?.slug === "dich-vu-mxh" ||
-          dbProduct.fulfillmentType === "API_DROPSHIP" ||
           dbProduct.title.toLowerCase().includes("tiktok") ||
           dbProduct.title.toLowerCase().includes("facebook");
 
-        const liveStock = await getAvailableStockCount(dbProduct.id);
+        const live = await getLiveProductStock(dbProduct.id);
+        const liveStock = live.stockCount;
         const minQty = Math.max(1, dbProduct.minQuantity || (isSMM ? 50 : 1));
         const maxQty = dbProduct.maxQuantity || (isSMM ? 100000 : liveStock);
 

@@ -1,3 +1,4 @@
+import { getLiveProductStock } from "@/services/live-stock.service";
 import {
   prisma,
   OrderStatus,
@@ -165,23 +166,24 @@ export async function regeneratePaymentIntent(
   for (const item of order.orderItems) {
     const currentProduct = await prisma.product.findUnique({
       where: { id: item.productId },
+      include: { category: true },
     });
 
     if (!currentProduct || !currentProduct.isActive) {
       throw new Error(`Sản phẩm "${item.product?.title || item.productId}" hiện đã tạm dừng bán.`);
     }
 
-    // Check available stock
+    // Check available stock with JIT Live Stock Verification
     const isSMM =
-      currentProduct.fulfillmentType === FulfillmentType.API_DROPSHIP ||
+      currentProduct.category?.slug === "dich-vu-mxh" ||
       currentProduct.title.toLowerCase().includes("tiktok") ||
       currentProduct.title.toLowerCase().includes("facebook");
 
-    if (!isSMM && currentProduct.fulfillmentType === FulfillmentType.LOCAL_STOCK) {
-      const liveStock = await getAvailableStockCount(currentProduct.id);
-      if (liveStock < item.quantity) {
+    if (!isSMM) {
+      const liveStock = await getLiveProductStock(currentProduct.id);
+      if (liveStock.stockCount < item.quantity) {
         throw new Error(
-          `Kho chỉ còn ${liveStock} sản phẩm khả dụng cho "${currentProduct.title}", không đủ đáp ứng số lượng ${item.quantity}.`
+          `Kho chỉ còn ${liveStock.stockCount} sản phẩm khả dụng cho "${currentProduct.title}", không đủ đáp ứng số lượng ${item.quantity}. Vui lòng không chuyển khoản.`
         );
       }
     }

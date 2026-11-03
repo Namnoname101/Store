@@ -1,43 +1,108 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#130e24" />
-      <stop offset="100%" stop-color="#05030d" />
-    </linearGradient>
-    <radialGradient id="glow" cx="50%" cy="45%" r="45%">
-      <stop offset="0%" stop-color="#3186FF" stop-opacity="0.25" />
-      <stop offset="100%" stop-color="#3186FF" stop-opacity="0" />
+    <radialGradient id="gemBg" cx="50%" cy="38%" r="65%">
+      <stop offset="0%" stop-color="#140e2b"/>
+      <stop offset="55%" stop-color="#090517"/>
+      <stop offset="100%" stop-color="#02000a"/>
     </radialGradient>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.03" />
-    </pattern>
+    <filter id="gemGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="35" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <linearGradient id="gemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4285f4"/>
+      <stop offset="40%" stop-color="#9b72cb"/>
+      <stop offset="75%" stop-color="#d96570"/>
+      <stop offset="100%" stop-color="#f2994a"/>
+    </linearGradient>
+    <linearGradient id="gemCard" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"/>
+    </linearGradient>
   </defs>
 
   <!-- Background -->
-  <rect width="800" height="500" fill="url(#bg)" />
-  <rect width="800" height="500" fill="url(#grid)" />
-  <circle cx="400" cy="220" r="280" fill="url(#glow)" />
+  <rect width="1200" height="800" fill="url(#gemBg)"/>
 
-  <!-- Center Emblem Container -->
-  <g transform="translate(400, 210)">
-    <!-- Ambient Ring -->
-    <circle cx="0" cy="0" r="85" fill="#18181b" fill-opacity="0.7" stroke="#27272a" stroke-width="1.5" />
-    <circle cx="0" cy="0" r="75" fill="#09090b" fill-opacity="0.9" stroke="#3186FF" stroke-width="1" stroke-opacity="0.4" />
-    
-    <!-- Icon -->
-    <g transform="translate(-40, -40) scale(3.33)">
-      <path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="#3186FF" />
-    </g>
+  <!-- Starry space dots -->
+  <g fill="#ffffff" opacity="0.5">
+    <circle cx="150" cy="140" r="1.5"/>
+    <circle cx="260" cy="220" r="2"/>
+    <circle cx="980" cy="160" r="1.5"/>
+    <circle cx="1060" cy="290" r="2"/>
+    <circle cx="890" cy="640" r="1.5"/>
+    <circle cx="210" cy="620" r="2"/>
+    <circle cx="750" cy="110" r="1.5"/>
   </g>
 
-  <!-- Text Badges -->
-  <g transform="translate(400, 385)" text-anchor="middle">
-    <!-- Brand Title -->
-    <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="1">GEMINI ADVANCED</text>
-    
-    <!-- Subtitle Pill -->
-    <g transform="translate(0, 32)">
-      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#3186FF" letter-spacing="1.5">GOOGLE 2.0 FLASH • 2M CONTEXT</text>
+  <!-- Glow Aura -->
+  <circle cx="600" cy="285" r="240" fill="#9b72cb" opacity="0.22" filter="url(#gemGlow)"/>
+
+  <!-- Center Card -->
+  <rect x="220" y="80" width="760" height="640" rx="44" fill="url(#gemCard)" stroke="#9b72cb" stroke-opacity="0.35" stroke-width="2"/>
+
+  <!-- Feature Tags -->
+  <g transform="translate(290, 140)">
+    <rect width="160" height="38" rx="19" fill="#4285f4" fill-opacity="0.2" stroke="#4285f4" stroke-width="1.5"/>
+    <text x="80" y="24" fill="#60a5fa" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" text-anchor="middle">✨ GEMINI 2.0 ADVANCED</text>
+  </g>
+  <g transform="translate(750, 140)">
+    <rect width="160" height="38" rx="19" fill="#00ac47" fill-opacity="0.2" stroke="#00ac47" stroke-width="1.5"/>
+    <text x="80" y="24" fill="#34d399" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" text-anchor="middle">☁️ GOOGLE DRIVE 5TB</text>
+  </g>
+
+  <!-- ================= AUTHENTIC GOOGLE GEMINI & DRIVE ================= -->
+  <g transform="translate(600, 285)">
+    <!-- Outer ambient ring -->
+    <circle cx="0" cy="0" r="110" fill="#070314" stroke="url(#gemGrad)" stroke-width="3" filter="url(#gemGlow)"/>
+
+    <!-- Exact Official Google Gemini 4-Point Star -->
+    <g transform="translate(-62, -62) scale(5.16)">
+      <path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#gemGrad)"/>
+    </g>
+
+    <!-- Satellite: Official Google Drive 3-Color Triangle Badge -->
+    <g transform="translate(125, 45)">
+      <circle cx="0" cy="0" r="28" fill="#08031a" stroke="#ffffff" stroke-width="1.5"/>
+      <g transform="translate(-16, -15) scale(1.35)">
+        <!-- Yellow top bar -->
+        <polygon points="10,2 22,2 17,10 5,10" fill="#ffba00"/>
+        <!-- Green right bar -->
+        <polygon points="17,10 22,2 28,13 23,21" fill="#00ac47"/>
+        <!-- Blue left/bottom bar -->
+        <polygon points="5,10 10,2 1,18 7,18" fill="#0066da"/>
+      </g>
     </g>
   </g>
+  <!-- ================= END GOOGLE GEMINI ================= -->
+
+  <!-- Brand Typography -->
+  <g transform="translate(600, 480)" text-anchor="middle">
+    <!-- Star Tag -->
+    <rect x="-135" y="-18" width="270" height="34" rx="17" fill="url(#gemGrad)"/>
+    <text x="0" y="6" fill="#050114" font-family="'Segoe UI', Roboto, sans-serif" font-size="17" font-weight="900" letter-spacing="3">GEMINI PRO &amp; DRIVE 5TB</text>
+
+    <!-- Main Title -->
+    <text x="0" y="58" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="900" letter-spacing="1">
+      GÓI CHÍNH CHỦ 18 THÁNG
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="94" fill="#a78bfa" font-family="'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="700" letter-spacing="2">
+      DUNG LƯỢNG 5000GB CLOUD • BẢO HÀNH TRỌN GÓI
+    </text>
+  </g>
+
+  <!-- Bottom CTA Strip -->
+  <g transform="translate(380, 615)">
+    <rect width="440" height="54" rx="27" fill="url(#gemGrad)"/>
+    <text x="220" y="34" fill="#050114" font-family="'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="900" text-anchor="middle">
+      GIÁ KHÓA: 59.999đ • KÍCH HOẠT DÙNG NGAY
+    </text>
+  </g>
+
+  <!-- Store Footer -->
+  <text x="600" y="760" fill="#60a5fa" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" letter-spacing="2" text-anchor="middle" opacity="0.8">
+    KHODEE MMO HUB — GOOGLE WORKSPACE &amp; AI CHÍNH HÃNG
+  </text>
 </svg>
