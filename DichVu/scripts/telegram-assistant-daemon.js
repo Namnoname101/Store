@@ -58,6 +58,56 @@ async function answerCallbackQuery(callbackQueryId, text) {
     text,
   });
 }
+async function sendPhoto(chatId, buffer, filename, caption, replyMarkup) {
+  try {
+    const formData = new FormData();
+    formData.append("chat_id", String(chatId));
+    const blob = new Blob([new Uint8Array(buffer)], { type: "image/png" });
+    formData.append("photo", blob, filename || "vietqr.png");
+    if (caption) {
+      formData.append("caption", caption);
+      formData.append("parse_mode", "HTML");
+    }
+    if (replyMarkup) {
+      formData.append("reply_markup", JSON.stringify(replyMarkup));
+    }
+    const res = await fetch(`${BASE_URL}/sendPhoto`, {
+      method: "POST",
+      body: formData,
+    });
+    return await res.json();
+  } catch (err) {
+    console.warn("[AssistantDaemon] Telegram API error on sendPhoto:", err.message);
+    return { ok: false, error: err.message };
+  }
+}
+
+async function generateVietQR(bankId, accountNo, accountName, amount, addInfo) {
+  try {
+    const res = await fetch("https://api.vietqr.io/v2/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        accountNo,
+        accountName,
+        acqId: bankId,
+        amount: amount > 0 ? amount : undefined,
+        addInfo,
+        format: "text",
+        template: "compact2",
+      }),
+    });
+    const data = await res.json();
+    if (data?.code === "00" && data.data?.qrDataURL) {
+      const b64 = data.data.qrDataURL.replace(/^data:image\/\w+;base64,/, "");
+      return Buffer.from(b64, "base64");
+    }
+  } catch (err) {
+    console.warn("[AssistantDaemon] VietQR error:", err.message);
+  }
+  return null;
+}
+
 
 function getMainKeyboard() {
   return {
@@ -73,6 +123,10 @@ function getMainKeyboard() {
       [
         { text: "🏷️ Bảng giá (Lẻ/CTV)", callback_data: "cmd:prices" },
         { text: "🔘 Bật/Tắt sản phẩm", callback_data: "cmd:toggles" },
+      ],
+      [
+        { text: "💳 Nạp tiền NCC (VietQR)", callback_data: "cmd:topup_menu" },
+        { text: "🏢 Số dư NCC", callback_data: "cmd:supplier_balances" },
       ],
     ],
   };
@@ -385,6 +439,250 @@ async function handleRetryOrder(orderCode) {
   }
 }
 
+
+// -----------------------------------------------------------------------------
+// SUPPLIER TOP-UP & BALANCE FLUCTUATIONS HANDLERS
+// -----------------------------------------------------------------------------
+
+async function handleSupplierBalances() {
+  const suppliers = await prisma.supplier.findMany({
+    where: { isActive: true },
+    include: { mappings: { include: { product: true } } },
+  });
+
+  if (suppliers.length === 0) {
+    return "Chưa có nhà cung cấp nào đang hoạt động.";
+  }
+
+  let text = "🏢 <b>DANH SÁCH & SỐ DƯ NHÀ CUNG CẤP:</b>\n\n";
+  for (const s of suppliers) {
+    text += `🔹 <b>${s.name}</b> (<code>${s.code}</code>)\n`;
+    text += `• Số dư ví: <b>${(s.currentBalance || 0).toLocaleString("vi-VN")}đ</b>\n`;
+    text += `• Ngân hàng nạp: <b>${s.depositBankId || "MB"}</b> | STK: <code>${s.depositAccountNo || "0388888888"}</code>\n`;
+    text += `• Chủ TK: <b>${s.depositAccountName || "Chưa cập nhật"}</b>\n`;
+    text += `• Cú pháp: <code>${s.depositSyntax || "NAP " + ADMIN_CHAT_ID}</code>\n`;
+    text += `• Sản phẩm: <b>${s.mappings.length}</b> sản phẩm\n\n`;
+  }
+  text += "👉 <i>Bấm nút bên dưới để tạo mã VietQR nạp tiền vào ví bot nguồn.</i>";
+  return text;
+}
+
+async function handleTopupMenu() {
+  const suppliers = await prisma.supplier.findMany({
+    where: { isActive: true },
+    select: { id: true, name: true, code: true, currentBalance: true },
+  });
+
+  const buttons = suppliers.map((s) => [
+    {
+      text: `${s.name.includes("Xoài") ? "🥭" : s.name.includes("Genz") ? "⚡" : "🏢"} ${s.name} (${(s.currentBalance || 0).toLocaleString("vi-VN")}đ)`,
+      callback_data: `topup_sup:${s.code}`,
+    },
+  ]);
+  buttons.push([{ text: "🔙 Về Menu", callback_data: "cmd:main_menu" }]);
+
+  return {
+    text: "💳 <b>CHỌN NHÀ CUNG CẤP CẦN NẠP TIỀN:</b>\n\nHệ thống sẽ tự động tạo ảnh VietQR kèm đúng cú pháp để quét nạp tức thì.",
+    keyboard: { inline_keyboard: buttons },
+  };
+}
+
+async function handleTopupSupplier(supCode) {
+  const supplier = await prisma.supplier.findFirst({
+    where: { OR: [{ code: supCode }, { id: supCode }] },
+  });
+
+  if (!supplier) {
+    return { text: `Không tìm thấy nhà cung cấp "${supCode}".`, keyboard: getMainKeyboard() };
+  }
+
+  const amounts = [20000, 50000, 100000, 200000, 500000];
+  const buttons = [
+    amounts.slice(0, 3).map((a) => ({
+      text: `${a / 1000}k`,
+      callback_data: `topup_amt:${supplier.code}:${a}`,
+    })),
+    amounts.slice(3).map((a) => ({
+      text: `${a / 1000}k`,
+      callback_data: `topup_amt:${supplier.code}:${a}`,
+    })),
+    [
+      { text: "🔄 Kiểm tra số dư", callback_data: `check_balance:${supplier.code}` },
+      { text: "🔙 Quay lại", callback_data: "cmd:topup_menu" },
+    ],
+  ];
+
+  const text =
+    `💳 <b>NẠP TIỀN VÀO VÍ: ${supplier.name}</b>\n\n` +
+    `• Số dư hiện tại: <b>${(supplier.currentBalance || 0).toLocaleString("vi-VN")}đ</b>\n` +
+    `• Ngân hàng nạp: <b>${supplier.depositBankId || "MB"}</b> | STK: <code>${supplier.depositAccountNo || "0388888888"}</code>\n` +
+    `• Chủ tài khoản: <b>${supplier.depositAccountName || "SHOP XOAI NON"}</b>\n` +
+    `• Cú pháp: <code>${supplier.depositSyntax || "NAP " + ADMIN_CHAT_ID}</code>\n\n` +
+    `👉 <b>Chọn mệnh giá muốn nạp bên dưới để lấy mã VietQR:</b>`;
+
+  return { text, keyboard: { inline_keyboard: buttons } };
+}
+
+async function handleSendTopupQR(chatId, supCode, amount, orderCode) {
+  const supplier = await prisma.supplier.findFirst({
+    where: { OR: [{ code: supCode }, { id: supCode }] },
+  });
+
+  if (!supplier) {
+    await sendMessage(chatId, `Không tìm thấy nhà cung cấp "${supCode}".`);
+    return;
+  }
+
+  const bankId = supplier.depositBankId || "MB";
+  const accountNo = supplier.depositAccountNo || "0388888888";
+  const accountName = supplier.depositAccountName || "SHOP XOAI NON";
+  const syntax = supplier.depositSyntax || `NAP ${ADMIN_CHAT_ID || chatId}`;
+
+  await sendMessage(chatId, `⏳ Đang tạo mã VietQR nạp <b>${amount.toLocaleString("vi-VN")}đ</b> cho <b>${supplier.name}</b>...`);
+
+  const qrBuf = await generateVietQR(bankId, accountNo, accountName, amount, syntax);
+  if (!qrBuf) {
+    const text =
+      `⚠️ <b>THÔNG TIN CHUYỂN KHOẢN NẠP TIỀN:</b>\n\n` +
+      `🏢 Nhà cung cấp: <b>${supplier.name}</b>\n` +
+      `🏦 Ngân hàng: <b>${bankId}</b> | STK: <code>${accountNo}</code>\n` +
+      `👤 Chủ tài khoản: <b>${accountName}</b>\n` +
+      `💵 Số tiền: <b>${amount.toLocaleString("vi-VN")}đ</b>\n` +
+      `📝 Cú pháp: <code>${syntax}</code>`;
+    await sendMessage(chatId, text, {
+      inline_keyboard: [
+        [{ text: "🔄 Kiểm tra số dư", callback_data: `check_balance:${supplier.code}` }],
+        [{ text: "🔙 Về Menu", callback_data: "cmd:main_menu" }],
+      ],
+    });
+    return;
+  }
+
+  const caption =
+    `💳 <b>MÃ VIETQR NẠP TIỀN: ${supplier.name}</b>\n\n` +
+    `💵 Số tiền: <b>${amount.toLocaleString("vi-VN")}đ</b>\n` +
+    `🏦 Ngân hàng: <b>${bankId}</b> | STK: <code>${accountNo}</code>\n` +
+    `👤 Chủ tài khoản: <b>${accountName}</b>\n` +
+    `📝 Cú pháp nạp: <code>${syntax}</code>\n\n` +
+    `👉 <i>Mở ứng dụng ngân hàng quét mã trên để nạp tiền vào ví bot nguồn. Hệ thống sẽ tự động cập nhật số dư!</i>`;
+
+  const buttons = [
+    [
+      { text: "🔄 Kiểm tra số dư", callback_data: `check_balance:${supplier.code}` },
+      { text: "🔙 Về Menu", callback_data: "cmd:main_menu" },
+    ],
+  ];
+
+  if (orderCode) {
+    buttons.unshift([
+      { text: "⚡ Đã nạp xong - Cấp hàng ngay", callback_data: `retry_order:${orderCode}` },
+    ]);
+  }
+
+  await sendPhoto(chatId, qrBuf, `vietqr_${supplier.code}_${amount}.png`, caption, {
+    inline_keyboard: buttons,
+  });
+}
+
+async function handleSetDeposit(text) {
+  const parts = text.replace(/^\/set_deposit\s+/i, "").trim().split(/\s+/);
+  if (parts.length < 3) {
+    return (
+      `ℹ️ <b>HƯỚNG DẪN CẤU HÌNH STK NẠP NCC:</b>\n\n` +
+      `Cú pháp:\n<code>/set_deposit &lt;MÃ_NCC&gt; &lt;STK&gt; &lt;NGÂN_HÀNG&gt; &lt;CHỦ_TK&gt; [CÚ_PHÁP]</code>\n\n` +
+      `Ví dụ:\n<code>/set_deposit XOAINON_TELE 0388888888 MB SHOP_XOAI_NON NAP 1853328773</code>`
+    );
+  }
+
+  const [supCode, accountNo, bankId, accountName, ...syntaxParts] = parts;
+  const syntax = syntaxParts.length > 0 ? syntaxParts.join(" ") : `NAP ${ADMIN_CHAT_ID}`;
+
+  const sup = await prisma.supplier.findFirst({
+    where: { OR: [{ code: supCode }, { id: supCode }] },
+  });
+
+  if (!sup) {
+    return `Không tìm thấy nhà cung cấp có mã "${supCode}".`;
+  }
+
+  const cleanName = (accountName || "").replace(/_/g, " ");
+  await prisma.supplier.update({
+    where: { id: sup.id },
+    data: {
+      depositBankId: bankId.toUpperCase(),
+      depositAccountNo: accountNo,
+      depositAccountName: cleanName,
+      depositSyntax: syntax,
+    },
+  });
+
+  return (
+    `✅ <b>ĐÃ CẬP NHẬT THÔNG TIN NẠP TIỀN CHO ${sup.name}:</b>\n\n` +
+    `• Mã NCC: <code>${sup.code}</code>\n` +
+    `• Ngân hàng: <b>${bankId.toUpperCase()}</b>\n` +
+    `• Số tài khoản: <code>${accountNo}</code>\n` +
+    `• Chủ tài khoản: <b>${cleanName}</b>\n` +
+    `• Cú pháp nạp: <code>${syntax}</code>\n\n` +
+    `👉 <i>Mọi mã VietQR tạo sau này sẽ tự động gắn thông tin trên!</i>`
+  );
+}
+
+let lastBalanceCheckTime = 0;
+async function checkBalanceFluctuations() {
+  const now = Date.now();
+  if (now - lastBalanceCheckTime < 40000) return;
+  lastBalanceCheckTime = now;
+
+  try {
+    const suppliers = await prisma.supplier.findMany({
+      where: { isActive: true },
+    });
+
+    for (const sup of suppliers) {
+      if (sup.lastNotifiedBalance !== null && sup.lastNotifiedBalance !== undefined) {
+        if (sup.currentBalance !== sup.lastNotifiedBalance) {
+          const diff = sup.currentBalance - sup.lastNotifiedBalance;
+          const isDeposit = diff > 0;
+          const alertMsg = isDeposit
+            ? `🟢 <b>BIẾN ĐỘNG SỐ DƯ NCC (TIỀN VÀO)</b>\n\n` +
+              `🏢 Nhà cung cấp: <b>${sup.name}</b>\n` +
+              `➕ Tiền nạp vào: <b>+${diff.toLocaleString("vi-VN")}đ</b>\n` +
+              `💰 Số dư hiện tại: <b>${sup.currentBalance.toLocaleString("vi-VN")}đ</b>\n` +
+              `⏰ Thời gian: ${new Date().toLocaleTimeString("vi-VN")}`
+            : `🔴 <b>BIẾN ĐỘNG SỐ DƯ NCC (TIỀN RA)</b>\n\n` +
+              `🏢 Nhà cung cấp: <b>${sup.name}</b>\n` +
+              `➖ Trừ tiền mua hàng: <b>${diff.toLocaleString("vi-VN")}đ</b>\n` +
+              `💰 Số dư còn lại: <b>${sup.currentBalance.toLocaleString("vi-VN")}đ</b>\n` +
+              `⏰ Thời gian: ${new Date().toLocaleTimeString("vi-VN")}`;
+
+          if (ADMIN_CHAT_ID) {
+            await sendMessage(ADMIN_CHAT_ID, alertMsg, {
+              inline_keyboard: [
+                [
+                  { text: "💳 Nạp thêm tiền", callback_data: `topup_sup:${sup.code}` },
+                  { text: "🏢 Tất cả số dư", callback_data: "cmd:supplier_balances" },
+                ],
+              ],
+            });
+          }
+
+          await prisma.supplier.update({
+            where: { id: sup.id },
+            data: { lastNotifiedBalance: sup.currentBalance },
+          });
+        }
+      } else {
+        await prisma.supplier.update({
+          where: { id: sup.id },
+          data: { lastNotifiedBalance: sup.currentBalance },
+        });
+      }
+    }
+  } catch (err) {
+    console.warn("[AssistantDaemon] Error checking balance fluctuations:", err.message);
+  }
+}
+
 // -----------------------------------------------------------------------------
 // GEMINI FLASH AI WITH FUNCTION CALLING
 // -----------------------------------------------------------------------------
@@ -552,6 +850,40 @@ function parsePriceNumber(raw) {
 
 async function tryFastRegex(text) {
   const t = text.trim();
+  // Set deposit config command: /set_deposit
+  if (t.startsWith("/set_deposit")) {
+    return await handleSetDeposit(t);
+  }
+
+  // Supplier balances
+  if (/^(?:số\s*dư|ví\s*ncc|số\s*dư\s*ncc|ncc)$/i.test(t)) {
+    return await handleSupplierBalances();
+  }
+
+  // Quick top-up: "nạp tiền", "nạp xoài non 50k", "nạp tiền ncc"
+  const topupQuickRegex = /^(?:nạp\s*tiền|nạp\s*ví|nạp\s*ncc)(?:\s+(.+?)(?:\s+(\d+[\d\.,]*(?:k|đ)?))?)?$/i;
+  const topupMatch = t.match(topupQuickRegex);
+  if (topupMatch) {
+    const targetSup = topupMatch[1]?.trim();
+    const targetAmt = topupMatch[2] ? parsePriceNumber(topupMatch[2]) : 50000;
+    if (targetSup) {
+      const sup = await prisma.supplier.findFirst({
+        where: {
+          OR: [
+            { code: { contains: targetSup } },
+            { name: { contains: targetSup } },
+          ],
+        },
+      });
+      if (sup) {
+        await handleSendTopupQR(ADMIN_CHAT_ID, sup.code, targetAmt);
+        return "✓ Đã gửi mã VietQR nạp tiền ở trên!";
+      }
+    }
+    const menu = await handleTopupMenu();
+    return menu.text;
+  }
+
 
   // 1. Price update: "Đổi giá Canva 35k" / "Sửa giá Canva thành 45000" / "Set giá capcut 150k ctv 120k"
   const priceRegex = /^(?:đổi|sửa|set|cập\s*nhật|chỉnh)\s+giá\s+(.+?)\s+(?:thành|=|sang)?\s*(\d+[\d\.,]*(?:k|tr|đ|vnd)?)(?:\s+(?:ctv|sỉ)\s+(\d+[\d\.,]*(?:k|tr|đ|vnd)?))?$/i;
@@ -609,6 +941,7 @@ let isRunning = true;
 
 async function pollUpdates() {
   while (isRunning) {
+    await checkBalanceFluctuations();
     try {
       const res = await fetch(
         `${BASE_URL}/getUpdates?offset=${lastUpdateId + 1}&timeout=20&allowed_updates=["message","callback_query"]`
@@ -704,6 +1037,59 @@ async function pollUpdates() {
               await sendMessage(cb.message.chat.id, text, {
                 inline_keyboard: [[{ text: "🔙 Về Menu", callback_data: "cmd:main_menu" }]],
               });
+              continue;
+            }
+
+            
+            if (dataStr === "cmd:supplier_balances") {
+              const text = await handleSupplierBalances();
+              await sendMessage(cb.message.chat.id, text, {
+                inline_keyboard: [
+                  [{ text: "💳 Nạp tiền ngay", callback_data: "cmd:topup_menu" }],
+                  [{ text: "🔙 Về Menu", callback_data: "cmd:main_menu" }],
+                ],
+              });
+              continue;
+            }
+
+            if (dataStr === "cmd:topup_menu") {
+              const menu = await handleTopupMenu();
+              await sendMessage(cb.message.chat.id, menu.text, menu.keyboard);
+              continue;
+            }
+
+            if (dataStr.startsWith("topup_sup:")) {
+              const supCode = dataStr.replace("topup_sup:", "");
+              const res = await handleTopupSupplier(supCode);
+              await sendMessage(cb.message.chat.id, res.text, res.keyboard);
+              continue;
+            }
+
+            if (dataStr.startsWith("topup_amt:")) {
+              const [, supCode, amtStr] = dataStr.split(":");
+              const amount = parseInt(amtStr, 10) || 50000;
+              await handleSendTopupQR(cb.message.chat.id, supCode, amount);
+              continue;
+            }
+
+            if (dataStr.startsWith("check_balance:")) {
+              const supCode = dataStr.replace("check_balance:", "");
+              const sup = await prisma.supplier.findFirst({
+                where: { OR: [{ code: supCode }, { id: supCode }] },
+              });
+              if (sup) {
+                const balText =
+                  `🏢 <b>THÔNG TIN SỐ DƯ: ${sup.name}</b>\n\n` +
+                  `• Số dư hiện tại: <b>${(sup.currentBalance || 0).toLocaleString("vi-VN")}đ</b>\n` +
+                  `• Ngân hàng nạp: <b>${sup.depositBankId || "MB"}</b> | STK: <code>${sup.depositAccountNo || "0388888888"}</code>\n` +
+                  `• Cú pháp: <code>${sup.depositSyntax || "NAP " + ADMIN_CHAT_ID}</code>`;
+                await sendMessage(cb.message.chat.id, balText, {
+                  inline_keyboard: [
+                    [{ text: "💳 Nạp tiền vào ví", callback_data: `topup_sup:${sup.code}` }],
+                    [{ text: "🔙 Về Menu", callback_data: "cmd:main_menu" }],
+                  ],
+                });
+              }
               continue;
             }
 

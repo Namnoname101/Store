@@ -7,7 +7,11 @@ import {
 } from "@/lib/prisma";
 import { getSupplierAdapter } from "@/services/suppliers/adapter.registry";
 import { fulfillCodexCreditOrder, isCodexProduct } from "@/services/codex-fulfillment.service";
-import { notifyFulfillmentSuccess, notifyFulfillmentFailure } from "@/services/telegram-assistant/notification-dispatcher";
+import {
+  notifyFulfillmentSuccess,
+  notifyFulfillmentFailure,
+  notifyInsufficientSupplierBalance,
+} from "@/services/telegram-assistant/notification-dispatcher";
 
 export interface UpstreamFulfillmentResult {
   success: boolean;
@@ -306,6 +310,40 @@ export async function fulfillOrderViaUpstream(
     }
 
     if (!purchaseResult || !purchaseResult.success) {
+      const isBalanceIssue =
+        typeof lastError === "string" &&
+        (/(?:số\s*dư\s*không\s*đủ|ví\s*chưa\s*đủ|không\s*đủ\s*để|nạp\s*thêm|insufficient|balance|402)/i.test(lastError) ||
+          lastError.includes("Lỗi kết nối Shop Xoài Non") ||
+          lastError.includes("AUTH_KEY_DUPLICATED"));
+
+      const primarySupplier = mapping.supplier;
+      const amountNeeded = Math.max(10000, quantityNeeded * (mapping.supplierPrice || item.price || 20000));
+
+      if (isBalanceIssue) {
+        const waitingErrorMsg = `Chờ nạp tiền NCC: Số dư ví ${primarySupplier.name} không đủ. Đã gửi ảnh VietQR nạp tiền tới Telegram Chủ sở hữu.`;
+        await prisma.order.update({
+          where: { id: order.id },
+          data: {
+            upstreamStatus: UpstreamStatus.AWAITING_SUPPLIER_PAYMENT,
+            upstreamError: waitingErrorMsg,
+          },
+        });
+
+        notifyInsufficientSupplierBalance({
+          orderCode: order.orderCode,
+          orderId: order.id,
+          productTitle: item.product?.title || "Sản phẩm",
+          supplier: primarySupplier,
+          amountNeeded,
+        }).catch((e) => console.error("[TelegramAssistant] notify insufficient balance err:", e));
+
+        return {
+          success: false,
+          status: UpstreamStatus.AWAITING_SUPPLIER_PAYMENT,
+          error: waitingErrorMsg,
+        };
+      }
+
       const errorMsg = `Cần Chủ sở hữu xử lý: ${lastError || "Lỗi cấp phát tự động"}`;
       await prisma.order.update({
         where: { id: order.id },
@@ -427,6 +465,7 @@ export async function retryUpstreamFulfillment(
 
   if (
     order.upstreamStatus !== UpstreamStatus.FAILED &&
+    order.upstreamStatus !== UpstreamStatus.AWAITING_SUPPLIER_PAYMENT &&
     order.upstreamStatus !== UpstreamStatus.PENDING_UPSTREAM
   ) {
     return {

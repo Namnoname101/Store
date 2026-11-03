@@ -278,3 +278,68 @@ export async function lookupOrder(orderCode: string) {
     order,
   };
 }
+
+/**
+ * 8. Tra cứu số dư và cấu hình nạp tiền của các nhà cung cấp
+ */
+export async function getSuppliersBalances() {
+  const suppliers = await prisma.supplier.findMany({
+    where: { isActive: true },
+    include: {
+      mappings: {
+        include: { product: true },
+      },
+    },
+  });
+
+  return {
+    success: true,
+    suppliers: suppliers.map((s) => ({
+      id: s.id,
+      name: s.name,
+      code: s.code,
+      balance: s.currentBalance,
+      depositBankId: s.depositBankId || "MB",
+      depositAccountNo: s.depositAccountNo || "0388888888",
+      depositAccountName: s.depositAccountName || "SHOP XOAI NON",
+      depositSyntax: s.depositSyntax || "NAP 1853328773",
+      productCount: s.mappings.length,
+    })),
+  };
+}
+
+/**
+ * 9. Cập nhật thông tin nhận nạp tiền của nhà cung cấp
+ */
+export async function updateSupplierDepositConfig(
+  supplierCode: string,
+  bankId: string,
+  accountNo: string,
+  accountName: string,
+  syntax?: string
+) {
+  const sup = await prisma.supplier.findFirst({
+    where: { OR: [{ code: supplierCode }, { id: supplierCode }] },
+  });
+
+  if (!sup) {
+    return { success: false, message: `Không tìm thấy nhà cung cấp "${supplierCode}"` };
+  }
+
+  const updated = await prisma.supplier.update({
+    where: { id: sup.id },
+    data: {
+      depositBankId: bankId.toUpperCase(),
+      depositAccountNo: accountNo.trim(),
+      depositAccountName: accountName.trim(),
+      depositSyntax: syntax?.trim() || sup.depositSyntax,
+    },
+  });
+
+  return {
+    success: true,
+    message: `Đã cập nhật STK nạp cho ${updated.name}: ${updated.depositBankId} - ${updated.depositAccountNo} (${updated.depositAccountName})`,
+    supplier: updated,
+  };
+}
+

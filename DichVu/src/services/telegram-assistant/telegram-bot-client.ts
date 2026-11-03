@@ -117,6 +117,41 @@ export class TelegramBotClient {
     }
   }
 
+  public async sendPhoto(
+    chatId: string | number,
+    photoBuffer: Buffer,
+    filename: string = "vietqr.png",
+    caption?: string,
+    options?: SendMessageOptions
+  ): Promise<any> {
+    if (!this.isConfigured()) return { ok: false, error: "Bot token not configured" };
+
+    const formData = new FormData();
+    formData.append("chat_id", String(chatId));
+    const blob = new Blob([new Uint8Array(photoBuffer)], { type: "image/png" });
+    formData.append("photo", blob, filename);
+
+    if (caption) {
+      formData.append("caption", caption);
+      formData.append("parse_mode", options?.parse_mode || "HTML");
+    }
+
+    if (options?.reply_markup) {
+      formData.append("reply_markup", JSON.stringify(options.reply_markup));
+    }
+
+    try {
+      const res = await fetch(`${this.baseUrl}/sendPhoto`, {
+        method: "POST",
+        body: formData,
+      });
+      return await res.json();
+    } catch (err: any) {
+      console.error("[TelegramBotClient] sendPhoto failed:", err?.message || err);
+      return { ok: false, error: err?.message };
+    }
+  }
+
   public async editMessageText(
     chatId: string | number,
     messageId: number,

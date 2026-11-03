@@ -164,8 +164,13 @@ model Supplier {
   baseUrl        String
   apiKey         String
   apiSecret      String?
-  currentBalance Int                      @default(0) // Số dư tài khoản đại lý (VND)
-  isActive       Boolean                  @default(true)
+  currentBalance      Int                      @default(0) // Số dư tài khoản đại lý (VND)
+  lastNotifiedBalance Int?                     // Số dư lần thông báo gần nhất để theo dõi biến động
+  depositBankId       String?                  @default("MB") // Mã ngân hàng nhận nạp (MB, VCB, TCB...)
+  depositAccountNo    String?                  @default("0388888888") // Số tài khoản nhận nạp
+  depositAccountName  String?                  @default("SHOP XOAI NON") // Tên chủ tài khoản
+  depositSyntax       String?                  @default("NAP 1853328773") // Cú pháp nạp (mặc định theo Telegram ID Admin)
+  isActive            Boolean                  @default(true)
   mappings       SupplierProductMapping[]
   createdAt      DateTime                 @default(now())
   updatedAt      DateTime                 @updatedAt

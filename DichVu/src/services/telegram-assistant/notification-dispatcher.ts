@@ -1,4 +1,5 @@
 import { telegramBot } from "./telegram-bot-client";
+import { sendSupplierTopupQR, SupplierDepositInfo } from "./vietqr-helper";
 
 function getAdminChatId(): string {
   return (
@@ -129,3 +130,29 @@ export async function notifyLowStockAlert(
 
   return sendAdminNotification(msg);
 }
+
+/**
+ * 5. Bắn mã VietQR nạp tiền NCC khi đơn hàng thiếu số dư ví nguồn
+ */
+export async function notifyInsufficientSupplierBalance(opts: {
+  orderCode: string;
+  orderId: string;
+  productTitle: string;
+  supplier: SupplierDepositInfo;
+  amountNeeded: number;
+}): Promise<boolean> {
+  const adminChatId = getAdminChatId();
+  if (!adminChatId) {
+    console.warn("[NotificationDispatcher] No admin chat ID for insufficient balance alert");
+    return false;
+  }
+
+  return sendSupplierTopupQR({
+    chatId: adminChatId,
+    supplier: opts.supplier,
+    amount: opts.amountNeeded,
+    orderCode: opts.orderCode,
+    isUrgentOrder: true,
+  });
+}
+
