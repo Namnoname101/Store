@@ -119,17 +119,32 @@ async function main() {
       });
     }
 
-    // 4. Remove Gemini Pro 18 Tháng (suppliers discontinued)
-    const gemini = await prisma.product.findUnique({
-      where: { slug: "gemini-advanced-18-thang" },
-      include: { supplierMapping: true },
-    });
-    if (gemini) {
-      if (gemini.supplierMapping) {
-        await prisma.supplierProductMapping.delete({ where: { id: gemini.supplierMapping.id } });
+    // 4. Remove or Deactivate Gemini Pro 18 Tháng (suppliers discontinued)
+    try {
+      const gemini = await prisma.product.findUnique({
+        where: { slug: "gemini-advanced-18-thang" },
+        include: { supplierMapping: true, orderItems: true, items: true },
+      });
+      if (gemini) {
+        if (gemini.supplierMapping) {
+          await prisma.supplierProductMapping.delete({ where: { id: gemini.supplierMapping.id } }).catch(() => {});
+        }
+        if (gemini.orderItems && gemini.orderItems.length > 0) {
+          // Has order history: deactivate and hide completely
+          await prisma.product.update({
+            where: { id: gemini.id },
+            data: { isActive: false, title: "[NGỪNG BÁN] " + gemini.title },
+          });
+          console.log("[SyncBanners] Deactivated discontinued Gemini 18M product (preserved order history)");
+        } else {
+          // No orders: delete items and product cleanly
+          await prisma.productItem.deleteMany({ where: { productId: gemini.id } }).catch(() => {});
+          await prisma.product.delete({ where: { id: gemini.id } });
+          console.log("[SyncBanners] Cleanly removed discontinued Gemini 18M product");
+        }
       }
-      await prisma.product.delete({ where: { id: gemini.id } });
-      console.log("[SyncBanners] Cleanly removed discontinued Gemini 18M product");
+    } catch (e) {
+      console.warn("[SyncBanners] Gemini removal notice:", e.message);
     }
 
     // 5. Office 365 1 Năm
