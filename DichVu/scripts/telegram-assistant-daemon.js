@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 const BOT_TOKEN = process.env.TELEGRAM_ASSISTANT_BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN || "";
 const ADMIN_CHAT_ID = (process.env.TELEGRAM_ADMIN_CHAT_ID || "").trim();
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-flash-lite-latest";
 
 if (!BOT_TOKEN) {
   console.warn("[AssistantDaemon] TELEGRAM_ASSISTANT_BOT_TOKEN not provided. Assistant daemon disabled.");
