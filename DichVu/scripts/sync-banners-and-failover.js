@@ -389,14 +389,15 @@ async function main() {
     });
 
     for (const cdx of codexProducts) {
-      if (cdx.description && (cdx.description.includes("GPT-4o") || cdx.description.includes("Claude 3.5") || cdx.description.includes("Gemini 1.5") || cdx.description.includes("Gemini 2.5") || cdx.description.includes("GPT-6"))) {
+      if (cdx.description && (cdx.description.includes("GPT-4o") || cdx.description.includes("Claude 3.5") || cdx.description.includes("Gemini 1.5") || cdx.description.includes("Gemini 2.0") || cdx.description.includes("Gemini 2.5") || cdx.description.includes("GPT-6"))) {
         let updatedDesc = cdx.description
           .replace(/Claude 3\.5 Sonnet/g, "Claude Sonnet 5.5")
           .replace(/Claude Opus/g, "Claude Opus 5.5")
           .replace(/GPT-6 & GPT-5 \/ OpenAI o3/g, "GPT-4.5, OpenAI o3, o1")
           .replace(/GPT-4o/g, "GPT-4.5, o3 & o1")
-          .replace(/Gemini 2\.5 \/ 3 Pro/g, "Gemini 2.0 Flash & 2.0 Pro (2M Context)")
-          .replace(/Gemini 1\.5 Pro/g, "Gemini 2.0 Flash & 2.0 Pro (2M Context)");
+          .replace(/Gemini 2\.0 Flash & 2\.0 Pro \(2M Context\)/g, "Gemini 4 Argon & 3.8 Flash (2M Context)")
+          .replace(/Gemini 2\.5 \/ 3 Pro/g, "Gemini 4 Argon & 3.8 Flash (2M Context)")
+          .replace(/Gemini 1\.5 Pro/g, "Gemini 4 Argon & 3.8 Flash (2M Context)");
         await prisma.product.update({
           where: { id: cdx.id },
           data: { description: updatedDesc }

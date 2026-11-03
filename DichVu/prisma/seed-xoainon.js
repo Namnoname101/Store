@@ -70,7 +70,7 @@ async function main() {
   const geminiDescription = `Gói Gemini Pro & Google Drive 5TB 18 Tháng Chính Chủ (Kích hoạt trực tiếp qua link nhận ưu đãi):
 
 💾 Dung lượng: 5TB lưu trữ Google Drive, Google Photos và Gmail tốc độ cao.
-🤖 Trí tuệ nhân tạo: Sử dụng Gemini Pro / Gemini Advanced trọn vẹn 18 tháng (mô hình Gemini 2.0 Flash 2M Context, viết code, phân tích tài liệu dài siêu tốc).
+🤖 Trí tuệ nhân tạo: Sử dụng Gemini Pro / Gemini Advanced trọn vẹn 18 tháng (mô hình Gemini 4 Argon & Gemini 3.8 Flash, viết code, phân tích tài liệu dài siêu tốc).
 👥 Chia sẻ gia đình: Thêm tối đa 5 thành viên dùng chung kho dung lượng 5TB.
 🔒 Bảo mật: Nâng cấp trên tài khoản chính chủ của bạn, riêng tư dữ liệu 100%.
 💳 Tiện lợi: Kích hoạt trực tiếp qua link nhận ưu đãi, không cần thêm thẻ thanh toán (Visa/Mastercard).

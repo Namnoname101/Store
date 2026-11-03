@@ -18,15 +18,15 @@ export const AI_FRONTIER_MODELS = {
   },
   gemini: {
     brandName: "Google Gemini AI & Google One",
-    latestGeneration: "Gemini 2.0 & Gemini 1.5 Generation",
+    latestGeneration: "Gemini 4 (Argon) & Gemini 3.8 Generation",
     flagshipModels: [
-      "Gemini 2.0 Flash (Multimodal Live & Real-time Reasoning)",
-      "Gemini 2.0 Pro Experimental (Advanced Coding & Complex Logic)",
-      "Gemini 2.0 Flash-Lite (High Efficiency & Low Latency)",
-      "Gemini 1.5 Pro (2.000.000 Tokens Context Window)",
+      "Gemini 4 Argon (2026 Frontier Flagship & Multi-step Agentic Workflows)",
+      "Gemini 3.8 Flash (Ultra-High Speed Coding & Deep Reasoning)",
+      "Gemini 3.5 Flash (Long-Context Multimodal Intelligence)",
+      "Gemini 2.0 Flash & 2.0 Pro Experimental",
     ],
-    summaryPill: "GEMINI 2.0 FLASH & PRO • 2M CONTEXT • 5TB CLOUD",
-    contextWindow: "2.000.000 (2M) Tokens Context & Native Multimodality",
+    summaryPill: "GEMINI 4 ARGON & 3.8 FLASH • 5TB CLOUD",
+    contextWindow: "2.000.000+ (2M) Tokens Context & Native Agentic Execution",
   },
   claude: {
     brandName: "Anthropic Claude",

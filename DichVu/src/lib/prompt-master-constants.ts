@@ -232,7 +232,7 @@ TỐI ƯU HÓA ĐẶC BIỆT DÀNH RIÊNG CHO DEEPSEEK (DeepSeek-V4.1 Flash / De
 
     case "gemini":
       targetAiGuide = `
-TỐI ƯU HÓA ĐẶC BIỆT DÀNH RIÊNG CHO GOOGLE GEMINI (Gemini 4 Argon / 2.0):
+TỐI ƯU HÓA ĐẶC BIỆT DÀNH RIÊNG CHO GOOGLE GEMINI (Gemini 4 Argon & 3.8 Flash):
 - Tận dụng năng lực long-horizon reasoning và khả năng sinh output đơn chuỗi lên tới 1M tokens của thế hệ Gemini 4 Argon.
 - Khai phóng siêu ngữ cảnh đa phương tiện (Long-Context): nạp toàn bộ codebase, sơ đồ kiến trúc, tài liệu tài chính và logs.
 - Tổ chức prompt thành cấu trúc phân tầng: [System Objective & Architecture] -> [Contextual Assets / Codebase] -> [Execution Plan & Verification].`;
@@ -327,7 +327,7 @@ QUY TẮC CỐT TỬ VỀ CHẤT LƯỢNG & HAI TẦNG NGÔN NGỮ (TWO-TIER LAN
 
 TIÊU CHÍ 1: MASTER PROMPT PHẢI VIẾT 100% BẰNG ENGLISH CHUẨN MỰC
 - Toàn bộ văn bản Master Prompt bạn xuất ra PHẢI ĐƯỢC VIẾT BẰNG TIẾNG ANH (Role, Persona, Project Context, Rules, Constraints, Step-by-Step Instructions...).
-- Lý do: Mọi mô hình LLM hàng đầu thế giới (GPT-6, Claude 5.5/5.6, OpenAI o3, Gemini 2.0) đều hiểu sâu nhất, tư duy logic chính xác nhất và tuân thủ chặt chẽ nhất khi chỉ dẫn được viết bằng Tiếng Anh.
+- Lý do: Mọi mô hình LLM hàng đầu thế giới (GPT-6, Claude 5.5/5.6, OpenAI o3, Gemini 4 Argon & 3.8 Flash) đều hiểu sâu nhất, tư duy logic chính xác nhất và tuân thủ chặt chẽ nhất khi chỉ dẫn được viết bằng Tiếng Anh.
 
 TIÊU CHÍ 2: BẮT BUỘC CHỈ ĐẠO AI ĐÍCH PHẢI TRẢ LỜI CHO NGƯỜI DÙNG BẰNG TIẾNG VIỆT
 - Trong Master Prompt, BẮT BUỘC có một section rõ ràng:
