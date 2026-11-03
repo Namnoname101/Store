@@ -72,9 +72,9 @@ export default function GuidePreviewPage() {
     },
     CLAUDE_API: {
       name: "Claude API / Claude Code",
-      desc: "Mã API chính hãng kết nối Claude 3.5 Sonnet",
+      desc: "Mã API chính hãng kết nối Claude Sonnet 5.5 & Opus 5.5",
       orderCode: "DEMO-CLAUDE",
-      productTitle: "Claude 3.5 Sonnet API Token Không Giới Hạn",
+      productTitle: "Claude Sonnet 5.5 API Token Không Giới Hạn",
       productSlug: "claude-api",
       productType: "LICENSE_KEY",
       secretContent: "sk-ant-api03-demo9999999999999999999999999999",

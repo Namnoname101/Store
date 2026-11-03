@@ -675,7 +675,7 @@ export default function ClaudeApiGuideHub({
                   Cấu hình Cursor AI & Windsurf
                 </h3>
                 <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
-                  Tận dụng Claude 3.5 Sonnet trong Cursor Composer, Agent Mode và Tab Autocomplete mà không phụ thuộc gói Pro tháng của Cursor.
+                  Tận dụng Claude Sonnet 5.5 trong Cursor Composer, Agent Mode và Tab Autocomplete mà không phụ thuộc gói Pro tháng của Cursor.
                 </p>
               </div>
 

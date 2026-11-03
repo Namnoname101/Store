@@ -4,7 +4,7 @@ import CheckUsageClient from "@/components/CheckUsageClient";
 export const metadata: Metadata = {
   title: "Kiểm Tra Hạn Mức & Usage API Claude / Cursor — KhoDEE",
   description:
-    "Tra cứu thời gian thực số dư Credit, hạn mức token hàng ngày, thống kê overage và lịch sử request của API Key Claude 3.5 Sonnet & Cursor AI.",
+    "Tra cứu thời gian thực số dư Credit, hạn mức token hàng ngày, thống kê overage và lịch sử request của API Key Claude 5.5 / 5.6 (Sonnet 5.5 & Opus 5.5) & Cursor AI.",
 };
 
 export default function CheckUsagePage() {

@@ -4,7 +4,7 @@ import React from "react";
 import { Zap, Flame } from "lucide-react";
 
 const INITIAL_TRANSACTIONS = [
-  { phone: "093****216", item: "API Claude 3.5 Sonnet (10$ Credit)", time: "1 phút trước", type: "BUY" },
+  { phone: "093****216", item: "API Claude Sonnet 5.5 (10$ Credit)", time: "1 phút trước", type: "BUY" },
   { phone: "dai****33", item: "Nạp +200.000đ vào ví tự động", time: "2 phút trước", type: "TOPUP" },
   { phone: "quang****88", item: "Tài khoản ChatGPT Plus 1 Tháng", time: "4 phút trước", type: "BUY" },
   { phone: "minh****01", item: "CapCut Pro 1 Năm Bản Quyền", time: "6 phút trước", type: "BUY" },

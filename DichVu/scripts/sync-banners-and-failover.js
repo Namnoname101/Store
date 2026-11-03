@@ -356,6 +356,20 @@ async function main() {
       console.log(`[SyncBanners] Updated NordVPN`);
     }
 
+        // 10. Sync Claude AI & API thumbnails to high-res 5.5/5.6 generation banner
+    await prisma.product.updateMany({
+      where: {
+        OR: [
+          { slug: { startsWith: "api-claude-" } },
+          { slug: { startsWith: "cla-" } }
+        ]
+      },
+      data: {
+        thumbnailUrl: "/images/products/claude-api.svg"
+      }
+    });
+    console.log("[SyncBanners] Updated Claude API product thumbnails to /images/products/claude-api.svg");
+
     console.log("[SyncBanners] All product banners and failover mappings synced successfully.");
   } catch (err) {
     console.error("[SyncBanners] Error:", err?.message || err);

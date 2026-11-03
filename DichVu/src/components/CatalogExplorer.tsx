@@ -684,7 +684,7 @@ export default function CatalogExplorer({
                         const subtitle = isCodex
                           ? "Hạn mức Credit cấp phát tự động 24/7 cho Cursor & IDE"
                           : isClaude
-                          ? "API Anthropic Claude 3.5 Sonnet & Opus chính hãng tốc độ cao"
+                          ? "API Anthropic Claude 5.5 & 5.6 (Sonnet 5.5 & Opus 5.5) chính hãng tốc độ cao"
                           : "Cấp phát tự động 24/7";
 
                         const groupKey = `subbrand-${b.key}`;

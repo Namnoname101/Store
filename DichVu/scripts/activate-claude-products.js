@@ -47,7 +47,7 @@ async function activateInDb(dbUrl) {
         price: 18000,
         originalPrice: 22500,
         description:
-          "Hạn mức 10$ Credit API Anthropic Claude chính hãng tốc độ cao. Cấp phát key tự động 24/7, tương thích hoàn toàn Cursor IDE, Claude Code CLI, Cline, Roo Code và SDK.",
+          "Hạn mức 10$ Credit API Anthropic Claude chính hãng tốc độ cao. Cấp phát key tự động 24/7, hỗ trợ Claude Sonnet 5.5 & Opus 5.5, tương thích Cursor IDE, Claude Code CLI, Cline, Roo Code và SDK.",
         supplierCode: "CLA-0036",
         supplierPrice: 15000,
         supplierStock: 25,
@@ -59,7 +59,7 @@ async function activateInDb(dbUrl) {
         price: 54000,
         originalPrice: 67500,
         description:
-          "Hạn mức 30$ Credit API Anthropic Claude chính hãng tốc độ cao. Cấp phát key tự động 24/7, tối ưu cho lập trình viên và dự án cá nhân.",
+          "Hạn mức 30$ Credit API Anthropic Claude chính hãng tốc độ cao. Cấp phát key tự động 24/7, hỗ trợ Claude 5.5 & 5.6 (Sonnet 5.5 / Opus 5.5), tối ưu cho lập trình viên và dự án cá nhân.",
         supplierCode: "CLA-0042",
         supplierPrice: 45000,
         supplierStock: 20,
@@ -71,7 +71,7 @@ async function activateInDb(dbUrl) {
         price: 90000,
         originalPrice: 112500,
         description:
-          "Hạn mức 50$ Credit API Anthropic Claude chính hãng tốc độ cao. Gói phổ biến nhất cho lập trình viên chuyên nghiệp, hỗ trợ Claude 3.5 Sonnet & Claude 3 Opus.",
+          "Hạn mức 50$ Credit API Anthropic Claude chính hãng tốc độ cao. Gói phổ biến nhất cho lập trình viên chuyên nghiệp, hỗ trợ Claude Opus 5.5 & Claude Sonnet 5.5 (Claude 5.5/5.6).",
         supplierCode: "CLA-0044",
         supplierPrice: 75000,
         supplierStock: 15,
@@ -123,7 +123,7 @@ async function activateInDb(dbUrl) {
             isActive: true,
             fulfillmentType: "LOCAL_STOCK",
             type: "LICENSE_KEY",
-            thumbnailUrl: "/images/brands/claude.svg",
+            thumbnailUrl: "/images/products/claude-api.svg",
           },
         });
         console.log(`✓ Updated & Migrated to clean slug: ${product.title} (${product.slug})`);
@@ -139,7 +139,7 @@ async function activateInDb(dbUrl) {
             isActive: true,
             fulfillmentType: "LOCAL_STOCK",
             type: "LICENSE_KEY",
-            thumbnailUrl: "/images/brands/claude.svg",
+            thumbnailUrl: "/images/products/claude-api.svg",
           },
         });
         console.log(`✓ Created & Activated: ${product.title} (${product.slug})`);

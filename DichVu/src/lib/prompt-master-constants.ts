@@ -327,7 +327,7 @@ QUY TẮC CỐT TỬ VỀ CHẤT LƯỢNG & HAI TẦNG NGÔN NGỮ (TWO-TIER LAN
 
 TIÊU CHÍ 1: MASTER PROMPT PHẢI VIẾT 100% BẰNG ENGLISH CHUẨN MỰC
 - Toàn bộ văn bản Master Prompt bạn xuất ra PHẢI ĐƯỢC VIẾT BẰNG TIẾNG ANH (Role, Persona, Project Context, Rules, Constraints, Step-by-Step Instructions...).
-- Lý do: Mọi mô hình LLM hàng đầu thế giới (GPT-6, Claude 3.5/5.5, DeepSeek, Gemini) đều hiểu sâu nhất, tư duy logic chính xác nhất và tuân thủ chặt chẽ nhất khi chỉ dẫn được viết bằng Tiếng Anh.
+- Lý do: Mọi mô hình LLM hàng đầu thế giới (GPT-6, Claude 5.5/5.6, OpenAI o3, Gemini 2.5) đều hiểu sâu nhất, tư duy logic chính xác nhất và tuân thủ chặt chẽ nhất khi chỉ dẫn được viết bằng Tiếng Anh.
 
 TIÊU CHÍ 2: BẮT BUỘC CHỈ ĐẠO AI ĐÍCH PHẢI TRẢ LỜI CHO NGƯỜI DÙNG BẰNG TIẾNG VIỆT
 - Trong Master Prompt, BẮT BUỘC có một section rõ ràng:
