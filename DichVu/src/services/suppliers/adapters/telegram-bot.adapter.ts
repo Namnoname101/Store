@@ -11,6 +11,8 @@ const { StringSession } = sessions;
 // Known product catalog from @shopxoainon_bot
 export const XOAINON_PRODUCT_ALIASES: Record<string, string> = {
   "51": "70",
+  "34": "21",
+  "10": "33",
 };
 
 export const XOAINON_KNOWN_PRODUCTS: Record<
@@ -35,22 +37,47 @@ export const XOAINON_KNOWN_PRODUCTS: Record<
   "73": {
     name: "Microsoft Office 365 Plus 1 năm riêng tư",
     price: 16800,
-    inStock: 59,
+    inStock: 81,
   },
   "71": {
     name: "Tài khoản Canva Pro 1 tháng",
     price: 9900,
-    inStock: 5,
+    inStock: 7,
   },
   "35": {
     name: "Capcut Pro 30d full Date - BHF",
-    price: 42800,
-    inStock: 13,
+    price: 38800,
+    inStock: 42,
   },
   "34": {
-    name: "Capcut Pro 7D Full BH",
-    price: 3000,
-    inStock: 25,
+    name: "Capcut Pro 7 day credit BHF",
+    price: 4500,
+    inStock: 20,
+  },
+  "21": {
+    name: "Capcut Pro 7 day credit BHF",
+    price: 4500,
+    inStock: 20,
+  },
+  "49": {
+    name: "Capcut Pro 7 ngày 500 Credit BH6D",
+    price: 6800,
+    inStock: 118,
+  },
+  "33": {
+    name: "Chatgpt plus 1 tháng pay PIX riêng tư - Bh24h",
+    price: 135400,
+    inStock: 26,
+  },
+  "37": {
+    name: "Chatgpt Plus pay Apple Gmail 1 thg - BH 12H",
+    price: 139000,
+    inStock: 2,
+  },
+  "1": {
+    name: "ChatGPT Plus 1 tháng riêng tư - BHF",
+    price: 222000,
+    inStock: 6,
   },
   "40": {
     name: "Grok Super 7 ngày - BHF",
@@ -60,12 +87,12 @@ export const XOAINON_KNOWN_PRODUCTS: Record<
   "65": {
     name: "Nord VPN Premium 3 Month code",
     price: 68000,
-    inStock: 8,
+    inStock: 23,
   },
   "72": {
     name: "Tài Khoản Figma Pro Edu 2 Năm",
-    price: 159000,
-    inStock: 4,
+    price: 139000,
+    inStock: 19,
   },
   "28": {
     name: "Canva Edu Pro Admin 3 năm add 500 mem",
@@ -75,12 +102,17 @@ export const XOAINON_KNOWN_PRODUCTS: Record<
   "42": {
     name: "Memrise Pro gói trọn đời chính chủ",
     price: 299000,
-    inStock: 1,
+    inStock: 2,
   },
   "55": {
     name: "Meitu Vip 7 days riêng tư - BHF",
     price: 9500,
-    inStock: 10,
+    inStock: 12,
+  },
+  "56": {
+    name: "Wink VIP+ riêng tư 7 Days",
+    price: 9600,
+    inStock: 8,
   },
 };
 
@@ -498,47 +530,143 @@ const effectiveCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierPr
         };
       }
 
-// 2. Locate target product button (exact code match, alias or smart keyword fallback)
+      // Check if bot returned product detail directly or full catalog
       let targetCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierProductCode;
+
+      // If the bot is already on product detail screen (has buyqty:... buttons)
+      const isAlreadyOnDetail = msg.replyMarkup && (msg.replyMarkup as any).rows?.some((row: any) =>
+        row.buttons?.some((b: any) => b.data && Buffer.from(b.data).toString("utf-8").startsWith("buyqty:"))
+      );
+
+      if (isAlreadyOnDetail) {
+        // Check if it's the product we want
+        const detailHasOurCode = (msg.replyMarkup as any).rows?.some((row: any) =>
+          row.buttons?.some((b: any) => {
+            const d = b.data ? Buffer.from(b.data).toString("utf-8") : "";
+            return d === `buyqty:${targetCode}:1` || d === `buyqty:custom:${targetCode}`;
+          })
+        );
+        if (!detailHasOurCode) {
+          // It's a different product! Click back to catalog
+          console.log(`[buyXoaiNon] Bot is on a different product detail. Clicking back to catalog...`);
+          await msg.click({ data: Buffer.from("menu:buy") }).catch(() => {});
+          await new Promise((r) => setTimeout(r, 2000));
+          msgs = await client.getMessages(botUsername, { limit: 1 });
+          msg = msgs[0];
+        }
+      }
+
+      // 2. Locate target product button in catalog
       let targetBtnFound = false;
+      let targetBtnData = `product:view:${targetCode}`;
+
       if (msg?.replyMarkup && (msg.replyMarkup as any).rows) {
+        // Step A: Exact match by product:view:<targetCode>
         for (const row of (msg.replyMarkup as any).rows) {
           for (const btn of row.buttons) {
             const dataStr = btn.data ? Buffer.from(btn.data).toString("utf-8") : "";
             if (dataStr === `product:view:${targetCode}`) {
               targetBtnFound = true;
+              targetBtnData = dataStr;
               break;
             }
           }
           if (targetBtnFound) break;
         }
+
+        // Step B: Smart keyword match fallback if code changed or alias was not updated
         if (!targetBtnFound) {
-          const isGemini = targetCode === "51" || targetCode === "70";
-          for (const row of (msg.replyMarkup as any).rows) {
-            for (const btn of row.buttons) {
-              const dataStr = btn.data ? Buffer.from(btn.data).toString("utf-8") : "";
-              const btnText = (btn.text || "").toLowerCase();
-              if (isGemini && btnText.includes("gemini") && (btnText.includes("18") || btnText.includes("5tb"))) {
-                const match = dataStr.match(/product:view:(\d+)/);
-                if (match) {
-                  targetCode = match[1];
-                  targetBtnFound = true;
-                  console.log(`[buyXoaiNon] Auto-remapped Gemini product code from ${supplierProductCode} to ${targetCode}`);
-                  break;
+          console.log(`[buyXoaiNon] Product code ${targetCode} not found in catalog buttons. Trying keyword matching...`);
+
+          const determineKeywords = (code: string): string[][] => {
+            if (code === "34" || code === "21" || code === "49") {
+              return [["capcut", "7"], ["capcut", "bhf"], ["capcut"]];
+            }
+            if (code === "35") {
+              return [["capcut", "30"], ["capcut", "month"], ["capcut", "date"]];
+            }
+            if (code === "51" || code === "70") {
+              return [["gemini", "18"], ["gemini", "5tb"], ["gemini"]];
+            }
+            if (code === "10" || code === "33" || code === "37" || code === "1") {
+              return [["chatgpt", "plus"], ["gpt", "plus"], ["chatgpt"]];
+            }
+            if (code === "71" || code === "28") {
+              return [["canva", "pro"], ["canva"]];
+            }
+            if (code === "60") {
+              return [["duolingo", "super"], ["duolingo", "12"], ["duolingo"]];
+            }
+            if (code === "73") {
+              return [["office", "365"], ["office"], ["365"]];
+            }
+            if (code === "55") {
+              return [["meitu", "vip"], ["meitu", "7"], ["meitu"]];
+            }
+            if (code === "56") {
+              return [["wink", "vip"], ["wink"]];
+            }
+            if (code === "65") {
+              return [["nord", "vpn"], ["nord"]];
+            }
+            if (code === "72") {
+              return [["figma", "pro"], ["figma", "edu"], ["figma"]];
+            }
+            return [];
+          };
+
+          const keywordGroups = determineKeywords(targetCode);
+
+          for (const kws of keywordGroups) {
+            for (const row of (msg.replyMarkup as any).rows) {
+              for (const btn of row.buttons) {
+                const btnText = (btn.text || "").toLowerCase();
+                const dataStr = btn.data ? Buffer.from(btn.data).toString("utf-8") : "";
+                if (dataStr === "noop" || btnText.includes("hết hàng")) continue; // Skip out of stock
+
+                const allMatch = kws.every((kw) => btnText.includes(kw));
+                if (allMatch && dataStr.startsWith("product:view:")) {
+                  const match = dataStr.match(/product:view:(\d+)/);
+                  if (match) {
+                    targetCode = match[1];
+                    targetBtnData = dataStr;
+                    targetBtnFound = true;
+                    console.log(`[buyXoaiNon] Auto-matched product "${btn.text}" -> remapped targetCode to ${targetCode}`);
+                    break;
+                  }
                 }
               }
+              if (targetBtnFound) break;
             }
             if (targetBtnFound) break;
           }
         }
       }
-      await msg.click({ data: Buffer.from(`product:view:${targetCode}`) });
-      await new Promise((r) => setTimeout(r, 2000));
 
-      msgs = await client.getMessages(botUsername, { limit: 1 });
-      msg = msgs[0];
+      // Check if we are already on the detail screen or need to click product view
+      const isCurrentlyOnDetail = msg.replyMarkup && (msg.replyMarkup as any).rows?.some((row: any) =>
+        row.buttons?.some((b: any) => b.data && Buffer.from(b.data).toString("utf-8").startsWith(`buyqty:${targetCode}`))
+      );
+
+      if (!isCurrentlyOnDetail) {
+        if (!targetBtnFound) {
+          return {
+            success: false,
+            deliveredKeys: [],
+            error: `Không tìm thấy nút sản phẩm ID ${supplierProductCode} (target: ${targetCode}) trên menu @${botUsername}`,
+          };
+        }
+
+        console.log(`[buyXoaiNon] Clicking product view: ${targetBtnData}...`);
+        await msg.click({ data: Buffer.from(targetBtnData) });
+        await new Promise((r) => setTimeout(r, 2000));
+
+        msgs = await client.getMessages(botUsername, { limit: 1 });
+        msg = msgs[0];
+      }
 
       // 3. Click buyqty:<id>:<quantity>
+      console.log(`[buyXoaiNon] Clicking quantity: buyqty:${targetCode}:${qty}...`);
       await msg.click({ data: Buffer.from(`buyqty:${targetCode}:${qty}`) });
       await new Promise((r) => setTimeout(r, 2000));
 
@@ -546,6 +674,7 @@ const effectiveCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierPr
       msg = msgs[0];
 
       // 4. Click pay:wallet:<id>:<quantity>
+      console.log(`[buyXoaiNon] Clicking pay wallet: pay:wallet:${targetCode}:${qty}...`);
       await msg.click({ data: Buffer.from(`pay:wallet:${targetCode}:${qty}`) });
       await new Promise((r) => setTimeout(r, 4000));
 

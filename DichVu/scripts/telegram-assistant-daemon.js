@@ -456,7 +456,7 @@ async function handleSupplierBalances() {
 
   let text = "🏢 <b>DANH SÁCH & SỐ DƯ NHÀ CUNG CẤP:</b>\n\n";
   for (const s of suppliers) {
-    text += `🔹 <b>${s.name}</b> (<code>${s.code}</code>)\n`;
+    text += `${getSupplierIcon(s.name, s.code)} <b>${s.name}</b> (<code>${s.code}</code>)\n`;
     text += `• Số dư ví: <b>${(s.currentBalance || 0).toLocaleString("vi-VN")}đ</b>\n`;
     text += `• Ngân hàng nạp: <b>${s.depositBankId || "MB"}</b> | STK: <code>${s.depositAccountNo || "0388888888"}</code>\n`;
     text += `• Chủ TK: <b>${s.depositAccountName || "Chưa cập nhật"}</b>\n`;
@@ -467,6 +467,20 @@ async function handleSupplierBalances() {
   return text;
 }
 
+function getSupplierIcon(name, code) {
+  if (code.includes("XOAI") || name.includes("Xoài")) return "🥭";
+  if (code.includes("KHOMMO") || name.includes("Kho MMO")) return "📦";
+  if (code.includes("DSHOP") || name.includes("D-Shop") || name.includes("DShop")) return "🛍";
+  if (code.includes("TOKI") || name.includes("Toki")) return "⚡";
+  if (code.includes("DKEY") || name.includes("DKey")) return "🔑";
+  if (code.includes("HXN") || name.includes("HXN")) return "✂️";
+  if (code.includes("CHODAUMOI") || name.includes("Chợ Đầu Mối")) return "🏪";
+  if (code.includes("HIHI") || name.includes("PQV")) return "🎁";
+  if (code.includes("NGHIENTRICK") || name.includes("Nghiện")) return "𝔑";
+  if (code.includes("GENZ") || name.includes("Genz")) return "⚡";
+  return "🏢";
+}
+
 async function handleTopupMenu() {
   const suppliers = await prisma.supplier.findMany({
     where: { isActive: true },
@@ -475,14 +489,14 @@ async function handleTopupMenu() {
 
   const buttons = suppliers.map((s) => [
     {
-      text: `${s.name.includes("Xoài") ? "🥭" : s.name.includes("Genz") ? "⚡" : "🏢"} ${s.name} (${(s.currentBalance || 0).toLocaleString("vi-VN")}đ)`,
+      text: `${getSupplierIcon(s.name, s.code)} ${s.name} (${(s.currentBalance || 0).toLocaleString("vi-VN")}đ)`,
       callback_data: `topup_sup:${s.code}`,
     },
   ]);
   buttons.push([{ text: "🔙 Về Menu", callback_data: "cmd:main_menu" }]);
 
   return {
-    text: "💳 <b>CHỌN NHÀ CUNG CẤP CẦN NẠP TIỀN:</b>\n\nHệ thống sẽ tự động tạo ảnh VietQR kèm đúng cú pháp để quét nạp tức thì.",
+    text: "💳 <b>CHỌN NHÀ CUNG CẤP CẦN NẠP TIỀN:</b>\n\nHệ thống kết nối trực tiếp với toàn bộ Bot NCC. Chọn nhà cung cấp bên dưới để lấy thông tin tài khoản và mã VietQR chuẩn:",
     keyboard: { inline_keyboard: buttons },
   };
 }
@@ -497,28 +511,37 @@ async function handleTopupSupplier(supCode) {
   }
 
   const amounts = [20000, 50000, 100000, 200000, 500000];
+  const botUsername = supplier.baseUrl?.replace("tg://resolve?domain=", "").replace("@", "");
+  const hasBot = botUsername && !botUsername.startsWith("http");
+
   const buttons = [
     amounts.slice(0, 3).map((a) => ({
-      text: `${a / 1000}k`,
+      text: `⚡ QR ${a / 1000}k`,
       callback_data: `topup_amt:${supplier.code}:${a}`,
     })),
     amounts.slice(3).map((a) => ({
-      text: `${a / 1000}k`,
+      text: `⚡ QR ${a / 1000}k`,
       callback_data: `topup_amt:${supplier.code}:${a}`,
     })),
-    [
-      { text: "🔄 Kiểm tra số dư", callback_data: `check_balance:${supplier.code}` },
-      { text: "🔙 Quay lại", callback_data: "cmd:topup_menu" },
-    ],
   ];
+
+  const actionRow = [];
+  if (hasBot) {
+    actionRow.push({ text: `🤖 Mở @${botUsername}`, url: `https://t.me/${botUsername}` });
+  }
+  actionRow.push({ text: "🔄 Kiểm tra số dư", callback_data: `check_balance:${supplier.code}` });
+  buttons.push(actionRow);
+  buttons.push([{ text: "🔙 Quay lại danh sách NCC", callback_data: "cmd:topup_menu" }]);
 
   const text =
     `💳 <b>NẠP TIỀN VÀO VÍ: ${supplier.name}</b>\n\n` +
+    (hasBot ? `🤖 Bot NCC: @${botUsername}\n` : "") +
     `• Số dư hiện tại: <b>${(supplier.currentBalance || 0).toLocaleString("vi-VN")}đ</b>\n` +
-    `• Ngân hàng nạp: <b>${supplier.depositBankId || "MB"}</b> | STK: <code>${supplier.depositAccountNo || "0388888888"}</code>\n` +
-    `• Chủ tài khoản: <b>${supplier.depositAccountName || "SHOP XOAI NON"}</b>\n` +
+    `• Ngân hàng nạp: <b>${supplier.depositBankId || "MB"}</b>\n` +
+    `• Số tài khoản: <code>${supplier.depositAccountNo || "Chưa có"}</code>\n` +
+    `• Chủ tài khoản: <b>${supplier.depositAccountName || "NCC"}</b>\n` +
     `• Cú pháp: <code>${supplier.depositSyntax || "NAP " + ADMIN_CHAT_ID}</code>\n\n` +
-    `👉 <b>Chọn mệnh giá muốn nạp bên dưới để lấy mã VietQR:</b>`;
+    `👉 <b>Bấm chọn mệnh giá bên dưới để tạo mã VietQR nạp tức thì:</b>`;
 
   return { text, keyboard: { inline_keyboard: buttons } };
 }
@@ -558,13 +581,25 @@ async function handleSendTopupQR(chatId, supCode, amount, orderCode) {
     return;
   }
 
+  let tip = "";
+  if (supplier.code === "TOKI_TELE") {
+    tip = "\n\n💡 <i>Toki MMO dùng cổng SePay tự động. Chuyển đúng cú pháp trên là ví được cộng tiền trong 10-30s.</i>";
+  } else if (supplier.code === "KHOMMO_TELE") {
+    tip = "\n\n💡 <i>Kho MMO Market tự tạo mã đơn riêng. Bạn cũng có thể gõ /nap " + amount + " tại @KhoMMO_Market_bot.</i>";
+  } else if (supplier.code === "XOAINON_TELE") {
+    tip = "\n\n💡 <i>Shop Xoài Non dùng phương thức tiền lẻ (Delta pennies) để xác nhận tự động qua Cake VPBank.</i>";
+  } else if (supplier.code === "HIHISTORE_TELE") {
+    tip = "\n\n💡 <i>PQV Store dùng số tiền lẻ nhận diện tự động qua MB Bank.</i>";
+  }
+
   const caption =
     `💳 <b>MÃ VIETQR NẠP TIỀN: ${supplier.name}</b>\n\n` +
     `💵 Số tiền: <b>${amount.toLocaleString("vi-VN")}đ</b>\n` +
     `🏦 Ngân hàng: <b>${bankId}</b> | STK: <code>${accountNo}</code>\n` +
     `👤 Chủ tài khoản: <b>${accountName}</b>\n` +
     `📝 Cú pháp nạp: <code>${syntax}</code>\n\n` +
-    `👉 <i>Mở ứng dụng ngân hàng quét mã trên để nạp tiền vào ví bot nguồn. Hệ thống sẽ tự động cập nhật số dư!</i>`;
+    `👉 <i>Mở ứng dụng ngân hàng quét mã trên để nạp tiền vào ví bot nguồn. Hệ thống sẽ tự động cập nhật số dư!</i>` +
+    tip;
 
   const buttons = [
     [
