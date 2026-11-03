@@ -201,6 +201,101 @@ export class TelegramBotAdapter implements ISupplierAdapter {
     return 0;
   }
 
+  public async exploreXoaiNonDeposit(creds: SupplierCredentials): Promise<any> {
+    const { botUsername } = this.resolveConfig(creds);
+    const client = await this.getClient(creds);
+
+    await client.sendMessage(botUsername, { message: "/start" });
+    await new Promise((r) => setTimeout(r, 2000));
+
+    let msgs = await client.getMessages(botUsername, { limit: 1 });
+    let msg = msgs[0];
+
+    // If language selection is requested, click Vietnamese
+    if (msg?.replyMarkup && (msg.replyMarkup as any).rows) {
+      for (const row of (msg.replyMarkup as any).rows) {
+        for (const btn of row.buttons) {
+          const dataStr = btn.data ? Buffer.from(btn.data).toString("utf-8") : "";
+          if (dataStr === "lang:vi") {
+            await msg.click({ data: btn.data });
+            await new Promise((r) => setTimeout(r, 1500));
+            msgs = await client.getMessages(botUsername, { limit: 1 });
+            msg = msgs[0];
+            break;
+          }
+        }
+      }
+    }
+
+    // Click menu:account
+    let accountClicked = false;
+    if (msg?.replyMarkup && (msg.replyMarkup as any).rows) {
+      for (const row of (msg.replyMarkup as any).rows) {
+        for (const btn of row.buttons) {
+          const dataStr = btn.data ? Buffer.from(btn.data).toString("utf-8") : "";
+          if (dataStr === "menu:account" || (btn.text || "").toLowerCase().includes("tài khoản")) {
+            await msg.click({ data: btn.data });
+            accountClicked = true;
+            break;
+          }
+        }
+        if (accountClicked) break;
+      }
+    }
+
+    await new Promise((r) => setTimeout(r, 2000));
+    msgs = await client.getMessages(botUsername, { limit: 1 });
+    msg = msgs[0];
+
+    const accountText = msg?.text || "";
+    const accountButtons: string[] = [];
+
+    // Find deposit button on the account message
+    let depositBtn: any = null;
+    if (msg?.replyMarkup && (msg.replyMarkup as any).rows) {
+      for (const row of (msg.replyMarkup as any).rows) {
+        for (const btn of row.buttons) {
+          const dataStr = btn.data ? Buffer.from(btn.data).toString("utf-8") : "";
+          accountButtons.push(`${btn.text} (${dataStr})`);
+          if (
+            dataStr.includes("deposit") ||
+            dataStr.includes("nap") ||
+            (btn.text || "").toLowerCase().includes("nạp")
+          ) {
+            depositBtn = btn;
+          }
+        }
+      }
+    }
+
+    let depositText = "";
+    const depositButtons: string[] = [];
+    if (depositBtn) {
+      await msg.click({ data: depositBtn.data });
+      await new Promise((r) => setTimeout(r, 2500));
+      msgs = await client.getMessages(botUsername, { limit: 3 });
+      depositText = msgs.map((m) => m.text).join("\n---\n");
+      for (const m of msgs) {
+        if (m.replyMarkup && (m.replyMarkup as any).rows) {
+          for (const row of (m.replyMarkup as any).rows) {
+            for (const btn of row.buttons) {
+              const dataStr = btn.data ? Buffer.from(btn.data).toString("utf-8") : "";
+              depositButtons.push(`${btn.text} (${dataStr})`);
+            }
+          }
+        }
+      }
+    }
+
+    return {
+      accountText,
+      accountButtons,
+      depositBtnFound: !!depositBtn,
+      depositText,
+      depositButtons,
+    };
+  }
+
   private async checkNghienTrickBalance(
     client: TelegramClient,
     botUsername: string
