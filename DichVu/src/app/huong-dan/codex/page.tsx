@@ -100,7 +100,7 @@ export default function CodexApiGuidePage() {
               Codex API hỗ trợ những model nào?
             </h3>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-              Codex API chuyên dụng tối ưu cho các mô hình OpenAI GPT mạnh nhất hiện nay: <strong>GPT-6 Series (Sol, Astra)</strong>, <strong>GPT-5</strong>, <strong>OpenAI o3</strong>, <strong>o1</strong> và <strong>o3-mini</strong>. Quota được trừ theo đúng lượng token in/out thực tế của model bạn chọn.
+              Codex API chuyên dụng tối ưu cho các mô hình OpenAI GPT mạnh nhất hiện nay: <strong>GPT-4.5</strong>, <strong>OpenAI o3</strong>, <strong>o1 & o1-pro</strong>, <strong>o3-mini</strong> và <strong>GPT-4o</strong>. Quota được trừ theo đúng lượng token in/out thực tế của model bạn chọn.
             </p>
           </div>
 
