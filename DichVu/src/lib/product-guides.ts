@@ -68,7 +68,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
       "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Dán mã API Key này theo hướng dẫn tại /huong-dan/codex.",
       "Kiểm tra hạn mức & lịch sử request thực tế thời gian thực tại: /developer/usage",
     ],
-    note: "Hạn mức 5.000.000 quota points bảo lưu vĩnh viễn, tối ưu cho lập trình và ứng dụng ChatGPT qua các mô hình OpenAI GPT (GPT-4o, o1, gpt-6.1-sol).",
+    note: "Hạn mức 5.000.000 quota points bảo lưu vĩnh viễn, tối ưu cho lập trình và ứng dụng ChatGPT qua các mô hình OpenAI GPT (GPT-6 series, GPT-5, OpenAI o3, o1).",
     docsUrl: "/huong-dan/codex",
   },
   "codex-credit-50usd": {
@@ -209,7 +209,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
       "Mở trình duyệt trên máy tính hoặc điện thoại, đảm bảo đang đăng nhập sẵn tài khoản Google (Gmail) chính chủ bạn muốn nâng cấp.",
       "Dán (paste) đường link vào thanh địa chỉ của trình duyệt rồi nhấn Enter / Truy cập.",
       "Tại giao diện kích hoạt Google One, nhấn nút 'Chấp nhận ưu đãi' (Claim Offer) để hoàn tất nhận gói 18 tháng trực tiếp vào tài khoản.",
-      "Kiểm tra dung lượng 5TB tại one.google.com và truy cập gemini.google.com để sử dụng mô hình Gemini Advanced với đầy đủ tính năng AI.",
+      "Kiểm tra dung lượng 5TB tại one.google.com và truy cập gemini.google.com để sử dụng mô hình Gemini 3 Pro & 2.5 Pro với đầy đủ tính năng AI tiên tiến nhất.",
       "Tùy chọn: Vào Google One bật tính năng 'Chia sẻ với gia đình' (Family Sharing) để mời thêm tối đa 5 thành viên khác cùng dùng chung bộ nhớ 5TB.",
     ],
     note: "⚠️ LƯU Ý QUAN TRỌNG: Link chỉ có hiệu lực kích hoạt trong vòng 12 giờ kể từ thời điểm giao đơn. Sau 12 giờ link sẽ tự động hết hạn, shop xin phép từ chối xử lý và không hỗ trợ các trường hợp kích hoạt trễ. Quý khách vui lòng kích hoạt ngay khi nhận link.",
