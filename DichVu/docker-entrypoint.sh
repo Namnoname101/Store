@@ -59,12 +59,16 @@ fi
 
 # 2. Process Management & Signal Trap
 SWEEP_PID=""
+ASSISTANT_PID=""
 NEXT_PID=""
 
 cleanup() {
   echo "[Entrypoint] Received termination signal. Shutting down gracefully..."
   if [ -n "$SWEEP_PID" ]; then
     kill -TERM "$SWEEP_PID" 2>/dev/null || true
+  fi
+  if [ -n "$ASSISTANT_PID" ]; then
+    kill -TERM "$ASSISTANT_PID" 2>/dev/null || true
   fi
   if [ -n "$NEXT_PID" ]; then
     kill -TERM "$NEXT_PID" 2>/dev/null || true
@@ -86,6 +90,14 @@ else
   echo "[Entrypoint] Warning: scripts/payment-sweep-daemon.js not found. Skipping daemon startup."
 fi
 
+# 3.1 Start 24/7 Telegram Admin Assistant Daemon
+if [ -f scripts/telegram-assistant-daemon.js ]; then
+  echo "[Entrypoint] Starting 24/7 Telegram Admin Assistant Daemon..."
+  node scripts/telegram-assistant-daemon.js &
+  ASSISTANT_PID=$!
+  echo "[Entrypoint] Telegram Admin Assistant Daemon started with PID $ASSISTANT_PID."
+fi
+
 # 4. Sync GenzShop Catalog (only if explicitly enabled to prevent rate-limit spam)
 if [ "$SYNC_ON_BOOT" = "true" ] && [ -f prisma/seed-genzshop.js ]; then
   echo "[Entrypoint] SYNC_ON_BOOT=true: Syncing GenzShop products & thumbnails..."
@@ -105,6 +117,9 @@ EXIT_CODE=$?
 # Cleanup background daemon if Next.js stops
 if [ -n "$SWEEP_PID" ]; then
   kill -TERM "$SWEEP_PID" 2>/dev/null || true
+fi
+if [ -n "$ASSISTANT_PID" ]; then
+  kill -TERM "$ASSISTANT_PID" 2>/dev/null || true
 fi
 
 exit $EXIT_CODE

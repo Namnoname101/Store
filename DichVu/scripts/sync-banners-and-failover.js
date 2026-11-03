@@ -119,48 +119,17 @@ async function main() {
       });
     }
 
-    // 4. Gemini Pro & Drive 5TB (Locked price: 59.999đ)
+    // 4. Remove Gemini Pro 18 Tháng (suppliers discontinued)
     const gemini = await prisma.product.findUnique({
       where: { slug: "gemini-advanced-18-thang" },
       include: { supplierMapping: true },
     });
     if (gemini) {
-      await prisma.product.update({
-        where: { id: gemini.id },
-        data: {
-          thumbnailUrl: "/images/products/gemini-pro.svg",
-          price: 59999,
-        },
-      });
       if (gemini.supplierMapping) {
-        await prisma.supplierProductMapping.update({
-          where: { id: gemini.supplierMapping.id },
-          data: {
-            isAutoSync: false,
-            customConfig: JSON.stringify({
-              retailPrice: 59999,
-              resellerPrice: 39000,
-              supplierCost: 25800,
-              priceLocked: true,
-              alternativeSuppliers: [
-                {
-                  supplierCode: "KHOMMO_TELE",
-                  supplierProductCode: "GEMINI_5TB_18M",
-                  supplierPrice: 70000,
-                  priority: 2,
-                },
-                {
-                  supplierCode: "NGHIENTRICK_TELE",
-                  supplierProductCode: "19",
-                  supplierPrice: 14567,
-                  priority: 3,
-                },
-              ],
-            }),
-          },
-        });
+        await prisma.supplierProductMapping.delete({ where: { id: gemini.supplierMapping.id } });
       }
-      console.log(`[SyncBanners] Updated Gemini Pro (59.999đ locked)`);
+      await prisma.product.delete({ where: { id: gemini.id } });
+      console.log("[SyncBanners] Cleanly removed discontinued Gemini 18M product");
     }
 
     // 5. Office 365 1 Năm

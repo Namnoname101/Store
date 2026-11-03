@@ -7,6 +7,7 @@ import {
 } from "@/lib/prisma";
 import { getSupplierAdapter } from "@/services/suppliers/adapter.registry";
 import { fulfillCodexCreditOrder, isCodexProduct } from "@/services/codex-fulfillment.service";
+import { notifyFulfillmentSuccess, notifyFulfillmentFailure } from "@/services/telegram-assistant/notification-dispatcher";
 
 export interface UpstreamFulfillmentResult {
   success: boolean;
@@ -183,6 +184,12 @@ export async function fulfillOrderViaUpstream(
         },
       });
 
+      notifyFulfillmentFailure(
+        order.orderCode,
+        item.product?.title || "Sản phẩm",
+        errorMsg
+      ).catch((e) => console.error("[TelegramAssistant] notify failure err:", e));
+
       return {
         success: false,
         status: UpstreamStatus.FAILED,
@@ -308,6 +315,12 @@ export async function fulfillOrderViaUpstream(
         },
       });
 
+      notifyFulfillmentFailure(
+        order.orderCode,
+        item.product?.title || "Sản phẩm",
+        errorMsg
+      ).catch((e) => console.error("[TelegramAssistant] notify failure err:", e));
+
       return {
         success: false,
         status: UpstreamStatus.FAILED,
@@ -364,6 +377,11 @@ export async function fulfillOrderViaUpstream(
       upstreamError: null,
     },
   });
+
+  notifyFulfillmentSuccess(
+    order.orderCode,
+    `Đã cấp phát ${totalKeysDelivered} sản phẩm tự động qua nhà cung cấp`
+  ).catch((e) => console.error("[TelegramAssistant] notify success err:", e));
 
   return {
     success: true,

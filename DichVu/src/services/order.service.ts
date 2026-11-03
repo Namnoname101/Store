@@ -114,7 +114,7 @@ export async function createOrder(data: CreateOrderInput) {
   const productIds = Array.from(new Set(data.items.map((i) => i.productId)));
   const products = await prisma.product.findMany({
     where: { id: { in: productIds } },
-    include: { category: true },
+    include: { category: true, supplierMapping: true },
   });
 
   const productMap = new Map(products.map((p) => [p.id, p]));

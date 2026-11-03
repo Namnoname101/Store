@@ -56,7 +56,7 @@ export async function notifyAdminOutOfStock(params: OutOfStockAlertParams): Prom
   }
 
   // 2. Dispatch Telegram Bot alert if configured in env
-  const botToken = process.env.TELEGRAM_BOT_TOKEN;
+  const botToken = process.env.TELEGRAM_ASSISTANT_BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
 
   if (botToken && chatId) {

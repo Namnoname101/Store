@@ -10,6 +10,7 @@ import {
   UpstreamStatus,
 } from "@/lib/prisma";
 import { notifyAdminOutOfStock } from "@/services/admin-alert.service";
+import { notifyOrderPaid } from "@/services/telegram-assistant/notification-dispatcher";
 import { commitReservedItemsToSold, releaseExpiredReservations } from "@/services/inventory.service";
 import { parseOrderCodeFromMemo, parseDepositCodeFromMemo } from "@/lib/vietqr";
 import { fulfillOrderViaUpstream } from "@/services/upstream-fulfillment.service";
@@ -518,6 +519,19 @@ export async function handleIncomingTransaction(
         maxWait: 5000,
         timeout: 10000,
       }
+    );
+
+    // Dispatch real-time Telegram notification to Admin
+    notifyOrderPaid({
+      orderCode: order.orderCode,
+      totalAmount: order.totalAmount,
+      customerEmail: order.customerEmail || (order as any).user?.email,
+      items: order.orderItems.map((item) => ({
+        title: item.product?.title || "Sản phẩm",
+        quantity: item.quantity,
+      })),
+    }).catch((teleErr) =>
+      console.error("[TelegramAssistant] Failed to dispatch order paid notification:", teleErr)
     );
 
     // Fulfill dropship items via upstream if any (exclude codex credit orders)
