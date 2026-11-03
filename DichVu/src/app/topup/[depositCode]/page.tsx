@@ -121,18 +121,18 @@ export default function DepositCheckoutPage() {
   if (isPaid) {
     return (
       <div className="max-w-md mx-auto my-12 px-4">
-        <div className="relative overflow-hidden rounded-2xl border border-emerald-500/40 bg-slate-900/90 p-8 text-center shadow-2xl backdrop-blur-xl">
+        <div className="relative overflow-hidden rounded-2xl border border-emerald-500/40 bg-white dark:bg-slate-900/90 p-8 text-center shadow-2xl backdrop-blur-xl">
           <div className="absolute top-0 right-0 h-40 w-40 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none" />
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-4 animate-fade-slide-in">
             <CheckCircle2 className="h-9 w-9" />
           </div>
 
-          <h2 className="text-2xl font-bold text-white mb-1">Nạp tiền thành công!</h2>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">Nạp tiền thành công!</h2>
           <p className="text-sm text-slate-400 mb-6">
             Số dư ví của bạn đã được cộng ngay lập tức.
           </p>
 
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/30 p-4 mb-6 text-left space-y-2.5">
+          <div className="rounded-xl border border-emerald-500/30 bg-emerald-50/80 dark:bg-emerald-950/30 p-4 mb-6 text-left space-y-2.5">
             <div className="flex justify-between text-xs">
               <span className="text-slate-400">Mã lệnh nạp:</span>
               <span className="font-mono font-bold text-slate-200">{deposit.depositCode}</span>
@@ -182,7 +182,7 @@ export default function DepositCheckoutPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* VietQR Box */}
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl text-center">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 shadow-xl text-center">
           <div className="relative rounded-xl border border-indigo-500/30 bg-white p-3 shadow-lg mb-4">
             <img
               src={deposit.qrCodeUrl}
@@ -198,9 +198,9 @@ export default function DepositCheckoutPage() {
         </div>
 
         {/* Bank Details Box */}
-        <div className="flex flex-col justify-between rounded-2xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl">
+        <div className="flex flex-col justify-between rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 shadow-xl">
           <div>
-            <h2 className="text-base font-bold text-white mb-4 pb-3 border-b border-slate-800 flex items-center justify-between">
+            <h2 className="text-base font-bold text-slate-900 dark:text-white mb-4 pb-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <span>Thông tin chuyển khoản</span>
               <span className="text-xs font-mono font-semibold text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-md">
                 {deposit.depositCode}
@@ -210,20 +210,20 @@ export default function DepositCheckoutPage() {
             <div className="space-y-4">
               {/* Ngân hàng */}
               <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-400">Ngân hàng:</span>
-                <span className="font-bold text-white">{deposit.bankInfo.bankId} (Tiên Phong Bank)</span>
+                <span className="text-slate-600 dark:text-slate-400">Ngân hàng:</span>
+                <span className="font-bold text-slate-900 dark:text-white">{deposit.bankInfo.bankId} (Tiên Phong Bank)</span>
               </div>
 
               {/* Số tài khoản */}
               <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-400">Số tài khoản:</span>
+                <span className="text-slate-600 dark:text-slate-400">Số tài khoản:</span>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono font-bold text-indigo-300 text-base">
+                  <span className="font-mono font-bold text-indigo-600 dark:text-indigo-300 text-base">
                     {deposit.bankInfo.accountNo}
                   </span>
                   <button
                     onClick={() => copyToClipboard(deposit.bankInfo.accountNo, "accNo")}
-                    className="p-1 rounded bg-slate-800 text-slate-300 hover:text-white"
+                    className="p-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                     title="Sao chép số tài khoản"
                   >
                     {copiedField === "accNo" ? (
@@ -237,20 +237,20 @@ export default function DepositCheckoutPage() {
 
               {/* Chủ tài khoản */}
               <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-400">Chủ tài khoản:</span>
-                <span className="font-semibold text-slate-200">{deposit.bankInfo.accountName}</span>
+                <span className="text-slate-600 dark:text-slate-400">Chủ tài khoản:</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">{deposit.bankInfo.accountName}</span>
               </div>
 
               {/* Số tiền */}
               <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-400">Số tiền nạp:</span>
+                <span className="text-slate-600 dark:text-slate-400">Số tiền nạp:</span>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-emerald-400 text-lg">
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400 text-lg font-mono">
                     {deposit.amount.toLocaleString("vi-VN")}đ
                   </span>
                   <button
                     onClick={() => copyToClipboard(deposit.amount.toString(), "amount")}
-                    className="p-1 rounded bg-slate-800 text-slate-300 hover:text-white"
+                    className="p-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                     title="Sao chép số tiền"
                   >
                     {copiedField === "amount" ? (
@@ -284,14 +284,14 @@ export default function DepositCheckoutPage() {
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
+          <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs text-slate-600 dark:text-slate-400">
             <span className="flex items-center gap-1">
               <Clock className="h-3.5 w-3.5 text-slate-500" />
               <span>Hết hạn sau 30 phút</span>
             </span>
             <button
               onClick={() => checkStatus()}
-              className="text-indigo-400 hover:text-indigo-300 font-medium"
+              className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold"
             >
               Tôi đã chuyển khoản
             </button>

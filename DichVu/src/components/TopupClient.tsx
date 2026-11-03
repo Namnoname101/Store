@@ -115,7 +115,7 @@ export default function TopupClient() {
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href="/login?callbackUrl=/topup"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white hover:bg-blue-700 transition-colors shadow-md shadow-blue-600/20"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 px-6 py-3 text-sm font-bold transition-all shadow-md"
             >
               <span>Đăng nhập để nạp tiền</span>
               <ArrowRight className="h-4 w-4" />
@@ -135,7 +135,7 @@ export default function TopupClient() {
             </p>
             <Link
               href="/#catalog"
-              className="inline-block mt-3 text-blue-600 dark:text-blue-400 font-semibold hover:underline"
+              className="inline-block mt-3 text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
             >
               Xem danh mục sản phẩm & mua ngay →
             </Link>
@@ -152,25 +152,25 @@ export default function TopupClient() {
         <div className="absolute top-0 right-0 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-1 font-mono">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-1 font-mono">
               <Wallet className="h-3.5 w-3.5" />
               <span>Ví Thành Viên KhoDEE</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-              Xin chào, <span className="text-indigo-400">{user?.username}</span>
+              Xin chào, <span className="text-indigo-600 dark:text-indigo-400 font-extrabold">{user?.username}</span>
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
               Nạp tiền qua VietQR tự động cộng số dư trong 3 giây. Mua mọi dịch vụ 1 chạm.
             </p>
           </div>
 
           <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3">
-            <div className="h-10 w-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+            <div className="h-10 w-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
               <Wallet className="h-5 w-5" />
             </div>
             <div>
-              <div className="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Số dư khả dụng</div>
-              <div className="text-lg sm:text-xl font-bold text-emerald-300">
+              <div className="text-xs text-slate-600 dark:text-slate-400 uppercase font-semibold">Số dư khả dụng</div>
+              <div className="text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400 font-mono">
                 {user?.balance.toLocaleString("vi-VN")}đ
               </div>
             </div>
@@ -181,12 +181,12 @@ export default function TopupClient() {
       {/* Topup Form Card */}
       <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white/95 dark:bg-slate-900/80 p-6 sm:p-8 shadow-lg backdrop-blur-md transition-colors">
         <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
-          <div className="h-9 w-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+          <div className="h-9 w-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
             <CreditCard className="h-5 w-5" />
           </div>
           <div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">Nạp tiền vào ví qua VietQR</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Chuyển khoản 24/7 từ mọi ngân hàng hoặc ví MoMo/ZaloPay</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400">Chuyển khoản 24/7 từ mọi ngân hàng hoặc ví MoMo/ZaloPay</p>
           </div>
         </div>
 
@@ -213,7 +213,7 @@ export default function TopupClient() {
                     onClick={() => handleSelectPreset(amt)}
                     className={`flex items-center justify-center py-3 px-4 rounded-xl border text-sm font-semibold transition-all cursor-pointer ${
                       isSelected
-                        ? "border-indigo-500 bg-indigo-600/20 text-white shadow-md shadow-indigo-500/20 ring-1 ring-indigo-500"
+                        ? "border-indigo-600 bg-indigo-600 text-white shadow-md shadow-indigo-600/25 ring-2 ring-indigo-600/20"
                         : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-slate-700 dark:text-slate-300 hover:border-indigo-400 dark:hover:border-slate-700 hover:bg-white dark:hover:bg-slate-900"
                     }`}
                   >
@@ -246,18 +246,18 @@ export default function TopupClient() {
           {/* Value Summary Box */}
           <div className="rounded-xl border border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-950/60 p-4 space-y-2 text-xs text-slate-700 dark:text-slate-300">
             <div className="flex justify-between items-center">
-              <span className="text-slate-400">Số tiền nạp vào ví:</span>
-              <span className="text-base font-bold text-emerald-400">
+              <span className="text-slate-600 dark:text-slate-400">Số tiền nạp vào ví:</span>
+              <span className="text-base font-bold text-emerald-600 dark:text-emerald-400 font-mono">
                 {selectedAmount ? selectedAmount.toLocaleString("vi-VN") + "đ" : "0đ"}
               </span>
             </div>
-            <div className="flex justify-between items-center text-slate-400">
-              <span>Thời gian xử lý:</span>
-              <span className="text-slate-200">Tự động 3 - 5 giây</span>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-600 dark:text-slate-400">Thời gian xử lý:</span>
+              <span className="text-slate-900 dark:text-slate-200 font-semibold">Tự động 3 - 5 giây</span>
             </div>
-            <div className="flex justify-between items-center text-slate-400">
-              <span>Phí nạp tiền:</span>
-              <span className="text-emerald-400 font-medium">Miễn phí 0đ</span>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-600 dark:text-slate-400">Phí nạp tiền:</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Miễn phí 0đ</span>
             </div>
           </div>
 
@@ -280,13 +280,13 @@ export default function TopupClient() {
         </form>
 
         {/* Security badges */}
-        <div className="mt-6 pt-6 border-t border-slate-800 grid grid-cols-2 gap-4 text-xs text-slate-400 text-center">
+        <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800 grid grid-cols-2 gap-4 text-xs text-slate-600 dark:text-slate-400 text-center">
           <div className="flex items-center justify-center gap-1.5">
-            <ShieldCheck className="h-4 w-4 text-emerald-400" />
+            <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             <span>Đối soát tự động 24/7</span>
           </div>
           <div className="flex items-center justify-center gap-1.5">
-            <Clock className="h-4 w-4 text-indigo-400" />
+            <Clock className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
             <span>Cộng tiền tức thì</span>
           </div>
         </div>
