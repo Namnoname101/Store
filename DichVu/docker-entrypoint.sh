@@ -51,6 +51,12 @@ if [ -f scripts/activate-claude-products.js ]; then
   node scripts/activate-claude-products.js || true
 fi
 
+# Ensure product banners and failover mappings are up to date
+if [ -f scripts/sync-banners-and-failover.js ]; then
+  echo "[Entrypoint] Ensuring product banners and failover mappings are up to date..."
+  node scripts/sync-banners-and-failover.js || true
+fi
+
 # 2. Process Management & Signal Trap
 SWEEP_PID=""
 NEXT_PID=""
