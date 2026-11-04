@@ -426,16 +426,62 @@ export class TelegramBotAdapter implements ISupplierAdapter {
       // 1. Try live parsed catalog first
       try {
         const liveCatalog = await this.getLiveCatalog(creds, botUsername);
-const effectiveCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierProductCode;
+        const effectiveCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierProductCode;
         let liveItem = liveCatalog[effectiveCode] || liveCatalog[supplierProductCode];
-        if (!liveItem) {
-          const isGemini = supplierProductCode === "51" || supplierProductCode === "70";
-          for (const item of Object.values(liveCatalog)) {
-            const lowerName = item.name.toLowerCase();
-            if (isGemini && lowerName.includes("gemini") && (lowerName.includes("18") || lowerName.includes("5tb"))) {
-              liveItem = item;
-              break;
+
+        // If not found in live catalog or currently out of stock, use Smart Keyword Matching to auto-remap
+        if (!liveItem || liveItem.inStock === 0) {
+          const determineKeywords = (code: string): string[][] => {
+            if (code === "34" || code === "21" || code === "49") {
+              return [["capcut", "7"], ["capcut", "bhf"], ["capcut"]];
             }
+            if (code === "35") {
+              return [["capcut", "30"], ["capcut", "month"], ["capcut", "date"]];
+            }
+            if (code === "51" || code === "70") {
+              return [["gemini", "18"], ["gemini", "5tb"], ["gemini"]];
+            }
+            if (code === "10" || code === "33" || code === "37" || code === "1") {
+              return [["chatgpt", "plus"], ["gpt", "plus"], ["chatgpt"]];
+            }
+            if (code === "71" || code === "28") {
+              return [["canva", "pro"], ["canva"]];
+            }
+            if (code === "60") {
+              return [["duolingo", "super"], ["duolingo", "12"], ["duolingo"]];
+            }
+            if (code === "73") {
+              return [["office", "365"], ["office"], ["365"]];
+            }
+            if (code === "55") {
+              return [["meitu", "vip"], ["meitu", "7"], ["meitu"]];
+            }
+            if (code === "56") {
+              return [["wink", "vip"], ["wink"]];
+            }
+            if (code === "65") {
+              return [["nord", "vpn"], ["nord"]];
+            }
+            if (code === "72") {
+              return [["figma", "pro"], ["figma", "edu"], ["figma"]];
+            }
+            return [];
+          };
+
+          const keywordGroups = determineKeywords(supplierProductCode);
+          for (const kws of keywordGroups) {
+            for (const item of Object.values(liveCatalog)) {
+              if (item.inStock === 0) continue; // Prioritize in-stock replacements
+              const lowerName = item.name.toLowerCase();
+              if (kws.every((kw) => lowerName.includes(kw))) {
+                liveItem = item;
+                console.log(
+                  `[TelegramBotAdapter] Auto-remapped stale code ${supplierProductCode} -> active code #${item.code} (${item.name}, Stock: ${item.inStock}) via live catalog scan!`
+                );
+                break;
+              }
+            }
+            if (liveItem) break;
           }
         }
         if (liveItem) {
