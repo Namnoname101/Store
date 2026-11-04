@@ -121,6 +121,7 @@ export default function CheckUsageClient() {
   const [showKey, setShowKey] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [directUrl, setDirectUrl] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   // Active Tab
@@ -196,6 +197,7 @@ export default function CheckUsageClient() {
 
     setLoading(true);
     setErrorMsg(null);
+    setDirectUrl(null);
     setSuccessMsg(null);
     setRequestsPayload(null);
     setRequestsPage(1);
@@ -395,11 +397,40 @@ export default function CheckUsageClient() {
 
         {/* Status notice */}
         {errorMsg && (
-          <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
-            <AlertCircle className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" />
-            <span>{errorMsg}</span>
+          <div className="mt-4 flex flex-col gap-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300">
+            <div className="flex items-start gap-2.5">
+              <AlertCircle className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" />
+              <span className="leading-relaxed font-medium">{errorMsg}</span>
+            </div>
+            {directUrl && (
+              <div className="pt-1">
+                <a
+                  href={directUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/25 hover:bg-rose-500/35 border border-rose-500/40 text-white font-bold transition-all shadow-sm"
+                >
+                  <span>Mở cổng tra cứu trực tiếp của NCC (GenzShop)</span>
+                  <ArrowUpRight className="h-4 w-4 text-rose-300" />
+                </a>
+              </div>
+            )}
           </div>
         )}
+
+        {/* Fallback direct link note */}
+        <div className="mt-3 flex items-center justify-between text-[11px] text-slate-400">
+          <span>💡 Nếu hệ thống tự động gặp tường lửa NCC, bạn có thể tra cứu trực tiếp:</span>
+          <a
+            href="https://genzshop.vn/check-usage"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-indigo-400 hover:text-indigo-300 font-semibold hover:underline"
+          >
+            <span>Cổng NCC GenzShop</span>
+            <ArrowUpRight className="h-3 w-3" />
+          </a>
+        </div>
 
         {successMsg && (
           <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-300">

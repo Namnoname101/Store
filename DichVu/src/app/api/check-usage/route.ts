@@ -40,14 +40,31 @@ export async function POST(req: NextRequest) {
 
     const data = await upstreamResponse.json().catch(() => null);
 
+    if (upstreamResponse.status === 403 || data?.message?.includes("Imunify360")) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Tường lửa của nhà cung cấp (Imunify360 WAF) đang chặn kết nối tự động từ máy chủ đám mây. Quý khách vui lòng bấm nút bên dưới để mở trang tra cứu trực tiếp của NCC.",
+          directUrl: "https://genzshop.vn/check-usage",
+        },
+        { status: 403 }
+      );
+    }
+
     if (!data) {
       return NextResponse.json(
         {
           success: false,
           error: `Máy chủ kiểm tra trả về mã lỗi ${upstreamResponse.status}. Vui lòng thử lại sau.`,
+          directUrl: "https://genzshop.vn/check-usage",
         },
         { status: upstreamResponse.status || 502 }
       );
+    }
+
+    if (!data.success && !data.error && data.message) {
+      data.error = data.message;
     }
 
     return NextResponse.json(data, { status: upstreamResponse.status });
