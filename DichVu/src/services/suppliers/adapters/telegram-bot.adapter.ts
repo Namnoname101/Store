@@ -11,7 +11,8 @@ const { StringSession } = sessions;
 // Known product catalog from @shopxoainon_bot
 export const XOAINON_PRODUCT_ALIASES: Record<string, string> = {
   "51": "70",
-  "34": "21",
+  "34": "49",
+  "21": "49", // CapCut 7 day credit BHF (#21) is out of stock -> map to active in-stock #49
   "10": "33",
 };
 
@@ -19,100 +20,80 @@ export const XOAINON_KNOWN_PRODUCTS: Record<
   string,
   { name: string; price: number; inStock: number }
 > = {
-  "70": {
-    name: "Gói Jio Gemini Pro & Drive 5TB 18 thg chính chủ",
-    price: 21800,
-    inStock: 56,
-  },
-  "51": {
-    name: "Gói Jio Gemini Pro & Drive 5TB 18 thg chính chủ",
-    price: 21800,
-    inStock: 56,
-  },
-  "60": {
-    name: "Duolingo Super 12 Tháng Chính Chủ",
-    price: 19800,
-    inStock: 2,
-  },
-  "73": {
-    name: "Microsoft Office 365 Plus 1 năm riêng tư",
-    price: 16800,
-    inStock: 81,
-  },
-  "71": {
-    name: "Tài khoản Canva Pro 1 tháng",
-    price: 9900,
-    inStock: 7,
+  "49": {
+    name: "Capcut Pro 7 ngày 500 Credit BH6D",
+    price: 5500,
+    inStock: 117,
   },
   "35": {
     name: "Capcut Pro 30d full Date - BHF",
     price: 38800,
-    inStock: 42,
+    inStock: 35,
   },
-  "34": {
-    name: "Capcut Pro 7 day credit BHF",
-    price: 4500,
-    inStock: 20,
-  },
-  "21": {
-    name: "Capcut Pro 7 day credit BHF",
-    price: 4500,
-    inStock: 20,
-  },
-  "49": {
-    name: "Capcut Pro 7 ngày 500 Credit BH6D",
-    price: 6800,
-    inStock: 118,
-  },
-  "33": {
-    name: "Chatgpt plus 1 tháng pay PIX riêng tư - Bh24h",
-    price: 135400,
-    inStock: 26,
-  },
-  "37": {
-    name: "Chatgpt Plus pay Apple Gmail 1 thg - BH 12H",
-    price: 139000,
-    inStock: 2,
-  },
-  "1": {
-    name: "ChatGPT Plus 1 tháng riêng tư - BHF",
-    price: 222000,
-    inStock: 6,
-  },
-  "40": {
-    name: "Grok Super 7 ngày - BHF",
-    price: 68800,
-    inStock: 13,
+  "60": {
+    name: "Duolingo Super 12 Tháng Chính Chủ",
+    price: 19800,
+    inStock: 31,
   },
   "65": {
-    name: "Nord VPN Premium 3 Month code",
+    name: "Nord VPN chính chủ Premium 3 tháng code",
     price: 68000,
-    inStock: 23,
+    inStock: 18,
+  },
+  "71": {
+    name: "Tài khoản Canva Pro 1 tháng",
+    price: 9900,
+    inStock: 5,
   },
   "72": {
     name: "Tài Khoản Figma Pro Edu 2 Năm",
     price: 139000,
     inStock: 19,
   },
-  "28": {
-    name: "Canva Edu Pro Admin 3 năm add 500 mem",
-    price: 99800,
-    inStock: 2,
+  "73": {
+    name: "Microsoft Office 365 Plus 1 năm riêng tư",
+    price: 16800,
+    inStock: 77,
+  },
+  "33": {
+    name: "Chatgpt plus 1 tháng pay PIX riêng tư - Bh24h",
+    price: 135400,
+    inStock: 11,
+  },
+  "37": {
+    name: "Chatgpt Plus pay Apple Gmail 1 thg - BH 24H",
+    price: 119500,
+    inStock: 9,
+  },
+  "1": {
+    name: "ChatGPT Plus 1 tháng riêng tư - BHF",
+    price: 219000,
+    inStock: 10,
+  },
+  "75": {
+    name: "MUSE AI 1 TỶ TOKEN KBH",
+    price: 2000,
+    inStock: 195,
+  },
+  "76": {
+    name: "MUSE AI 31 TỶ TOKEN KBH",
+    price: 9800,
+    inStock: 51,
+  },
+  "55": {
+    name: "Meitu SVip, VIP+ 7 days riêng tư - BHF",
+    price: 9500,
+    inStock: 8,
+  },
+  "56": {
+    name: "Wink VIP+ riêng tư 7 Days",
+    price: 9600,
+    inStock: 7,
   },
   "42": {
     name: "Memrise Pro gói trọn đời chính chủ",
     price: 299000,
     inStock: 2,
-  },
-  "55": {
-    name: "Meitu Vip 7 days riêng tư - BHF",
-    price: 9500,
-    inStock: 12,
-  },
-  "56": {
-    name: "Wink VIP+ riêng tư 7 Days",
-    price: 9600,
-    inStock: 8,
   },
 };
 
@@ -516,6 +497,10 @@ const effectiveCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierPr
     try {
       const qty = quantity > 0 ? quantity : 1;
 
+      // Record pre-purchase latest message ID to avoid picking up old purchase messages
+      const preMsgs = await client.getMessages(botUsername, { limit: 1 });
+      const minMsgId = preMsgs[0]?.id || 0;
+
       // 1. Send /buy to get catalog
       await client.sendMessage(botUsername, { message: "/buy" });
       await new Promise((r) => setTimeout(r, 2000));
@@ -673,13 +658,29 @@ const effectiveCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierPr
       msgs = await client.getMessages(botUsername, { limit: 1 });
       msg = msgs[0];
 
+      // Check if checkout screen reports insufficient balance before attempting to pay
+      const checkoutText = (msg?.message || "").toLowerCase();
+      if (
+        checkoutText.includes("ví chưa đủ") ||
+        checkoutText.includes("số dư không đủ") ||
+        checkoutText.includes("không đủ để mua") ||
+        checkoutText.includes("thiếu")
+      ) {
+        const errorLine = (msg?.message || "").split("\n").find((l: string) => /ví chưa đủ|thiếu|không đủ/i.test(l)) || "Số dư ví Shop Xoài Non không đủ để thanh toán";
+        return {
+          success: false,
+          deliveredKeys: [],
+          error: `Số dư ví Shop Xoài Non không đủ: ${errorLine.trim()}`,
+        };
+      }
+
       // 4. Click pay:wallet:<id>:<quantity>
       console.log(`[buyXoaiNon] Clicking pay wallet: pay:wallet:${targetCode}:${qty}...`);
       await msg.click({ data: Buffer.from(`pay:wallet:${targetCode}:${qty}`) });
       await new Promise((r) => setTimeout(r, 4000));
 
       // 5. Check response messages
-      return await this.extractSecretFromRecentMessages(client, botUsername, orderCode, "XOAINON");
+      return await this.extractSecretFromRecentMessages(client, botUsername, orderCode, "XOAINON", minMsgId);
     } catch (err: any) {
       return {
         success: false,
@@ -697,6 +698,9 @@ const effectiveCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierPr
     orderCode: string
   ): Promise<SupplierOrderResult> {
     try {
+      const preMsgs = await client.getMessages(botUsername, { limit: 1 });
+      const minMsgId = preMsgs[0]?.id || 0;
+
       await client.sendMessage(botUsername, { message: "/start" });
       await new Promise((r) => setTimeout(r, 2000));
 
@@ -736,7 +740,7 @@ const effectiveCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierPr
       await new Promise((r) => setTimeout(r, 4000));
 
       // 7. Extract link from recent messages
-      return await this.extractSecretFromRecentMessages(client, botUsername, orderCode, "TG");
+      return await this.extractSecretFromRecentMessages(client, botUsername, orderCode, "TG", minMsgId);
     } catch (err: any) {
       return {
         success: false,
@@ -750,14 +754,20 @@ const effectiveCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierPr
     client: TelegramClient,
     botUsername: string,
     orderCode: string,
-    fallbackPrefix: string
+    fallbackPrefix: string,
+    minMsgId?: number
   ): Promise<SupplierOrderResult> {
-    const recent = await client.getMessages(botUsername, { limit: 5 });
+    const recent = await client.getMessages(botUsername, { limit: 8 });
     let botOrderId = "";
     let bestCandidate: { content: string; type: string; rawText: string } | null = null;
     let fallbackTextCandidate: { content: string; type: string; rawText: string } | null = null;
 
     for (const m of recent) {
+      // If minMsgId is provided, ignore messages that occurred before this purchase
+      if (minMsgId && m.id <= minMsgId) {
+        continue;
+      }
+
       const text = m.text || "";
 
       // Check balance issues and failure notices (case-insensitive & comprehensive)
