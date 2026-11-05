@@ -3,9 +3,9 @@ import { Mail, Phone, Store, ShieldCheck, Zap, Headphones, ArrowUpRight } from "
 
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-200/90 dark:border-white/10 bg-slate-50 dark:bg-[#070b14] text-slate-600 dark:text-slate-400 text-xs transition-colors">
+    <footer className="border-t border-slate-200/90 dark:border-zinc-800/80 bg-slate-50 dark:bg-[#0b0f19] text-slate-600 dark:text-slate-400 text-xs transition-colors">
       {/* Top MMO Trust Pillars Bar */}
-      <div className="border-b border-slate-200/80 dark:border-white/5 bg-white/70 dark:bg-slate-900/40 py-6">
+      <div className="border-b border-slate-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-[#0e1424]/40 py-6">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
           <div className="flex items-center justify-center sm:justify-start gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
@@ -152,7 +152,7 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-10 pt-6 border-t border-slate-200 dark:border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+        <div className="mt-10 pt-6 border-t border-slate-200 dark:border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
           <div>
             © {new Date().getFullYear()} KhoDEE. Bản quyền thuộc về hệ thống cung cấp tài nguyên MMO.
           </div>

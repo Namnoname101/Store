@@ -1,18 +1,33 @@
 const fs = require('fs');
 const { spawnSync } = require('child_process');
+const path = require('path');
 
-const remoteScript = fs.readFileSync('scripts/check-ord626949.js', 'utf8');
+const targetScript = process.argv[2] || 'scripts/inspect-prod-orders.js';
+const remoteScript = fs.readFileSync(path.resolve(targetScript), 'utf8');
 const b64 = Buffer.from(remoteScript).toString('base64');
 const cmd = `sh -c "echo ${b64} | base64 -d | node"`;
 
-console.log('Sending update-thumbnails.js to Fly remote...');
-const res = spawnSync('fly.exe', ['ssh', 'console', '-C', cmd], {
+// Read .env to get FLY_API_TOKEN
+const envContent = fs.readFileSync(path.resolve('.env'), 'utf8');
+let token = process.env.FLY_API_TOKEN;
+const match = envContent.match(/^\s*FLY_API_TOKEN\s*=\s*["']?(.*?)["']?\s*$/m);
+if (match) {
+  token = match[1];
+}
+
+console.log(`Running ${targetScript} on Fly remote (daitruongstore)...`);
+const res = spawnSync('fly.exe', ['ssh', 'console', '-a', 'daitruongstore', '-C', cmd], {
   encoding: 'utf8',
-  timeout: 45000,
+  timeout: 60000,
+  env: {
+    ...process.env,
+    FLY_API_TOKEN: token,
+    FLY_ACCESS_TOKEN: token,
+  }
 });
 
 if (res.error) {
   console.error('Error:', res.error);
 }
-console.log('STDOUT:', res.stdout);
-console.log('STDERR:', res.stderr);
+if (res.stdout) console.log(res.stdout);
+if (res.stderr) console.error(res.stderr);

@@ -100,7 +100,7 @@ export default function TopupClient() {
   if (!user) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-12">
-        <div className="relative overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 sm:p-10 shadow-2xl text-center">
+        <div className="relative overflow-hidden rounded-3xl border border-slate-200 dark:border-zinc-800/80 bg-white dark:bg-[#0b0f19] p-8 sm:p-10 shadow-2xl text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 mb-5 border border-indigo-200/50 dark:border-indigo-900">
             <Wallet className="h-8 w-8" />
           </div>
@@ -115,21 +115,21 @@ export default function TopupClient() {
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href="/login?callbackUrl=/topup"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 px-6 py-3 text-sm font-bold transition-all shadow-md"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-sm shadow-blue-500/25 px-6 py-3 text-sm font-bold transition-all shadow-md"
             >
               <span>Đăng nhập để nạp tiền</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/register?callbackUrl=/topup"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-6 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-zinc-800/80 bg-slate-50 dark:bg-slate-800 px-6 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
             >
               <span>Đăng ký tài khoản</span>
             </Link>
           </div>
 
           {/* Guest Direct Buy Notice */}
-          <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500">
+          <div className="mt-8 pt-6 border-t border-slate-100 dark:border-zinc-800/80 text-xs text-slate-500">
             <p>
               💡 <strong>Lưu ý:</strong> Bạn không bắt buộc phải tạo tài khoản ví để mua hàng. Bạn có thể chọn sản phẩm và thanh toán trực tiếp qua mã VietQR tại trang chủ.
             </p>
@@ -148,7 +148,7 @@ export default function TopupClient() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       {/* Balance Banner */}
-      <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white/95 dark:bg-gradient-to-r dark:from-slate-900 dark:via-slate-900/95 dark:to-slate-950 p-6 sm:p-8 shadow-lg mb-8 transition-colors">
+      <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 dark:border-zinc-800/80 bg-white/95 dark:bg-gradient-to-r dark:from-slate-900 dark:via-slate-900/95 dark:to-slate-950 p-6 sm:p-8 shadow-lg mb-8 transition-colors">
         <div className="absolute top-0 right-0 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -164,7 +164,7 @@ export default function TopupClient() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3">
+          <div className="flex items-center gap-3 bg-slate-50 dark:bg-[#131926] border border-slate-200 dark:border-zinc-800/80 rounded-xl px-4 py-3">
             <div className="h-10 w-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
               <Wallet className="h-5 w-5" />
             </div>
@@ -179,8 +179,8 @@ export default function TopupClient() {
       </div>
 
       {/* Topup Form Card */}
-      <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white/95 dark:bg-slate-900/80 p-6 sm:p-8 shadow-lg backdrop-blur-md transition-colors">
-        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
+      <div className="rounded-2xl border border-slate-200/90 dark:border-zinc-800/80 bg-white/95 dark:bg-[#0b0f19]/80 p-6 sm:p-8 shadow-lg backdrop-blur-md transition-colors">
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-200 dark:border-zinc-800/80">
           <div className="h-9 w-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
             <CreditCard className="h-5 w-5" />
           </div>
@@ -213,8 +213,8 @@ export default function TopupClient() {
                     onClick={() => handleSelectPreset(amt)}
                     className={`flex items-center justify-center py-3 px-4 rounded-xl border text-sm font-semibold transition-all cursor-pointer ${
                       isSelected
-                        ? "border-indigo-600 bg-indigo-600 text-white shadow-md shadow-indigo-600/25 ring-2 ring-indigo-600/20"
-                        : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-slate-700 dark:text-slate-300 hover:border-indigo-400 dark:hover:border-slate-700 hover:bg-white dark:hover:bg-slate-900"
+                        ? "border-blue-600 bg-blue-600 text-white shadow-sm shadow-blue-500/25 ring-2 ring-blue-500/30 font-bold"
+                        : "border-slate-200 dark:border-zinc-800/80 bg-slate-50 dark:bg-[#131926] text-slate-700 dark:text-slate-300 hover:border-indigo-400 dark:hover:border-slate-700 hover:bg-white dark:hover:bg-slate-900"
                     }`}
                   >
                     {amt.toLocaleString("vi-VN")}đ
@@ -235,7 +235,7 @@ export default function TopupClient() {
                 value={customAmount ? parseInt(customAmount, 10).toLocaleString("vi-VN") : ""}
                 onChange={handleCustomChange}
                 placeholder="Ví dụ: 75.000"
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 py-3 pl-4 pr-12 text-base font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-xl border border-slate-200 dark:border-zinc-800/80 bg-slate-50 dark:bg-[#131926] py-3 pl-4 pr-12 text-base font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
               <span className="absolute right-4 top-3.5 text-sm font-semibold text-slate-400">
                 VND
@@ -244,7 +244,7 @@ export default function TopupClient() {
           </div>
 
           {/* Value Summary Box */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-950/60 p-4 space-y-2 text-xs text-slate-700 dark:text-slate-300">
+          <div className="rounded-xl border border-slate-200 dark:border-zinc-800/80/80 bg-slate-50 dark:bg-[#131926] p-4 space-y-2 text-xs text-slate-700 dark:text-slate-300">
             <div className="flex justify-between items-center">
               <span className="text-slate-600 dark:text-slate-400">Số tiền nạp vào ví:</span>
               <span className="text-base font-bold text-emerald-600 dark:text-emerald-400 font-mono">
@@ -280,7 +280,7 @@ export default function TopupClient() {
         </form>
 
         {/* Security badges */}
-        <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800 grid grid-cols-2 gap-4 text-xs text-slate-600 dark:text-slate-400 text-center">
+        <div className="mt-6 pt-6 border-t border-slate-200 dark:border-zinc-800/80 grid grid-cols-2 gap-4 text-xs text-slate-600 dark:text-slate-400 text-center">
           <div className="flex items-center justify-center gap-1.5">
             <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             <span>Đối soát tự động 24/7</span>

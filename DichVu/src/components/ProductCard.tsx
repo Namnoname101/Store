@@ -67,10 +67,10 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
   }, [resolvedThumbnail]);
 
   return (
-    <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-950 p-3.5 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-xl hover:shadow-zinc-950/5 dark:hover:shadow-zinc-950/40">
+    <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 dark:border-zinc-800/80 bg-white/95 dark:bg-[#0b0f19] p-3.5 backdrop-blur-md transition-all duration-200 hover:-translate-y-1 hover:border-blue-500/40 dark:hover:border-blue-500/40 hover:shadow-xl hover:shadow-blue-500/5 dark:hover:shadow-blue-950/20">
       <div>
         {/* Aspect Ratio Product Image */}
-        <div className="relative mb-3 flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-xl border border-zinc-100 dark:border-white/5 bg-zinc-50 dark:bg-zinc-900/60">
+        <div className="relative mb-3 flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-xl border border-slate-100 dark:border-zinc-800/70 bg-slate-50 dark:bg-[#131926]">
           <img
             key={resolvedThumbnail}
             ref={imgRef}
@@ -86,7 +86,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
 
           {/* Type Badge */}
           <div className="absolute top-2.5 left-2.5">
-            <span className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200/90 dark:border-white/10 bg-white/95 dark:bg-zinc-900/90 px-2.5 py-1 text-xs font-semibold text-zinc-800 dark:text-zinc-200 shadow-xs backdrop-blur-md">
+            <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-[#131926]/95 px-2.5 py-1 text-xs font-semibold text-slate-800 dark:text-zinc-200 shadow-xs backdrop-blur-md">
               <TypeIcon className="h-3.5 w-3.5 text-zinc-700 dark:text-zinc-300" />
               {typeInfo.shortLabel}
             </span>
@@ -115,7 +115,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
         </Link>
       </div>
 
-      <div className="mt-3.5 pt-3 border-t border-zinc-100 dark:border-zinc-850">
+      <div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-zinc-800/70">
         {/* Price & Stock Row */}
         <div className="flex items-center justify-between gap-1 mb-3">
           <div className="min-w-0">
@@ -160,7 +160,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
             <button
               type="button"
               onClick={() => onQuickView(product)}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200/90 dark:border-zinc-800/90 bg-slate-50 dark:bg-[#131926] text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1c2538] transition-colors"
               title="Xem nhanh"
               aria-label="Xem nhanh sản phẩm"
             >
@@ -169,7 +169,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
           ) : (
             <Link
               href={`/products/${slug}`}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200/90 dark:border-zinc-800/90 bg-slate-50 dark:bg-[#131926] text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1c2538] transition-colors"
               title="Chi tiết"
               aria-label="Xem chi tiết sản phẩm"
             >
@@ -180,7 +180,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
           {inStock ? (
             <Link
               href={`/products/${slug}`}
-              className="flex h-9 flex-1 items-center justify-center gap-2 rounded-xl bg-zinc-900 dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-100 px-3 text-xs sm:text-sm font-semibold text-white dark:text-zinc-950 shadow-sm transition-all duration-200 active:scale-[0.98]"
+              className="flex h-9 flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-3 text-xs sm:text-sm font-semibold text-white shadow-sm shadow-blue-500/25 transition-all duration-150 active:scale-[0.98]"
             >
               <span>Mua ngay</span>
               <ArrowRight className="h-3.5 w-3.5" />

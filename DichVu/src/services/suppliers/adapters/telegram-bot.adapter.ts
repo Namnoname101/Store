@@ -465,6 +465,9 @@ export class TelegramBotAdapter implements ISupplierAdapter {
             if (code === "72") {
               return [["figma", "pro"], ["figma", "edu"], ["figma"]];
             }
+            if (code === "76" || code === "75") {
+              return [["muse", "ai"], ["muse"]];
+            }
             return [];
           };
 
@@ -529,6 +532,12 @@ export class TelegramBotAdapter implements ISupplierAdapter {
 
     if (botUsername.includes("xoainon")) {
       return this.buyXoaiNon(client, botUsername, supplierProductCode, quantity, orderCode);
+    }
+    if (botUsername.includes("dkey")) {
+      return this.buyDKey(client, botUsername, supplierProductCode, quantity, orderCode);
+    }
+    if (botUsername.includes("dshop") || botUsername.includes("mmo_dshop")) {
+      return this.buyDShop(client, botUsername, supplierProductCode, quantity, orderCode);
     }
     return this.buyNghienTrick(client, botUsername, supplierProductCode, quantity, orderCode);
   }
@@ -642,6 +651,9 @@ export class TelegramBotAdapter implements ISupplierAdapter {
             }
             if (code === "72") {
               return [["figma", "pro"], ["figma", "edu"], ["figma"]];
+            }
+            if (code === "76" || code === "75") {
+              return [["muse", "ai"], ["muse"]];
             }
             return [];
           };
@@ -792,6 +804,173 @@ export class TelegramBotAdapter implements ISupplierAdapter {
         success: false,
         deliveredKeys: [],
         error: `Lỗi kết nối Telegram Userbot: ${err?.message || err}`,
+      };
+    }
+  }
+
+  private async buyDKey(
+    client: TelegramClient,
+    botUsername: string,
+    supplierProductCode: string,
+    quantity: number,
+    orderCode: string
+  ): Promise<SupplierOrderResult> {
+    try {
+      const qty = quantity > 0 ? quantity : 1;
+      const preMsgs = await client.getMessages(botUsername, { limit: 1 });
+      const minMsgId = preMsgs[0]?.id || 0;
+
+      await client.sendMessage(botUsername, { message: "/start" });
+      await new Promise((r) => setTimeout(r, 1500));
+
+      let msgs = await client.getMessages(botUsername, { limit: 1 });
+      let msg = msgs[0];
+      if (!msg) {
+        return { success: false, deliveredKeys: [], error: "Không nhận được phản hồi từ @dkeyshop_bot" };
+      }
+
+      await msg.click({ data: Buffer.from("menu::buy") });
+      await new Promise((r) => setTimeout(r, 1500));
+
+      msgs = await client.getMessages(botUsername, { limit: 1 });
+      msg = msgs[0];
+
+      let categoryCode = "";
+      if (supplierProductCode === "6acf7db4452526529250f06e" || supplierProductCode.includes("netflix")) {
+        categoryCode = "products_category::6839ac01fff70f6f";
+      } else if (supplierProductCode === "6a3f1008cc06fe4bc3ab8e27" || supplierProductCode.includes("kling")) {
+        categoryCode = "products_category::5c7d32ac2d24c7f9";
+      } else if (supplierProductCode.includes("wink")) {
+        categoryCode = "products_category::675e9bd10c28e5ab";
+      }
+
+      if (categoryCode && msg?.replyMarkup && (msg.replyMarkup as any).rows) {
+        await msg.click({ data: Buffer.from(categoryCode) });
+        await new Promise((r) => setTimeout(r, 1500));
+        msgs = await client.getMessages(botUsername, { limit: 1 });
+        msg = msgs[0];
+      }
+
+      const targetProdBtn = `product_id::${supplierProductCode}`;
+      await msg.click({ data: Buffer.from(targetProdBtn) });
+      await new Promise((r) => setTimeout(r, 1500));
+
+      await client.sendMessage(botUsername, { message: String(qty) });
+      await new Promise((r) => setTimeout(r, 2000));
+
+      msgs = await client.getMessages(botUsername, { limit: 1 });
+      msg = msgs[0];
+
+      const confirmText = (msg?.message || "").toLowerCase();
+      if (
+        confirmText.includes("số dư ví hiện tại: 0") ||
+        confirmText.includes("số dư không đủ") ||
+        confirmText.includes("ví chưa đủ") ||
+        confirmText.includes("không đủ để mua")
+      ) {
+        return {
+          success: false,
+          deliveredKeys: [],
+          error: `Số dư ví DKeyShop không đủ để thanh toán (cần nạp thêm tiền vào @${botUsername})`,
+        };
+      }
+
+      console.log(`[buyDKey] Clicking pay_method::wallet...`);
+      await msg.click({ data: Buffer.from("pay_method::wallet") });
+      await new Promise((r) => setTimeout(r, 4000));
+
+      return await this.extractSecretFromRecentMessages(client, botUsername, orderCode, "DKEY", minMsgId);
+    } catch (err: any) {
+      return {
+        success: false,
+        deliveredKeys: [],
+        error: `Lỗi kết nối DKeyShop: ${err?.message || err}`,
+      };
+    }
+  }
+
+  private async buyDShop(
+    client: TelegramClient,
+    botUsername: string,
+    supplierProductCode: string,
+    quantity: number,
+    orderCode: string
+  ): Promise<SupplierOrderResult> {
+    try {
+      const qty = quantity > 0 ? quantity : 1;
+      const preMsgs = await client.getMessages(botUsername, { limit: 1 });
+      const minMsgId = preMsgs[0]?.id || 0;
+
+      await client.sendMessage(botUsername, { message: "/start" });
+      await new Promise((r) => setTimeout(r, 1500));
+
+      let msgs = await client.getMessages(botUsername, { limit: 1 });
+      let msg = msgs[0];
+      await msg.click({ data: Buffer.from("buy") });
+      await new Promise((r) => setTimeout(r, 1500));
+
+      msgs = await client.getMessages(botUsername, { limit: 1 });
+      msg = msgs[0];
+
+      let catCode = "cat:13";
+      if (supplierProductCode.startsWith("prod:")) {
+        const parts = supplierProductCode.split(":");
+        catCode = `cat:${parts[1]}`;
+      }
+
+      await msg.click({ data: Buffer.from(catCode) });
+      await new Promise((r) => setTimeout(r, 1500));
+
+      msgs = await client.getMessages(botUsername, { limit: 1 });
+      msg = msgs[0];
+
+      await msg.click({ data: Buffer.from(supplierProductCode) });
+      await new Promise((r) => setTimeout(r, 1500));
+
+      msgs = await client.getMessages(botUsername, { limit: 1 });
+      msg = msgs[0];
+
+      let qtyBtnData: string | null = null;
+      if (msg?.replyMarkup && (msg.replyMarkup as any).rows) {
+        for (const row of (msg.replyMarkup as any).rows) {
+          for (const btn of row.buttons) {
+            const d = btn.data ? Buffer.from(btn.data).toString("utf-8") : "";
+            if (d.startsWith("qty:") && d.endsWith(`:${qty}`)) {
+              qtyBtnData = d;
+              break;
+            }
+          }
+          if (qtyBtnData) break;
+        }
+      }
+
+      if (qtyBtnData) {
+        await msg.click({ data: Buffer.from(qtyBtnData) });
+        await new Promise((r) => setTimeout(r, 2000));
+        msgs = await client.getMessages(botUsername, { limit: 1 });
+        msg = msgs[0];
+      }
+
+      if (msg?.replyMarkup && (msg.replyMarkup as any).rows) {
+        for (const row of (msg.replyMarkup as any).rows) {
+          for (const btn of row.buttons) {
+            const d = btn.data ? Buffer.from(btn.data).toString("utf-8") : "";
+            const t = (btn.text || "").toLowerCase();
+            if (d.includes("wallet") || d.includes("balance") || t.includes("wallet") || t.includes("ví") || t.includes("balance")) {
+              await msg.click({ data: Buffer.from(d) });
+              await new Promise((r) => setTimeout(r, 4000));
+              break;
+            }
+          }
+        }
+      }
+
+      return await this.extractSecretFromRecentMessages(client, botUsername, orderCode, "DSHOP", minMsgId);
+    } catch (err: any) {
+      return {
+        success: false,
+        deliveredKeys: [],
+        error: `Lỗi kết nối MMO D-Shop: ${err?.message || err}`,
       };
     }
   }

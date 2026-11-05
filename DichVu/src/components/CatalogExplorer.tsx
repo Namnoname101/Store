@@ -562,14 +562,14 @@ export default function CatalogExplorer({
       />
 
       {/* Category Tabs Filter Bar (Universal across Mobile & Desktop) */}
-      <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar pb-3 mb-6 border-b border-slate-100 dark:border-slate-800">
+      <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar pb-3 mb-6 border-b border-slate-100 dark:border-zinc-800/80">
         <button
           type="button"
           onClick={() => handleSelectCategoryTab("all")}
           className={`flex items-center gap-1.5 shrink-0 rounded-xl px-3 sm:px-3.5 py-2 text-xs font-semibold transition-all ${
             selectedCategoryTab === "all"
-              ? "bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 shadow-xs ring-1 ring-zinc-800 dark:ring-zinc-200"
-              : "bg-white dark:bg-zinc-900/60 text-zinc-600 dark:text-zinc-300 border border-zinc-200/90 dark:border-zinc-800 hover:text-zinc-900 dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700 shadow-xs"
+              ? "border border-blue-600 bg-blue-600 text-white dark:border-blue-500 dark:bg-blue-600 dark:text-white shadow-sm shadow-blue-500/25 ring-2 ring-blue-500/30 font-bold"
+              : "border border-slate-200/90 dark:border-zinc-800/90 bg-slate-50/90 hover:bg-white dark:bg-[#131926] dark:hover:bg-[#1c2538] text-slate-800 dark:text-zinc-100 hover:text-slate-950 dark:hover:text-white shadow-2xs hover:shadow-xs"
           }`}
         >
           <LayoutGrid className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -598,8 +598,8 @@ export default function CatalogExplorer({
               onClick={() => handleSelectCategoryTab(def.id)}
               className={`flex items-center gap-1.5 shrink-0 rounded-xl px-3 sm:px-3.5 py-2 text-xs font-semibold transition-all ${
                 isSelected
-                  ? "bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 shadow-xs ring-1 ring-zinc-800 dark:ring-zinc-200"
-                  : "bg-white dark:bg-zinc-900/60 text-zinc-600 dark:text-zinc-300 border border-zinc-200/90 dark:border-zinc-800 hover:text-zinc-900 dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700 shadow-xs"
+                  ? "border border-blue-600 bg-blue-600 text-white dark:border-blue-500 dark:bg-blue-600 dark:text-white shadow-sm shadow-blue-500/25 ring-2 ring-blue-500/30 font-bold"
+                  : "border border-slate-200/90 dark:border-zinc-800/90 bg-slate-50/90 hover:bg-white dark:bg-[#131926] dark:hover:bg-[#1c2538] text-slate-800 dark:text-zinc-100 hover:text-slate-950 dark:hover:text-white shadow-2xs hover:shadow-xs"
               }`}
             >
               <DefIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -653,7 +653,7 @@ export default function CatalogExplorer({
                   className="scroll-mt-24"
                 >
                   {/* Modern Section Header */}
-                  <div className="mb-4 pb-2.5 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                  <div className="mb-4 pb-2.5 border-b border-slate-100 dark:border-zinc-800/80/80 flex items-center justify-between">
                     <div className="flex items-center gap-2.5 sm:gap-3">
                       <div
                         className={`flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl shadow-2xs ${sec.iconBg} ${sec.iconColor}`}

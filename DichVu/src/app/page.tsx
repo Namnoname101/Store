@@ -24,7 +24,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   return (
     <div className="flex flex-col gap-10 sm:gap-12 pb-20">
       {/* Modern Tech Studio Hero Section */}
-      <section className="relative overflow-hidden pt-8 sm:pt-14 pb-10 sm:pb-14 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-radial-[at_50%_0%] from-blue-500/10 via-zinc-50 to-white dark:from-blue-600/15 dark:via-zinc-900/30 dark:to-[#070b14]">
+      <section className="relative overflow-hidden pt-8 sm:pt-14 pb-10 sm:pb-14 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-radial-[at_50%_0%] from-blue-500/10 via-zinc-50 to-white dark:from-blue-600/15 dark:via-zinc-900/30 dark:to-[#0b0f19]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
           <div className="flex flex-col items-center text-center max-w-3xl mx-auto space-y-5">
             {/* Live Status Pill */}
@@ -52,7 +52,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               method="GET"
               className="w-full max-w-xl relative flex items-center group pt-2"
             >
-              <div className="relative w-full flex items-center rounded-2xl border border-zinc-300 dark:border-white/10 bg-white/95 dark:bg-[#0c1220] shadow-lg transition-all focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20">
+              <div className="relative w-full flex items-center rounded-2xl border border-slate-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-[#131926] shadow-lg transition-all focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20">
                 <Search className="absolute left-4 h-4 w-4 text-zinc-400 group-focus-within:text-blue-500 transition-colors" />
                 <input
                   type="text"
@@ -63,7 +63,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 />
                 <button
                   type="submit"
-                  className="absolute right-2 rounded-xl bg-zinc-900 dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-100 px-4 py-2 text-xs font-semibold text-white dark:text-zinc-950 transition-all shadow-xs active:scale-[0.98]"
+                  className="absolute right-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-semibold text-white transition-all shadow-sm shadow-blue-500/25 active:scale-[0.98]"
                 >
                   Tìm kiếm
                 </button>
@@ -75,21 +75,21 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               <span className="text-zinc-500 text-xs mr-1 font-mono">Tìm nhanh:</span>
               <a
                 href="/?search=claude#catalog"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 px-2.5 py-1 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-blue-400 transition-all shadow-xs"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/90 dark:border-zinc-800/90 bg-white/90 dark:bg-[#131926] hover:bg-slate-50 dark:hover:bg-[#1c2538] px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-zinc-300 hover:border-blue-400 transition-all shadow-2xs"
               >
                 <BrandLogo brandName="claude" size={13} className="w-3.5 h-3.5 shrink-0" />
                 <span>Claude API</span>
               </a>
               <a
                 href="/?search=cursor#catalog"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 px-2.5 py-1 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-blue-400 transition-all shadow-xs"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/90 dark:border-zinc-800/90 bg-white/90 dark:bg-[#131926] hover:bg-slate-50 dark:hover:bg-[#1c2538] px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-zinc-300 hover:border-blue-400 transition-all shadow-2xs"
               >
                 <BrandLogo brandName="cursor" size={13} className="w-3.5 h-3.5 shrink-0" />
                 <span>Cursor AI</span>
               </a>
               <a
                 href="/?search=capcut#catalog"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 px-2.5 py-1 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-blue-400 transition-all shadow-xs"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/90 dark:border-zinc-800/90 bg-white/90 dark:bg-[#131926] hover:bg-slate-50 dark:hover:bg-[#1c2538] px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-zinc-300 hover:border-blue-400 transition-all shadow-2xs"
               >
                 <BrandLogo brandName="capcut" size={13} className="w-3.5 h-3.5 shrink-0" />
                 <span>CapCut Pro</span>
@@ -122,7 +122,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       {/* Flagship Bento Highlights & Topup Bonus */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full space-y-6">
         {/* Wallet Bonus Banner */}
-        <div className="rounded-2xl p-4 sm:p-5 bg-gradient-to-r from-emerald-50/80 via-teal-50/50 to-emerald-50/80 dark:from-emerald-950/30 dark:via-zinc-900/40 dark:to-teal-950/30 border border-emerald-200/80 dark:border-emerald-500/20 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="rounded-2xl p-4 sm:p-5 bg-gradient-to-r from-emerald-50/80 via-teal-50/50 to-emerald-50/80 dark:from-[#131926] dark:via-[#162032] dark:to-[#131926] border border-emerald-200/80 dark:border-emerald-500/30 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 text-left">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-xl shrink-0">
               🎁
