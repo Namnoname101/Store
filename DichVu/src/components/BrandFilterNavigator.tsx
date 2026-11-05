@@ -64,10 +64,10 @@ export default function BrandFilterNavigator({
 
   return (
     <div
-      className={`rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white/95 dark:bg-[#0c1220]/95 backdrop-blur-xl p-3.5 sm:p-4.5 shadow-sm dark:shadow-2xl transition-all ${className}`}
+      className={`rounded-2xl border border-slate-200/90 dark:border-zinc-800/80 bg-white/95 dark:bg-[#0b0f19] p-3.5 sm:p-4.5 shadow-sm dark:shadow-none transition-all ${className}`}
     >
       {/* Navigator Top Header Bar */}
-      <div className="flex items-center justify-between gap-3 mb-3 pb-2.5 border-b border-slate-100 dark:border-white/[0.08]">
+      <div className="flex items-center justify-between gap-3 mb-3 pb-2.5 border-b border-slate-100 dark:border-zinc-800/70">
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 rounded-lg bg-blue-500/10 dark:bg-white/10 border border-blue-500/20 dark:border-white/15 flex items-center justify-center text-blue-600 dark:text-white shrink-0">
             <Sparkles className="w-3.5 h-3.5" />
@@ -85,7 +85,7 @@ export default function BrandFilterNavigator({
         {/* Filter Feedback Status Badge */}
         <div className="flex items-center gap-2">
           {activeBrand && activeBrand.id !== "all" ? (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-white/[0.08] border border-blue-200 dark:border-white/15 text-blue-700 dark:text-zinc-200 text-[11px] font-semibold">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-zinc-800/90 border border-blue-200 dark:border-zinc-700/80 text-blue-700 dark:text-zinc-200 text-[11px] font-semibold">
               <span>Đang lọc: <strong className="font-bold text-blue-800 dark:text-blue-400">{activeBrand.name}</strong></span>
               {typeof filteredCount === "number" && (
                 <span className="font-mono text-[10px] opacity-80">({filteredCount} gói)</span>
@@ -93,7 +93,7 @@ export default function BrandFilterNavigator({
               <button
                 type="button"
                 onClick={() => onSelectBrand("", "Tất cả")}
-                className="ml-1 p-0.5 rounded-full hover:bg-blue-200/50 dark:hover:bg-white/20 text-blue-600 dark:text-zinc-300 hover:text-blue-900 dark:hover:text-white transition-colors"
+                className="ml-1 p-0.5 rounded-full hover:bg-blue-200/50 dark:hover:bg-zinc-700 text-blue-600 dark:text-zinc-300 hover:text-blue-900 dark:hover:text-white transition-colors"
                 title="Bỏ lọc"
                 aria-label="Bỏ lọc"
               >
@@ -101,7 +101,7 @@ export default function BrandFilterNavigator({
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50/70 dark:bg-white/[0.06] border border-blue-100 dark:border-white/10 text-[11px] font-semibold text-slate-700 dark:text-zinc-200">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50/70 dark:bg-zinc-900/90 border border-blue-100 dark:border-zinc-800 text-[11px] font-semibold text-slate-700 dark:text-zinc-200">
               <span>Đang chọn: <strong className="font-bold text-blue-600 dark:text-blue-400">Tất cả</strong></span>
               <span className="font-mono text-[10px] opacity-80">({totalCount} gói)</span>
             </div>
@@ -145,7 +145,7 @@ export default function BrandFilterNavigator({
                   className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
                     isItemActive
                       ? "bg-white/20 text-white font-bold"
-                      : "bg-slate-200/80 dark:bg-white/10 text-slate-600 dark:text-zinc-300"
+                      : "bg-slate-200/80 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300"
                   }`}
                 >
                   {totalCount}
