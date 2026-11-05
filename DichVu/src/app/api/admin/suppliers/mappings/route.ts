@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma, FulfillmentType, MarkupType } from "@/lib/prisma";
 import { calculateRetailPrice, syncProductFromSupplier } from "@/services/pricing.service";

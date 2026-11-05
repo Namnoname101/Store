@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma, UpstreamStatus } from "@/lib/prisma";
 import { retryUpstreamFulfillment } from "@/services/upstream-fulfillment.service";

@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { createOrder } from "@/services/order.service";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limiter";

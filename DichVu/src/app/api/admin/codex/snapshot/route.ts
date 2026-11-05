@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import prisma, { SyncSnapshotStatus } from "@/lib/prisma";
 import { ModelApiService } from "@/services/modelapi/modelapi.service";

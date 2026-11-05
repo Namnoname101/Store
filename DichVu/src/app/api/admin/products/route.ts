@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma, ProductType } from "@/lib/prisma";
 import { getAllProductsAdmin } from "@/services/admin.service";

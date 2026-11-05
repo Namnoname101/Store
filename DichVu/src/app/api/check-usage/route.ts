@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 
 const UPSTREAM_URL = "https://genzshop.vn/api/check-usage.php";
