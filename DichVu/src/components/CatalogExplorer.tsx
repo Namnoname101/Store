@@ -16,6 +16,7 @@ import GroupedProductCard from "@/components/GroupedProductCard";
 import { processSectionProducts, isApiProduct } from "@/lib/catalog-grouping";
 import QuickViewModal from "@/components/QuickViewModal";
 import BrandLogo from "@/components/BrandLogo";
+import BrandFilterNavigator from "@/components/BrandFilterNavigator";
 import type { CategoryWithProducts } from "@/services/catalog.service";
 import type { Category } from "@prisma/client";
 
@@ -458,6 +459,17 @@ export default function CatalogExplorer({
     }
   };
 
+  const totalFilteredProducts = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return allProducts.length;
+    return allProducts.filter((p) => {
+      const titleLower = p.title.toLowerCase();
+      const descLower = p.description.toLowerCase();
+      const catName = p.category?.name.toLowerCase() || "";
+      return titleLower.includes(query) || descLower.includes(query) || catName.includes(query);
+    }).length;
+  }, [allProducts, searchQuery]);
+
   const sectionProductCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     populatedSections.forEach((s) => {
@@ -534,6 +546,20 @@ export default function CatalogExplorer({
           )}
         </div>
       </div>
+
+      {/* Brand & Resource Quick Navigator (Unified Capsule Grid - Kiểu 1) */}
+      <BrandFilterNavigator
+        activeQuery={searchQuery}
+        onSelectBrand={(query, brandName) => {
+          handleSearchChange(query);
+          if (query && selectedCategoryTab !== "all") {
+            setSelectedCategoryTab("all");
+          }
+        }}
+        totalCount={allProducts.length}
+        filteredCount={totalFilteredProducts}
+        className="mb-6"
+      />
 
       {/* Category Tabs Filter Bar (Universal across Mobile & Desktop) */}
       <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar pb-3 mb-6 border-b border-slate-100 dark:border-slate-800">

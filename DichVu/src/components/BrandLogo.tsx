@@ -17,7 +17,14 @@ export function normalizeBrandName(name?: string | null): string {
   if (lower.includes("deepseek")) return "deepseek";
   if (lower.includes("capcut")) return "capcut";
   if (lower.includes("office") || lower.includes("365") || lower.includes("microsoft")) return "microsoft";
+  if (lower.includes("windows") || lower.includes("win")) return "windows";
   if (lower.includes("canva")) return "canva";
+  if (lower.includes("adobe") || lower.includes("photoshop") || lower.includes("ps")) return "adobe";
+  if (lower.includes("meitu")) return "meitu";
+  if (lower.includes("figma")) return "figma";
+  if (lower.includes("grok") || lower.includes("xai")) return "grok";
+  if (lower.includes("veo")) return "veo";
+  if (lower.includes("gmail") || lower.includes("mail")) return "mail";
   if (lower.includes("locket")) return "locket";
   if (lower.includes("telegram")) return "telegram";
   if (lower.includes("github")) return "github";
@@ -293,11 +300,135 @@ export default function BrandLogo({ brandName, className = "w-4 h-4", size = 16 
         <svg
           width={size}
           height={size}
+          viewBox="-130 -115 260 230"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={className}
+        >
+          {/* Authentic Duolingo Owl Mascot (Official Brand Vector) */}
+          <ellipse cx="0" cy="0" rx="112" ry="105" fill="#58CC02" />
+          <path d="M-65,25 Q0,75 65,25 Q85,-35 45,-65 Q0,-80 -45,-65 Q-85,-35 -65,25 Z" fill="#78C800" />
+          <path d="M-110,-10 C-135,15 -125,60 -95,75 C-90,50 -95,15 -110,-10 Z" fill="#46A302" />
+          <path d="M110,-10 C135,15 125,60 95,75 C90,50 95,15 110,-10 Z" fill="#46A302" />
+          <ellipse cx="-44" cy="-18" rx="34" ry="34" fill="#FFFFFF" />
+          <circle cx="-38" cy="-18" r="18" fill="#4B4B4B" />
+          <circle cx="-33" cy="-22" r="7" fill="#FFFFFF" />
+          <ellipse cx="44" cy="-18" rx="34" ry="34" fill="#FFFFFF" />
+          <circle cx="38" cy="-18" r="18" fill="#4B4B4B" />
+          <circle cx="43" cy="-22" r="7" fill="#FFFFFF" />
+          <polygon points="-16,-6 16,-6 0,22" fill="#FF9600" />
+          <polygon points="-12,-6 12,-6 0,16" fill="#FFC800" />
+          <ellipse cx="-35" cy="102" rx="18" ry="10" fill="#FF9600" />
+          <ellipse cx="35" cy="102" rx="18" ry="10" fill="#FF9600" />
+        </svg>
+      );
+
+    case "adobe":
+      return (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={className}
+        >
+          <rect x="2" y="2" width="20" height="20" rx="3.5" fill="#FA0F00" />
+          <polygon points="4.5,4.5 9.5,19.5 7,19.5 5.5,15.5 4.5,15.5" fill="#FFFFFF" />
+          <polygon points="19.5,4.5 14.5,19.5 17,19.5 18.5,15.5 19.5,15.5" fill="#FFFFFF" />
+          <polygon points="12,10.5 15,19.5 13.2,19.5 12.2,16.5 9.5,16.5" fill="#FFFFFF" />
+        </svg>
+      );
+
+    case "windows":
+      return (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={className}
+        >
+          <path d="M2.5 4.5L10.5 3.4V11.2H2.5V4.5ZM2.5 12.8H10.5V20.6L2.5 19.5V12.8ZM11.8 3.2L21.5 1.8V11.2H11.8V3.2ZM11.8 12.8H21.5V22.2L11.8 20.8V12.8Z" fill="#0078D7" />
+        </svg>
+      );
+
+    case "meitu":
+      return (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={className}
+        >
+          <circle cx="12" cy="12" r="10" fill="#FF4D79" />
+          <path d="M7 16V8l5 4.5L17 8v8" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+
+    case "grok":
+      return (
+        <svg
+          width={size}
+          height={size}
           viewBox="0 0 24 24"
           fill="currentColor"
-          className={`text-lime-500 ${className}`}
+          xmlns="http://www.w3.org/2000/svg"
+          className={className}
         >
-          <path d="M12 2C7 2 3 6 3 11c0 3.5 2 6.5 5 8v3h8v-3c3-1.5 5-4.5 5-8 0-5-4-9-9-9zm-3 10c-.8 0-1.5-.7-1.5-1.5S8.2 9 9 9s1.5.7 1.5 1.5S9.8 12 9 12zm6 0c-.8 0-1.5-.7-1.5-1.5S14.2 9 15 9s1.5.7 1.5 1.5S15.8 12 15 12z" />
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+        </svg>
+      );
+
+    case "figma":
+      return (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={className}
+        >
+          <path d="M8 24C10.2091 24 12 22.2091 12 20V16H8C5.79086 16 4 17.7909 4 20C4 22.2091 5.79086 24 8 24Z" fill="#0ACF83"/>
+          <path d="M4 12C4 9.79086 5.79086 8 8 8H12V16H8C5.79086 16 4 14.2091 4 12Z" fill="#A259FF"/>
+          <path d="M4 4C4 1.79086 5.79086 0 8 0H12V8H8C5.79086 8 4 6.20914 4 4Z" fill="#F24E1E"/>
+          <path d="M12 0H16C18.2091 0 20 1.79086 20 4C20 6.20914 18.2091 8 16 8H12V0Z" fill="#FF7262"/>
+          <path d="M20 12C20 14.2091 18.2091 16 16 16C13.7909 16 12 14.2091 12 12C12 9.79086 13.7909 8 16 8C18.2091 8 20 9.79086 20 12Z" fill="#1ABCFE"/>
+        </svg>
+      );
+
+    case "veo":
+      return (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={className}
+        >
+          <circle cx="12" cy="12" r="10" fill="#2563EB" />
+          <path d="M9.5 7.5L16.5 12L9.5 16.5V7.5Z" fill="#FFFFFF" />
+        </svg>
+      );
+
+    case "mail":
+      return (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={className}
+        >
+          <path d="M2 5.5V18.5C2 19.3 2.7 20 3.5 20H6V11.5L12 16L18 11.5V20H20.5C21.3 20 22 19.3 22 18.5V5.5C22 4.4 20.7 3.8 19.8 4.4L12 10.2L4.2 4.4C3.3 3.8 2 4.4 2 5.5Z" fill="#EA4335" />
+          <path d="M18 20H20.5C21.3 20 22 19.3 22 18.5V9.5L18 12.5V20Z" fill="#4285F4" />
+          <path d="M2 9.5V18.5C2 19.3 2.7 20 3.5 20H6V12.5L2 9.5Z" fill="#34A853" />
         </svg>
       );
 
