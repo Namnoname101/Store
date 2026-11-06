@@ -119,7 +119,21 @@ export class TelegramBotClient {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      return await res.json();
+      const data = await res.json();
+      if (!data.ok && typeof data.description === "string" && data.description.includes("can't parse entities")) {
+        console.warn("[TelegramBotClient] Retrying sendMessage without parse_mode due to entity parsing error...");
+        const retryRes = await fetch(`${this.baseUrl}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...payload,
+            parse_mode: undefined,
+            text: text.replace(/<[^>]*>/g, ""),
+          }),
+        });
+        return await retryRes.json();
+      }
+      return data;
     } catch (err: any) {
       console.error("[TelegramBotClient] sendMessage failed:", err?.message || err);
       return { ok: false, error: err?.message };

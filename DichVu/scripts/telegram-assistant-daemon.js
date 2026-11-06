@@ -17,6 +17,15 @@ if (!BOT_TOKEN) {
 
 const BASE_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
+function escapeHtml(str) {
+  if (str === null || str === undefined) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 async function callTelegram(method, body) {
   try {
     const res = await fetch(`${BASE_URL}/${method}`, {
@@ -24,25 +33,42 @@ async function callTelegram(method, body) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    return await res.json();
+    const result = await res.json();
+    if (!result.ok) {
+      console.warn(`[AssistantDaemon] Telegram API warning on ${method}:`, result.description || result);
+    }
+    return result;
   } catch (err) {
-    console.warn(`[AssistantDaemon] Telegram API error on ${method}:`, err.message);
+    console.warn(`[AssistantDaemon] Telegram API network error on ${method}:`, err.message);
     return { ok: false, error: err.message };
   }
 }
 
 async function sendMessage(chatId, text, replyMarkup) {
-  return callTelegram("sendMessage", {
+  const res = await callTelegram("sendMessage", {
     chat_id: chatId,
     text,
     parse_mode: "HTML",
     disable_web_page_preview: true,
     reply_markup: replyMarkup,
   });
+
+  // Fallback to plain text if HTML entity parsing failed
+  if (!res.ok && typeof res.description === "string" && res.description.includes("can't parse entities")) {
+    console.warn("[AssistantDaemon] Retrying sendMessage without HTML parse_mode due to entity parsing error...");
+    return callTelegram("sendMessage", {
+      chat_id: chatId,
+      text: text.replace(/<[^>]*>/g, ""),
+      disable_web_page_preview: true,
+      reply_markup: replyMarkup,
+    });
+  }
+
+  return res;
 }
 
 async function editMessageText(chatId, messageId, text, replyMarkup) {
-  return callTelegram("editMessageText", {
+  const res = await callTelegram("editMessageText", {
     chat_id: chatId,
     message_id: messageId,
     text,
@@ -50,6 +76,24 @@ async function editMessageText(chatId, messageId, text, replyMarkup) {
     disable_web_page_preview: true,
     reply_markup: replyMarkup,
   });
+
+  if (!res.ok && typeof res.description === "string") {
+    if (res.description.includes("message is not modified")) {
+      return { ok: true };
+    }
+    if (res.description.includes("can't parse entities")) {
+      console.warn("[AssistantDaemon] Retrying editMessageText without HTML parse_mode...");
+      return callTelegram("editMessageText", {
+        chat_id: chatId,
+        message_id: messageId,
+        text: text.replace(/<[^>]*>/g, ""),
+        disable_web_page_preview: true,
+        reply_markup: replyMarkup,
+      });
+    }
+  }
+
+  return res;
 }
 
 async function answerCallbackQuery(callbackQueryId, text) {
@@ -456,11 +500,11 @@ async function handleSupplierBalances() {
 
   let text = "🏢 <b>DANH SÁCH & SỐ DƯ NHÀ CUNG CẤP:</b>\n\n";
   for (const s of suppliers) {
-    text += `${getSupplierIcon(s.name, s.code)} <b>${s.name}</b> (<code>${s.code}</code>)\n`;
+    text += `${getSupplierIcon(s.name, s.code)} <b>${escapeHtml(s.name)}</b> (<code>${escapeHtml(s.code)}</code>)\n`;
     text += `• Số dư ví: <b>${(s.currentBalance || 0).toLocaleString("vi-VN")}đ</b>\n`;
-    text += `• Ngân hàng nạp: <b>${s.depositBankId || "MB"}</b> | STK: <code>${s.depositAccountNo || "0388888888"}</code>\n`;
-    text += `• Chủ TK: <b>${s.depositAccountName || "Chưa cập nhật"}</b>\n`;
-    text += `• Cú pháp: <code>${s.depositSyntax || "NAP " + ADMIN_CHAT_ID}</code>\n`;
+    text += `• Ngân hàng nạp: <b>${escapeHtml(s.depositBankId || "MB")}</b> | STK: <code>${escapeHtml(s.depositAccountNo || "0388888888")}</code>\n`;
+    text += `• Chủ TK: <b>${escapeHtml(s.depositAccountName || "Chưa cập nhật")}</b>\n`;
+    text += `• Cú pháp: <code>${escapeHtml(s.depositSyntax || "NAP " + ADMIN_CHAT_ID)}</code>\n`;
     text += `• Sản phẩm: <b>${s.mappings.length}</b> sản phẩm\n\n`;
   }
   text += "👉 <i>Bấm nút bên dưới để tạo mã VietQR nạp tiền vào ví bot nguồn.</i>";
@@ -784,6 +828,11 @@ const TOOLS_DECLARATION = [
         description: "Đồng bộ tồn kho và giá từ các bot Telegram nhà cung cấp",
         parameters: { type: "OBJECT", properties: {} },
       },
+      {
+        name: "get_supplier_balances",
+        description: "Xem danh sách và số dư ví tại tất cả các nhà cung cấp hoặc bot nguồn",
+        parameters: { type: "OBJECT", properties: {} },
+      },
     ],
   },
 ];
@@ -798,6 +847,7 @@ Hãy phân tích yêu cầu của Chủ shop và gọi đúng Function Call phù
 - Xem tồn kho: handle_stock_summary
 - Tra cứu đơn hàng ORD...: lookup_order
 - Đồng bộ nguồn: trigger_supplier_sync
+- Xem số dư nhà cung cấp, ví bot nguồn: get_supplier_balances
 Nếu là câu hỏi thông thường, hãy trả lời ngắn gọn, lịch sự, dùng emoji thân thiện.
 `;
 
@@ -856,6 +906,20 @@ async function callGeminiAI(userText) {
       if (fnName === "trigger_supplier_sync") {
         return "⏳ Đã gửi yêu cầu đồng bộ nhà cung cấp. Bấm nút 'Sync' trên menu để kiểm tra tiến độ!";
       }
+      if (fnName === "get_supplier_balances") {
+        const textBalances = await handleSupplierBalances();
+        return {
+          text: textBalances,
+          keyboard: {
+            inline_keyboard: [
+              [
+                { text: "💳 Nạp tiền NCC", callback_data: "cmd:topup_menu" },
+                { text: "🔙 Về Menu", callback_data: "cmd:main_menu" },
+              ],
+            ],
+          },
+        };
+      }
     }
 
     const textPart = parts.find((p) => p.text);
@@ -891,8 +955,30 @@ async function tryFastRegex(text) {
   }
 
   // Supplier balances
-  if (/^(?:số\s*dư|ví\s*ncc|số\s*dư\s*ncc|ncc)$/i.test(t)) {
-    return await handleSupplierBalances();
+  const cleanT = t.toLowerCase().replace(/\s+/g, " ");
+  if (
+    /^(?:số\s*dư|so\s*du|ví\s*ncc|vi\s*ncc|số\s*dư\s*ncc|so\s*du\s*ncc|ncc|balance|check\s*balance|kiem\s*tra\s*so\s*du|xem\s*so\s*du|kt\s*so\s*du|so\s*du\s*vi)(?:\s+ncc)?$/i.test(t) ||
+    cleanT === "so du ncc" ||
+    cleanT === "so du" ||
+    cleanT === "so du vi" ||
+    cleanT === "vi ncc" ||
+    cleanT.includes("số dư") ||
+    cleanT.includes("so du") ||
+    cleanT.includes("ví ncc") ||
+    cleanT.includes("vi ncc")
+  ) {
+    const textBalances = await handleSupplierBalances();
+    return {
+      text: textBalances,
+      keyboard: {
+        inline_keyboard: [
+          [
+            { text: "💳 Nạp tiền NCC", callback_data: "cmd:topup_menu" },
+            { text: "🔙 Về Menu", callback_data: "cmd:main_menu" },
+          ],
+        ],
+      },
+    };
   }
 
   // Quick top-up: "nạp tiền", "nạp xoài non 50k", "nạp tiền ncc"
@@ -1016,13 +1102,17 @@ async function pollUpdates() {
             // Check fast regex first for zero latency
             const fastReply = await tryFastRegex(text);
             if (fastReply) {
-              await sendMessage(msg.chat.id, fastReply, getMainKeyboard());
+              const replyText = typeof fastReply === "object" ? fastReply.text : fastReply;
+              const replyKb = typeof fastReply === "object" && fastReply.keyboard ? fastReply.keyboard : getMainKeyboard();
+              await sendMessage(msg.chat.id, replyText, replyKb);
               continue;
             }
 
             // Fallback to Gemini Flash Function Calling AI
             const aiReply = await callGeminiAI(text);
-            await sendMessage(msg.chat.id, aiReply, getMainKeyboard());
+            const aiText = typeof aiReply === "object" ? aiReply.text : aiReply;
+            const aiKb = typeof aiReply === "object" && aiReply.keyboard ? aiReply.keyboard : getMainKeyboard();
+            await sendMessage(msg.chat.id, aiText, aiKb);
           }
 
           // 2. Process Callback Queries (Button clicks)
