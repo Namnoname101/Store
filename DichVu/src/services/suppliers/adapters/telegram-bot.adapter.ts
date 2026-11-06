@@ -163,7 +163,241 @@ export class TelegramBotAdapter implements ISupplierAdapter {
     if (botUsername.includes("xoainon")) {
       return this.checkXoaiNonBalance(client, botUsername);
     }
+    if (botUsername.includes("KhoMMO") || botUsername.includes("khommo")) {
+      return this.checkKhoMmoBalance(client, botUsername);
+    }
+    if (botUsername.includes("dkeyshop")) {
+      return this.checkDKeyShopBalance(client, botUsername);
+    }
+    if (botUsername.includes("toki_shopmmo")) {
+      return this.checkTokiShopBalance(client, botUsername);
+    }
+    if (botUsername.includes("ShopHXN") || botUsername.includes("shophxn")) {
+      return this.checkShopHXNBalance(client, botUsername);
+    }
+    if (botUsername.includes("chodaumoi")) {
+      return this.checkChoDauMoiBalance(client, botUsername);
+    }
+    if (botUsername.includes("hihistore")) {
+      return this.checkHiHistoreBalance(client, botUsername);
+    }
+    if (botUsername.includes("timecloudorder")) {
+      return this.checkTimeCloudBalance(client, botUsername);
+    }
+    if (botUsername.includes("mmo_dshop") || botUsername.includes("dshop")) {
+      return this.checkDShopBalance(client, botUsername);
+    }
     return this.checkNghienTrickBalance(client, botUsername);
+  }
+
+  /**
+   * Helper: parse VND balance from texts like:
+   *   "VND: 50.000 ~ $2.00"  → 50000
+   *   "VND: 0k"               → 0
+   *   "VND: 50k"              → 50000
+   *   "Số dư khả dụng: 50.000đ" → 50000
+   *   "Số dư ví: 50000 VND"  → 50000
+   *   "Số dư tài khoản: 50.000 ₫" → 50000
+   */
+  private parseBalanceFromText(text: string): number | null {
+    // Pattern: "VND: 50.000 ~ $..." or "VND: 50k"
+    const vndTilde = text.match(/VND:\s*([\d.,]+)\s*(?:~|\s|$)/i);
+    if (vndTilde) {
+      const raw = vndTilde[1].replace(/\./g, "").replace(/,/g, "");
+      if (raw.endsWith("k") || raw.endsWith("K")) {
+        return parseInt(raw.slice(0, -1), 10) * 1000;
+      }
+      const n = parseInt(raw, 10);
+      if (!isNaN(n)) return n;
+    }
+
+    // Pattern: "Số dư ...: 50.000đ" or "50 ₫" or "50000 VND"
+    const soduMatch = text.match(
+      /(?:Số\s*dư[^:]*:|balance[^:]*:)\s*([\d.,]+)\s*(?:đ|₫|VND|vnđ|vnd)/i
+    );
+    if (soduMatch) {
+      const raw = soduMatch[1].replace(/[.,]/g, "");
+      const n = parseInt(raw, 10);
+      if (!isNaN(n)) return n;
+    }
+
+    // Fallback: any "Số dư" followed by number + currency
+    const fallback = text.match(/Số\s*dư[^0-9]*([\d.,]+)\s*(?:đ|₫|VND)/i);
+    if (fallback) {
+      const raw = fallback[1].replace(/[.,]/g, "");
+      const n = parseInt(raw, 10);
+      if (!isNaN(n)) return n;
+    }
+
+    return null;
+  }
+
+  /** KhoMMO_Market_bot: /wallet → "VND: X ~ $Y" */
+  private async checkKhoMmoBalance(
+    client: TelegramClient,
+    botUsername: string
+  ): Promise<number> {
+    await client.sendMessage(botUsername, { message: "/wallet" });
+    await new Promise((r) => setTimeout(r, 2500));
+    const msgs = await client.getMessages(botUsername, { limit: 2 });
+    for (const m of msgs) {
+      const bal = this.parseBalanceFromText(m.text || "");
+      if (bal !== null) return bal;
+    }
+    return 0;
+  }
+
+  /** dkeyshop_bot + ShopHXN_bot: /wallet → "VND: Xk" */
+  private async checkDKeyShopBalance(
+    client: TelegramClient,
+    botUsername: string
+  ): Promise<number> {
+    await client.sendMessage(botUsername, { message: "/wallet" });
+    await new Promise((r) => setTimeout(r, 2500));
+    const msgs = await client.getMessages(botUsername, { limit: 2 });
+    for (const m of msgs) {
+      const text = m.text || "";
+      // "VND: 50k" or "VND: 0k"
+      const match = text.match(/VND:\s*([\d.]+)k/i);
+      if (match) {
+        const n = parseFloat(match[1].replace(/\./g, "")) * 1000;
+        return Math.round(n);
+      }
+      // Try generic parser
+      const bal = this.parseBalanceFromText(text);
+      if (bal !== null) return bal;
+    }
+    return 0;
+  }
+
+  /** ShopHXN_bot: same system as dkeyshop */
+  private async checkShopHXNBalance(
+    client: TelegramClient,
+    botUsername: string
+  ): Promise<number> {
+    return this.checkDKeyShopBalance(client, botUsername);
+  }
+
+  /** toki_shopmmo_bot: /wallet → "Số dư khả dụng: Xđ" */
+  private async checkTokiShopBalance(
+    client: TelegramClient,
+    botUsername: string
+  ): Promise<number> {
+    await client.sendMessage(botUsername, { message: "/wallet" });
+    await new Promise((r) => setTimeout(r, 2500));
+    const msgs = await client.getMessages(botUsername, { limit: 2 });
+    for (const m of msgs) {
+      const bal = this.parseBalanceFromText(m.text || "");
+      if (bal !== null) return bal;
+    }
+    return 0;
+  }
+
+  /**
+   * chodaumoi_bot: /start → click reply keyboard button "Ví"
+   * (buttons are ReplyKeyboardMarkup with text only, no callback data)
+   */
+  private async checkChoDauMoiBalance(
+    client: TelegramClient,
+    botUsername: string
+  ): Promise<number> {
+    await client.sendMessage(botUsername, { message: "/start" });
+    await new Promise((r) => setTimeout(r, 2000));
+
+    // This bot uses ReplyKeyboardMarkup – just send the button text as a message
+    await client.sendMessage(botUsername, { message: "Ví" });
+    await new Promise((r) => setTimeout(r, 2500));
+
+    const msgs = await client.getMessages(botUsername, { limit: 3 });
+    for (const m of msgs) {
+      if (m.out) continue;
+      const text = m.text || "";
+      // History showed: "💰 Số dư ví của bạn: 0đ"
+      const bal = this.parseBalanceFromText(text);
+      if (bal !== null) return bal;
+    }
+    return 0;
+  }
+
+  /** hihistorebot (PQV Store): /deposit or /start → "Số dư tài khoản: X ₫" */
+  private async checkHiHistoreBalance(
+    client: TelegramClient,
+    botUsername: string
+  ): Promise<number> {
+    await client.sendMessage(botUsername, { message: "/start" });
+    await new Promise((r) => setTimeout(r, 2500));
+    const msgs = await client.getMessages(botUsername, { limit: 2 });
+    for (const m of msgs) {
+      const text = m.text || "";
+      // "💰 Số dư tài khoản: 0 ₫"
+      const match = text.match(/Số\s*dư\s*tài\s*khoản\s*:\s*([\d.,]+)\s*[₫đ]/i);
+      if (match) {
+        const n = parseInt(match[1].replace(/[.,]/g, ""), 10);
+        if (!isNaN(n)) return n;
+      }
+      const bal = this.parseBalanceFromText(text);
+      if (bal !== null) return bal;
+    }
+    return 0;
+  }
+
+  /** timecloudorderbot: /start → "Số dư ví: X VND" */
+  private async checkTimeCloudBalance(
+    client: TelegramClient,
+    botUsername: string
+  ): Promise<number> {
+    await client.sendMessage(botUsername, { message: "/start" });
+    await new Promise((r) => setTimeout(r, 2500));
+    const msgs = await client.getMessages(botUsername, { limit: 2 });
+    for (const m of msgs) {
+      const text = m.text || "";
+      // "💳 Số dư ví: 0 VND"
+      const match = text.match(/Số\s*dư\s*ví\s*:\s*([\d.,]+)\s*VND/i);
+      if (match) {
+        const n = parseInt(match[1].replace(/[.,]/g, ""), 10);
+        if (!isNaN(n)) return n;
+      }
+      const bal = this.parseBalanceFromText(text);
+      if (bal !== null) return bal;
+    }
+    return 0;
+  }
+
+  /**
+   * mmo_dshop_bot: /start → click inline button "wallet" (callback_data: "wallet")
+   * Then parse balance from reply.
+   */
+  private async checkDShopBalance(
+    client: TelegramClient,
+    botUsername: string
+  ): Promise<number> {
+    await client.sendMessage(botUsername, { message: "/start" });
+    await new Promise((r) => setTimeout(r, 2000));
+
+    let msgs = await client.getMessages(botUsername, { limit: 1 });
+    let msg = msgs[0];
+
+    // Click the "Wallet" inline button
+    if (msg?.replyMarkup && (msg.replyMarkup as any).rows) {
+      for (const row of (msg.replyMarkup as any).rows) {
+        for (const btn of row.buttons) {
+          const dataStr = btn.data ? Buffer.from(btn.data).toString("utf-8") : "";
+          if (dataStr === "wallet" || (btn.text || "").toLowerCase().includes("wallet")) {
+            await msg.click({ data: btn.data });
+            await new Promise((r) => setTimeout(r, 2500));
+            msgs = await client.getMessages(botUsername, { limit: 2 });
+            for (const m of msgs) {
+              if (m.out) continue;
+              const bal = this.parseBalanceFromText(m.text || "");
+              if (bal !== null) return bal;
+            }
+            return 0;
+          }
+        }
+      }
+    }
+
+    return 0;
   }
 
   private async checkXoaiNonBalance(
@@ -332,7 +566,7 @@ export class TelegramBotAdapter implements ISupplierAdapter {
       }
     }
 
-    return 35433; // Default estimated balance for nghientrick
+    return 0;
   }
 
   private parsePrice(str: string): number | null {
