@@ -13,6 +13,16 @@ export async function sendAdminNotification(
   htmlText: string,
   replyMarkup?: any
 ): Promise<boolean> {
+  // Never send real Telegram notifications during tests or CI runs
+  if (
+    process.env.NODE_ENV === "test" ||
+    process.env.VITEST ||
+    process.env.CI ||
+    process.env.JEST_WORKER_ID !== undefined
+  ) {
+    return true;
+  }
+
   const adminChatId = getAdminChatId();
   if (!adminChatId) {
     console.warn("[NotificationDispatcher] TELEGRAM_ADMIN_CHAT_ID is not configured. Notification dropped.");

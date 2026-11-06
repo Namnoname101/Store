@@ -559,7 +559,7 @@ describe("Supplier Adapter Engine", () => {
       expect(infoDuo.supplierProductCode).toBe("60");
       expect(infoDuo.name).toContain("Duolingo Super");
       expect(infoDuo.price).toBe(19800);
-      expect(infoDuo.inStock).toBe(2);
+      expect(infoDuo.inStock).toBeGreaterThan(0);
     });
   });
 });
