@@ -1,8 +1,8 @@
 // Global test setup for Vitest
 // Ensures tests NEVER send real Telegram notifications or call external supplier bots
 
-process.env.NODE_ENV = "test";
-process.env.VITEST = "true";
+(process.env as Record<string, string | undefined>).NODE_ENV = "test";
+(process.env as Record<string, string | undefined>).VITEST = "true";
 
 // Clear Telegram credentials from test environment to guarantee isolation
 delete process.env.TELEGRAM_ADMIN_CHAT_ID;
