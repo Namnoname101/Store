@@ -9,6 +9,8 @@ const BOT_TOKEN = process.env.TELEGRAM_ASSISTANT_BOT_TOKEN || process.env.TELEGR
 const ADMIN_CHAT_ID = (process.env.TELEGRAM_ADMIN_CHAT_ID || "").trim();
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-flash-lite-latest";
+// Internal API base URL – same host as the Next.js app
+const APP_INTERNAL_URL = process.env.NEXTAUTH_URL || process.env.APP_URL || "http://localhost:3000";
 
 if (!BOT_TOKEN) {
   console.warn("[AssistantDaemon] TELEGRAM_ASSISTANT_BOT_TOKEN not provided. Assistant daemon disabled.");
@@ -488,6 +490,45 @@ async function handleRetryOrder(orderCode) {
 // SUPPLIER TOP-UP & BALANCE FLUCTUATIONS HANDLERS
 // -----------------------------------------------------------------------------
 
+/**
+ * Gọi API /api/admin/suppliers/{id}/balance để lấy số dư THỰC từ bot NCC rồi cập nhật DB.
+ * Chỉ áp dụng cho các supplier dạng TELEGRAM_BOT (có baseUrl dạng tg://resolve?domain=...).
+ * Returns updated balance hoặc null nếu lỗi.
+ */
+async function refreshSupplierBalance(supplierId) {
+  try {
+    const res = await fetch(`${APP_INTERNAL_URL}/api/admin/suppliers/${supplierId}/balance`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data.balance ?? null;
+    }
+  } catch (err) {
+    console.warn(`[Daemon] refreshSupplierBalance(${supplierId}) failed:`, err.message);
+  }
+  return null;
+}
+
+/**
+ * Refresh balance của tất cả Telegram Bot suppliers tuần tự.
+ * Chạy trước khi hiển thị danh sách số dư cho admin.
+ */
+async function refreshAllTelegramBalances(suppliers) {
+  const telegramSuppliers = suppliers.filter(
+    (s) => s.type === "TELEGRAM_BOT" && s.baseUrl && s.baseUrl.includes("tg://")
+  );
+  for (const sup of telegramSuppliers) {
+    const bal = await refreshSupplierBalance(sup.id);
+    if (bal !== null) {
+      sup.currentBalance = bal; // update in-memory for display
+    }
+    // small delay between bots to avoid flooding
+    await new Promise((r) => setTimeout(r, 800));
+  }
+}
+
 async function handleSupplierBalances() {
   const suppliers = await prisma.supplier.findMany({
     where: { isActive: true },
@@ -497,6 +538,9 @@ async function handleSupplierBalances() {
   if (suppliers.length === 0) {
     return "Chưa có nhà cung cấp nào đang hoạt động.";
   }
+
+  // Refresh real-time balances from Telegram bots before displaying
+  await refreshAllTelegramBalances(suppliers);
 
   let text = "🏢 <b>DANH SÁCH & SỐ DƯ NHÀ CUNG CẤP:</b>\n\n";
   for (const s of suppliers) {
@@ -1203,13 +1247,19 @@ async function pollUpdates() {
                 where: { OR: [{ code: supCode }, { id: supCode }] },
               });
               if (sup) {
+                // Refresh real-time balance from the actual bot
+                await sendMessage(cb.message.chat.id, `⏳ Đang kiểm tra số dư thực từ bot <b>${escapeHtml(sup.name)}</b>...`);
+                const freshBalance = await refreshSupplierBalance(sup.id);
+                const displayBalance = freshBalance !== null ? freshBalance : (sup.currentBalance || 0);
                 const balText =
-                  `🏢 <b>THÔNG TIN SỐ DƯ: ${sup.name}</b>\n\n` +
-                  `• Số dư hiện tại: <b>${(sup.currentBalance || 0).toLocaleString("vi-VN")}đ</b>\n` +
-                  `• Ngân hàng nạp: <b>${sup.depositBankId || "MB"}</b> | STK: <code>${sup.depositAccountNo || "0388888888"}</code>\n` +
-                  `• Cú pháp: <code>${sup.depositSyntax || "NAP " + ADMIN_CHAT_ID}</code>`;
+                  `🏢 <b>THÔNG TIN SỐ DƯ: ${escapeHtml(sup.name)}</b>\n\n` +
+                  `• Số dư hiện tại: <b>${displayBalance.toLocaleString("vi-VN")}đ</b>` +
+                  (freshBalance !== null ? " ✅ <i>(vừa cập nhật)</i>" : " ⚠️ <i>(từ cache)</i>") + "\n" +
+                  `• Ngân hàng nạp: <b>${escapeHtml(sup.depositBankId || "MB")}</b> | STK: <code>${escapeHtml(sup.depositAccountNo || "0388888888")}</code>\n` +
+                  `• Cú pháp: <code>${escapeHtml(sup.depositSyntax || "NAP " + ADMIN_CHAT_ID)}</code>`;
                 await sendMessage(cb.message.chat.id, balText, {
                   inline_keyboard: [
+                    [{ text: "🔄 Refresh lại", callback_data: `check_balance:${sup.code}` }],
                     [{ text: "💳 Nạp tiền vào ví", callback_data: `topup_sup:${sup.code}` }],
                     [{ text: "🔙 Về Menu", callback_data: "cmd:main_menu" }],
                   ],
