@@ -204,7 +204,7 @@ export function buildGenerateSystemPrompt(
   switch (targetAi) {
     case "chatgpt":
       targetAiGuide = `
-TỐI ƯU HÓA ĐẶC BIỆT DÀNH RIÊNG CHO OPENAI (GPT-6 Astra / GPT-6.1 Sol / o1):
+TỐI ƯU HÓA ĐẶC BIỆT DÀNH RIÊNG CHO OPENAI (GPT-6 Astra / Sol & OpenAI o3 / o3-mini / o1-pro):
 - Áp dụng kỹ thuật Chain-of-Thought (CoT) agentic nâng cao: Yêu cầu AI suy nghĩ đa bước và tự phân tích phản biện trước khi đưa ra kiến trúc hoàn chỉnh.
 - Tận dụng thế mạnh của GPT-6 Astra trong việc xử lý multi-step workflows, computer-use và logic toán/code chuyên sâu.
 - Cấu trúc tiêu đề Markdown (#, ##, ###) phân cấp rõ ràng, bảng dữ liệu và bullet points mạch lạc để giao diện Intelligent UI hiển thị trực quan nhất.`;

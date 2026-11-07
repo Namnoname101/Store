@@ -63,6 +63,9 @@ export default function CountdownTimer({
       return;
     }
 
+    // Reset expire flag on new valid timestamp so regenerated timers can trigger onExpire
+    onExpireCalled.current = false;
+
     const intervalId = setInterval(() => {
       const remaining = calculateRemainingSeconds(expiresAt);
       setRemainingSeconds(remaining);
@@ -80,12 +83,13 @@ export default function CountdownTimer({
   }, [expiresAt, onExpire]);
 
   const isExpired = remainingSeconds <= 0;
-  const isUrgent = remainingSeconds > 0 && remainingSeconds <= 180; // Less than 3 mins
+  const isCritical = remainingSeconds > 0 && remainingSeconds <= 60; // Less than 1 min
+  const isUrgent = remainingSeconds > 60 && remainingSeconds <= 180; // Less than 3 mins
 
   if (isExpired) {
     return (
       <div
-        className={`inline-flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-700 dark:text-rose-400 ${className}`}
+        className={`inline-flex items-center gap-2 rounded-xl border border-destructive/40 bg-destructive/10 px-3 py-1.5 text-xs font-semibold text-destructive ${className}`}
       >
         <AlertCircle className="h-4 w-4 shrink-0" />
         <span>Đơn hàng đã hết hạn thanh toán</span>
@@ -96,15 +100,19 @@ export default function CountdownTimer({
   return (
     <div
       className={`inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors ${
-        isUrgent
-          ? "border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-300 animate-pulse"
-          : "border-indigo-500/30 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300"
+        isCritical
+          ? "border-destructive/60 bg-destructive/15 text-destructive animate-pulse"
+          : isUrgent
+          ? "border-amber-500/50 bg-amber-500/15 text-amber-800 dark:text-amber-300 animate-pulse"
+          : "border-border bg-secondary text-foreground"
       } ${className}`}
     >
-      {isUrgent ? (
-        <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400" />
+      {isCritical ? (
+        <AlertCircle className="h-4 w-4 shrink-0 text-destructive" />
+      ) : isUrgent ? (
+        <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500" />
       ) : (
-        <Clock className="h-4 w-4 shrink-0 text-indigo-400" />
+        <Clock className="h-4 w-4 shrink-0 text-muted-foreground" />
       )}
       <span>Hết hạn trong:</span>
       <span className="font-mono text-sm font-bold tracking-wider">

@@ -1,0 +1,820 @@
+{
+  "nghientrickshop_bot": {
+    "code": "NGHIENTRICK_TELE",
+    "mainMenuText": "╭━━━━━━━━━━━━━━━━━━╮\n      ✨ 𝐍𝐆𝐇𝐈𝐄𝐍 𝐓𝐑𝐈𝐂𝐊 𝐒𝐇𝐎𝐏\n╰━━━━━━━━━━━━━━━━━━╯\n\n\n✨ 𝐗𝐢𝐧 𝐜𝐡𝐚̀𝐨 Na Na NA!\n✨ 𝐒𝐨̂́ 𝐝𝐮̛ 𝐯𝐢́: 17.131đ\n  0 Xu\n\n✨ 𝐓𝐡𝐚𝐦 𝐆𝐢𝐚 𝐂𝐨̣̂𝐧𝐠 𝐃𝐨̂̀𝐧𝐠 𝐃𝐞̂̉ 𝐧𝐡𝐚̣̂𝐧 𝐮̛𝐮 𝐝𝐚̃𝐢, 𝐦𝐚̃ 𝐠𝐢𝐚̉𝐦 𝐠𝐢𝐚́ 𝐯𝐚̀ 𝐭𝐡𝐨̂𝐧𝐠 𝐛𝐚́𝐨 𝐦𝐨̛́𝐢.\n\n✨ 𝐇𝐞̣̂ 𝐭𝐡\ud835",
+    "menuButtons": [
+      {
+        "text": "𝐌𝐮𝐚 𝐡𝐚̀𝐧𝐠",
+        "data": "menu_shop"
+      },
+      {
+        "text": "𝐕𝐢́ 𝐜𝐮̉𝐚 𝐭𝐨̂𝐢",
+        "data": "menu_wallet"
+      },
+      {
+        "text": "𝐃𝐨̛𝐧 𝐝𝐚̃ 𝐦𝐮𝐚",
+        "data": "menu_history"
+      },
+      {
+        "text": "𝐇𝐨̂̃ 𝐭𝐫𝐨̛̣",
+        "data": "menu_support"
+      },
+      {
+        "text": "𝐁𝐨̣̂ 𝐜𝐨̂𝐧𝐠 𝐜𝐮̣ 𝐦𝐢𝐞̂̃𝐧 𝐩𝐡𝐢́",
+        "data": "https://locket.com.vn/tools?shop=v196&build=20260822-0358-v196-premium-svg"
+      },
+      {
+        "text": "𝐂𝐨̣̂𝐧𝐠 𝐃𝐨̂̀𝐧𝐠 𝐍𝐠𝐡𝐢𝐞̣̂𝐧 𝐓𝐫𝐢𝐜𝐤",
+        "data": "https://t.me/nghientrickvn"
+      },
+      {
+        "text": "𝐍𝐠𝐨̂𝐧 𝐧𝐠𝐮̛̃",
+        "data": "menu_language"
+      }
+    ],
+    "subCategories": [
+      {
+        "text": "𝐓𝐨̂̉𝐧𝐠 𝐇𝐨̛̣𝐩 𝐆𝐞𝐦𝐢𝐧𝐢 & 𝐆𝐨𝐨𝐠𝐥𝐞 𝐨𝐧𝐞",
+        "data": "shopcat_0c86f99a2a"
+      },
+      {
+        "text": "𝐌𝐢𝐜𝐫𝐨𝐬𝐨𝐟𝐭 𝐎𝐟𝐟𝐢𝐜𝐞",
+        "data": "shopcat_2787a1d4a1"
+      },
+      {
+        "text": "𝐒𝐩𝐨𝐭𝐢𝐟𝐲",
+        "data": "shopcat_d50addf719"
+      },
+      {
+        "text": "𝐀𝐝𝐨𝐛𝐞",
+        "data": "shopcat_105d81e743"
+      },
+      {
+        "text": "𝐍𝐞𝐭𝐟𝐥𝐢𝐱 𝐏𝐫𝐞𝐦𝐢𝐮𝐦 𝟒𝐤 𝐇𝐃𝐑",
+        "data": "shopcat_65db894f0b"
+      },
+      {
+        "text": "𝐘𝐨𝐮𝐭𝐮𝐛𝐞 𝐏𝐫𝐞𝐦𝐢𝐮𝐦",
+        "data": "shopcat_256e0b3786"
+      },
+      {
+        "text": "Dualingo 12 Tháng",
+        "data": "shopcat_ff95c6372f"
+      },
+      {
+        "text": "Canvar Pro Lite 12 Tháng",
+        "data": "shopcat_90f401df7a"
+      },
+      {
+        "text": "Nord Vpn 3 Months",
+        "data": "shopcat_e741591955"
+      },
+      {
+        "text": "CHAT GPT PLUS K12 - 2 Năm",
+        "data": "shopcat_3f37dc97dd"
+      },
+      {
+        "text": "API Claude",
+        "data": "shopcat_7b5dca23f7"
+      },
+      {
+        "text": "Capcut pro 6 months",
+        "data": "shopcat_f6ef823b53"
+      },
+      {
+        "text": "Fast VPN",
+        "data": "shopcat_defbb0ff7d"
+      },
+      {
+        "text": "Muse.ai",
+        "data": "shopcat_610005efcc"
+      },
+      {
+        "text": "Locket Gold",
+        "data": "shopcat_2bc95ece0a"
+      },
+      {
+        "text": "tus muse.ai",
+        "data": "shopcat_94e7bbfd4f"
+      },
+      {
+        "text": "KEY HMA VPN",
+        "data": "shopcat_867bcc4e4f"
+      },
+      {
+        "text": "ExpressVPN",
+        "data": "shopcat_d6986afda9"
+      },
+      {
+        "text": "📦 Sportify 6 tháng dns",
+        "data": "shopcat_8016470e9e"
+      },
+      {
+        "text": "📦 Gemini Plus 6 Tháng",
+        "data": "shopcat_453cac82f4"
+      },
+      {
+        "text": "𝐐𝐮𝐚𝐲 𝐥𝐚̣𝐢",
+        "data": "main_back"
+      }
+    ]
+  },
+  "KhoMMO_Market_bot": {
+    "code": "KHOMMO_TELE",
+    "mainMenuText": "🏠 Trang chủ\n\n🛍 Chào mừng bạn đến với Khommo Market.\n\nChọn chức năng bên dưới:",
+    "menuButtons": [
+      {
+        "text": "Ví",
+        "data": "b:1"
+      },
+      {
+        "text": "Cửa hàng",
+        "data": "b:4"
+      },
+      {
+        "text": "🤝 Giới thiệu",
+        "data": "b:5"
+      },
+      {
+        "text": "📜 Lịch sử",
+        "data": "b:6"
+      },
+      {
+        "text": "Hỗ trợ",
+        "data": "b:7"
+      },
+      {
+        "text": "Làm mới",
+        "data": "b:8"
+      },
+      {
+        "text": "Đóng",
+        "data": "b:9"
+      }
+    ],
+    "subCategories": []
+  },
+  "mmo_dshop_bot": {
+    "code": "DSHOP_TELE",
+    "mainMenuText": "📌 Quick guide:\n1. Tap \"🛍 Shop\".\n2. Choose a product.\n3. Select or enter the quantity.\n4. Choose a payment method and follow the instructions.\n\n📌 Choose an option:",
+    "menuButtons": [
+      {
+        "text": "🛍 Shop",
+        "data": "buy"
+      },
+      {
+        "text": "👤 Profile",
+        "data": "profile"
+      },
+      {
+        "text": "🧾 Purchase history",
+        "data": "history"
+      },
+      {
+        "text": "💗 Wallet",
+        "data": "wallet"
+      },
+      {
+        "text": "💬 Support",
+        "data": "support"
+      },
+      {
+        "text": "🌐 Language",
+        "data": "language"
+      }
+    ],
+    "subCategories": [
+      {
+        "text": "Adobe (Products: 1, Stock: 0)",
+        "data": "cat:0"
+      },
+      {
+        "text": "Api Codex (Products: 4, Stock: 11)",
+        "data": "cat:1"
+      },
+      {
+        "text": "Canva (Products: 2, Stock: 531)",
+        "data": "cat:2"
+      },
+      {
+        "text": "CapCut (Products: 4, Stock: 187)",
+        "data": "cat:3"
+      },
+      {
+        "text": "ChatGPT (Products: 6, Stock: 185)",
+        "data": "cat:4"
+      },
+      {
+        "text": "Elevenlabs (Products: 1, Stock: 243)",
+        "data": "cat:5"
+      },
+      {
+        "text": "Figma (Products: 2, Stock: 14)",
+        "data": "cat:6"
+      },
+      {
+        "text": "Gemini (Products: 1, Stock: 0)",
+        "data": "cat:7"
+      },
+      {
+        "text": "Grok (Products: 1, Stock: 0)",
+        "data": "cat:8"
+      },
+      {
+        "text": "HMA (Products: 1, Stock: 23)",
+        "data": "cat:9"
+      },
+      {
+        "text": "Meitu (Products: 2, Stock: 8)",
+        "data": "cat:10"
+      },
+      {
+        "text": "Perplexity (Products: 1, Stock: 5)",
+        "data": "cat:11"
+      },
+      {
+        "text": "Youtube (Products: 4, Stock: Unlimited)",
+        "data": "cat:12"
+      },
+      {
+        "text": "Zoom (Products: 3, Stock: 6)",
+        "data": "cat:13"
+      },
+      {
+        "text": "Microsoft Office (Products: 2, Stock: 212)",
+        "data": "cat:14"
+      },
+      {
+        "text": "Muse Ai (Products: 2, Stock: 3783)",
+        "data": "cat:15"
+      },
+      {
+        "text": "Nord VPN (Products: 2, Stock: 2)",
+        "data": "cat:16"
+      },
+      {
+        "text": "🔙 Back",
+        "data": "menu"
+      },
+      {
+        "text": "🔄 Refresh",
+        "data": "buy:refresh"
+      }
+    ]
+  },
+  "toki_shopmmo_bot": {
+    "code": "TOKI_TELE",
+    "mainMenuText": "📦 Hàng đang có sẵn trong kho\n\n📦 Tài khoản Google đuôi @gmail.com new\n\n💰 13.000đ\n📦 Kho hiện tại: 37\n🔥 Đã bán: 0\n\n📝 Tài khoản google đuôi @gmail.com new chưa qua dịch vụ, chưa có số điện thoại\nTài khoản chỉ được bảo hành trong vòng 3 ngày tính theo đầu ngày lúc 0h\nBảo hành chỉ áp dụng cho lần đă",
+    "menuButtons": [
+      {
+        "text": "🛍 Xem sản phẩm",
+        "data": "menu_products"
+      }
+    ],
+    "subCategories": [
+      {
+        "text": "🛍 Khám phá sản phẩm",
+        "data": "menu_products"
+      },
+      {
+        "text": "💰 Ví của tôi",
+        "data": "menu_wallet"
+      },
+      {
+        "text": "🧾 Đơn đã mua",
+        "data": "menu_history"
+      },
+      {
+        "text": "💳 Cách thanh toán",
+        "data": "menu_payment"
+      },
+      {
+        "text": "💬 Cần hỗ trợ",
+        "data": "menu_support"
+      },
+      {
+        "text": "💬 Group chat",
+        "data": "https://t.me/chattokishopmmo"
+      },
+      {
+        "text": "🎁 Mời bạn bè",
+        "data": "menu_affiliate"
+      },
+      {
+        "text": "🤝 Khu vực CTV",
+        "data": "ctv_home"
+      },
+      {
+        "text": "🌐 Ngôn ngữ",
+        "data": "menu_language"
+      }
+    ]
+  },
+  "dkeyshop_bot": {
+    "code": "DKEY_TELE",
+    "mainMenuText": "📌 Vui lòng chọn menu:",
+    "menuButtons": [
+      {
+        "text": "Mua hàng",
+        "data": "menu::buy"
+      },
+      {
+        "text": "👤 Hồ sơ",
+        "data": "menu::profile"
+      },
+      {
+        "text": "🧿 Lịch sử mua",
+        "data": "menu::history"
+      },
+      {
+        "text": "👛 Ví",
+        "data": "menu::wallet"
+      },
+      {
+        "text": "🔗 Liên kết API",
+        "data": "menu::api"
+      },
+      {
+        "text": "💬 Hỗ trợ",
+        "data": "menu::support"
+      },
+      {
+        "text": "Bảo hành",
+        "data": "menu::warranty"
+      },
+      {
+        "text": "🌐 Ngôn ngữ",
+        "data": "menu::language"
+      }
+    ],
+    "subCategories": [
+      {
+        "text": "Capcut",
+        "data": "products_category::e9a30951852e98a2"
+      },
+      {
+        "text": "Youtube",
+        "data": "products_category::7bdb4d7adeb2ac95"
+      },
+      {
+        "text": "Meitu",
+        "data": "products_category::9fc890007e6493d8"
+      },
+      {
+        "text": "Grok",
+        "data": "products_category::ea77a35954109b82"
+      },
+      {
+        "text": "TikTok",
+        "data": "products_category::7bcf6fbf75a925e3"
+      },
+      {
+        "text": "Claude",
+        "data": "products_category::85b6206de528b4ab"
+      },
+      {
+        "text": "NetFlix",
+        "data": "products_category::6839ac01fff70f6f"
+      },
+      {
+        "text": "SurfShark",
+        "data": "products_category::bdb2624f9ff23df9"
+      },
+      {
+        "text": "Canva",
+        "data": "products_category::272b33233ea9b1f7"
+      },
+      {
+        "text": "Gmail",
+        "data": "products_category::5ed42672799531b1"
+      },
+      {
+        "text": "Kling",
+        "data": "products_category::5c7d32ac2d24c7f9"
+      },
+      {
+        "text": "Wink",
+        "data": "products_category::675e9bd10c28e5ab"
+      },
+      {
+        "text": "NordVPN",
+        "data": "products_category::24dd9018a198c849"
+      },
+      {
+        "text": "Notion",
+        "data": "products_category::dab065c76ba03206"
+      },
+      {
+        "text": "X",
+        "data": "products_category::437447477495031f"
+      },
+      {
+        "text": "Microsoft Office 365",
+        "data": "products_category::05035288a942c542"
+      },
+      {
+        "text": "Xingtu",
+        "data": "products_category::7eddd6dfc58a7431"
+      },
+      {
+        "text": "ChatGPT",
+        "data": "products_category::d7b2a409b7ed08d2"
+      },
+      {
+        "text": "API-GPT",
+        "data": "products_category::4cf10639e639d92c"
+      },
+      {
+        "text": "Antigravity",
+        "data": "products_category::baa37172b12e75a6"
+      },
+      {
+        "text": "Locket",
+        "data": "products_category::49b9c345a8c600d7"
+      },
+      {
+        "text": "Lovable",
+        "data": "products_category::d93867596ff0b727"
+      },
+      {
+        "text": "HMA Vpn",
+        "data": "products_category::bf81c746a43a4c87"
+      },
+      {
+        "text": "zoom",
+        "data": "products_category::cfd1d041049a0d7c"
+      },
+      {
+        "text": "Tele",
+        "data": "products_category::161d7c821a083ddb"
+      },
+      {
+        "text": "Higgfield",
+        "data": "products_category::abc322716b33e7e6"
+      },
+      {
+        "text": "Google One",
+        "data": "products_category::e87e49a3860fb837"
+      },
+      {
+        "text": "facebook",
+        "data": "products_category::fee4def1e16f9e54"
+      },
+      {
+        "text": "TV360",
+        "data": "products_category::31ddae0550f6692f"
+      },
+      {
+        "text": "Adobe",
+        "data": "products_category::27ce7e0049c74330"
+      },
+      {
+        "text": "Icloud",
+        "data": "products_category::cf8009717fdc0140"
+      },
+      {
+        "text": "Deepseek",
+        "data": "products_category::1e490c30f3aa7f0f"
+      },
+      {
+        "text": "Norton VPN",
+        "data": "products_category::2362045bd1212107"
+      },
+      {
+        "text": "Quizlet",
+        "data": "products_category::87cb9c403cbfd21c"
+      },
+      {
+        "text": "Google",
+        "data": "products_category::c5752c25243c95fb"
+      },
+      {
+        "text": "Duolingo",
+        "data": "products_category::0687f1cff577189b"
+      },
+      {
+        "text": "ElevenLabs",
+        "data": "products_category::0553ca49d59793d5"
+      },
+      {
+        "text": "Express",
+        "data": "products_category::d7177db6f3c2025a"
+      },
+      {
+        "text": "PhotoRoom",
+        "data": "products_category::6cf424f4699edabf"
+      },
+      {
+        "text": "GitHub",
+        "data": "products_category::c0b0109d9439de57"
+      },
+      {
+        "text": "Khác",
+        "data": "products_category::6b20ff1b56936ceb"
+      },
+      {
+        "text": "Capcut Pro 1 Tháng BHF | 35k | 📦 15",
+        "data": "product_id::6a339d1b086ed556b9f71e01"
+      },
+      {
+        "text": "CapCut Pro Team 3 Tháng - BHF | 130k | 📦 5",
+        "data": "product_id::6aa55320df59fbc6fe1ab546"
+      },
+      {
+        "text": "CAPCUT TEAM 6 THÁNG  BHF | 240k | 📦 3",
+        "data": "product_id::6aaff3c086b4242014ba4440"
+      },
+      {
+        "text": "Capcut Pro Team 12 Tháng - BHF | 480k | 📦 2",
+        "data": "product_id::6ac36ea18931359f49c82da9"
+      },
+      {
+        "text": "Cập nhật sản phẩm",
+        "data": "refresh_product_categories"
+      }
+    ]
+  },
+  "ShopHXN_bot": {
+    "code": "SHOPHXN_TELE",
+    "mainMenuText": "📌 Vui lòng chọn menu:",
+    "menuButtons": [
+      {
+        "text": "Mua hàng",
+        "data": "menu::buy"
+      },
+      {
+        "text": "👤 Hồ sơ",
+        "data": "menu::profile"
+      },
+      {
+        "text": "🧿 Lịch sử mua",
+        "data": "menu::history"
+      },
+      {
+        "text": "👛 Ví",
+        "data": "menu::wallet"
+      },
+      {
+        "text": "🔗 Liên kết API",
+        "data": "menu::api"
+      },
+      {
+        "text": "💬 Hỗ trợ",
+        "data": "menu::support"
+      },
+      {
+        "text": "Bảo hành",
+        "data": "menu::warranty"
+      },
+      {
+        "text": "🌐 Ngôn ngữ",
+        "data": "menu::language"
+      }
+    ],
+    "subCategories": [
+      {
+        "text": "ChatGPT",
+        "data": "products_category::c23a2c23ef7ec1ea"
+      },
+      {
+        "text": "Claude",
+        "data": "products_category::8688f618e185d1e4"
+      },
+      {
+        "text": "Capcut",
+        "data": "products_category::03dc4451c178cbfa"
+      },
+      {
+        "text": "Microsoft Office 365",
+        "data": "products_category::677aee0f3e68da00"
+      },
+      {
+        "text": "SurfShark",
+        "data": "products_category::35de573bc5f9130f"
+      },
+      {
+        "text": "Spotify",
+        "data": "products_category::3d47513f18b4919c"
+      },
+      {
+        "text": "Minimax",
+        "data": "products_category::dd30cc5e4ff54cf2"
+      },
+      {
+        "text": "Tele",
+        "data": "products_category::47affdbcf15fdf5d"
+      },
+      {
+        "text": "API-GPT",
+        "data": "products_category::d359d82099b969fc"
+      },
+      {
+        "text": "NordVPN",
+        "data": "products_category::24dd9018a198c849"
+      },
+      {
+        "text": "ElevenLabs",
+        "data": "products_category::0553ca49d59793d5"
+      },
+      {
+        "text": "NetFlix",
+        "data": "products_category::c9b76056ec4674e1"
+      },
+      {
+        "text": "Higgfield",
+        "data": "products_category::abc322716b33e7e6"
+      },
+      {
+        "text": "Muse AI",
+        "data": "products_category::d2c5bb19dabe8f0d"
+      },
+      {
+        "text": "API 10M Token Claude 1 Tháng - BH1D | 29k | 📦 1344",
+        "data": "product_id::6a22db2d0f516979ef98b1c0"
+      },
+      {
+        "text": "API 50M Token Claude 1 Tháng - BH1D | 69k | 📦 516",
+        "data": "product_id::6a3601a2718150c401005ff3"
+      },
+      {
+        "text": "API 100M Token Claude 1 Ngày - BHF | 99k | 📦 1030",
+        "data": "product_id::6a22dc740f516979ef98de98"
+      },
+      {
+        "text": "API 200M Token Claude 1 Ngày - BHF | 179k | 📦 478",
+        "data": "product_id::6a71694f5efd834588b70e91"
+      },
+      {
+        "text": "API 500M Token Claude 1 Ngày - BHF | 359k | 📦 488",
+        "data": "product_id::6acbbdbcfac0129822a07a7a"
+      },
+      {
+        "text": "API 100M Token Claude 3 Ngày - BHF | 139k | 📦 470",
+        "data": "product_id::6a22dd420f516979ef98f8f7"
+      },
+      {
+        "text": "API 500M Token Claude 7 Ngày - BHF | 469k | 📦 511",
+        "data": "product_id::6acd18179e12f9acc56be6a0"
+      },
+      {
+        "text": "API 500M Token Claude 15 Ngày - BH7D | 539k | 📦 504",
+        "data": "product_id::6acbbf01fac0129822a0b7d0"
+      },
+      {
+        "text": "API 1B (1 tỉ) Token Claude 30 Ngày - BH7D | 888k | 📦 507",
+        "data": "product_id::6acbbf65fac0129822a0ce74"
+      },
+      {
+        "text": "Cập nhật sản phẩm",
+        "data": "refresh_product_categories"
+      }
+    ]
+  },
+  "chodaumoi_bot": {
+    "code": "CHODAUMOI_TELE",
+    "mainMenuText": "Xin chào Na Na NA NIha! ⭐\n\n ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐\n\n⭐⭐⭐ CHỢ ĐẦU MỐI - MMO ⭐⭐⭐\n\n⭐⭐ Chuyên Cung Cấp Tài Khoản ⭐⭐\n                                                            ⭐\n        ⭐⭐⭐⭐⭐⭐⭐ GIÁ RẺ \n\n        🤖 ✨ 🪐 ⭐ 🟥 ⭐ ⭐ ⭐ 📹\n\n   ⭐ Liên hệ hỗ trợ: @chodaumoimmo \n\n⭐ Gõ /menu để xem danh sách sản phẩm ⭐",
+    "menuButtons": [
+      {
+        "text": "Sản phẩm",
+        "data": ""
+      },
+      {
+        "text": "Ví",
+        "data": ""
+      },
+      {
+        "text": "Lịch sử",
+        "data": ""
+      },
+      {
+        "text": "Bảo hành",
+        "data": ""
+      },
+      {
+        "text": "Liên hệ",
+        "data": ""
+      },
+      {
+        "text": "Kích hoạt Pixel",
+        "data": ""
+      }
+    ],
+    "subCategories": []
+  },
+  "hihistorebot": {
+    "code": "HIHISTORE_TELE",
+    "mainMenuText": "👋 Xin chào Na Na NA NIha (@Namnoname)!\nChào mừng bạn đến với PQV STORE BOT 🛍️✨\n\n💰 Số dư tài khoản: 0 ₫\n⚡ Hệ thống bán hàng tự động 24/7 - Giao key tức thì qua MB Bank!\n\n👉 Các lệnh nhanh:\n📦 /sanpham - Xem tất cả sản phẩm & tồn kho\n💳 /nap - Nạp tiền tự động vào số dư bot\n📜 /history - Lịch sử mu",
+    "menuButtons": [
+      {
+        "text": "📦 Xem Danh Mục Sản Phẩm",
+        "data": "cmd_sanpham"
+      },
+      {
+        "text": "💳 Nạp Tiền Vào Số Dư",
+        "data": "cmd_nap"
+      },
+      {
+        "text": "📜 Lịch Sử Giao Dịch",
+        "data": "cmd_history"
+      },
+      {
+        "text": "💬 Hỗ Trợ Khách Hàng",
+        "data": "cmd_support"
+      },
+      {
+        "text": "🌐 Mở Website Cửa Hàng",
+        "data": "https://pqvstore.site/"
+      }
+    ],
+    "subCategories": [
+      {
+        "text": "🛡️ VPN (10)",
+        "data": "cat_view_cat_3ea9f840"
+      },
+      {
+        "text": "🛡️ Order acc steam (16)",
+        "data": "cat_view_cat_ae533ebd"
+      },
+      {
+        "text": "🛡️ AI (11)",
+        "data": "cat_view_cat_53b29d0b"
+      },
+      {
+        "text": "📖 Học tập (1)",
+        "data": "cat_view_cat_265a8f2b"
+      },
+      {
+        "text": "🎉 UGPHONE (4)",
+        "data": "cat_view_cat_850908dc"
+      },
+      {
+        "text": "🛡️ GPM LOGIN (4)",
+        "data": "cat_view_cat_368220dc"
+      },
+      {
+        "text": "🛡️ Figma (1)",
+        "data": "cat_view_cat_71b4df17"
+      },
+      {
+        "text": "🛡️ Capcut (5)",
+        "data": "cat_view_cat_5180b272"
+      },
+      {
+        "text": "🛡️ Canva (5)",
+        "data": "cat_view_cat_caa9d1f4"
+      },
+      {
+        "text": "🛡️ Wink (0)",
+        "data": "cat_view_cat_77b2e2d5"
+      },
+      {
+        "text": "🛡️ Meitu (1)",
+        "data": "cat_view_cat_c8e728f2"
+      },
+      {
+        "text": "🛡️ VIEON (2)",
+        "data": "cat_view_cat_fceefcee"
+      },
+      {
+        "text": "🛡️ YTB PRE (4)",
+        "data": "cat_view_cat_8aa802ff"
+      },
+      {
+        "text": "🛡️ NETFLIX (2)",
+        "data": "cat_view_cat_f6d3599b"
+      },
+      {
+        "text": "🚆 MB BANK (1)",
+        "data": "cat_view_cat_1762af30"
+      },
+      {
+        "text": "🛡️ Mail (1)",
+        "data": "cat_view_cat_32948291"
+      },
+      {
+        "text": "🛡️ SPOTIFY (1)",
+        "data": "cat_view_cat_10eba7d2"
+      },
+      {
+        "text": "🔖 Sản Phẩm Khác (2)",
+        "data": "cat_view_other"
+      },
+      {
+        "text": "🛒 Xem Tất Cả Sản Phẩm (71)",
+        "data": "cat_view_all"
+      },
+      {
+        "text": "💳 Nạp Thêm Tiền",
+        "data": "cmd_nap"
+      },
+      {
+        "text": "📜 Lịch Sử Đã Mua",
+        "data": "cmd_history"
+      },
+      {
+        "text": "🔙 Quay Lại Menu",
+        "data": "cmd_start"
+      }
+    ]
+  }
+}

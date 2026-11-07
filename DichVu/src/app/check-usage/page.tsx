@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function CheckUsagePage() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 py-8 sm:py-12">
+    <div className="min-h-screen bg-background text-foreground py-8 sm:py-12">
       <CheckUsageClient />
     </div>
   );

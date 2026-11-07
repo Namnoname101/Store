@@ -29,18 +29,18 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
   if (!order) {
     return (
       <div className="mx-auto max-w-lg px-4 py-20 text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 mb-4">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-destructive/10 border border-destructive/20 text-destructive mb-4">
           <AlertCircle className="h-8 w-8" />
         </div>
-        <h1 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+        <h1 className="text-xl font-bold text-foreground mb-2">
           Không tìm thấy đơn hàng
         </h1>
-        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-6">
+        <p className="text-xs sm:text-sm text-muted-foreground mb-6">
           Mã đơn hàng <strong>{orderCode}</strong> không tồn tại trong hệ thống hoặc đã quá hạn và bị hủy.
         </p>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-xs font-bold text-white transition-all shadow-md shadow-blue-600/30"
+          className="inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary/90 px-5 py-2.5 text-xs font-bold text-primary-foreground transition-all shadow-md shadow-primary/25"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Quay lại trang chủ mua sắm</span>
@@ -61,7 +61,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
 
   const bankId = process.env.BANK_ID || "MB";
   const bankAccountNo = process.env.BANK_ACCOUNT_NO || "0987654321";
-  const bankAccountName = process.env.BANK_ACCOUNT_NAME || "DIGISTORE VIET NAM";
+  const bankAccountName = process.env.BANK_ACCOUNT_NAME || "TRUONG CONG QUANG DAI";
   const bankInfo = SUPPORTED_BANKS[bankId];
   const bankName = bankInfo
     ? `${bankInfo.shortName} - ${bankInfo.name}`

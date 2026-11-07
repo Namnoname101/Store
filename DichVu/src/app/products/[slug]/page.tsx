@@ -3,17 +3,15 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import {
   ChevronRight,
-  BookOpen,
   ShieldCheck,
   Clock,
   Headphones,
   Send,
   Sparkles,
-  HelpCircle,
-  ExternalLink,
 } from "lucide-react";
 import { getProductBySlug } from "@/services/catalog.service";
 import ProductPurchaseBox from "@/components/ProductPurchaseBox";
+import ProductDetailTabs from "@/components/ProductDetailTabs";
 import { getProductTypeInfo, formatVND } from "@/lib/product-types";
 import { resolveProductInstruction } from "@/lib/product-guides";
 import { resolveProductThumbnail } from "@/lib/catalog-grouping";
@@ -31,12 +29,12 @@ export async function generateMetadata({
   const product = await getProductBySlug(slug);
   if (!product) {
     return {
-      title: "Không tìm thấy sản phẩm - KhoDEE",
+      title: "Không tìm thấy sản phẩm - DaiTruong Store",
     };
   }
 
   return {
-    title: `${product.title} - KhoDEE`,
+    title: `${product.title} - DaiTruong Store`,
     description: product.description.slice(0, 160),
   };
 }
@@ -143,28 +141,28 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     : "lượt";
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:py-8 sm:px-6 lg:px-8 pb-20">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:py-8 sm:px-6 lg:px-8 pb-28 lg:pb-16">
       {/* Breadcrumbs */}
-      <nav className="mb-6 flex items-center gap-1.5 sm:gap-2 text-xs text-slate-500 dark:text-slate-400">
-        <Link href="/" className="hover:text-blue-600 dark:hover:text-white transition-colors">
+      <nav className="mb-6 flex items-center gap-1.5 sm:gap-2 text-xs text-muted-foreground">
+        <Link href="/" className="hover:text-primary transition-colors">
           Trang chủ
         </Link>
-        <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
+        <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
         <Link
           href={`/?category=${product.category.slug}#catalog`}
-          className="hover:text-blue-600 dark:hover:text-white transition-colors"
+          className="hover:text-primary transition-colors"
         >
           {product.category.name}
         </Link>
-        <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
-        <span className="truncate max-w-[200px] sm:max-w-md text-slate-800 dark:text-slate-200 font-medium">
+        <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="truncate max-w-[200px] sm:max-w-md text-foreground font-medium">
           {product.title}
         </span>
       </nav>
 
       {/* Main Grid: 2 Columns */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
-        {/* Left column: Overview, Media, and Details */}
+        {/* Left column: Overview, Media, Details, and Dual Tabs */}
         <div className="lg:col-span-7 flex flex-col gap-6 sm:gap-8">
           {/* Header Info */}
           <div>
@@ -176,46 +174,46 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
                 {typeInfo.label}
               </span>
 
-              <span className="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-400">
+              <span className="inline-flex items-center rounded-lg border border-border bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground">
                 {product.category.name}
               </span>
 
               {discountPercent > 0 && (
-                <span className="rounded-lg bg-rose-600 px-2 py-0.5 text-xs font-bold text-white shadow-xs">
+                <span className="rounded-lg bg-destructive px-2 py-0.5 text-xs font-bold text-destructive-foreground shadow-xs">
                   Tiết kiệm {discountPercent}%
                 </span>
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white leading-snug">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground leading-snug">
               {product.title}
             </h1>
 
             {/* Price Row */}
             <div className="mt-3 flex items-baseline gap-3">
-              <span className="text-3xl font-extrabold text-blue-600 dark:text-blue-400">
+              <span className="text-3xl font-extrabold text-primary font-mono">
                 {formatVND(product.price)}
               </span>
               {isSMM && (
-                <span className="text-sm font-medium text-slate-500">
+                <span className="text-sm font-medium text-muted-foreground">
                   / 1 {unitLabel}
                 </span>
               )}
               {product.originalPrice && product.originalPrice > product.price && (
-                <span className="text-base text-slate-400 line-through">
+                <span className="text-base text-muted-foreground line-through font-mono">
                   {formatVND(product.originalPrice)}
                 </span>
               )}
             </div>
 
             {isCodex && (
-              <div className="mt-4 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/70 dark:bg-blue-950/30 p-3.5 flex items-start gap-2.5">
-                <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
-                <div className="text-xs text-blue-900 dark:text-blue-200">
+              <div className="mt-4 rounded-xl border border-primary/20 bg-primary/10 p-3.5 flex items-start gap-2.5">
+                <Sparkles className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <div className="text-xs text-foreground">
                   <span className="font-semibold">Bạn đã có API Key từ trước?</span>
-                  <p className="mt-0.5 text-blue-700 dark:text-blue-300">
+                  <p className="mt-0.5 text-muted-foreground">
                     Không cần mua key mới! Bạn có thể{" "}
-                    <Link href="/codex" className="font-bold underline hover:text-blue-900 dark:hover:text-white">
+                    <Link href="/codex" className="font-bold text-primary underline hover:text-primary/80">
                       vào đây để nạp thêm hạn mức thẳng vào key cũ của bạn
                     </Link>
                     .
@@ -225,8 +223,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             )}
           </div>
 
-          {/* Product Media Card (4:3 or standard ratio, clean look) */}
-          <div className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-6 shadow-sm">
+          {/* Product Media Card */}
+          <div className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm">
             <img
               src={resolvedThumbnail}
               alt={product.title}
@@ -235,167 +233,65 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           </div>
 
           {/* Standardized Product Specification Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white/95 dark:bg-slate-900/60 p-4 sm:p-5 shadow-xs">
-            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 shrink-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-xs">
+            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-secondary/50 border border-border">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
                 <Send className="h-4 w-4" />
               </div>
               <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Hình thức nhận hàng</span>
-                <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 mt-0.5 leading-snug">{deliveryFormat}</p>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Hình thức nhận hàng</span>
+                <p className="text-xs font-semibold text-foreground mt-0.5 leading-snug">{deliveryFormat}</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
+            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-secondary/50 border border-border">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
                 <Clock className="h-4 w-4" />
               </div>
               <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Thời hạn sử dụng</span>
-                <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 mt-0.5 leading-snug">{durationLabel}</p>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Thời hạn sử dụng</span>
+                <p className="text-xs font-semibold text-foreground mt-0.5 leading-snug">{durationLabel}</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
+            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-secondary/50 border border-border">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/15 text-accent shrink-0">
                 <ShieldCheck className="h-4 w-4" />
               </div>
               <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Chính sách bảo hành</span>
-                <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 mt-0.5 leading-snug">{warrantyLabel}</p>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Chính sách bảo hành</span>
+                <p className="text-xs font-semibold text-foreground mt-0.5 leading-snug">{warrantyLabel}</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 shrink-0">
+            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-secondary/50 border border-border">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
                 <Headphones className="h-4 w-4" />
               </div>
               <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Hỗ trợ kỹ thuật</span>
-                <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 mt-0.5 leading-snug">Đồng hành 24/7 qua Zalo & Telegram</p>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Hỗ trợ kỹ thuật</span>
+                <p className="text-xs font-semibold text-foreground mt-0.5 leading-snug">Đồng hành 24/7 qua Zalo &amp; Telegram</p>
               </div>
             </div>
           </div>
 
-          {/* Product Description */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-6 sm:p-7 shadow-xs">
-            <h2 className="text-base font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-              <BookOpen className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-              <span>Thông tin sản phẩm</span>
-            </h2>
-
-            <div className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed whitespace-pre-line">
-              {product.description}
-            </div>
-          </div>
-
-          {/* Product Instruction Guide Link Card */}
-          {isCodex ? (
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 text-emerald-600 dark:text-emerald-400 shrink-0">
-                  <BookOpen className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                    Hướng Dẫn Cấu Hình API Codex
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
-                    Hỗ trợ 1-Click vào ChatGPT Windows App qua KhoDee-helper, hoặc kết nối Cursor IDE, VS Code, Cline.
-                  </p>
-                </div>
-              </div>
-              <Link
-                href="/huong-dan/codex"
-                target="_blank"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200 text-white px-4 py-2.5 text-xs font-semibold transition shrink-0 shadow-xs"
-              >
-                <span>Xem hướng dẫn chi tiết</span>
-                <ExternalLink className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-          ) : isClaude ? (
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 text-blue-600 dark:text-blue-400 shrink-0">
-                  <BookOpen className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                    Hướng Dẫn Cấu Hình API Claude (5 Nền Tảng)
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
-                    Tích hợp chuẩn xác vào Cursor AI, Claude Code CLI, VS Code Cline, Open Design và OpenClaw.
-                  </p>
-                </div>
-              </div>
-              <Link
-                href="/huong-dan/api-claude"
-                target="_blank"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200 text-white px-4 py-2.5 text-xs font-semibold transition shrink-0 shadow-xs"
-              >
-                <span>Xem hướng dẫn chi tiết</span>
-                <ExternalLink className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-          ) : guide && guide.steps && guide.steps.length > 0 ? (
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-6 sm:p-7 shadow-xs">
-              <h2 className="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                <HelpCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                <span>{guide.title}</span>
-              </h2>
-
-              <div className="space-y-3.5">
-                {guide.steps.map((stepItem, idx) => {
-                  const isObj = typeof stepItem === "object" && stepItem !== null;
-                  const text = isObj ? stepItem.text : String(stepItem);
-                  const image = isObj ? stepItem.image : undefined;
-                  const caption = isObj ? stepItem.caption : undefined;
-
-                  return (
-                    <div key={idx} className="space-y-2">
-                      <div className="flex items-start gap-3">
-                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900 text-blue-600 dark:text-blue-400 font-mono font-bold text-xs mt-0.5">
-                          {idx + 1}
-                        </span>
-                        <div className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed pt-0.5">
-                          {text}
-                        </div>
-                      </div>
-
-                      {image && (
-                        <div className="ml-8 mt-2">
-                          <img
-                            src={image}
-                            alt={caption || `Bước ${idx + 1}`}
-                            className="rounded-xl border border-slate-200 dark:border-slate-800 max-w-md w-full object-cover"
-                          />
-                          {caption && (
-                            <p className="mt-1 text-xs text-slate-500 italic">{caption}</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {guide.note && (
-                <div className="mt-5 rounded-xl border border-amber-200/80 dark:border-amber-900/50 bg-amber-50/60 dark:bg-amber-950/20 p-3.5 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2.5">
-                  <span className="font-bold shrink-0">Lưu ý bảo hành:</span>
-                  <span className="leading-relaxed">{guide.note}</span>
-                </div>
-              )}
-            </div>
-          ) : null}
+          {/* Dual-Level Tabs: Beginner Onboarding vs Developer Gateway Specs */}
+          <ProductDetailTabs
+            product={product}
+            guide={guide}
+            isCodex={isCodex}
+            isClaude={isClaude}
+            isApiKeyProduct={isApiKeyProduct}
+          />
         </div>
 
         {/* Right column: Sticky Purchase Configuration Box */}
         <div className="lg:col-span-5">
-          <div className="sticky top-20">
+          <div id="purchase-config-box" className="sticky top-20">
             <ProductPurchaseBox
               productId={product.id}
               price={product.price}
+              originalPrice={product.originalPrice}
               stockCount={product.stockCount}
               productTitle={product.title}
               slug={product.slug}

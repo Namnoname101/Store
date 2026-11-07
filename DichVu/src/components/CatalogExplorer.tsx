@@ -10,13 +10,18 @@ import {
   ArrowUp,
   ChevronDown,
   ChevronUp,
+  Cpu,
+  Bot,
+  Layers,
+  Share2,
+  Server,
 } from "lucide-react";
 import ProductCard, { ProductCardProps } from "@/components/ProductCard";
 import GroupedProductCard from "@/components/GroupedProductCard";
 import { processSectionProducts, isApiProduct } from "@/lib/catalog-grouping";
 import QuickViewModal from "@/components/QuickViewModal";
 import BrandLogo from "@/components/BrandLogo";
-import BrandFilterNavigator from "@/components/BrandFilterNavigator";
+import BrandFilterNavigator, { BRAND_NAVIGATOR_ITEMS } from "@/components/BrandFilterNavigator";
 import type { CategoryWithProducts } from "@/services/catalog.service";
 import type { Category } from "@prisma/client";
 
@@ -29,40 +34,25 @@ interface CatalogExplorerProps {
 
 type SectionIconComponent = React.ComponentType<{ className?: string; size?: number }>;
 
-// Authentic official vector brand / industry icons for each catalog section
-const CursorSectionIcon: SectionIconComponent = ({ className = "h-4 w-4" }) => (
-  <BrandLogo brandName="cursor" className={className} size={18} />
+// Generic industry / category vector icons for each catalog section (when unfiltered)
+const ApiSectionIcon: SectionIconComponent = ({ className = "h-4 w-4" }) => (
+  <Cpu className={className} />
 );
 
-const OpenAiSectionIcon: SectionIconComponent = ({ className = "h-4 w-4" }) => (
-  <BrandLogo brandName="openai" className={className} size={18} />
+const AiAccountSectionIcon: SectionIconComponent = ({ className = "h-4 w-4" }) => (
+  <Bot className={className} />
 );
 
-const CapCutSectionIcon: SectionIconComponent = ({ className = "h-4 w-4" }) => (
-  <BrandLogo brandName="capcut" className={className} size={18} />
+const SoftwareSectionIcon: SectionIconComponent = ({ className = "h-4 w-4" }) => (
+  <Layers className={className} />
 );
 
-const TikTokSectionIcon: SectionIconComponent = ({ className = "h-4 w-4" }) => (
-  <BrandLogo brandName="tiktok" className={className} size={18} />
+const SocialSectionIcon: SectionIconComponent = ({ className = "h-4 w-4" }) => (
+  <Share2 className={className} />
 );
 
 const ServerRackSectionIcon: SectionIconComponent = ({ className = "h-4 w-4" }) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <rect x="2" y="2" width="20" height="8" rx="2" />
-    <rect x="2" y="14" width="20" height="8" rx="2" />
-    <line x1="6" y1="6" x2="6.01" y2="6" strokeWidth="2.5" />
-    <line x1="6" y1="18" x2="6.01" y2="18" strokeWidth="2.5" />
-    <line x1="10" y1="6" x2="18" y2="6" />
-    <line x1="10" y1="18" x2="18" y2="18" />
-  </svg>
+  <Server className={className} />
 );
 
 const UtilitiesSectionIcon: SectionIconComponent = ({ className = "h-4 w-4" }) => (
@@ -86,10 +76,10 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     id: "ai-api",
     title: "Key & API Trí Tuệ Nhân Tạo (Claude, Codex, Cursor)",
     shortLabel: "API AI",
-    icon: CursorSectionIcon,
-    iconBg: "bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80",
-    iconColor: "text-zinc-900 dark:text-zinc-100",
-    activeRing: "ring-zinc-500/30",
+    icon: ApiSectionIcon,
+    iconBg: "bg-blue-500/10 border border-blue-500/20",
+    iconColor: "text-blue-600 dark:text-blue-400",
+    activeRing: "ring-blue-500/30",
     categorySlugs: [
       "ai-api",
       "ai-api-keys",
@@ -112,7 +102,7 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     id: "tai-khoan-ai",
     title: "Tài Khoản AI & Trí Tuệ Nhân Tạo (ChatGPT, Gemini Pro...)",
     shortLabel: "Tài khoản AI",
-    icon: OpenAiSectionIcon,
+    icon: AiAccountSectionIcon,
     iconBg: "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-900/50",
     iconColor: "text-emerald-600 dark:text-emerald-400",
     activeRing: "ring-emerald-500/30",
@@ -132,13 +122,15 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
       "suno",
       "runway",
       "copilot pro",
+      "kling",
+      "muse",
     ],
   },
   {
     id: "ban-quyen",
     title: "Phần Mềm & Bản Quyền Ứng Dụng (CapCut, Canva, Office...)",
     shortLabel: "Bản quyền",
-    icon: CapCutSectionIcon,
+    icon: SoftwareSectionIcon,
     iconBg: "bg-amber-50 dark:bg-amber-950/40 border border-amber-200/70 dark:border-amber-900/50",
     iconColor: "text-amber-600 dark:text-amber-400",
     activeRing: "ring-amber-500/30",
@@ -169,7 +161,7 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
     id: "mxh",
     title: "Dịch Vụ Tương Tác Mạng Xã Hội (TikTok, Facebook...)",
     shortLabel: "Mạng xã hội",
-    icon: TikTokSectionIcon,
+    icon: SocialSectionIcon,
     iconBg: "bg-rose-50 dark:bg-rose-950/40 border border-rose-200/70 dark:border-rose-900/50",
     iconColor: "text-rose-600 dark:text-rose-400",
     activeRing: "ring-rose-500/30",
@@ -237,6 +229,84 @@ type FlattenedProduct = CategoryWithProducts["products"][0] & {
   category?: { name: string; slug: string };
 };
 
+/**
+ * Strict Brand Matching: strictly checks product title, slug, and category metadata.
+ * NEVER matches incidental marketing descriptions (e.g. Canva Pro mentioning "Facebook ratio",
+ * CapCut mentioning "Windows/Mac", or Codex AI mentioning "Gemini 4 Argon").
+ */
+export function matchProductBrand(product: FlattenedProduct, brandId: string): boolean {
+  if (!brandId || brandId === "all") return true;
+  const titleLower = product.title.toLowerCase();
+  const slugLower = (product.slug || "").toLowerCase();
+  const catSlug = (product.category?.slug || "").toLowerCase();
+  const catName = (product.category?.name || "").toLowerCase();
+
+  switch (brandId) {
+    case "claude":
+      return titleLower.includes("claude") || slugLower.includes("claude");
+    case "codex":
+      return (titleLower.includes("codex") || slugLower.includes("cdx")) && !titleLower.includes("claude");
+    case "chatgpt":
+      return titleLower.includes("chatgpt") || titleLower.includes("openai") || titleLower.includes("gpt");
+    case "cursor":
+      return titleLower.includes("cursor");
+    case "gemini":
+      return titleLower.includes("gemini");
+    case "deepseek":
+      return titleLower.includes("deepseek");
+    case "grok":
+      return titleLower.includes("grok");
+    case "capcut":
+      return titleLower.includes("capcut");
+    case "canva":
+      return titleLower.includes("canva");
+    case "duolingo":
+      return titleLower.includes("duolingo");
+    case "meitu":
+      return titleLower.includes("meitu");
+    case "adobe":
+      return titleLower.includes("adobe");
+    case "office":
+      return titleLower.includes("office") || titleLower.includes("365") || titleLower.includes("microsoft");
+    case "windows":
+      return (
+        titleLower.includes("windows pro") ||
+        titleLower.includes("key windows") ||
+        titleLower.includes("win 10") ||
+        titleLower.includes("win 11")
+      );
+    case "tiktok":
+      return titleLower.includes("tiktok") || slugLower.includes("tiktok");
+    case "facebook":
+      return (
+        (titleLower.includes("facebook") || slugLower.includes("facebook") || titleLower.includes("fb")) &&
+        !titleLower.includes("canva")
+      );
+    case "nordvpn":
+      return titleLower.includes("nordvpn") || (titleLower.includes("vpn") && !titleLower.includes("vps"));
+    case "netflix":
+      return titleLower.includes("netflix");
+    case "youtube":
+      return titleLower.includes("youtube");
+    case "vps":
+      return titleLower.includes("vps") || catSlug.includes("vps") || catName.includes("vps") || titleLower.includes("máy chủ");
+    default:
+      return titleLower.includes(brandId) || slugLower.includes(brandId);
+  }
+}
+
+/**
+ * Strict search matching: matches title, slug, or category name.
+ * Excludes raw description to eliminate false keyword collisions.
+ */
+function matchSearchQuery(product: FlattenedProduct, q: string): boolean {
+  if (!q) return true;
+  const titleLower = product.title.toLowerCase();
+  const slugLower = (product.slug || "").toLowerCase();
+  const catName = (product.category?.name || "").toLowerCase();
+  return titleLower.includes(q) || slugLower.includes(q) || catName.includes(q);
+}
+
 export default function CatalogExplorer({
   categories,
   allCategories,
@@ -244,12 +314,10 @@ export default function CatalogExplorer({
   initialSearch = "",
 }: CatalogExplorerProps) {
   const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
-  const [selectedCategoryTab, setSelectedCategoryTab] = useState<string>(
+  const [selectedBrandId, setSelectedBrandId] = useState<string>(
     initialCategory && initialCategory !== "all" ? initialCategory.toLowerCase() : "all"
   );
-  const [activeSectionId, setActiveSectionId] = useState<string>(
-    initialCategory && initialCategory !== "all" ? initialCategory.toLowerCase() : SECTION_DEFINITIONS[0].id
-  );
+  const [activeSectionId, setActiveSectionId] = useState<string>(SECTION_DEFINITIONS[0].id);
   const [quickViewProduct, setQuickViewProduct] = useState<ProductCardProps["product"] | null>(null);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState<boolean>(false);
   const [selectedSubBrands, setSelectedSubBrands] = useState<Record<string, string>>({});
@@ -265,13 +333,15 @@ export default function CatalogExplorer({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Sync state if searchParams change externally (e.g. from Navbar search or category links)
+  // Sync state if searchParams change externally (e.g. from Navbar search or direct links)
   useEffect(() => {
+    const urlBrand = searchParams.get("brand");
     const urlCategory = searchParams.get("category");
-    if (urlCategory) {
-      const lowerCat = urlCategory.toLowerCase();
-      setSelectedCategoryTab(lowerCat);
-      setActiveSectionId(lowerCat);
+
+    if (urlBrand) {
+      setSelectedBrandId(urlBrand.toLowerCase());
+    } else if (urlCategory) {
+      setSelectedBrandId(urlCategory.toLowerCase());
     }
 
     const urlSearch = searchParams.get("search");
@@ -297,24 +367,37 @@ export default function CatalogExplorer({
     return list;
   }, [categories]);
 
-  // Group products into sections according to definitions
-  const populatedSections = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-
-    // 1. Filter by search query first if provided
-    const filtered = allProducts.filter((p) => {
-      if (!query) return true;
-      const titleLower = p.title.toLowerCase();
-      const descLower = p.description.toLowerCase();
-      const catName = p.category?.name.toLowerCase() || "";
-      return titleLower.includes(query) || descLower.includes(query) || catName.includes(query);
+  // Compute live product counts for each brand pill in BrandFilterNavigator
+  const brandCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: allProducts.length };
+    BRAND_NAVIGATOR_ITEMS.forEach((b) => {
+      if (b.id !== "all") {
+        counts[b.id] = allProducts.filter((p) => matchProductBrand(p, b.id)).length;
+      }
     });
+    return counts;
+  }, [allProducts]);
 
-    // 2. Classify each product into sections
+  // Filter products strictly based on selected brand and search query
+  const filteredProducts = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return allProducts.filter((p) => {
+      if (selectedBrandId && selectedBrandId !== "all") {
+        if (!matchProductBrand(p, selectedBrandId)) return false;
+      }
+      if (query) {
+        if (!matchSearchQuery(p, query)) return false;
+      }
+      return true;
+    });
+  }, [allProducts, selectedBrandId, searchQuery]);
+
+  // Group filtered products into sections according to definitions
+  const populatedSections = useMemo(() => {
     const map = new Map<string, FlattenedProduct[]>();
     SECTION_DEFINITIONS.forEach((s) => map.set(s.id, []));
 
-    filtered.forEach((product) => {
+    filteredProducts.forEach((product) => {
       const titleLower = product.title.toLowerCase();
       const catSlug = product.category?.slug.toLowerCase() || "";
       const catName = product.category?.name.toLowerCase() || "";
@@ -357,7 +440,7 @@ export default function CatalogExplorer({
         assignedSectionId = "ban-quyen";
       }
 
-      // B. If a product ended up in ai-api but is not an API product (e.g. Gemini 18 Tháng, ChatGPT Plus account), route to tai-khoan-ai
+      // B. If a product ended up in ai-api but is not an API product, route to tai-khoan-ai
       if (assignedSectionId === "ai-api" && !isApiProduct(product)) {
         assignedSectionId = "tai-khoan-ai";
       }
@@ -365,17 +448,16 @@ export default function CatalogExplorer({
       map.get(assignedSectionId)?.push(product);
     });
 
-    // 3. Return only sections that have at least 1 product
+    // Return only sections that have at least 1 product, sorted ascending by price
     return SECTION_DEFINITIONS.map((def) => {
       const sectionProducts = map.get(def.id) || [];
-      // Guarantee products are sorted ascending by price
       sectionProducts.sort((a, b) => a.price - b.price);
       return {
         ...def,
         products: sectionProducts,
       };
     }).filter((sec) => sec.products.length > 0);
-  }, [allProducts, searchQuery]);
+  }, [filteredProducts]);
 
   const isManualScrollingRef = useRef(false);
   const manualScrollTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -386,11 +468,6 @@ export default function CatalogExplorer({
 
     const handleScroll = () => {
       if (isManualScrollingRef.current) return;
-
-      // If user is filtering by a specific category, keep that category active
-      if (selectedCategoryTab !== "all") {
-        return;
-      }
 
       // If scrolled to the very bottom of the document, activate the last section
       if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 60) {
@@ -405,7 +482,6 @@ export default function CatalogExplorer({
         const el = document.getElementById(`section-${sec.id}`);
         if (el) {
           const rect = el.getBoundingClientRect();
-          // Active when section top is at or above the viewing line and bottom is still below the viewing line
           if (rect.top <= headerOffset + 60 && rect.bottom > headerOffset) {
             setActiveSectionId(sec.id);
             break;
@@ -420,7 +496,7 @@ export default function CatalogExplorer({
       window.removeEventListener("scroll", handleScroll);
       if (manualScrollTimerRef.current) clearTimeout(manualScrollTimerRef.current);
     };
-  }, [populatedSections, selectedCategoryTab]);
+  }, [populatedSections]);
 
   const scrollToSection = (sectionId: string) => {
     const el = document.getElementById(`section-${sectionId}`);
@@ -439,57 +515,9 @@ export default function CatalogExplorer({
     }
   };
 
-  const handleSelectCategoryTab = (tabId: string) => {
-    setSelectedCategoryTab(tabId);
-    if (tabId === "all") {
-      setActiveSectionId(populatedSections[0]?.id || SECTION_DEFINITIONS[0].id);
-      router.replace("/#catalog", { scroll: false });
-    } else {
-      setActiveSectionId(tabId);
-      router.replace(`/?category=${tabId}#catalog`, { scroll: false });
-    }
-  };
-
   const handlePillClick = (sectionId: string) => {
-    setActiveSectionId(sectionId);
-    if (selectedCategoryTab !== "all" && selectedCategoryTab !== sectionId) {
-      handleSelectCategoryTab(sectionId);
-    } else {
-      scrollToSection(sectionId);
-    }
+    scrollToSection(sectionId);
   };
-
-  const totalFilteredProducts = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) return allProducts.length;
-    return allProducts.filter((p) => {
-      const titleLower = p.title.toLowerCase();
-      const descLower = p.description.toLowerCase();
-      const catName = p.category?.name.toLowerCase() || "";
-      return titleLower.includes(query) || descLower.includes(query) || catName.includes(query);
-    }).length;
-  }, [allProducts, searchQuery]);
-
-  const sectionProductCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    populatedSections.forEach((s) => {
-      counts[s.id] = s.products.length;
-    });
-    return counts;
-  }, [populatedSections]);
-
-  const sectionsToDisplay = useMemo(() => {
-    if (selectedCategoryTab === "all") return populatedSections;
-    const target = selectedCategoryTab.toLowerCase();
-    const matchedDef = SECTION_DEFINITIONS.find(
-      (d) =>
-        d.id === target ||
-        d.categorySlugs.includes(target) ||
-        d.keywords.some((kw) => kw === target || target.includes(kw))
-    );
-    if (!matchedDef) return populatedSections;
-    return populatedSections.filter((s) => s.id === matchedDef.id);
-  }, [selectedCategoryTab, populatedSections]);
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
@@ -497,8 +525,7 @@ export default function CatalogExplorer({
 
   const clearFilters = () => {
     setSearchQuery("");
-    setSelectedCategoryTab("all");
-    setActiveSectionId(populatedSections[0]?.id || SECTION_DEFINITIONS[0].id);
+    setSelectedBrandId("all");
     router.replace("/#catalog", { scroll: false });
   };
 
@@ -521,7 +548,7 @@ export default function CatalogExplorer({
             Danh mục sản phẩm
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Lướt xem danh mục theo từng nhóm bên dưới hoặc tìm kiếm nhanh
+            Lướt xem danh mục theo từng nhóm bên dưới hoặc chọn thương hiệu để lọc tức thì
           </p>
         </div>
 
@@ -532,13 +559,18 @@ export default function CatalogExplorer({
             placeholder="Lọc tài nguyên, API, key..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white/90 dark:bg-slate-900/80 backdrop-blur-md py-2.5 pl-10 pr-9 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all shadow-xs"
+            className="w-full rounded-xl border border-border bg-card py-2.5 pl-10 pr-9 text-sm text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-xs"
           />
-          <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
+          <Search className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
           {searchQuery && (
             <button
-              onClick={() => handleSearchChange("")}
-              className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              onClick={() => {
+                handleSearchChange("");
+                if (selectedBrandId === "all") {
+                  router.replace("/#catalog", { scroll: false });
+                }
+              }}
+              className="absolute right-3 top-3 text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] sm:min-h-[24px] sm:min-w-[24px] flex items-center justify-center -mr-2 -mt-2 sm:mr-0 sm:mt-0"
               aria-label="Xóa từ khóa"
             >
               <X className="h-4 w-4" />
@@ -549,90 +581,36 @@ export default function CatalogExplorer({
 
       {/* Brand & Resource Quick Navigator (Unified Capsule Grid - Kiểu 1) */}
       <BrandFilterNavigator
+        activeBrandId={selectedBrandId}
         activeQuery={searchQuery}
-        onSelectBrand={(query, brandName) => {
-          handleSearchChange(query);
-          if (query && selectedCategoryTab !== "all") {
-            setSelectedCategoryTab("all");
+        onSelectBrand={(brandId) => {
+          setSelectedBrandId(brandId);
+          if (brandId === "all") {
+            setSearchQuery("");
+            router.replace("/#catalog", { scroll: false });
+          } else {
+            router.replace(`/?brand=${encodeURIComponent(brandId)}#catalog`, { scroll: false });
           }
         }}
+        brandCounts={brandCounts}
         totalCount={allProducts.length}
-        filteredCount={totalFilteredProducts}
-        className="mb-6"
+        filteredCount={filteredProducts.length}
+        className="mb-8"
       />
 
-      {/* Category Tabs Filter Bar (Universal across Mobile & Desktop) */}
-      <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar pb-3 mb-6 border-b border-slate-100 dark:border-zinc-800/80">
-        <button
-          type="button"
-          onClick={() => handleSelectCategoryTab("all")}
-          className={`flex items-center gap-1.5 shrink-0 rounded-xl px-3 sm:px-3.5 py-2 text-xs font-semibold transition-all ${
-            selectedCategoryTab === "all"
-              ? "border border-blue-600 bg-blue-600 text-white dark:border-blue-500 dark:bg-blue-600 dark:text-white shadow-sm shadow-blue-500/25 ring-2 ring-blue-500/30 font-bold"
-              : "border border-slate-200/90 dark:border-zinc-800/90 bg-slate-50/90 hover:bg-white dark:bg-[#131926] dark:hover:bg-[#1c2538] text-slate-800 dark:text-zinc-100 hover:text-slate-950 dark:hover:text-white shadow-2xs hover:shadow-xs"
-          }`}
-        >
-          <LayoutGrid className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-          <span>Tất cả</span>
-          <span
-            className={`ml-0.5 rounded-full px-1.5 py-0.5 text-xs ${
-              selectedCategoryTab === "all"
-                ? "bg-white/20 text-white font-bold"
-                : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
-            }`}
-          >
-            {allProducts.length}
-          </span>
-        </button>
-
-        {SECTION_DEFINITIONS.map((def) => {
-          const isSelected =
-            selectedCategoryTab === def.id ||
-            def.categorySlugs.includes(selectedCategoryTab);
-          const DefIcon = def.icon;
-          const count = sectionProductCounts[def.id] || 0;
-          return (
-            <button
-              key={def.id}
-              type="button"
-              onClick={() => handleSelectCategoryTab(def.id)}
-              className={`flex items-center gap-1.5 shrink-0 rounded-xl px-3 sm:px-3.5 py-2 text-xs font-semibold transition-all ${
-                isSelected
-                  ? "border border-blue-600 bg-blue-600 text-white dark:border-blue-500 dark:bg-blue-600 dark:text-white shadow-sm shadow-blue-500/25 ring-2 ring-blue-500/30 font-bold"
-                  : "border border-slate-200/90 dark:border-zinc-800/90 bg-slate-50/90 hover:bg-white dark:bg-[#131926] dark:hover:bg-[#1c2538] text-slate-800 dark:text-zinc-100 hover:text-slate-950 dark:hover:text-white shadow-2xs hover:shadow-xs"
-              }`}
-            >
-              <DefIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              <span>{def.shortLabel}</span>
-              {count > 0 && (
-                <span
-                  className={`ml-0.5 rounded-full px-1.5 py-0.5 text-xs ${
-                    isSelected
-                      ? "bg-white/20 text-white font-bold"
-                      : "bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
-                  }`}
-                >
-                  {count}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
       {/* Main Container: Category Sections spanning full width */}
-      {sectionsToDisplay.length > 0 ? (
+      {populatedSections.length > 0 ? (
         <div className="relative w-full">
           {/* Category Sections */}
           <div className="w-full space-y-10 sm:space-y-14">
-            {sectionsToDisplay.map((sec) => {
+            {populatedSections.map((sec) => {
               // 1. Probe available sub-brands across products in this section
               const { availableBrands: allAvailableBrands } = processSectionProducts(
                 sec.products,
                 "all"
               );
 
-              // 2. If sub-brands exist, do not show 'all' tab; default directly to first brand
+              // 2. If sub-brands exist, show sub-brand groupings
               const hasSubBrands = allAvailableBrands.length > 1;
               const defaultSubBrand = hasSubBrands ? allAvailableBrands[0].key : "all";
               const currentSubBrand =
@@ -641,10 +619,15 @@ export default function CatalogExplorer({
                   : selectedSubBrands[sec.id] || "all";
 
               // 3. Process products for active sub-brand
-              const { items, availableBrands } = processSectionProducts(
+              const { items } = processSectionProducts(
                 sec.products,
                 currentSubBrand
               );
+
+              const activeBrandObj =
+                selectedBrandId && selectedBrandId !== "all"
+                  ? BRAND_NAVIGATOR_ITEMS.find((b) => b.id === selectedBrandId)
+                  : null;
 
               return (
                 <section
@@ -653,22 +636,30 @@ export default function CatalogExplorer({
                   className="scroll-mt-24"
                 >
                   {/* Modern Section Header */}
-                  <div className="mb-4 pb-2.5 border-b border-slate-100 dark:border-zinc-800/80/80 flex items-center justify-between">
+                  <div className="mb-4 pb-2.5 border-b border-slate-100 dark:border-zinc-800/80 flex items-center justify-between">
                     <div className="flex items-center gap-2.5 sm:gap-3">
                       <div
-                        className={`flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl shadow-2xs ${sec.iconBg} ${sec.iconColor}`}
+                        className={`flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl shadow-2xs ${
+                          activeBrandObj
+                            ? "bg-primary/10 border border-primary/20 text-primary"
+                            : `${sec.iconBg} ${sec.iconColor}`
+                        }`}
                       >
-                        <sec.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                        {activeBrandObj ? (
+                          <BrandLogo brandName={activeBrandObj.iconKey} className="h-5 w-5" size={20} />
+                        ) : (
+                          <sec.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                        )}
                       </div>
                       <div>
                         <div className="flex items-center gap-2 sm:gap-2.5">
                           <h3 className="text-base sm:text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">
-                            {sec.title}
+                            {activeBrandObj ? activeBrandObj.name : sec.title}
                           </h3>
                           <span className="rounded-full bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 text-xs font-semibold text-slate-600 dark:text-slate-400 whitespace-nowrap shrink-0">
-                            {hasSubBrands
+                            {hasSubBrands && !activeBrandObj
                               ? allAvailableBrands.reduce((sum, b) => sum + b.count, 0)
-                              : sec.products.length} dịch vụ
+                              : items.length} dịch vụ
                           </span>
                         </div>
                       </div>
@@ -677,7 +668,7 @@ export default function CatalogExplorer({
                     <button
                       type="button"
                       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                      className="hidden sm:inline-flex items-center gap-1 text-xs text-slate-400 hover:text-blue-600 transition-colors"
+                      className="hidden sm:inline-flex items-center gap-1 text-xs text-slate-400 hover:text-blue-600 transition-colors min-h-[44px] px-2"
                       title="Lên đầu trang"
                     >
                       <span>Lên đầu</span>
@@ -746,7 +737,7 @@ export default function CatalogExplorer({
                                 <button
                                   type="button"
                                   onClick={() => toggleMobileGroup(groupKey)}
-                                  className="md:hidden inline-flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-500/20 active:scale-95 transition-all"
+                                  className="md:hidden inline-flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 bg-blue-500/10 px-2.5 py-1 min-h-[44px] rounded-full border border-blue-500/20 active:scale-95 transition-all"
                                 >
                                   <span>{isExpanded ? "Thu gọn" : `Xem thêm (${b.count})`}</span>
                                   {isExpanded ? (
@@ -759,7 +750,7 @@ export default function CatalogExplorer({
                             </div>
 
                             {/* Products Grid for this Brand */}
-                            <div className="grid grid-cols-2 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3.5">
+                            <div className="grid grid-cols-1 min-[480px]:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                               {brandItems.map((item, idx) => {
                                 const isHiddenOnMobile = idx >= 3 && !isExpanded;
                                 return (
@@ -814,7 +805,7 @@ export default function CatalogExplorer({
                                     const el = document.getElementById(groupKey);
                                     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                                   }}
-                                  className="w-full py-2 px-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/80 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] transition-all"
+                                  className="w-full py-2 px-3 min-h-[44px] rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/80 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] transition-all"
                                 >
                                   <span>Thu gọn danh sách {b.name}</span>
                                   <ChevronUp className="w-3.5 h-3.5 text-slate-400" />
@@ -834,7 +825,7 @@ export default function CatalogExplorer({
 
                       return (
                         <div className="space-y-3">
-                          <div className="grid grid-cols-2 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3.5">
+                          <div className="grid grid-cols-1 min-[480px]:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                             {items.map((item, idx) => {
                               const isHiddenOnMobile = idx >= 3 && !isSectionExpanded;
                               return (
@@ -889,7 +880,7 @@ export default function CatalogExplorer({
                                   const el = document.getElementById(`section-${sec.id}`);
                                   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                                 }}
-                                className="w-full py-2 px-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/80 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] transition-all"
+                                className="w-full py-2 px-3 min-h-[44px] rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/80 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] transition-all"
                               >
                                 <span>Thu gọn danh sách {sec.shortLabel}</span>
                                 <ChevronUp className="w-3.5 h-3.5 text-slate-400" />
@@ -912,10 +903,7 @@ export default function CatalogExplorer({
               className="hidden lg:flex fixed right-0 top-1/2 -translate-y-1/2 z-40 flex-col items-end gap-2 select-none pointer-events-none"
             >
               {populatedSections.map((sec) => {
-                const isActive =
-                  selectedCategoryTab !== "all"
-                    ? selectedCategoryTab === sec.id
-                    : activeSectionId === sec.id;
+                const isActive = activeSectionId === sec.id;
                 const SecIcon = sec.icon;
                 return (
                   <button
@@ -955,24 +943,32 @@ export default function CatalogExplorer({
           )}
         </div>
       ) : (
-        /* Empty State */
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/30 px-6 py-16 text-center">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500">
+        /* Polished Accessible Empty State */
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/60 px-6 py-16 text-center max-w-md mx-auto my-10 shadow-xs">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 text-primary shadow-2xs">
             <PackageX className="h-7 w-7" />
           </div>
-          <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200">
-            Không tìm thấy sản phẩm phù hợp
+          <h3 className="text-base font-bold text-foreground">
+            {selectedBrandId && selectedBrandId !== "all"
+              ? `Chưa có sản phẩm ${
+                  BRAND_NAVIGATOR_ITEMS.find((b) => b.id === selectedBrandId)?.name || selectedBrandId
+                }`
+              : "Không tìm thấy sản phẩm phù hợp"}
           </h3>
-          <p className="mt-1 max-w-sm text-xs text-slate-500">
-            {searchQuery
-              ? `Không tìm thấy sản phẩm nào khớp với từ khóa "${searchQuery}".`
+          <p className="mt-2 max-w-sm text-xs text-muted-foreground leading-relaxed">
+            {selectedBrandId && selectedBrandId !== "all"
+              ? `Hiện tại kho hàng đang cập nhật thêm các gói dịch vụ mới cho ${
+                  BRAND_NAVIGATOR_ITEMS.find((b) => b.id === selectedBrandId)?.name || selectedBrandId
+                }. Bạn có thể khám phá các dịch vụ khác đang sẵn sàng bên dưới.`
+              : searchQuery
+              ? `Không tìm thấy sản phẩm nào khớp với từ khóa "${searchQuery}". Vui lòng thử tìm với từ khóa khác.`
               : "Danh mục này hiện chưa có sản phẩm sẵn sàng. Đội ngũ kỹ thuật đang cập nhật thêm dịch vụ mới!"}
           </p>
           <button
             onClick={clearFilters}
-            className="mt-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
+            className="mt-5 inline-flex items-center gap-1.5 min-h-[44px] rounded-xl bg-primary text-primary-foreground px-5 py-2 text-xs font-semibold hover:bg-primary/90 transition-colors shadow-xs"
           >
-            Xóa bộ lọc & Xem tất cả sản phẩm
+            <span>Xem tất cả sản phẩm ({allProducts.length})</span>
           </button>
         </div>
       )}

@@ -44,14 +44,14 @@ export default function FloatingSupport() {
     >
       {/* Expanded Support Card */}
       {isOpen && (
-        <div className="mb-3 w-[300px] sm:w-[330px] rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-indigo-500/30 p-4 shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-5 duration-200">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="mb-3 w-[300px] sm:w-[330px] rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-zinc-800 p-4 shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-5 duration-200">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
                 <HeartHandshake className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-white">Hỗ Trợ Khách Hàng</h4>
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">Hỗ Trợ Khách Hàng</h4>
                 <div className="flex items-center gap-1.5 text-xs text-emerald-500 dark:text-emerald-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   <span>Trực tuyến 24/7</span>
@@ -60,14 +60,14 @@ export default function FloatingSupport() {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               aria-label="Đóng"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          <p className="text-xs text-slate-300 my-3 leading-relaxed">
+          <p className="text-xs text-slate-600 dark:text-slate-300 my-3 leading-relaxed">
             Bạn cần hỗ trợ bảo hành key, tư vấn tài khoản hoặc xử lý sự cố? Liên hệ ngay với chúng tôi:
           </p>
 
@@ -77,14 +77,14 @@ export default function FloatingSupport() {
               href="https://www.facebook.com/2k2.2k6"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border border-blue-500/30 hover:border-blue-400 text-slate-100 transition-all group"
+              className="w-full flex items-center justify-between p-3 rounded-xl bg-blue-500/10 dark:bg-blue-600/20 border border-blue-500/20 dark:border-blue-500/30 hover:border-blue-400 text-slate-800 dark:text-slate-100 transition-all group"
             >
               <div className="flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-md shadow-blue-600/40">
                   f
                 </div>
                 <div className="text-left">
-                  <div className="text-xs font-semibold text-white group-hover:text-blue-300 transition-colors">
+                  <div className="text-xs font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
                     Facebook Cá Nhân / Fanpage
                   </div>
                   <div className="text-xs text-slate-500 dark:text-slate-400">
@@ -92,7 +92,7 @@ export default function FloatingSupport() {
                   </div>
                 </div>
               </div>
-              <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors" />
+              <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 dark:group-hover:text-white transition-colors" />
             </a>
 
             {/* Direct Messenger */}
@@ -107,16 +107,16 @@ export default function FloatingSupport() {
                   <MessageCircle className="w-3.5 h-3.5" />
                 </div>
                 <div className="text-left">
-                  <div className="text-xs font-medium text-slate-200 group-hover:text-indigo-300 transition-colors">
+                  <div className="text-xs font-medium text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">
                     Chat Trực Tiếp Messenger
                   </div>
                 </div>
               </div>
-              <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors" />
+              <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-700 dark:group-hover:text-white transition-colors" />
             </a>
           </div>
 
-          <div className="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-center gap-1.5 text-[10px] text-slate-500">
+          <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-center gap-1.5 text-[10px] text-slate-500">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
             <span>Cam kết hoàn tiền & bảo hành 100% nếu có lỗi</span>
           </div>

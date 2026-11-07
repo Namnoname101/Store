@@ -19,7 +19,7 @@ export default function StorefrontShell({
   const isAdmin = pathname?.startsWith("/admin");
 
   if (isAdmin) {
-    return <main className="min-h-screen flex flex-col">{children}</main>;
+    return <main className="min-h-screen flex flex-col bg-background text-foreground">{children}</main>;
   }
 
   return (

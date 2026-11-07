@@ -343,7 +343,7 @@ export function processSectionProducts(
     const matchedBrand = BRAND_DEFINITIONS.find((b) =>
       b.keywords.some(
         (kw) =>
-          titleLower.includes(kw) || descLower.includes(kw) || slugLower.includes(kw)
+          titleLower.includes(kw) || slugLower.includes(kw)
       )
     );
 

@@ -193,7 +193,7 @@ export class CanbosoAdapter implements ISupplierAdapter {
       if (deliveredKeys.length === 0) {
         const parsed = extractDeliveredSecret(JSON.stringify(data));
         if (parsed) {
-          deliveredKeys.push(parsed);
+          deliveredKeys.push(parsed.content);
         }
       }
 

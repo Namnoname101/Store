@@ -1,51 +1,70 @@
 "use client";
 
 import React from "react";
-import { Zap, Flame } from "lucide-react";
+import { ShieldCheck, Zap, Headphones, CheckCircle2, Gift } from "lucide-react";
 
-const INITIAL_TRANSACTIONS = [
-  { phone: "093****216", item: "API Claude Sonnet 5.5 (10$ Credit)", time: "1 phút trước", type: "BUY" },
-  { phone: "dai****33", item: "Nạp +200.000đ vào ví tự động", time: "2 phút trước", type: "TOPUP" },
-  { phone: "quang****88", item: "Tài khoản ChatGPT Plus 1 Tháng", time: "4 phút trước", type: "BUY" },
-  { phone: "minh****01", item: "CapCut Pro 1 Năm Bản Quyền", time: "6 phút trước", type: "BUY" },
-  { phone: "hoang****92", item: "Cursor Pro 1 Tháng (Codex AI)", time: "8 phút trước", type: "BUY" },
-  { phone: "tuan****55", item: "Nạp +500.000đ (Nhận thưởng +5%)", time: "11 phút trước", type: "TOPUP" },
+const PLATFORM_STATUS_NOTICES = [
+  {
+    icon: CheckCircle2,
+    text: "Hệ thống VietQR 24/7 NAPAS hoạt động bình thường",
+  },
+  {
+    icon: Zap,
+    text: "Bàn giao tự động tức thì < 30s",
+  },
+  {
+    icon: ShieldCheck,
+    text: "Bảo hành 1 đổi 1 toàn thời gian",
+  },
+  {
+    icon: Gift,
+    text: "Nạp ví tự động thưởng thêm tới +5%",
+  },
+  {
+    icon: Headphones,
+    text: "Hỗ trợ kỹ thuật trực tuyến 24/7",
+  },
 ];
 
 export default function LiveOrderTicker() {
   return (
-    <div className="bg-slate-100/90 dark:bg-[#0b1222] border-b border-slate-200/80 dark:border-white/5 py-1.5 sm:py-2 overflow-hidden text-xs text-slate-600 dark:text-slate-300 print:hidden select-none transition-colors">
+    <div className="bg-slate-100/90 dark:bg-[#0b1222] border-b border-slate-200/80 dark:border-white/5 py-1.5 overflow-hidden text-xs text-slate-600 dark:text-slate-300 print:hidden select-none transition-colors">
       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 flex items-center gap-2.5 sm:gap-3">
-        {/* Badge */}
-        <div className="flex items-center gap-1.5 font-bold text-amber-600 dark:text-amber-400 shrink-0 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/30 dark:border-amber-500/20 text-[11px]">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-400 animate-pulse" />
-          <Flame className="w-3 h-3 text-amber-500 dark:text-amber-400" />
-          <span className="whitespace-nowrap">Giao dịch mới</span>
+        {/* Status Indicator Badge */}
+        <div className="flex items-center gap-1.5 font-medium text-emerald-600 dark:text-emerald-400 shrink-0 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/30 dark:border-emerald-500/20 text-[11px]">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+          </span>
+          <span className="whitespace-nowrap font-mono font-semibold">VietQR 24/7 Active</span>
         </div>
 
-        {/* Marquee Track with Smooth Fade Edges */}
+        {/* Marquee Track with Fade Edges */}
         <div className="relative overflow-hidden w-full [mask-image:linear-gradient(to_right,transparent_0,black_28px,black_calc(100%-28px),transparent_100%)]">
           <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-slate-100 dark:from-[#0b1222] to-transparent z-10" />
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-slate-100 dark:from-[#0b1222] to-transparent z-10" />
 
-          <div className="animate-marquee flex items-center gap-8 text-[11px] font-mono">
-            {INITIAL_TRANSACTIONS.concat(INITIAL_TRANSACTIONS).map((tx, idx) => (
-              <span key={idx} className="flex items-center gap-1.5 whitespace-nowrap text-slate-600 dark:text-slate-300">
-                {tx.type === "TOPUP" ? (
-                  <>
-                    <Zap className="w-3 h-3 text-emerald-500 dark:text-emerald-400 shrink-0" />
-                    <span>Khách <b className="text-emerald-600 dark:text-emerald-400 font-semibold">{tx.phone}</b> vừa {tx.item}</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="text-blue-500 dark:text-blue-400">🔥</span>
-                    <span>Khách <b className="text-blue-600 dark:text-blue-400 font-semibold">{tx.phone}</b> vừa mua <b className="text-slate-900 dark:text-white font-semibold">{tx.item}</b></span>
-                  </>
-                )}
-                <span className="text-slate-400 dark:text-slate-500 text-[10px]">• {tx.time}</span>
-              </span>
-            ))}
+          <div className="animate-marquee flex items-center gap-8 text-[11px]">
+            {PLATFORM_STATUS_NOTICES.concat(PLATFORM_STATUS_NOTICES).map((notice, idx) => {
+              const Icon = notice.icon;
+              return (
+                <span
+                  key={idx}
+                  className="flex items-center gap-1.5 whitespace-nowrap text-slate-700 dark:text-slate-200"
+                >
+                  <Icon className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span>{notice.text}</span>
+                  <span className="text-slate-400 dark:text-slate-600 text-[10px]">•</span>
+                </span>
+              );
+            })}
           </div>
+        </div>
+
+        {/* Desktop SLA Badge */}
+        <div className="hidden lg:flex items-center gap-1.5 shrink-0 text-[11px] font-mono text-slate-500 dark:text-slate-400 pl-2 border-l border-slate-200 dark:border-zinc-800">
+          <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
+          <span>SLA: 100% Tự động</span>
         </div>
       </div>
     </div>

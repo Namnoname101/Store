@@ -14,7 +14,7 @@ import {
   Clock,
 } from "lucide-react";
 
-const PRESET_AMOUNTS = [20000, 50000, 100000, 200000, 500000, 1000000];
+const PRESET_AMOUNTS = [50000, 100000, 200000, 500000, 1000000, 2000000];
 
 export default function TopupClient() {
   const [selectedAmount, setSelectedAmount] = useState<number>(50000);
@@ -99,45 +99,45 @@ export default function TopupClient() {
 
   if (!user) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-12">
-        <div className="relative overflow-hidden rounded-3xl border border-slate-200 dark:border-zinc-800/80 bg-white dark:bg-[#0b0f19] p-8 sm:p-10 shadow-2xl text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 mb-5 border border-indigo-200/50 dark:border-indigo-900">
+      <div className="max-w-2xl mx-auto px-4 py-12 text-foreground">
+        <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-8 sm:p-10 shadow-xs text-center text-card-foreground">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-5 border border-primary/20">
             <Wallet className="h-8 w-8" />
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
             Nạp tiền vào tài khoản
           </h1>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+          <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
             Hệ thống nạp tiền tự động qua VietQR 24/7, cộng số dư ví KhoDEE tức thì trong 3-5 giây để thanh toán 1 chạm.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href="/login?callbackUrl=/topup"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-sm shadow-blue-500/25 px-6 py-3 text-sm font-bold transition-all shadow-md"
+              className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs px-6 py-3 text-sm font-bold transition-all active:scale-95"
             >
               <span>Đăng nhập để nạp tiền</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/register?callbackUrl=/topup"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-zinc-800/80 bg-slate-50 dark:bg-slate-800 px-6 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-muted/40 hover:bg-muted px-6 py-3 text-sm font-semibold text-foreground transition-colors"
             >
               <span>Đăng ký tài khoản</span>
             </Link>
           </div>
 
           {/* Guest Direct Buy Notice */}
-          <div className="mt-8 pt-6 border-t border-slate-100 dark:border-zinc-800/80 text-xs text-slate-500">
+          <div className="mt-8 pt-6 border-t border-border text-xs text-muted-foreground">
             <p>
               💡 <strong>Lưu ý:</strong> Bạn không bắt buộc phải tạo tài khoản ví để mua hàng. Bạn có thể chọn sản phẩm và thanh toán trực tiếp qua mã VietQR tại trang chủ.
             </p>
             <Link
               href="/#catalog"
-              className="inline-block mt-3 text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+              className="min-h-[44px] inline-flex items-center mt-3 text-primary font-semibold hover:underline"
             >
-              Xem danh mục sản phẩm & mua ngay →
+              Xem danh mục sản phẩm &amp; mua ngay →
             </Link>
           </div>
         </div>
@@ -146,30 +146,30 @@ export default function TopupClient() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="max-w-3xl mx-auto px-4 py-8 text-foreground">
       {/* Balance Banner */}
-      <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 dark:border-zinc-800/80 bg-white/95 dark:bg-gradient-to-r dark:from-slate-900 dark:via-slate-900/95 dark:to-slate-950 p-6 sm:p-8 shadow-lg mb-8 transition-colors">
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-xs mb-8 transition-colors text-card-foreground">
         <div className="absolute top-0 right-0 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-1 font-mono">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1 font-mono">
               <Wallet className="h-3.5 w-3.5" />
               <span>Ví Thành Viên KhoDEE</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-              Xin chào, <span className="text-indigo-600 dark:text-indigo-400 font-extrabold">{user?.username}</span>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">
+              Xin chào, <span className="text-primary font-extrabold">{user?.username}</span>
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               Nạp tiền qua VietQR tự động cộng số dư trong 3 giây. Mua mọi dịch vụ 1 chạm.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 bg-slate-50 dark:bg-[#131926] border border-slate-200 dark:border-zinc-800/80 rounded-xl px-4 py-3">
+          <div className="flex items-center gap-3 bg-muted/40 border border-border rounded-xl px-4 py-3">
             <div className="h-10 w-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
               <Wallet className="h-5 w-5" />
             </div>
             <div>
-              <div className="text-xs text-slate-600 dark:text-slate-400 uppercase font-semibold">Số dư khả dụng</div>
+              <div className="text-xs text-muted-foreground uppercase font-semibold">Số dư khả dụng</div>
               <div className="text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400 font-mono">
                 {user?.balance.toLocaleString("vi-VN")}đ
               </div>
@@ -179,20 +179,20 @@ export default function TopupClient() {
       </div>
 
       {/* Topup Form Card */}
-      <div className="rounded-2xl border border-slate-200/90 dark:border-zinc-800/80 bg-white/95 dark:bg-[#0b0f19]/80 p-6 sm:p-8 shadow-lg backdrop-blur-md transition-colors">
-        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-200 dark:border-zinc-800/80">
-          <div className="h-9 w-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+      <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-xs transition-colors text-card-foreground">
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
+          <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
             <CreditCard className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Nạp tiền vào ví qua VietQR</h2>
-            <p className="text-xs text-slate-600 dark:text-slate-400">Chuyển khoản 24/7 từ mọi ngân hàng hoặc ví MoMo/ZaloPay</p>
+            <h2 className="text-lg font-bold text-foreground">Nạp tiền vào ví qua VietQR</h2>
+            <p className="text-xs text-muted-foreground">Chuyển khoản 24/7 từ mọi ngân hàng hoặc ví MoMo/ZaloPay</p>
           </div>
         </div>
 
         {error && (
-          <div className="mb-6 flex items-center gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-sm text-red-400">
-            <AlertCircle className="h-5 w-5 shrink-0 text-red-400" />
+          <div className="mb-6 flex items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/10 p-3.5 text-sm text-destructive">
+            <AlertCircle className="h-5 w-5 shrink-0" />
             <span>{error}</span>
           </div>
         )}
@@ -200,7 +200,7 @@ export default function TopupClient() {
         <form onSubmit={handleCreateDeposit} className="space-y-6">
           {/* Preset Buttons */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-3">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-foreground mb-3">
               Chọn nhanh số tiền nạp
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
@@ -211,10 +211,10 @@ export default function TopupClient() {
                     key={amt}
                     type="button"
                     onClick={() => handleSelectPreset(amt)}
-                    className={`flex items-center justify-center py-3 px-4 rounded-xl border text-sm font-semibold transition-all cursor-pointer ${
+                    className={`min-h-[44px] flex items-center justify-center py-3 px-4 rounded-xl border text-sm font-semibold transition-all cursor-pointer ${
                       isSelected
-                        ? "border-blue-600 bg-blue-600 text-white shadow-sm shadow-blue-500/25 ring-2 ring-blue-500/30 font-bold"
-                        : "border-slate-200 dark:border-zinc-800/80 bg-slate-50 dark:bg-[#131926] text-slate-700 dark:text-slate-300 hover:border-indigo-400 dark:hover:border-slate-700 hover:bg-white dark:hover:bg-slate-900"
+                        ? "border-primary bg-primary text-primary-foreground shadow-xs ring-2 ring-primary/20 font-bold"
+                        : "border-border bg-card text-foreground hover:bg-muted/50"
                     }`}
                   >
                     {amt.toLocaleString("vi-VN")}đ
@@ -226,7 +226,7 @@ export default function TopupClient() {
 
           {/* Custom Amount Input */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-foreground mb-2">
               Hoặc nhập số tiền khác (Tối thiểu 20.000đ)
             </label>
             <div className="relative">
@@ -235,28 +235,28 @@ export default function TopupClient() {
                 value={customAmount ? parseInt(customAmount, 10).toLocaleString("vi-VN") : ""}
                 onChange={handleCustomChange}
                 placeholder="Ví dụ: 75.000"
-                className="w-full rounded-xl border border-slate-200 dark:border-zinc-800/80 bg-slate-50 dark:bg-[#131926] py-3 pl-4 pr-12 text-base font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full min-h-[44px] rounded-xl border border-input bg-background py-3 pl-4 pr-12 text-base font-bold text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
               />
-              <span className="absolute right-4 top-3.5 text-sm font-semibold text-slate-400">
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-muted-foreground">
                 VND
               </span>
             </div>
           </div>
 
           {/* Value Summary Box */}
-          <div className="rounded-xl border border-slate-200 dark:border-zinc-800/80/80 bg-slate-50 dark:bg-[#131926] p-4 space-y-2 text-xs text-slate-700 dark:text-slate-300">
+          <div className="rounded-xl border border-border bg-muted/40 p-4 space-y-2 text-xs text-foreground">
             <div className="flex justify-between items-center">
-              <span className="text-slate-600 dark:text-slate-400">Số tiền nạp vào ví:</span>
+              <span className="text-muted-foreground">Số tiền nạp vào ví:</span>
               <span className="text-base font-bold text-emerald-600 dark:text-emerald-400 font-mono">
                 {selectedAmount ? selectedAmount.toLocaleString("vi-VN") + "đ" : "0đ"}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-slate-600 dark:text-slate-400">Thời gian xử lý:</span>
-              <span className="text-slate-900 dark:text-slate-200 font-semibold">Tự động 3 - 5 giây</span>
+              <span className="text-muted-foreground">Thời gian xử lý:</span>
+              <span className="font-semibold text-foreground">Tự động 3 - 5 giây</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-slate-600 dark:text-slate-400">Phí nạp tiền:</span>
+              <span className="text-muted-foreground">Phí nạp tiền:</span>
               <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Miễn phí 0đ</span>
             </div>
           </div>
@@ -265,10 +265,10 @@ export default function TopupClient() {
           <button
             type="submit"
             disabled={submitting || selectedAmount < 20000}
-            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-600/25 hover:from-emerald-500 hover:to-teal-400 focus:outline-none disabled:opacity-50 transition-all cursor-pointer"
+            className="w-full min-h-[44px] flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary/90 py-3.5 text-sm font-bold text-primary-foreground shadow-xs disabled:opacity-50 transition-all cursor-pointer active:scale-95"
           >
             {submitting ? (
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
             ) : (
               <>
                 <QrCode className="h-4 w-4" />
@@ -280,13 +280,13 @@ export default function TopupClient() {
         </form>
 
         {/* Security badges */}
-        <div className="mt-6 pt-6 border-t border-slate-200 dark:border-zinc-800/80 grid grid-cols-2 gap-4 text-xs text-slate-600 dark:text-slate-400 text-center">
+        <div className="mt-6 pt-6 border-t border-border grid grid-cols-2 gap-4 text-xs text-muted-foreground text-center">
           <div className="flex items-center justify-center gap-1.5">
             <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             <span>Đối soát tự động 24/7</span>
           </div>
           <div className="flex items-center justify-center gap-1.5">
-            <Clock className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+            <Clock className="h-4 w-4 text-primary" />
             <span>Cộng tiền tức thì</span>
           </div>
         </div>

@@ -83,12 +83,40 @@ export async function GET(
       isUserOwner ||
       (Boolean(token) && token === order.accessToken && !isTokenExpired);
 
+    let paidAmount = order.status === "PAID" ? order.totalAmount : 0;
+    let remainingAmount = order.status === "PAID" ? 0 : order.totalAmount;
+    let deltaVietQrUrl: string | null = null;
+
+    if (order.reconciliationStatus === "UNDERPAID" && order.reconciliationNote) {
+      const matchReceived = order.reconciliationNote.match(/Đã nhận:\s*([\d.,]+)đ/);
+      const matchDiff = order.reconciliationNote.match(/Chuyển thiếu\s*([\d.,]+)đ/);
+      if (matchDiff) {
+        const rawDiff = parseInt(matchDiff[1].replace(/[.,]/g, ""), 10);
+        if (!isNaN(rawDiff) && rawDiff > 0) {
+          remainingAmount = rawDiff;
+        }
+      }
+      if (matchReceived) {
+        const rawRecv = parseInt(matchReceived[1].replace(/[.,]/g, ""), 10);
+        if (!isNaN(rawRecv) && rawRecv > 0) {
+          paidAmount = rawRecv;
+        }
+      }
+
+      const bankId = process.env.BANK_ID || "MB";
+      const bankAccountNo = process.env.BANK_ACCOUNT_NO || "0987654321";
+      deltaVietQrUrl = `https://img.vietqr.io/image/${bankId}-${bankAccountNo}-compact2.png?amount=${remainingAmount}&addInfo=${encodeURIComponent(order.orderCode)}`;
+    }
+
     return NextResponse.json({
       status: order.status,
       upstreamStatus: order.upstreamStatus,
       reconciliationStatus: order.reconciliationStatus,
       reconciliationNote: order.reconciliationNote,
       totalAmount: order.totalAmount,
+      paidAmount,
+      remainingAmount,
+      deltaVietQrUrl,
       refundInfo: isTokenValid && order.refundInfo ? JSON.parse(order.refundInfo) : null,
       paidAt: order.paidAt ?? null,
       deliveredItems: isTokenValid ? (order.deliveredItems ?? []) : [],

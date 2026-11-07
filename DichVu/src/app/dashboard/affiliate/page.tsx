@@ -143,18 +143,18 @@ export default function AffiliateDashboardPage() {
   const shareUrl = `${origin}/?coupon=${data.affiliateCode}`;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-emerald-500 selection:text-black pb-16">
+    <div className="min-h-screen bg-slate-50/60 dark:bg-[#0b0f19] text-slate-900 dark:text-zinc-100 pb-16">
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-850 pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/90 dark:border-zinc-800/80 pb-6">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Bảng Quản Lý CTV</h1>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Bảng Quản Lý CTV</h1>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                 {data.affiliateTier}
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
               Theo dõi lượt bán, hoa hồng tích lũy và rút tiền về tài khoản ngân hàng.
             </p>
           </div>
@@ -169,7 +169,7 @@ export default function AffiliateDashboardPage() {
             </button>
             <Link
               href="/ctv"
-              className="px-4 py-2.5 rounded-xl font-medium text-xs bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition-colors"
+              className="px-4 py-2.5 rounded-xl font-semibold text-xs bg-slate-50 dark:bg-[#131926] hover:bg-slate-100 dark:hover:bg-[#1c2538] text-slate-700 dark:text-zinc-300 border border-slate-200/90 dark:border-zinc-800/90 transition-colors"
             >
               Thể lệ & Bảng giá
             </Link>
@@ -178,7 +178,7 @@ export default function AffiliateDashboardPage() {
 
         {/* 4 Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-850 space-y-2">
+          <div className="p-5 rounded-2xl bg-white/95 dark:bg-[#131926] border border-slate-200/90 dark:border-zinc-800/80 shadow-xs space-y-2">
             <div className="flex items-center justify-between text-slate-400">
               <span className="text-xs font-medium">Số Dư Hoa Hồng Khả Dụng</span>
               <Wallet className="w-4 h-4 text-emerald-400" />
@@ -191,12 +191,12 @@ export default function AffiliateDashboardPage() {
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-850 space-y-2">
+          <div className="p-5 rounded-2xl bg-white/95 dark:bg-[#131926] border border-slate-200/90 dark:border-zinc-800/80 shadow-xs space-y-2">
             <div className="flex items-center justify-between text-slate-400">
               <span className="text-xs font-medium">Tổng Hoa Hồng Đã Nhận</span>
               <TrendingUp className="w-4 h-4 text-blue-400" />
             </div>
-            <div className="text-2xl font-black text-white">
+            <div className="text-2xl font-black text-slate-900 dark:text-white">
               {data.totalCommission.toLocaleString("vi-VN")}đ
             </div>
             <div className="text-[11px] text-slate-500">
@@ -204,12 +204,12 @@ export default function AffiliateDashboardPage() {
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-850 space-y-2">
+          <div className="p-5 rounded-2xl bg-white/95 dark:bg-[#131926] border border-slate-200/90 dark:border-zinc-800/80 shadow-xs space-y-2">
             <div className="flex items-center justify-between text-slate-400">
               <span className="text-xs font-medium">Số Đơn Giới Thiệu</span>
               <ShoppingBag className="w-4 h-4 text-purple-400" />
             </div>
-            <div className="text-2xl font-black text-white">
+            <div className="text-2xl font-black text-slate-900 dark:text-white">
               {data.totalAffOrders} đơn
             </div>
             <div className="text-[11px] text-slate-500">
@@ -217,7 +217,7 @@ export default function AffiliateDashboardPage() {
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-850 space-y-2">
+          <div className="p-5 rounded-2xl bg-white/95 dark:bg-[#131926] border border-slate-200/90 dark:border-zinc-800/80 shadow-xs space-y-2">
             <div className="flex items-center justify-between text-slate-400">
               <span className="text-xs font-medium">Cấp Bậc CTV</span>
               <Award className="w-4 h-4 text-amber-400" />
@@ -236,10 +236,10 @@ export default function AffiliateDashboardPage() {
         </div>
 
         {/* Affiliate Link & Code Box */}
-        <div className="p-6 rounded-3xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-900 border border-emerald-500/20 space-y-4">
+        <div className="p-6 rounded-3xl bg-white/95 dark:bg-[#131926] border border-slate-200/90 dark:border-zinc-800/80 shadow-xs space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-emerald-400" />
                 <span>Mã Giảm Giá & Đường Dẫn Chia Sẻ Của Bạn</span>
               </h2>
@@ -251,11 +251,11 @@ export default function AffiliateDashboardPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
             {/* Coupon Code Box */}
-            <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+            <div className="p-4 rounded-2xl bg-slate-50/90 dark:bg-[#0b0f19] border border-slate-200/90 dark:border-zinc-800/90 space-y-2">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
                 Mã Giảm Giá Khách Nhập (Voucher 5%)
               </span>
-              <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-900 border border-slate-800">
+              <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-white dark:bg-[#131926] border border-slate-200/90 dark:border-zinc-800/80">
                 <code className="text-base font-black text-emerald-400 tracking-wider font-mono">
                   {data.affiliateCode}
                 </code>
@@ -271,11 +271,11 @@ export default function AffiliateDashboardPage() {
             </div>
 
             {/* Direct Referral Link Box */}
-            <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+            <div className="p-4 rounded-2xl bg-slate-50/90 dark:bg-[#0b0f19] border border-slate-200/90 dark:border-zinc-800/90 space-y-2">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
                 Đường Dẫn Mua Hàng (Tự động áp mã)
               </span>
-              <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-900 border border-slate-800">
+              <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-white dark:bg-[#131926] border border-slate-200/90 dark:border-zinc-800/80">
                 <span className="text-xs text-slate-300 truncate font-mono">
                   {shareUrl}
                 </span>
@@ -295,8 +295,8 @@ export default function AffiliateDashboardPage() {
         {/* 2 Tables: Commission History & Withdrawal Requests */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Commission History */}
-          <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-850 space-y-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <div className="p-6 rounded-3xl bg-white/95 dark:bg-[#0b0f19] border border-slate-200/90 dark:border-zinc-800/80 shadow-xs space-y-4">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-emerald-400" />
               <span>Lịch Sử Nhận Hoa Hồng Gần Nhất</span>
             </h3>
@@ -306,11 +306,11 @@ export default function AffiliateDashboardPage() {
                 Chưa có đơn hàng nào phát sinh hoa hồng. Hãy đăng Story/Note FB để kiếm đơn đầu tiên nhé!
               </div>
             ) : (
-              <div className="divide-y divide-slate-800/60">
+              <div className="divide-y divide-slate-100 dark:divide-zinc-800/60">
                 {data.recentCommissions.map((item: any) => (
                   <div key={item.id} className="py-3 flex items-center justify-between gap-3 text-xs">
                     <div className="space-y-0.5">
-                      <div className="font-semibold text-white">
+                      <div className="font-semibold text-slate-900 dark:text-white">
                         {item.description}
                       </div>
                       <div className="text-[11px] text-slate-500">
@@ -327,8 +327,8 @@ export default function AffiliateDashboardPage() {
           </div>
 
           {/* Recent Withdrawal Requests */}
-          <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-850 space-y-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <div className="p-6 rounded-3xl bg-white/95 dark:bg-[#0b0f19] border border-slate-200/90 dark:border-zinc-800/80 shadow-xs space-y-4">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <CreditCard className="w-4 h-4 text-blue-400" />
               <span>Yêu Cầu Rút Tiền Gần Nhất</span>
             </h3>
@@ -338,11 +338,11 @@ export default function AffiliateDashboardPage() {
                 Chưa có yêu cầu rút tiền nào. Số dư từ 50.000đ có thể bấm &quot;Yêu Cầu Rút Tiền&quot;.
               </div>
             ) : (
-              <div className="divide-y divide-slate-800/60">
+              <div className="divide-y divide-slate-100 dark:divide-zinc-800/60">
                 {data.recentWithdrawals.map((item: any) => (
                   <div key={item.id} className="py-3 flex items-center justify-between gap-3 text-xs">
                     <div className="space-y-0.5">
-                      <div className="font-semibold text-white flex items-center gap-2">
+                      <div className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
                         <span>{item.withdrawalCode}</span>
                         <span className="text-[11px] text-slate-400">({item.bankName})</span>
                       </div>

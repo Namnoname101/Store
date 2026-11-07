@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Zap,
@@ -23,6 +23,7 @@ import { useCart } from "@/contexts/CartContext";
 interface ProductPurchaseBoxProps {
   productId: string;
   price: number;
+  originalPrice?: number | null;
   stockCount: number;
   productTitle: string;
   slug?: string;
@@ -39,6 +40,7 @@ interface ProductPurchaseBoxProps {
 export default function ProductPurchaseBox({
   productId,
   price,
+  originalPrice,
   stockCount,
   productTitle,
   slug,
@@ -272,17 +274,18 @@ export default function ProductPurchaseBox({
   const validateTargetLink = (link: string): string | null => {
     const trimmed = link.trim();
     if (!trimmed) return "Vui lòng nhập đường link mục tiêu.";
-    if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) {
+    const lower = trimmed.toLowerCase();
+    if (!lower.startsWith("http://") && !lower.startsWith("https://")) {
       return "Đường link phải bắt đầu bằng https:// hoặc http://";
     }
-    if (isTikTok && !trimmed.toLowerCase().includes("tiktok.com")) {
+    if (isTikTok && !lower.includes("tiktok.com")) {
       return "Vui lòng nhập đúng đường link TikTok (chứa tiktok.com).";
     }
     if (
       isFacebook &&
-      !trimmed.toLowerCase().includes("facebook.com") &&
-      !trimmed.toLowerCase().includes("fb.watch") &&
-      !trimmed.toLowerCase().includes("fb.com")
+      !lower.includes("facebook.com") &&
+      !lower.includes("fb.watch") &&
+      !lower.includes("fb.com")
     ) {
       return "Vui lòng nhập đúng đường link Facebook (chứa facebook.com).";
     }
@@ -455,73 +458,103 @@ export default function ProductPurchaseBox({
     }
   };
 
+  const discountPercent =
+    originalPrice && originalPrice > price
+      ? Math.round(((originalPrice - price) / originalPrice) * 100)
+      : 0;
+
   const quickChips =
     effectiveMin >= 500
       ? [500, 1000, 2000, 5000, 10000]
       : [100, 500, 1000, 2000, 5000];
 
   return (
-    <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xl">
-      {/* Price summary */}
-      <div className="mb-6 pb-6 border-b border-slate-100 dark:border-slate-800">
-        <div className="text-xs uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-1">
-          {isCustomQuantity ? "Đơn giá theo lượt" : "Đơn giá sản phẩm"}
-        </div>
-        <div className="flex items-baseline gap-2">
-          <span className="text-3xl font-extrabold text-blue-600 dark:text-blue-400 tracking-tight">
-            {formatVND(price)}
-          </span>
-          <span className="text-xs text-slate-500">
-            {isCustomQuantity ? `/ 1 ${unitLabel}` : "/ 1 sản phẩm"}
-          </span>
-        </div>
-      </div>
-
-      {/* Stock status banner */}
-      <div className="mb-5">
-        {isCustomQuantity ? (
-          <div className="flex items-center gap-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/30 px-3 py-2 text-xs font-medium text-emerald-800 dark:text-emerald-300">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            <span>Dịch vụ tự động — Khởi tạo sau khi thanh toán</span>
+    <>
+      <div id="purchase-box" className="rounded-2xl border border-border bg-card text-card-foreground p-6 shadow-xl">
+        {/* Price summary */}
+        <div className="mb-6 pb-6 border-b border-border">
+          <div className="text-xs uppercase tracking-wider font-semibold text-muted-foreground mb-1">
+            {isCustomQuantity ? "Đơn giá theo lượt" : "Đơn giá sản phẩm"}
           </div>
-        ) : inStock ? (
-          <div className="flex items-center justify-between rounded-xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-500/30 px-3.5 py-2 text-xs font-medium text-emerald-800 dark:text-emerald-300">
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span>
-                {allowsManualFulfillment || categorySlug === "ai-api" || categorySlug === "ai" || productTitle.toLowerCase().includes("api") || productTitle.toLowerCase().includes("codex") || effectiveStock >= 99999 ? (
-                  <>Dịch vụ tự động — Cấp phát 24/7 tức thì</>
-                ) : (
-                  <>
-                    Kho sẵn: <strong>{effectiveStock}</strong> slot {isLiveChecked ? "(Live Telegram)" : ""}
-                  </>
-                )}
-              </span>
-            </div>
-            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold uppercase">Sẵn sàng</span>
-          </div>
-        ) : allowsManualFulfillment ? (
-          <div className="flex items-center gap-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-500/30 px-3 py-2 text-xs font-medium text-amber-800 dark:text-amber-300">
-            <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-            <span>
-              Kho sẵn tạm hết — <strong>Cấp mã thủ công trong 5 - 15 phút</strong> sau thanh toán
+          <div className="flex items-baseline gap-2.5 flex-wrap">
+            <span className="text-3xl font-extrabold text-primary tracking-tight font-mono">
+              {formatVND(price)}
             </span>
+            {isCustomQuantity ? (
+              <span className="text-xs text-muted-foreground">/ 1 {unitLabel}</span>
+            ) : (
+              <span className="text-xs text-muted-foreground">/ 1 sản phẩm</span>
+            )}
+            {originalPrice && originalPrice > price && (
+              <span className="text-base text-muted-foreground line-through font-mono">
+                {formatVND(originalPrice)}
+              </span>
+            )}
+            {discountPercent > 0 && (
+              <span className="rounded-lg bg-destructive/15 border border-destructive/30 px-2 py-0.5 text-xs font-bold font-mono text-destructive">
+                -{discountPercent}%
+              </span>
+            )}
           </div>
-        ) : (
-          <div className="flex items-center justify-between rounded-xl bg-rose-50/90 dark:bg-rose-950/40 border border-rose-500/30 px-3.5 py-2 text-xs font-medium text-rose-700 dark:text-rose-400">
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-rose-500" />
-              <span>Tạm hết hàng tại nhà cung cấp</span>
-            </div>
-            <span className="text-xs text-rose-600 dark:text-rose-400 font-semibold uppercase">Hết slot</span>
-          </div>
-        )}
-      </div>
+        </div>
 
-      {/* Form */}
+        {/* 3-Tier Stock status banner */}
+        <div className="mb-5">
+          {isCustomQuantity ? (
+            <div className="flex items-center gap-2 rounded-xl bg-accent/10 border border-accent/30 px-3.5 py-2 text-xs font-medium text-accent">
+              <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
+              <span>Dịch vụ tự động — Khởi tạo tức thì sau khi thanh toán</span>
+            </div>
+          ) : inStock ? (
+            effectiveStock > 5 ? (
+              <div className="flex items-center justify-between rounded-xl bg-accent/10 border border-accent/30 px-3.5 py-2 text-xs font-medium text-accent">
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+                  </span>
+                  <span>
+                    {allowsManualFulfillment || categorySlug === "ai-api" || categorySlug === "ai" || productTitle.toLowerCase().includes("api") || productTitle.toLowerCase().includes("codex") || effectiveStock >= 99999 ? (
+                      <>Dịch vụ tự động — Cấp phát 24/7 tức thì</>
+                    ) : (
+                      <>
+                        Kho sẵn: <strong>{effectiveStock}</strong> slot {isLiveChecked ? "(Live)" : ""}
+                      </>
+                    )}
+                  </span>
+                </div>
+                <span className="text-xs text-accent font-semibold uppercase">Sẵn hàng</span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between rounded-xl bg-amber-500/10 border border-amber-500/30 px-3.5 py-2 text-xs font-medium text-amber-600 dark:text-amber-400">
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                  <span>
+                    Sắp hết hàng: Chỉ còn <strong>{effectiveStock}</strong> slot
+                  </span>
+                </div>
+                <span className="text-xs text-amber-600 dark:text-amber-400 font-semibold uppercase">Còn ít</span>
+              </div>
+            )
+          ) : allowsManualFulfillment ? (
+            <div className="flex items-center gap-2 rounded-xl bg-amber-500/10 border border-amber-500/30 px-3 py-2 text-xs font-medium text-amber-600 dark:text-amber-400">
+              <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+              <span>
+                Kho sẵn tạm hết — <strong>Cấp mã thủ công trong 5 - 15 phút</strong> sau thanh toán
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between rounded-xl bg-destructive/10 border border-destructive/30 px-3.5 py-2 text-xs font-medium text-destructive">
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-destructive" />
+                <span>Tạm hết hàng tại nhà cung cấp</span>
+              </div>
+              <span className="text-xs text-destructive font-semibold uppercase">Hết hàng</span>
+            </div>
+          )}
+        </div>
+
+        {/* Form */}
       <form onSubmit={handleCheckout} className="space-y-4 sm:space-y-5">
         {/* Quantity Selector */}
         {isCustomQuantity ? (
@@ -554,7 +587,7 @@ export default function ProductPurchaseBox({
                     const val = parseInt(e.target.value, 10);
                     setQuantity(isNaN(val) ? 0 : val);
                   }}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2.5 px-4 text-base font-bold text-slate-900 dark:text-white focus:border-blue-600 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full rounded-xl border border-slate-200 dark:border-zinc-800/80 bg-slate-50 dark:bg-[#131926] py-2.5 px-4 text-base font-bold text-slate-900 dark:text-white focus:border-blue-600 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                   placeholder={`Tối thiểu ${effectiveMin}`}
                 />
               </div>
@@ -563,7 +596,7 @@ export default function ProductPurchaseBox({
                 type="button"
                 disabled={isLoading || quantity <= effectiveMin}
                 onClick={() => handleQuantityChange(-100)}
-                className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-750 disabled:opacity-40 transition-colors"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 dark:border-zinc-800/80 bg-slate-50 dark:bg-[#131926] text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-750 disabled:opacity-40 transition-colors"
                 title="Giảm 100"
               >
                 <Minus className="h-4 w-4" />
@@ -573,7 +606,7 @@ export default function ProductPurchaseBox({
                 type="button"
                 disabled={isLoading || (maxQuantity !== null && quantity >= maxQuantity)}
                 onClick={() => handleQuantityChange(100)}
-                className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-750 disabled:opacity-40 transition-colors"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 dark:border-zinc-800/80 bg-slate-50 dark:bg-[#131926] text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-750 disabled:opacity-40 transition-colors"
                 title="Tăng 100"
               >
                 <Plus className="h-4 w-4" />
@@ -595,7 +628,7 @@ export default function ProductPurchaseBox({
                       return next;
                     })
                   }
-                  className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 transition-all"
+                  className="rounded-lg border border-slate-200 dark:border-zinc-800/80 bg-white dark:bg-[#131926] px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 transition-all"
                 >
                   +{chip.toLocaleString("vi-VN")}
                 </button>
@@ -604,7 +637,7 @@ export default function ProductPurchaseBox({
                 type="button"
                 disabled={isLoading}
                 onClick={() => setQuantity(effectiveMin)}
-                className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-colors"
+                className="rounded-lg border border-slate-200 dark:border-zinc-800/80 bg-slate-100 dark:bg-[#131926] px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-colors"
               >
                 Min
               </button>
@@ -623,7 +656,7 @@ export default function ProductPurchaseBox({
         ) : (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-foreground">
                 Số lượng mua
               </label>
               {quantity >= 5 && (
@@ -634,12 +667,12 @@ export default function ProductPurchaseBox({
             </div>
 
             <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-              <div className="flex items-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-1">
+              <div className="flex items-center rounded-xl border border-border bg-secondary p-1">
                 <button
                   type="button"
-                  disabled={!canPurchase || quantity <= 1 || isLoading}
+                  disabled={!canPurchase || quantity <= effectiveMin || isLoading}
                   onClick={() => handleQuantityChange(-1)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-40"
+                  className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-foreground hover:bg-background/80 disabled:opacity-40 transition-colors"
                   aria-label="Giảm số lượng"
                 >
                   <Minus className="h-4 w-4" />
@@ -647,23 +680,26 @@ export default function ProductPurchaseBox({
 
                 <input
                   type="number"
-                  min={1}
-                  max={allowsManualFulfillment && stockCount === 0 ? 10 : stockCount}
-                  value={quantity || 1}
+                  min={effectiveMin}
+                  max={effectiveMax}
+                  value={quantity || effectiveMin}
                   disabled={!canPurchase || isLoading}
                   onChange={(e) => {
                     const val = parseInt(e.target.value, 10);
-                    if (isNaN(val)) setQuantity(1);
-                    else setQuantity(Math.max(1, Math.min(allowsManualFulfillment && stockCount === 0 ? 10 : stockCount, val)));
+                    if (isNaN(val)) setQuantity(effectiveMin);
+                    else setQuantity(Math.max(effectiveMin, Math.min(effectiveMax, val)));
                   }}
-                  className="w-12 text-center text-sm font-bold bg-transparent text-slate-900 dark:text-white border-0 focus:outline-none"
+                  onBlur={() => {
+                    setQuantity((prev) => Math.max(effectiveMin, Math.min(effectiveMax, prev || effectiveMin)));
+                  }}
+                  className="w-12 text-center text-sm font-bold bg-transparent text-foreground border-0 focus:outline-none font-mono"
                 />
 
                 <button
                   type="button"
-                  disabled={!canPurchase || quantity >= (allowsManualFulfillment && stockCount === 0 ? 10 : stockCount) || isLoading}
+                  disabled={!canPurchase || quantity >= effectiveMax || isLoading}
                   onClick={() => handleQuantityChange(1)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-40"
+                  className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-foreground hover:bg-background/80 disabled:opacity-40 transition-colors"
                   aria-label="Tăng số lượng"
                 >
                   <Plus className="h-4 w-4" />
@@ -671,17 +707,17 @@ export default function ProductPurchaseBox({
               </div>
 
               {(allowsManualFulfillment || categorySlug === "ai-api" || categorySlug === "ai" || productTitle.toLowerCase().includes("api") || productTitle.toLowerCase().includes("codex") || stockCount > 1) && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5 flex-wrap">
                   {[1, 3, 5, 10].filter(n => (allowsManualFulfillment || categorySlug === "ai-api" || categorySlug === "ai" || productTitle.toLowerCase().includes("api") || productTitle.toLowerCase().includes("codex")) ? true : n <= stockCount).map(n => (
                     <button
                       key={n}
                       type="button"
                       disabled={isLoading}
                       onClick={() => setQuantity(n)}
-                      className={`h-7 px-2 rounded-lg text-xs font-semibold border transition-all ${
+                      className={`min-h-[38px] px-2.5 rounded-xl text-xs font-semibold border transition-all ${
                         quantity === n
-                          ? "border-blue-500 bg-blue-500/10 text-blue-500"
-                          : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700"
+                          ? "border-primary bg-primary/10 text-primary font-bold"
+                          : "border-border bg-card text-foreground hover:bg-secondary"
                       }`}
                     >
                       {n}
@@ -690,8 +726,8 @@ export default function ProductPurchaseBox({
                 </div>
               )}
 
-              <div className="text-xs text-slate-500 dark:text-slate-400 ml-auto">
-                Tổng: <strong className="text-slate-900 dark:text-white text-sm">{formatVND(totalPrice)}</strong>
+              <div className="text-xs text-muted-foreground ml-auto">
+                Tổng: <strong className="text-foreground text-sm font-mono">{formatVND(totalPrice)}</strong>
               </div>
             </div>
           </div>
@@ -702,9 +738,9 @@ export default function ProductPurchaseBox({
           <div>
             <label
               htmlFor="targetLink"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
+              className="block text-xs font-semibold uppercase tracking-wider text-foreground mb-1.5"
             >
-              {targetLinkLabel} <span className="text-rose-500">*</span>
+              {targetLinkLabel} <span className="text-destructive">*</span>
             </label>
             <div className="relative">
               <input
@@ -714,12 +750,19 @@ export default function ProductPurchaseBox({
                 placeholder={targetLinkPlaceholder}
                 value={targetLink}
                 disabled={isLoading || !inStock}
-                onChange={(e) => setTargetLink(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2.5 pl-10 pr-4 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
+                onChange={(e) => {
+                  setTargetLink(e.target.value);
+                  if (errorMessage) setErrorMessage(null);
+                }}
+                className={`w-full rounded-xl border bg-secondary py-2.5 pl-10 pr-4 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 transition-all ${
+                  errorMessage && !targetLink.trim()
+                    ? "border-destructive text-destructive focus:border-destructive"
+                    : "border-border focus:border-primary"
+                }`}
               />
-              <Globe className="absolute left-3.5 top-3 h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <Globe className="absolute left-3.5 top-3 h-4 w-4 text-primary" />
             </div>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-muted-foreground">
               {targetLinkHelper}
             </p>
           </div>
@@ -763,12 +806,12 @@ export default function ProductPurchaseBox({
                       setKeyVerifyError(null);
                     }
                   }}
-                  className={`w-full rounded-xl border bg-slate-50 dark:bg-slate-800 py-2.5 pl-3.5 pr-24 text-xs font-mono text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 disabled:opacity-50 transition-all ${
+                  className={`w-full rounded-xl border bg-slate-50 dark:bg-[#131926] py-2.5 pl-3.5 pr-24 text-xs font-mono text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 disabled:opacity-50 transition-all ${
                     keyVerifyError
                       ? "border-rose-500/50 focus:border-rose-500 focus:ring-rose-500/20"
                       : verifiedKeyData && verifiedKeyData.rawKey === customerApiKey.trim()
                       ? "border-emerald-500/50 focus:border-emerald-500 focus:ring-emerald-500/20"
-                      : "border-slate-200 dark:border-slate-700 focus:border-blue-600 focus:ring-blue-500/20"
+                      : "border-slate-200 dark:border-zinc-800/80 focus:border-blue-600 focus:ring-blue-500/20"
                   }`}
                 />
 
@@ -857,7 +900,7 @@ export default function ProductPurchaseBox({
                     value={customerKeyUsername}
                     disabled={isLoading}
                     onChange={(e) => setCustomerKeyUsername(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2.5 px-3.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
+                    className="w-full rounded-xl border border-slate-200 dark:border-zinc-800/80 bg-slate-50 dark:bg-[#131926] py-2.5 px-3.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
                   />
                 </div>
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
@@ -885,7 +928,7 @@ export default function ProductPurchaseBox({
                 value={couponCode}
                 disabled={isLoading || !canPurchase || appliedCoupon !== null}
                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2 pl-9 pr-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 uppercase focus:border-blue-600 focus:outline-none font-mono"
+                className="w-full rounded-xl border border-slate-200 dark:border-zinc-800/80 bg-slate-50 dark:bg-[#131926] py-2 pl-9 pr-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 uppercase focus:border-blue-600 focus:outline-none font-mono"
               />
               <Ticket className="absolute left-3 top-2.5 h-4 w-4 text-blue-600 dark:text-blue-400" />
             </div>
@@ -894,7 +937,7 @@ export default function ProductPurchaseBox({
               <button
                 type="button"
                 onClick={handleRemoveCoupon}
-                className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center gap-1 transition-all"
+                className="px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center gap-1 transition-all"
               >
                 <CloseIcon className="h-3.5 w-3.5 text-rose-500" />
                 <span>Hủy</span>
@@ -953,19 +996,19 @@ export default function ProductPurchaseBox({
                 type="button"
                 onClick={handleAddToCart}
                 disabled={isLoading}
-                className="flex-1 flex min-h-[46px] items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 px-4 text-sm font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-all active:scale-[0.99] shadow-2xs"
+                className="flex-1 flex min-h-[46px] items-center justify-center gap-2 rounded-xl border border-border bg-secondary text-secondary-foreground hover:bg-secondary/80 py-2.5 px-4 text-sm font-semibold transition-all active:scale-[0.99] shadow-2xs"
               >
-                <ShoppingBag className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <ShoppingBag className="h-4 w-4 text-primary" />
                 <span>Thêm vào giỏ</span>
               </button>
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`flex-1 flex min-h-[46px] items-center justify-center gap-2 rounded-xl py-2.5 px-5 text-sm font-bold text-white shadow-md disabled:opacity-60 transition-all active:scale-[0.99] ${
+                className={`flex-1 flex min-h-[46px] items-center justify-center gap-2 rounded-xl py-2.5 px-5 text-sm font-bold shadow-md disabled:opacity-60 transition-all active:scale-[0.99] ${
                   !inStock && allowsManualFulfillment
-                    ? "bg-amber-600 hover:bg-amber-700 shadow-amber-600/20"
-                    : "bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 shadow-sm active:scale-[0.98]"
+                    ? "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-600/20"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm shadow-primary/25 active:scale-[0.98]"
                 }`}
               >
                 {isLoading ? (
@@ -984,7 +1027,7 @@ export default function ProductPurchaseBox({
             <button
               type="button"
               disabled
-              className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 py-3 px-6 text-sm font-semibold text-slate-400 dark:text-slate-500 cursor-not-allowed"
+              className="w-full rounded-xl bg-muted py-3 px-6 text-sm font-semibold text-muted-foreground cursor-not-allowed"
             >
               Tạm hết hàng
             </button>
@@ -993,16 +1036,87 @@ export default function ProductPurchaseBox({
       </form>
 
       {/* Basic product notes */}
-      <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-1.5 text-xs text-slate-500 dark:text-slate-400">
+      <div className="mt-5 pt-4 border-t border-border space-y-1.5 text-xs text-muted-foreground">
         <div className="flex items-center gap-2">
-          <Clock className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+          <Clock className="h-3.5 w-3.5 text-primary shrink-0" />
           <span>Thanh toán quét mã VietQR nhận thông tin tự động</span>
         </div>
         <div className="flex items-center gap-2">
-          <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+          <ShieldCheck className="h-3.5 w-3.5 text-accent shrink-0" />
           <span>Hỗ trợ kỹ thuật và bảo hành theo thời hạn gói</span>
         </div>
       </div>
     </div>
+
+    {/* Mobile Fixed Sticky Bottom Purchase Bar */}
+    <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t border-border bg-card/95 backdrop-blur-md px-4 py-3 shadow-2xl safe-area-bottom flex items-center justify-between gap-3">
+      <div className="flex flex-col min-w-0 flex-1">
+        <span className="text-xs font-semibold text-foreground truncate">
+          {productTitle}
+        </span>
+        <div className="flex items-baseline gap-1.5 flex-wrap">
+          <span className="text-base font-extrabold text-primary font-mono truncate">
+            {formatVND(netTotal)}
+          </span>
+          {originalPrice && originalPrice > price && (
+            <span className="text-xs text-muted-foreground line-through font-mono">
+              {formatVND(originalPrice * quantity)}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 shrink-0">
+        {canPurchase && (
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            disabled={isLoading}
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border border-border bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all active:scale-95"
+            title="Thêm vào giỏ"
+            aria-label="Thêm vào giỏ"
+          >
+            <ShoppingBag className="h-4 w-4 text-primary" />
+          </button>
+        )}
+
+        {canPurchase ? (
+          <button
+            type="button"
+            disabled={isLoading}
+            onClick={(e) => {
+              if (requiresLink && !targetLink.trim()) {
+                const box = document.getElementById("purchase-config-box") || document.getElementById("targetLink");
+                if (box) {
+                  box.scrollIntoView({ behavior: "smooth", block: "center" });
+                  setTimeout(() => {
+                    const input = document.getElementById("targetLink");
+                    if (input) input.focus();
+                  }, 400);
+                }
+                setErrorMessage("Vui lòng nhập đường link mục tiêu trước khi thanh toán.");
+                return;
+              }
+              handleCheckout(e);
+            }}
+            className="min-h-[44px] px-4 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs sm:text-sm flex items-center justify-center shadow-md shadow-primary/20 active:scale-95 transition-all shrink-0"
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <span>Mua ngay →</span>
+            )}
+          </button>
+        ) : (
+          <button
+            disabled
+            className="min-h-[44px] px-4 rounded-xl bg-muted text-muted-foreground font-semibold text-xs cursor-not-allowed"
+          >
+            Hết hàng
+          </button>
+        )}
+      </div>
+    </div>
+  </>
   );
 }

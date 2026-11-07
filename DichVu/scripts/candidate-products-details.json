@@ -1,0 +1,91 @@
+{
+  "dshopDetails": [
+    {
+      "cat": "cat:12",
+      "text": "🔴 6 tháng acc cấp dùng riêng | Stock: 0 | ₫150,000 · 5.81 USDT",
+      "data": "prod:12:0"
+    },
+    {
+      "cat": "cat:12",
+      "text": "🟢 Slot Youtube Premium 1 Năm BHF | Stock: Unlimited | ₫350,000 · 13.57 USDT",
+      "data": "prod:12:1"
+    },
+    {
+      "cat": "cat:12",
+      "text": "🟢 Slot Youtube Premium 3 Tháng BHF | Stock: Unlimited | ₫120,000 · 4.65 USDT",
+      "data": "prod:12:2"
+    },
+    {
+      "cat": "cat:12",
+      "text": "🟢 Slot Youtube Premium 6 Tháng BHF | Stock: Unlimited | ₫245,000 · 9.5 USDT",
+      "data": "prod:12:3"
+    },
+    {
+      "cat": "cat:12",
+      "text": "🔙 Back",
+      "data": "buy"
+    },
+    {
+      "cat": "cat:12",
+      "text": "🔄 Refresh",
+      "data": "cat:12:refresh"
+    },
+    {
+      "cat": "cat:5",
+      "text": "🟢 🔥 ElevenLabs Free 10k Credits (W24H) | Stock: 217 | ₫15,000 · 0.58 USDT",
+      "data": "prod:5:0"
+    },
+    {
+      "cat": "cat:5",
+      "text": "🔙 Back",
+      "data": "buy"
+    },
+    {
+      "cat": "cat:5",
+      "text": "🔄 Refresh",
+      "data": "cat:5:refresh"
+    },
+    {
+      "cat": "cat:13",
+      "text": "🔴 Zoom Pro 28 Ngày BHF | Stock: 0 | ₫70,000 · 2.71 USDT",
+      "data": "prod:13:0"
+    },
+    {
+      "cat": "cat:13",
+      "text": "🔴 12 tháng ( 100 người) | Stock: 0 | ₫800,000 · 31.01 USDT",
+      "data": "prod:13:1"
+    },
+    {
+      "cat": "cat:13",
+      "text": "🟢 Zoom Pro 1M (W25D) Ready Account | Stock: 22 | ₫70,000 · 2.71 USDT",
+      "data": "prod:13:2"
+    },
+    {
+      "cat": "cat:13",
+      "text": "🔙 Back",
+      "data": "buy"
+    },
+    {
+      "cat": "cat:13",
+      "text": "🔄 Refresh",
+      "data": "cat:13:refresh"
+    }
+  ],
+  "trickDetails": [
+    {
+      "cat": "Netflix",
+      "text": "𝐃𝐚𝐧𝐡 𝐦𝐮̣𝐜",
+      "data": "menu_shop"
+    },
+    {
+      "cat": "Spotify",
+      "text": "𝐃𝐚𝐧𝐡 𝐦𝐮̣𝐜",
+      "data": "menu_shop"
+    },
+    {
+      "cat": "Locket Gold",
+      "text": "𝐃𝐚𝐧𝐡 𝐦𝐮̣𝐜",
+      "data": "menu_shop"
+    }
+  ]
+}

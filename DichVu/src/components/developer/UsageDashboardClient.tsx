@@ -45,6 +45,9 @@ interface RequestLog {
   completion_tokens: number;
   total_tokens: number;
   costUsd: number;
+  latency?: number;
+  use_time?: number;
+  status?: number;
 }
 
 export default function UsageDashboardClient() {
@@ -162,14 +165,14 @@ export default function UsageDashboardClient() {
       {/* Header section */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1 text-xs font-mono font-medium text-zinc-300 shadow-2xs">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-mono font-medium text-foreground shadow-2xs">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>KhoDEE Developer Portal</span>
           </div>
-          <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
             API Usage & Real-time Logs
           </h1>
-          <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
             Theo dõi hạn mức còn lại, tỷ lệ sử dụng và lịch sử request thực tế của API Key.
           </p>
         </div>
@@ -183,47 +186,47 @@ export default function UsageDashboardClient() {
               }
             }}
             disabled={isLoading || !apiKey}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition disabled:opacity-50 shadow-2xs"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-xs font-semibold text-card-foreground hover:bg-muted/50 transition disabled:opacity-50 shadow-2xs"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
             <span>Làm mới</span>
           </button>
 
           <Link
             href="/codex"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 dark:bg-white px-3.5 py-2 text-xs font-bold text-white dark:text-zinc-950 shadow-xs hover:bg-zinc-800 dark:hover:bg-zinc-100 transition active:scale-[0.98]"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground shadow-xs hover:bg-primary/90 transition active:scale-[0.98]"
           >
-            <Zap className="h-3.5 w-3.5" />
+            <Zap className="h-4 w-4" />
             <span>Nạp Thêm Quota</span>
           </Link>
         </div>
       </div>
 
       {/* API Key input bar */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 sm:p-5 shadow-sm">
+      <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-xs">
         <form onSubmit={handleApplyKey} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="relative flex-1">
-            <Key className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
+            <Key className="absolute left-3.5 top-3.5 h-4 w-4 text-muted-foreground" />
             <input
               type="password"
               placeholder="Nhập API Key của bạn (sk-...) để xem thống kê..."
               value={inputKey}
               onChange={(e) => setInputKey(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 py-2.5 pl-10 pr-4 text-xs sm:text-sm font-mono text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:border-blue-600 focus:outline-none"
+              className="min-h-[44px] w-full rounded-xl border border-input bg-background py-2.5 pl-10 pr-4 text-xs sm:text-sm font-mono text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
           <button
             type="submit"
             disabled={isLoading || !inputKey.trim()}
-            className="rounded-xl bg-blue-600 px-5 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition shrink-0"
+            className="min-h-[44px] rounded-xl bg-primary px-6 py-2.5 text-xs sm:text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition shrink-0 inline-flex items-center justify-center"
           >
             Tra cứu
           </button>
         </form>
 
         {error && (
-          <div className="mt-3 flex items-center gap-2 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/20 p-3 text-xs text-rose-700 dark:text-rose-300">
-            <AlertTriangle className="h-4 w-4 shrink-0" />
+          <div className="mt-3 flex items-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-700 dark:text-rose-300">
+            <AlertTriangle className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
             <span>{error}</span>
           </div>
         )}
@@ -231,7 +234,7 @@ export default function UsageDashboardClient() {
 
       {/* Low credit alert if applicable */}
       {usage?.isLowCredit && (
-        <div className="rounded-2xl border border-amber-300 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-950/30 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
           <div className="flex items-start gap-3">
             <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
             <div>
@@ -245,10 +248,10 @@ export default function UsageDashboardClient() {
           </div>
           <Link
             href="/codex"
-            className="inline-flex items-center gap-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 px-4 py-2 text-xs font-bold text-white shadow transition shrink-0"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-amber-600 hover:bg-amber-700 px-5 py-2.5 text-xs font-bold text-white shadow transition shrink-0"
           >
             <span>Nạp ngay</span>
-            <ArrowUpRight className="h-3.5 w-3.5" />
+            <ArrowUpRight className="h-4 w-4" />
           </Link>
         </div>
       )}
@@ -257,17 +260,17 @@ export default function UsageDashboardClient() {
       {usage && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {/* Card 1: Balance Remaining */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <div className="rounded-2xl border border-border bg-card p-5 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              <span className="text-xs font-medium text-muted-foreground">
                 Hạn mức khả dụng
               </span>
-              <span className="rounded-lg bg-emerald-50 dark:bg-emerald-950/40 p-2 text-emerald-600 dark:text-emerald-400">
+              <span className="rounded-lg bg-emerald-500/10 p-2 text-emerald-600 dark:text-emerald-400">
                 <Database className="h-4 w-4" />
               </span>
             </div>
             <div className="mt-3">
-              <div className="text-2xl font-extrabold text-slate-900 dark:text-white">
+              <div className="text-2xl font-extrabold text-foreground">
                 ${usage.balanceUsd.toFixed(2)}
               </div>
               <div className="mt-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
@@ -277,81 +280,107 @@ export default function UsageDashboardClient() {
           </div>
 
           {/* Card 2: Used Quota */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <div className="rounded-2xl border border-border bg-card p-5 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              <span className="text-xs font-medium text-muted-foreground">
                 Đã tiêu thụ
               </span>
-              <span className="rounded-lg bg-blue-50 dark:bg-blue-950/40 p-2 text-blue-600 dark:text-blue-400">
+              <span className="rounded-lg bg-primary/10 p-2 text-primary">
                 <TrendingUp className="h-4 w-4" />
               </span>
             </div>
             <div className="mt-3">
-              <div className="text-2xl font-extrabold text-slate-900 dark:text-white">
+              <div className="text-2xl font-extrabold text-foreground">
                 ${usage.usedUsd.toFixed(2)}
               </div>
-              <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+              <div className="mt-1 text-xs text-muted-foreground">
                 {usage.usedQuota.toLocaleString("vi-VN")} Points đã dùng
               </div>
             </div>
           </div>
 
-          {/* Card 3: Consumption rate */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          {/* Card 3: Consumption rate (Swiss Tech SVG Radial Gauge) */}
+          <div className="rounded-2xl border border-border bg-card p-5 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              <span className="text-xs font-medium text-muted-foreground">
                 Tỷ lệ sử dụng
               </span>
-              <span className="rounded-lg bg-purple-50 dark:bg-purple-950/40 p-2 text-purple-600 dark:text-purple-400">
+              <span className="rounded-lg bg-purple-500/10 p-2 text-purple-600 dark:text-purple-400">
                 <Layers className="h-4 w-4" />
               </span>
             </div>
-            <div className="mt-3">
-              <div className="text-2xl font-extrabold text-slate-900 dark:text-white">
-                {usage.consumptionRate}%
+            <div className="mt-2 flex flex-col items-center justify-center">
+              <div className="relative flex items-center justify-center w-28 h-28 sm:w-32 sm:h-32">
+                <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
+                  {/* Background Arc */}
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="48"
+                    fill="transparent"
+                    stroke="currentColor"
+                    strokeWidth="10"
+                    className="text-muted/40"
+                  />
+                  {/* Animated Gauge Arc */}
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="48"
+                    fill="transparent"
+                    stroke="currentColor"
+                    strokeWidth="10"
+                    strokeDasharray={2 * Math.PI * 48}
+                    strokeDashoffset={2 * Math.PI * 48 * (1 - Math.min(100, Math.max(0, usage.consumptionRate)) / 100)}
+                    strokeLinecap="round"
+                    className={`transition-all duration-700 ease-out ${
+                      usage.consumptionRate > 85
+                        ? "text-rose-500"
+                        : usage.consumptionRate > 60
+                        ? "text-amber-500"
+                        : "text-emerald-500"
+                    }`}
+                  />
+                </svg>
+                <div className="absolute flex flex-col items-center justify-center text-center">
+                  <span className="font-mono text-xl sm:text-2xl font-black text-foreground tracking-tight">
+                    {usage.consumptionRate}%
+                  </span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Đã dùng
+                  </span>
+                </div>
               </div>
-              <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                Tổng cấp: ${usage.totalGrantedUsd !== undefined ? usage.totalGrantedUsd.toFixed(2) : (usage.balanceUsd + usage.usedUsd).toFixed(2)}
-              </div>
-              <div className="mt-2 h-1.5 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                <div
-                  className={`h-full rounded-full ${
-                    usage.consumptionRate > 80
-                      ? "bg-rose-500"
-                      : usage.consumptionRate > 50
-                      ? "bg-amber-500"
-                      : "bg-blue-600"
-                  }`}
-                  style={{ width: `${Math.min(100, usage.consumptionRate)}%` }}
-                />
+              <div className="mt-1 text-center text-xs text-muted-foreground">
+                Tổng cấp: <strong className="text-foreground font-semibold">${usage.totalGrantedUsd !== undefined ? usage.totalGrantedUsd.toFixed(2) : (usage.balanceUsd + usage.usedUsd).toFixed(2)}</strong>
               </div>
             </div>
           </div>
 
           {/* Card 4: Key Info */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <div className="rounded-2xl border border-border bg-card p-5 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              <span className="text-xs font-medium text-muted-foreground">
                 API Key liên kết
               </span>
-              <span className="rounded-lg bg-slate-50 dark:bg-slate-800 p-2 text-slate-600 dark:text-slate-400">
+              <span className="rounded-lg bg-muted/60 p-2 text-muted-foreground">
                 <ShieldCheck className="h-4 w-4" />
               </span>
             </div>
             <div className="mt-3">
-              <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-slate-800 dark:text-slate-200">
-                <span>{usage.maskedKey}</span>
+              <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-foreground">
+                <span className="truncate">{usage.maskedKey}</span>
                 <button
                   type="button"
                   onClick={handleCopyKey}
-                  className="rounded p-1 text-slate-400 hover:text-blue-600"
+                  className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition shrink-0"
                   title="Copy masked key"
                 >
-                  {copiedKey ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                  {copiedKey ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
                 </button>
               </div>
-              <div className="mt-1 flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <div className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span>{usage.status === "ACTIVE" ? "Đang hoạt động" : usage.status}</span>
               </div>
             </div>
@@ -360,38 +389,65 @@ export default function UsageDashboardClient() {
       )}
 
       {/* Request Logs Table */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+      <div className="rounded-2xl border border-border bg-card shadow-xs overflow-hidden">
         {/* Table header / filter bar */}
-        <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="p-4 sm:p-5 border-b border-border flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Clock className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-              <span>Nhật ký Request gần đây</span>
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <Clock className="h-4 w-4 text-primary" />
+              <span>Nhật ký Request & Độ trễ thời gian thực</span>
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Hiển thị chi tiết token prompt, completion và quota points đã dùng.
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Hiển thị độ trễ phản hồi, trạng thái HTTP, token prompt/completion và quota points đã dùng.
             </p>
           </div>
 
-          <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Lọc theo model (vd: claude-5.5, gpt-6, gemini-4)..."
-              value={modelFilter}
-              onChange={(e) => setModelFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 py-1.5 pl-8 pr-3 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:border-blue-600 focus:outline-none"
-            />
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+            {/* Quick model filter pills */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              {[
+                { id: "", label: "Tất cả" },
+                { id: "claude", label: "Claude 5.5" },
+                { id: "gpt-6", label: "GPT-6" },
+                { id: "gemini", label: "Gemini 4" },
+              ].map((pill) => (
+                <button
+                  key={pill.id}
+                  type="button"
+                  onClick={() => setModelFilter(pill.id)}
+                  className={`min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-semibold transition inline-flex items-center justify-center ${
+                    modelFilter.toLowerCase() === pill.id.toLowerCase()
+                      ? "bg-primary text-primary-foreground shadow-xs"
+                      : "border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                  }`}
+                >
+                  {pill.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="relative min-w-[220px]">
+              <Search className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Lọc tên model..."
+                value={modelFilter}
+                onChange={(e) => setModelFilter(e.target.value)}
+                className="min-h-[44px] w-full rounded-xl border border-input bg-background py-2 pl-9 pr-3 text-xs text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none"
+              />
+            </div>
           </div>
         </div>
 
         {/* Table rows */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 uppercase font-semibold text-[10px] tracking-wider">
+            <thead className="bg-muted/50 text-muted-foreground uppercase font-semibold text-[10px] tracking-wider border-b border-border">
               <tr>
                 <th className="px-4 py-3">Thời gian</th>
                 <th className="px-4 py-3">Model</th>
+                <th className="px-4 py-3 text-center">Trạng thái</th>
+                <th className="px-4 py-3 text-right">Độ trễ</th>
                 <th className="px-4 py-3 text-right">Prompt Tokens</th>
                 <th className="px-4 py-3 text-right">Completion Tokens</th>
                 <th className="px-4 py-3 text-right">Tổng Tokens</th>
@@ -399,49 +455,62 @@ export default function UsageDashboardClient() {
                 <th className="px-4 py-3 text-right">Chi phí ($USD)</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-border">
               {filteredLogs.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-slate-400">
+                  <td colSpan={9} className="px-4 py-10 text-center text-muted-foreground">
                     {apiKey
                       ? "Chưa có request nào được ghi nhận hoặc không khớp bộ lọc."
                       : "Vui lòng nhập API Key phía trên để tải dữ liệu."}
                   </td>
                 </tr>
               ) : (
-                filteredLogs.map((log) => (
-                  <tr key={log.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
-                    <td className="px-4 py-3 font-mono text-slate-500 whitespace-nowrap">
-                      {new Date(log.createdAt).toLocaleString("vi-VN", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                        day: "2-digit",
-                        month: "2-digit",
-                      })}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="inline-flex rounded-lg bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 font-mono text-[11px] font-semibold text-blue-700 dark:text-blue-300">
-                        {log.model_name}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right font-mono text-slate-600 dark:text-slate-300">
-                      {log.prompt_tokens.toLocaleString("vi-VN")}
-                    </td>
-                    <td className="px-4 py-3 text-right font-mono text-slate-600 dark:text-slate-300">
-                      {log.completion_tokens.toLocaleString("vi-VN")}
-                    </td>
-                    <td className="px-4 py-3 text-right font-mono font-semibold text-slate-900 dark:text-white">
-                      {log.total_tokens.toLocaleString("vi-VN")}
-                    </td>
-                    <td className="px-4 py-3 text-right font-mono text-slate-700 dark:text-slate-300 font-medium">
-                      {log.quota.toLocaleString("vi-VN")}
-                    </td>
-                    <td className="px-4 py-3 text-right font-mono text-slate-600 dark:text-slate-300">
-                      ${log.costUsd.toFixed(4)}
-                    </td>
-                  </tr>
-                ))
+                filteredLogs.map((log) => {
+                  const latencyVal = (log as any).use_time || (log as any).latency;
+                  const latencyDisplay = latencyVal ? `${Math.round(latencyVal)}ms` : "--";
+
+                  return (
+                    <tr key={log.id} className="hover:bg-muted/30 transition">
+                      <td className="px-4 py-3 font-mono text-muted-foreground whitespace-nowrap">
+                        {new Date(log.createdAt).toLocaleString("vi-VN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          day: "2-digit",
+                          month: "2-digit",
+                        })}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="inline-flex rounded-lg bg-primary/10 border border-primary/20 px-2 py-0.5 font-mono text-[11px] font-semibold text-primary">
+                          {log.model_name}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+                          {log.status || 200} OK
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono text-xs text-muted-foreground">
+                        {latencyDisplay}
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono text-muted-foreground">
+                        {log.prompt_tokens.toLocaleString("vi-VN")}
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono text-muted-foreground">
+                        {log.completion_tokens.toLocaleString("vi-VN")}
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono font-semibold text-foreground">
+                        {log.total_tokens.toLocaleString("vi-VN")}
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono text-card-foreground font-medium">
+                        {log.quota.toLocaleString("vi-VN")}
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono text-muted-foreground">
+                        ${log.costUsd.toFixed(4)}
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -449,16 +518,17 @@ export default function UsageDashboardClient() {
 
         {/* Pagination controls */}
         {totalLogs > pageSize && (
-          <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+          <div className="p-4 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
             <div>
-              Trang <span className="font-semibold text-slate-900 dark:text-white">{page}</span> / {totalPages} (Tổng {totalLogs} logs)
+              Trang <span className="font-semibold text-foreground">{page}</span> / {totalPages} (Tổng {totalLogs} logs)
             </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="rounded-lg border border-slate-200 dark:border-slate-800 px-2.5 py-1 text-slate-600 dark:text-slate-300 disabled:opacity-40"
+                className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-xl border border-border bg-card text-foreground hover:bg-muted/40 disabled:opacity-40 transition"
+                title="Trang trước"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
@@ -466,7 +536,8 @@ export default function UsageDashboardClient() {
                 type="button"
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="rounded-lg border border-slate-200 dark:border-slate-800 px-2.5 py-1 text-slate-600 dark:text-slate-300 disabled:opacity-40"
+                className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-xl border border-border bg-card text-foreground hover:bg-muted/40 disabled:opacity-40 transition"
+                title="Trang sau"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>

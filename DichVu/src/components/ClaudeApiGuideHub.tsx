@@ -14,7 +14,13 @@ import {
   Terminal,
   X,
   Sparkles,
+  Eye,
+  EyeOff,
+  Code,
+  Layers,
+  FileCode,
 } from "lucide-react";
+import { AI_FRONTIER_MODELS, DEFAULT_CLAUDE_MODEL_ID } from "@/lib/constants/ai-models";
 
 export interface ClaudeApiGuideHubProps {
   apiKey?: string;
@@ -133,10 +139,12 @@ export default function ClaudeApiGuideHub({
   >(initialTab);
   const [osTab, setOsTab] = useState<"windows" | "mac">("windows");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [showMaskedKey, setShowMaskedKey] = useState<boolean>(false);
+  const [sdkTab, setSdkTab] = useState<"curl" | "python" | "node" | "env" | "vscode">("curl");
   const [lightboxImage, setLightboxImage] = useState<{ src: string; title: string } | null>(null);
   const [showManualSetup, setShowManualSetup] = useState<boolean>(false);
 
-  const currentKey = customKey.trim() || apiKey || "sk-ant-api03-khodee-demo-key-8888";
+  const currentKey = customKey.trim() || apiKey || "sk-ant-api03-daitruong-demo-key-8888";
   const isCustomKeyEntered = Boolean(customKey.trim() || apiKey);
 
   const handleCopy = (id: string, text: string) => {
@@ -151,10 +159,10 @@ export default function ClaudeApiGuideHub({
   "env": {
     "ANTHROPIC_AUTH_TOKEN": "${currentKey}",
     "ANTHROPIC_BASE_URL": "https://1gw.gwai.cloud",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5",
-    "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-4-5",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5-5",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5-5",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-5-5",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-5-5",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
     "API_TIMEOUT_MS": "3000000",
     "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "0",
@@ -183,15 +191,15 @@ export default function ClaudeApiGuideHub({
         },
         "authHeader": true,
         "models": [
-          { "id": "claude-opus-4-7", "name": "Clawbot Opus 4.7" },
-          { "id": "claude-sonnet-4-6", "name": "Clawbot Sonnet 4.6" }
+          { "id": "claude-opus-5-5", "name": "Clawbot Opus 5.5" },
+          { "id": "claude-sonnet-5-5", "name": "Clawbot Sonnet 5.5" }
         ]
       }
     }
   },
   "agents": {
     "defaults": {
-      "model": { "primary": "gwai/claude-opus-4-7" }
+      "model": { "primary": "gwai/claude-opus-5-5" }
     }
   }
 }`;
@@ -235,14 +243,14 @@ export default function ClaudeApiGuideHub({
   ];
 
   return (
-    <div className="w-full space-y-6 text-slate-800 dark:text-slate-200">
+    <div className="w-full space-y-6 text-foreground">
       {/* Clean API Key Input Bar */}
       {showKeyInput && (
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 sm:p-5 shadow-xs">
+        <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-xs text-card-foreground">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                <span className="text-xs font-bold text-foreground uppercase tracking-wider">
                   Mã API Key của bạn
                 </span>
                 {isCustomKeyEntered ? (
@@ -250,37 +258,49 @@ export default function ClaudeApiGuideHub({
                     Đã đồng bộ vào cấu hình
                   </span>
                 ) : (
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                  <span className="text-[11px] text-muted-foreground">
                     (Nhập key để xem cấu hình hoàn chỉnh)
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Các đoạn mã bên dưới sẽ tự động gắn mã Key này để bạn sao chép thuận tiện.
               </p>
             </div>
 
             <div className="flex items-center gap-2 sm:max-w-md w-full sm:w-auto">
-              <input
-                type="text"
-                value={customKey}
-                onChange={(e) => setCustomKey(e.target.value)}
-                placeholder="Dán mã API Key (sk-...)"
-                className="w-full sm:w-64 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-2 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-slate-900 dark:focus:border-white focus:outline-none"
-              />
+              <div className="relative flex-1 sm:w-64">
+                <input
+                  type={showMaskedKey ? "text" : "password"}
+                  value={customKey}
+                  onChange={(e) => setCustomKey(e.target.value)}
+                  placeholder="Dán mã API Key (sk-...)"
+                  className="w-full min-h-[44px] rounded-xl border border-input bg-background pr-11 pl-3 py-2 text-xs font-mono text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowMaskedKey(!showMaskedKey)}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-muted-foreground hover:text-foreground transition rounded-lg"
+                  title={showMaskedKey ? "Ẩn key" : "Hiện key"}
+                  aria-label={showMaskedKey ? "Ẩn mã API key" : "Hiện mã API key"}
+                >
+                  {showMaskedKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+
               <button
                 type="button"
                 onClick={() => handleCopy("main-key", currentKey)}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200 px-3.5 py-2 text-xs font-semibold text-white transition shrink-0 active:scale-95"
+                className="min-h-[44px] inline-flex items-center gap-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground px-3.5 py-2 text-xs font-bold shadow-xs transition shrink-0 active:scale-95"
               >
                 {copiedKey === "main-key" ? (
                   <>
-                    <Check className="h-3.5 w-3.5 text-emerald-400 dark:text-emerald-600" />
+                    <Check className="h-4 w-4 text-emerald-400" />
                     <span>Đã chép</span>
                   </>
                 ) : (
                   <>
-                    <Copy className="h-3.5 w-3.5" />
+                    <Copy className="h-4 w-4" />
                     <span>Sao chép</span>
                   </>
                 )}
@@ -291,14 +311,14 @@ export default function ClaudeApiGuideHub({
       )}
 
       {/* Main Container */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-xs overflow-hidden">
+      <div className="rounded-2xl border border-border bg-card shadow-xs overflow-hidden text-card-foreground">
         {/* Platform Selection */}
-        <div className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/40 p-3 sm:p-4">
+        <div className="border-b border-border bg-muted/40 p-3 sm:p-4">
           <div className="flex items-center justify-between mb-3 px-1">
-            <span className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wide">
+            <span className="text-xs font-bold text-foreground uppercase tracking-wide">
               Chọn nền tảng bạn muốn kết nối:
             </span>
-            <span className="text-[11px] text-slate-500 hidden sm:inline">
+            <span className="text-[11px] text-muted-foreground hidden sm:inline">
               1 API Key dùng chung được cho cả 5 nền tảng
             </span>
           </div>
@@ -312,26 +332,26 @@ export default function ClaudeApiGuideHub({
                   key={p.id}
                   type="button"
                   onClick={() => setActiveTab(p.id)}
-                  className={`flex flex-col items-start gap-2 p-3 rounded-xl border text-left transition-all ${
+                  className={`min-h-[44px] flex flex-col items-start gap-2 p-3 rounded-xl border text-left transition-all ${
                     isActive
-                      ? "bg-white dark:bg-slate-900 border-slate-900 dark:border-white shadow-sm ring-1 ring-slate-900 dark:ring-white"
-                      : "bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-600 dark:text-slate-400"
+                      ? "border-primary bg-primary/10 text-foreground shadow-xs ring-2 ring-primary/20"
+                      : "border-border bg-card hover:bg-muted/50 text-foreground"
                   }`}
                 >
                   <div className="flex items-center justify-between w-full">
                     <div className="shrink-0">
                       <Icon className="h-7 w-7" />
                     </div>
-                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground border border-border">
                       {p.badge}
                     </span>
                   </div>
 
                   <div>
-                    <div className="text-xs font-bold text-slate-900 dark:text-white">
+                    <div className="text-xs font-bold text-foreground">
                       {p.name}
                     </div>
-                    <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
+                    <div className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">
                       {p.subtitle}
                     </div>
                   </div>
@@ -352,15 +372,15 @@ export default function ClaudeApiGuideHub({
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-                      Cấu hình Claude Desktop App (Tự động 1-Click với Khodee Gateway)
+                      Cấu hình Claude Desktop App (Tự động 1-Click với DaiTruong Gateway)
                     </h3>
                     <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-[#D97757] bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-800/60 px-2 py-0.5 rounded-full">
                       <Sparkles className="h-3 w-3" />
                       v0.3.3 Mới nhất
                     </span>
                   </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
-                    Dành cho Windows &amp; macOS. Trò chuyện trực tiếp với Claude Opus 4.7 &amp; Sonnet 3.7 qua Gateway, tự động mở sẵn tính năng Import chat từ Claude.ai.
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                    Dành cho Windows &amp; macOS. Trò chuyện trực tiếp với Claude Opus 5.5 &amp; Sonnet 5.5 qua Gateway, tự động mở sẵn tính năng Import chat từ Claude.ai.
                   </p>
                 </div>
 
@@ -369,10 +389,10 @@ export default function ClaudeApiGuideHub({
                     href="https://drive.google.com/file/d/1lOjC5O7QGW7P5eOmPhAkXU3QyZIxOGAX/view?usp=sharing"
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-[#D97757] hover:bg-[#c26547] text-white px-3.5 py-2 text-xs font-bold transition shadow-xs active:scale-95"
+                    className="min-h-[44px] inline-flex items-center gap-1.5 rounded-xl bg-[#D97757] hover:bg-[#c26547] text-white px-3.5 py-2 text-xs font-bold transition shadow-xs active:scale-95"
                   >
                     <Download className="h-3.5 w-3.5" />
-                    <span>Tải KhodeeGateway.exe (94 KB)</span>
+                    <span>Tải DaiTruongGateway.exe (94 KB)</span>
                     <ExternalLink className="h-3 w-3" />
                   </a>
 
@@ -380,7 +400,7 @@ export default function ClaudeApiGuideHub({
                     href="https://claude.com/download"
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-2 text-xs font-medium transition"
+                    className="min-h-[44px] inline-flex items-center gap-1.5 rounded-xl border border-border bg-card hover:bg-muted text-foreground px-3 py-2 text-xs font-medium transition"
                   >
                     <span>Tải App Claude Desktop</span>
                     <ExternalLink className="h-3 w-3" />
@@ -397,7 +417,7 @@ export default function ClaudeApiGuideHub({
                         1
                       </span>
                       <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                        Bước 1: Mở Khodee Gateway &amp; Bấm START (1-Click cấu hình)
+                        Bước 1: Mở DaiTruong Gateway &amp; Bấm START (1-Click cấu hình)
                       </h5>
                     </div>
                     <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
@@ -407,7 +427,7 @@ export default function ClaudeApiGuideHub({
 
                   <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-8 space-y-1.5">
                     <p>
-                      Mở file <code className="font-mono font-bold text-slate-900 dark:text-white">KhodeeGateway.exe</code> (chọn <em>Yes</em> nếu Windows hỏi quyền Administrator). Dán mã API Key được cấp vào ô duy nhất rồi nhấn nút <strong className="text-blue-600 dark:text-blue-400 font-bold">⚡ START</strong>.
+                      Mở file <code className="font-mono font-bold text-slate-900 dark:text-white">DaiTruongGateway.exe</code> (chọn <em>Yes</em> nếu Windows hỏi quyền Administrator). Dán mã API Key được cấp vào ô duy nhất rồi nhấn nút <strong className="text-blue-600 dark:text-blue-400 font-bold">⚡ START</strong>.
                     </p>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
                       • <strong>Tự động kiểm tra Key:</strong> Hệ thống kết nối kiểm tra hạn mức API thời gian thực, báo số dư còn lại (ví dụ: <code className="font-mono text-emerald-600 dark:text-emerald-400 font-semibold">Còn $9.99/$10.00</code>).<br />
@@ -419,14 +439,14 @@ export default function ClaudeApiGuideHub({
                     onClick={() =>
                       setLightboxImage({
                         src: "/images/guides/claude/step-1-tool.png",
-                        title: "Bước 1: Giao diện Khodee Gateway v0.3.3 One-Click",
+                        title: "Bước 1: Giao diện DaiTruong Gateway v0.3.3 One-Click",
                       })
                     }
                     className="relative group cursor-zoom-in overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-950 shadow-md"
                   >
                     <img
                       src="/images/guides/claude/step-1-tool.png"
-                      alt="Bước 1: Giao diện Khodee Gateway One-Click"
+                      alt="Bước 1: Giao diện DaiTruong Gateway One-Click"
                       className="w-full h-auto object-contain transition duration-300 group-hover:scale-[1.01]"
                       loading="lazy"
                     />
@@ -519,7 +539,7 @@ export default function ClaudeApiGuideHub({
                     </h5>
                   </div>
                   <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-8">
-                    Tại phần <strong>Import</strong> bên phải, nhấp vào nút màu cam đất <strong className="text-[#D97757]">Import...</strong> (nút này đã được Khodee Gateway mở khóa sẵn sàng thay vì bị mờ).
+                    Tại phần <strong>Import</strong> bên phải, nhấp vào nút màu cam đất <strong className="text-[#D97757]">Import...</strong> (nút này đã được DaiTruong Gateway mở khóa sẵn sàng thay vì bị mờ).
                   </p>
                   <div
                     onClick={() =>
@@ -590,7 +610,7 @@ export default function ClaudeApiGuideHub({
                       🛡️ <strong>HOÀN TOÀN KHÔNG BỊ MẤT CHAT:</strong> Tất cả các đoạn chat cũ, lịch sử hội thoại và project đã import hoặc vừa trò chuyện đều được lưu vĩnh viễn trên máy tính của bạn (tại <code>AppData</code>). Việc đổi Key chỉ là thay đổi &quot;chìa khóa kết nối mạng&quot;, tuyệt đối không làm mất bất kỳ tin nhắn nào của bạn.
                     </p>
                     <p>
-                      ⚡ <strong>KHÔNG CẦN IMPORT LẠI - ĐỔI KEY CHỈ TRONG 10 GIÂY:</strong> Bạn không cần phải thao tác Import lại từ đầu. Khi mua key mới, bạn chỉ việc mở lại file <code className="font-bold">KhodeeGateway.exe</code>, dán Key mới vào ô và bấm <strong className="text-blue-600 dark:text-blue-400 font-bold">⚡ START</strong>. Tool sẽ tự kiểm tra key, nạp vào hệ thống và khởi động lại Claude Desktop. Bạn tiếp tục chat bình thường ngay lập tức!
+                      ⚡ <strong>KHÔNG CẦN IMPORT LẠI - ĐỔI KEY CHỈ TRONG 10 GIÂY:</strong> Bạn không cần phải thao tác Import lại từ đầu. Khi mua key mới, bạn chỉ việc mở lại file <code className="font-bold">DaiTruongGateway.exe</code>, dán Key mới vào ô và bấm <strong className="text-blue-600 dark:text-blue-400 font-bold">⚡ START</strong>. Tool sẽ tự kiểm tra key, nạp vào hệ thống và khởi động lại Claude Desktop. Bạn tiếp tục chat bình thường ngay lập tức!
                     </p>
                   </div>
                 </div>
@@ -600,7 +620,7 @@ export default function ClaudeApiGuideHub({
                   <button
                     type="button"
                     onClick={() => setShowManualSetup(!showManualSetup)}
-                    className="w-full flex items-center justify-between p-4 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer"
+                    className="w-full min-h-[44px] flex items-center justify-between p-4 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer"
                   >
                     <div className="flex items-center gap-2">
                       <Terminal className="h-4 w-4 text-slate-500" />
@@ -623,7 +643,7 @@ export default function ClaudeApiGuideHub({
                             <button
                               type="button"
                               onClick={() => handleCopy("gw-url", "https://1gw.gwai.cloud")}
-                              className="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] text-slate-700 dark:text-slate-300"
+                              className="min-h-[44px] px-3.5 inline-flex items-center justify-center rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 transition shrink-0"
                             >
                               {copiedKey === "gw-url" ? "Đã chép" : "Chép"}
                             </button>
@@ -637,7 +657,7 @@ export default function ClaudeApiGuideHub({
                             <button
                               type="button"
                               onClick={() => handleCopy("gw-key", currentKey)}
-                              className="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] text-slate-700 dark:text-slate-300"
+                              className="min-h-[44px] px-3.5 inline-flex items-center justify-center rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 transition shrink-0"
                             >
                               {copiedKey === "gw-key" ? "Đã chép" : "Chép"}
                             </button>
@@ -651,7 +671,7 @@ export default function ClaudeApiGuideHub({
                             <button
                               type="button"
                               onClick={() => handleCopy("gw-schema", "x-api-key")}
-                              className="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] text-slate-700 dark:text-slate-300"
+                              className="min-h-[44px] px-3.5 inline-flex items-center justify-center rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 transition shrink-0"
                             >
                               {copiedKey === "gw-schema" ? "Đã chép" : "Chép"}
                             </button>
@@ -715,7 +735,7 @@ export default function ClaudeApiGuideHub({
                           <button
                             type="button"
                             onClick={() => handleCopy("cursor-url", "https://1gw.gwai.cloud")}
-                            className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[11px] text-slate-700 dark:text-slate-300 transition"
+                            className="min-h-[44px] px-3.5 inline-flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 transition shrink-0"
                           >
                             {copiedKey === "cursor-url" ? "Đã chép" : "Chép"}
                           </button>
@@ -731,7 +751,7 @@ export default function ClaudeApiGuideHub({
                           <button
                             type="button"
                             onClick={() => handleCopy("cursor-key", currentKey)}
-                            className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[11px] text-slate-700 dark:text-slate-300 transition"
+                            className="min-h-[44px] px-3.5 inline-flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 transition shrink-0"
                           >
                             {copiedKey === "cursor-key" ? "Đã chép" : "Chép"}
                           </button>
@@ -751,7 +771,7 @@ export default function ClaudeApiGuideHub({
                     </span>
                   </div>
                   <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 pl-7.5 leading-relaxed">
-                    Trong danh sách Model, bấm <strong>Add Model</strong> và nhập: <code className="px-1.5 py-0.5 rounded bg-white dark:bg-slate-950 border font-mono font-bold text-slate-900 dark:text-white">claude-3-5-sonnet-20241022</code> hoặc <code className="px-1.5 py-0.5 rounded bg-white dark:bg-slate-950 border font-mono font-bold text-slate-900 dark:text-white">claude-opus-4-7</code>. Sau đó bật model này lên là hoàn tất.
+                    Trong danh sách Model, bấm <strong>Add Model</strong> và nhập: <code className="px-1.5 py-0.5 rounded bg-white dark:bg-slate-950 border font-mono font-bold text-slate-900 dark:text-white">claude-sonnet-5-5</code> hoặc <code className="px-1.5 py-0.5 rounded bg-white dark:bg-slate-950 border font-mono font-bold text-slate-900 dark:text-white">claude-opus-5-5</code>. Sau đó bật model này lên là hoàn tất.
                   </p>
                 </div>
               </div>
@@ -792,7 +812,7 @@ export default function ClaudeApiGuideHub({
                       <button
                         type="button"
                         onClick={() => handleCopy("cmd-install", "npm install -g @anthropic-ai/claude-code")}
-                        className="ml-2 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] transition"
+                        className="min-h-[44px] ml-2 px-3.5 inline-flex items-center justify-center rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition shrink-0"
                       >
                         {copiedKey === "cmd-install" ? "Đã chép" : "Sao chép"}
                       </button>
@@ -832,14 +852,14 @@ export default function ClaudeApiGuideHub({
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1 rounded-lg bg-slate-200 dark:bg-slate-900 p-1 text-[11px] font-semibold">
+                    <div className="flex items-center gap-1 rounded-xl bg-slate-200 dark:bg-slate-900 p-1 text-xs font-semibold">
                       <button
                         type="button"
                         onClick={() => setOsTab("windows")}
-                        className={`px-2.5 py-1 rounded transition ${
+                        className={`min-h-[44px] px-4 py-2 inline-flex items-center justify-center rounded-lg text-xs font-semibold transition ${
                           osTab === "windows"
                             ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs"
-                            : "text-slate-600 dark:text-slate-400"
+                            : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                         }`}
                       >
                         Windows
@@ -847,10 +867,10 @@ export default function ClaudeApiGuideHub({
                       <button
                         type="button"
                         onClick={() => setOsTab("mac")}
-                        className={`px-2.5 py-1 rounded transition ${
+                        className={`min-h-[44px] px-4 py-2 inline-flex items-center justify-center rounded-lg text-xs font-semibold transition ${
                           osTab === "mac"
                             ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs"
-                            : "text-slate-600 dark:text-slate-400"
+                            : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                         }`}
                       >
                         macOS / Linux
@@ -868,15 +888,25 @@ export default function ClaudeApiGuideHub({
                       </code>
                     </p>
 
-                    <div className="relative rounded-lg border border-slate-800 bg-slate-950 overflow-hidden font-mono text-xs">
-                      <div className="flex items-center justify-between px-3 py-2 bg-slate-900 border-b border-slate-800 text-[11px] text-slate-300">
+                    <div className="relative rounded-lg border border-border bg-slate-950 overflow-hidden font-mono text-xs">
+                      <div className="flex items-center justify-between px-3 py-2 bg-slate-900 border-b border-border text-[11px] text-slate-300">
                         <span>settings.json (Đã gắn sẵn API Key)</span>
                         <button
                           type="button"
                           onClick={() => handleCopy("vscode-json", vscodeSettingsJson)}
-                          className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white transition text-[11px]"
+                          className="min-h-[44px] px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white transition text-xs font-semibold inline-flex items-center gap-1.5"
                         >
-                          {copiedKey === "vscode-json" ? "Đã sao chép" : "Sao chép cấu hình"}
+                          {copiedKey === "vscode-json" ? (
+                            <>
+                              <Check className="h-4 w-4 text-emerald-400" />
+                              <span>Đã sao chép</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-4 w-4" />
+                              <span>Sao chép cấu hình</span>
+                            </>
+                          )}
                         </button>
                       </div>
                       <pre className="p-3 text-slate-200 text-[11px] leading-relaxed overflow-x-auto max-h-64 select-all">
@@ -886,22 +916,171 @@ export default function ClaudeApiGuideHub({
                   </div>
                 </div>
 
+                {/* Step 4: Quick SDK & CLI Snippets */}
+                <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-xs">
+                        4
+                      </span>
+                      <span className="text-xs sm:text-sm font-bold text-foreground">
+                        Code Snippet tích hợp SDK &amp; Dòng lệnh
+                      </span>
+                    </div>
+
+                    <div className="flex items-center flex-wrap gap-1">
+                      {[
+                        { id: "curl" as const, label: "cURL" },
+                        { id: "python" as const, label: "Python SDK" },
+                        { id: "node" as const, label: "Node.js SDK" },
+                        { id: "env" as const, label: ".env" },
+                      ].map((sub) => (
+                        <button
+                          key={sub.id}
+                          type="button"
+                          onClick={() => setSdkTab(sub.id)}
+                          className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                            sdkTab === sub.id
+                              ? "bg-primary text-primary-foreground shadow-xs"
+                              : "border border-border bg-muted/40 text-muted-foreground hover:text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          {sub.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="relative rounded-lg border border-border bg-muted/40 p-3 font-mono text-[11px] text-foreground">
+                    {sdkTab === "curl" && (
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleCopy(
+                              "claude-curl",
+                              `curl https://1gw.gwai.cloud/v1/messages \\\n  -H "x-api-key: ${currentKey}" \\\n  -H "anthropic-version: 2023-06-01" \\\n  -H "content-type: application/json" \\\n  -d '{\n    "model": "claude-sonnet-5-5",\n    "max_tokens": 1024,\n    "messages": [{"role": "user", "content": "Xin chào Claude 5.5!"}]\n  }'`
+                            )
+                          }
+                          className="absolute top-2 right-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-lg border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition shadow-2xs"
+                          title="Sao chép cURL"
+                        >
+                          {copiedKey === "claude-curl" ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                        </button>
+                        <pre className="overflow-x-auto pr-12 text-muted-foreground leading-relaxed">{`curl https://1gw.gwai.cloud/v1/messages \\
+  -H "x-api-key: ${currentKey}" \\
+  -H "anthropic-version: 2023-06-01" \\
+  -H "content-type: application/json" \\
+  -d '{
+    "model": "claude-sonnet-5-5",
+    "max_tokens": 1024,
+    "messages": [{"role": "user", "content": "Xin chào Claude 5.5!"}]
+  }'`}</pre>
+                      </div>
+                    )}
+
+                    {sdkTab === "python" && (
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleCopy(
+                              "claude-python",
+                              `import anthropic\n\nclient = anthropic.Anthropic(\n    api_key="${currentKey}",\n    base_url="https://1gw.gwai.cloud"\n)\n\nmessage = client.messages.create(\n    model="claude-sonnet-5-5",\n    max_tokens=1024,\n    messages=[{"role": "user", "content": "Xin chào Claude 5.5!"}]\n)\nprint(message.content[0].text)`
+                            )
+                          }
+                          className="absolute top-2 right-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-lg border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition shadow-2xs"
+                          title="Sao chép Python"
+                        >
+                          {copiedKey === "claude-python" ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                        </button>
+                        <pre className="overflow-x-auto pr-12 text-muted-foreground leading-relaxed">{`import anthropic
+
+client = anthropic.Anthropic(
+    api_key="${currentKey}",
+    base_url="https://1gw.gwai.cloud"
+)
+
+message = client.messages.create(
+    model="claude-sonnet-5-5",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Xin chào Claude 5.5!"}]
+)
+print(message.content[0].text)`}</pre>
+                      </div>
+                    )}
+
+                    {sdkTab === "node" && (
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleCopy(
+                              "claude-node",
+                              `import Anthropic from "@anthropic-ai/sdk";\n\nconst anthropic = new Anthropic({\n  apiKey: "${currentKey}",\n  baseURL: "https://1gw.gwai.cloud",\n});\n\nconst response = await anthropic.messages.create({\n  model: "claude-sonnet-5-5",\n  max_tokens: 1024,\n  messages: [{ role: "user", content: "Xin chào Claude 5.5!" }],\n});\n\nconsole.log(response.content[0].text);`
+                            )
+                          }
+                          className="absolute top-2 right-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-lg border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition shadow-2xs"
+                          title="Sao chép Node.js"
+                        >
+                          {copiedKey === "claude-node" ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                        </button>
+                        <pre className="overflow-x-auto pr-12 text-muted-foreground leading-relaxed">{`import Anthropic from "@anthropic-ai/sdk";
+
+const anthropic = new Anthropic({
+  apiKey: "${currentKey}",
+  baseURL: "https://1gw.gwai.cloud",
+});
+
+const response = await anthropic.messages.create({
+  model: "claude-sonnet-5-5",
+  max_tokens: 1024,
+  messages: [{ role: "user", content: "Xin chào Claude 5.5!" }],
+});
+
+console.log(response.content[0].text);`}</pre>
+                      </div>
+                    )}
+
+                    {sdkTab === "env" && (
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleCopy(
+                              "claude-env",
+                              `ANTHROPIC_BASE_URL="https://1gw.gwai.cloud"\nANTHROPIC_API_KEY="${currentKey}"\nANTHROPIC_DEFAULT_MODEL="claude-sonnet-5-5"`
+                            )
+                          }
+                          className="absolute top-2 right-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-lg border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition shadow-2xs"
+                          title="Sao chép .env"
+                        >
+                          {copiedKey === "claude-env" ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                        </button>
+                        <pre className="overflow-x-auto pr-12 text-muted-foreground leading-relaxed">{`ANTHROPIC_BASE_URL="https://1gw.gwai.cloud"
+ANTHROPIC_API_KEY="${currentKey}"
+ANTHROPIC_DEFAULT_MODEL="claude-sonnet-5-5"`}</pre>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* Compatibility: Cline & Roo Code */}
-                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 space-y-2 text-xs">
-                  <div className="font-bold text-slate-900 dark:text-white">
+                <div className="rounded-xl border border-border bg-card p-4 space-y-2 text-xs">
+                  <div className="font-bold text-foreground">
                     Tùy chọn: Kết nối qua Extension Cline hoặc Roo Code trong VS Code
                   </div>
-                  <p className="text-slate-600 dark:text-slate-400">
+                  <p className="text-muted-foreground">
                     Nếu bạn thích dùng giao diện bảng điều khiển trong VS Code, hãy cài extension <strong>Cline</strong> hoặc <strong>Roo Code</strong> và điền thông số:
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono text-xs mt-1">
-                    <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                      <span className="text-slate-500 font-sans text-[11px]">API Provider: </span>
-                      <span className="text-slate-900 dark:text-white font-bold">Anthropic</span>
+                    <div className="p-2.5 rounded-lg bg-muted/40 border border-border">
+                      <span className="text-muted-foreground font-sans text-[11px]">API Provider: </span>
+                      <span className="text-foreground font-bold">Anthropic</span>
                     </div>
-                    <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                      <span className="text-slate-500 font-sans text-[11px]">Base URL: </span>
-                      <span className="text-slate-900 dark:text-emerald-400 font-bold select-all">https://1gw.gwai.cloud</span>
+                    <div className="p-2.5 rounded-lg bg-muted/40 border border-border">
+                      <span className="text-muted-foreground font-sans text-[11px]">Base URL: </span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold select-all">https://1gw.gwai.cloud</span>
                     </div>
                   </div>
                 </div>
@@ -928,7 +1107,7 @@ export default function ClaudeApiGuideHub({
                   href="https://design.gwai.cloud/"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs text-white bg-emerald-600 hover:bg-emerald-500 px-3.5 py-1.5 rounded-lg transition font-semibold"
+                  className="min-h-[44px] px-4 inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition shadow-xs active:scale-95 shrink-0"
                 >
                   <span>Mở Web Open Design</span>
                   <ExternalLink className="h-3.5 w-3.5" />
@@ -966,45 +1145,45 @@ export default function ClaudeApiGuideHub({
           {activeTab === "openclaw" && (
             <div className="space-y-6">
               <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
-                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                <h3 className="text-base sm:text-lg font-bold text-foreground">
                   Cấu hình OpenClaw Framework AI Agent
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
-                  Framework agent đa năng mã nguồn mở — Chạy nền với Claude Opus 4.7 và Claude Sonnet 4.6.
+                <p className="text-xs text-muted-foreground mt-1">
+                  Framework agent đa năng mã nguồn mở — Chạy nền với Claude Opus 5.5 và Claude Sonnet 5.5.
                 </p>
               </div>
 
               <div className="space-y-4">
-                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4">
-                  <div className="text-xs font-bold text-slate-900 dark:text-white mb-2">
+                <div className="rounded-xl border border-border bg-card p-4">
+                  <div className="text-xs font-bold text-foreground mb-2">
                     1. Cài đặt OpenClaw qua npm:
                   </div>
-                  <div className="flex items-center justify-between rounded-lg bg-slate-950 border border-slate-800 px-3 py-2 font-mono text-xs text-slate-200">
+                  <div className="flex items-center justify-between rounded-lg bg-slate-950 border border-border px-3 py-2 font-mono text-xs text-slate-200">
                     <span>npm install -g openclaw@latest</span>
                     <button
                       type="button"
                       onClick={() => handleCopy("openclaw-cmd", "npm install -g openclaw@latest")}
-                      className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[11px] text-slate-300 transition"
+                      className="min-h-[44px] px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-semibold transition inline-flex items-center gap-1.5"
                     >
-                      {copiedKey === "openclaw-cmd" ? "Đã chép" : "Chép"}
+                      {copiedKey === "openclaw-cmd" ? "Đã chép" : "Sao chép"}
                     </button>
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-4 space-y-2">
+                <div className="rounded-xl border border-border bg-card p-4 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-900 dark:text-white">
+                    <span className="text-xs font-bold text-foreground">
                       2. Cấu hình file <code className="font-mono">~/.openclaw/openclaw.json</code>:
                     </span>
                     <button
                       type="button"
                       onClick={() => handleCopy("openclaw-json", openclawJson)}
-                      className="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 text-white text-[11px] transition"
+                      className="min-h-[44px] px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold transition inline-flex items-center gap-1.5"
                     >
                       {copiedKey === "openclaw-json" ? "Đã sao chép" : "Sao chép JSON"}
                     </button>
                   </div>
-                  <pre className="p-3 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 font-mono text-[11px] leading-relaxed overflow-x-auto max-h-60 select-all">
+                  <pre className="p-3 bg-slate-950 border border-border rounded-lg text-slate-200 font-mono text-[11px] leading-relaxed overflow-x-auto max-h-60 select-all">
                     {openclawJson}
                   </pre>
                 </div>
@@ -1022,7 +1201,7 @@ export default function ClaudeApiGuideHub({
 
           <Link
             href="/developer/usage"
-            className="text-slate-900 dark:text-white hover:underline font-semibold flex items-center gap-1 transition"
+            className="min-h-[44px] inline-flex items-center gap-1 text-slate-900 dark:text-white hover:underline font-semibold transition py-2"
           >
             <span>Trang kiểm tra Quota & Logs</span>
             <ArrowRight className="h-3 w-3" />
@@ -1042,7 +1221,7 @@ export default function ClaudeApiGuideHub({
               <button
                 type="button"
                 onClick={() => setLightboxImage(null)}
-                className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-white font-medium transition cursor-pointer"
+                className="min-h-[44px] px-4 inline-flex items-center gap-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition cursor-pointer shadow-xs active:scale-95 shrink-0"
               >
                 <X className="h-4 w-4" />
                 <span>Đóng (Esc)</span>

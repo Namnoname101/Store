@@ -30,6 +30,7 @@ interface CartContextType {
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, deltaOrQuantity: number, isAbsolute?: boolean) => void;
   updateItemLink: (productId: string, link: string) => void;
+  updateItemAttributes: (productId: string, attributes: Partial<CartItem>) => void;
   toggleSelectItem: (productId: string) => void;
   selectAll: (select: boolean) => void;
   clearCart: () => void;
@@ -154,6 +155,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
+  const updateItemAttributes = (productId: string, attributes: Partial<CartItem>) => {
+    setItems((prev) =>
+      prev.map((item) => (item.productId === productId ? { ...item, ...attributes } : item))
+    );
+  };
+
   const toggleSelectItem = (productId: string) => {
     setItems((prev) =>
       prev.map((item) => {
@@ -211,6 +218,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         removeFromCart,
         updateQuantity,
         updateItemLink,
+        updateItemAttributes,
         toggleSelectItem,
         selectAll,
         clearCart,

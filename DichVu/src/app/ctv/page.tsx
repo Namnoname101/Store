@@ -90,7 +90,7 @@ export default function AffiliateLandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-emerald-500 selection:text-black transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 selection:bg-emerald-500 selection:text-black transition-colors">
       {/* Background Glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-gradient-to-b from-emerald-500/10 dark:from-emerald-500/15 via-blue-500/5 dark:via-blue-500/10 to-transparent blur-3xl rounded-full" />
@@ -132,7 +132,7 @@ export default function AffiliateLandingPage() {
             )}
             <a
               href="#commission-table"
-              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl font-medium text-sm bg-white dark:bg-slate-900/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 shadow-xs transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl font-medium text-sm bg-white dark:bg-[#0b0f19]/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-zinc-800/80 shadow-xs transition-colors"
             >
               <span>Xem bảng hoa hồng chi tiết</span>
             </a>
@@ -141,7 +141,7 @@ export default function AffiliateLandingPage() {
 
         {/* 3 Steps Process */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900/50 border border-slate-200/90 dark:border-slate-800/80 shadow-sm backdrop-blur space-y-4">
+          <div className="p-6 rounded-2xl bg-white dark:bg-[#0b0f19]/50 border border-slate-200/90 dark:border-zinc-800/80/80 shadow-sm backdrop-blur space-y-4">
             <div className="w-12 h-12 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold text-lg">
               1
             </div>
@@ -151,7 +151,7 @@ export default function AffiliateLandingPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900/50 border border-slate-200/90 dark:border-slate-800/80 shadow-sm backdrop-blur space-y-4">
+          <div className="p-6 rounded-2xl bg-white dark:bg-[#0b0f19]/50 border border-slate-200/90 dark:border-zinc-800/80/80 shadow-sm backdrop-blur space-y-4">
             <div className="w-12 h-12 rounded-xl bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-lg">
               2
             </div>
@@ -161,7 +161,7 @@ export default function AffiliateLandingPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900/50 border border-slate-200/90 dark:border-slate-800/80 shadow-sm backdrop-blur space-y-4">
+          <div className="p-6 rounded-2xl bg-white dark:bg-[#0b0f19]/50 border border-slate-200/90 dark:border-zinc-800/80/80 shadow-sm backdrop-blur space-y-4">
             <div className="w-12 h-12 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-400 font-bold text-lg">
               3
             </div>
@@ -173,7 +173,7 @@ export default function AffiliateLandingPage() {
         </div>
 
         {/* Commission Table */}
-        <div id="commission-table" className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900/70 border border-slate-200/90 dark:border-slate-800 shadow-md space-y-6">
+        <div id="commission-table" className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0b0f19]/70 border border-slate-200/90 dark:border-zinc-800/80 shadow-md space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -193,7 +193,7 @@ export default function AffiliateLandingPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                <tr className="border-b border-slate-200 dark:border-zinc-800/80 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   <th className="pb-3 pr-4">Nhóm Sản Phẩm</th>
                   <th className="pb-3 px-4">Sản Phẩm Tiêu Biểu</th>
                   <th className="pb-3 px-4">Hoa Hồng CTV</th>
@@ -237,7 +237,7 @@ export default function AffiliateLandingPage() {
         </div>
 
         {/* Registration Form */}
-        <div id="register-form" className="max-w-xl mx-auto p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xl space-y-6">
+        <div id="register-form" className="max-w-xl mx-auto p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0b0f19] border border-slate-200/90 dark:border-zinc-800/80 shadow-xl space-y-6">
           <div className="text-center space-y-2">
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Đăng Ký Làm CTV Trong 30 Giây</h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -273,7 +273,7 @@ export default function AffiliateLandingPage() {
                   value={customCode}
                   onChange={(e) => setCustomCode(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, ""))}
                   maxLength={15}
-                  className="w-full pl-14 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-white text-sm font-mono uppercase tracking-wider outline-none transition-colors"
+                  className="w-full pl-14 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-zinc-800/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-white text-sm font-mono uppercase tracking-wider outline-none transition-colors"
                 />
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -291,7 +291,7 @@ export default function AffiliateLandingPage() {
                   placeholder="MB, VCB, Techcombank..."
                   value={bankName}
                   onChange={(e) => setBankName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-white text-sm outline-none transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-zinc-800/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-white text-sm outline-none transition-colors"
                 />
               </div>
 
@@ -304,7 +304,7 @@ export default function AffiliateLandingPage() {
                   placeholder="0987654321..."
                   value={bankAccountNumber}
                   onChange={(e) => setBankAccountNumber(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-white text-sm font-mono outline-none transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-zinc-800/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-white text-sm font-mono outline-none transition-colors"
                 />
               </div>
             </div>
@@ -318,7 +318,7 @@ export default function AffiliateLandingPage() {
                 placeholder="NGUYEN VAN A"
                 value={bankAccountName}
                 onChange={(e) => setBankAccountName(e.target.value.toUpperCase())}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-white text-sm uppercase tracking-wider outline-none transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-zinc-800/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-white text-sm uppercase tracking-wider outline-none transition-colors"
               />
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Thông tin ngân hàng có thể cập nhật lại bất kỳ lúc nào trong trang cá nhân.
@@ -346,21 +346,21 @@ export default function AffiliateLandingPage() {
         <div className="max-w-2xl mx-auto space-y-4 pt-6">
           <h3 className="text-lg font-bold text-slate-900 dark:text-white text-center">Câu Hỏi Thường Gặp (FAQ)</h3>
           
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2">
+          <div className="p-5 rounded-2xl bg-white dark:bg-[#0b0f19]/60 border border-slate-200/90 dark:border-zinc-800/80 shadow-xs space-y-2">
             <div className="text-sm font-bold text-emerald-700 dark:text-emerald-400">Tôi có cần phải bỏ tiền cọc hay đóng phí gì không?</div>
             <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
               Hoàn toàn 0đ. Bạn không cần nạp tiền hay ôm hàng. Khách tự lên web mua, quét VietQR trả tiền, bạn nhận hoa hồng tự động.
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2">
+          <div className="p-5 rounded-2xl bg-white dark:bg-[#0b0f19]/60 border border-slate-200/90 dark:border-zinc-800/80 shadow-xs space-y-2">
             <div className="text-sm font-bold text-emerald-700 dark:text-emerald-400">Bao nhiêu tiền thì rút được về ngân hàng?</div>
             <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
               Chỉ cần từ 50.000đ là bạn có thể bấm lệnh rút. Admin duyệt và chuyển khoản nhanh qua VietQR trong vòng 24h mỗi ngày.
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2">
+          <div className="p-5 rounded-2xl bg-white dark:bg-[#0b0f19]/60 border border-slate-200/90 dark:border-zinc-800/80 shadow-xs space-y-2">
             <div className="text-sm font-bold text-emerald-700 dark:text-emerald-400">Nếu khách cần bảo hành tài khoản thì ai hỗ trợ?</div>
             <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
               Đội ngũ admin của website chịu trách nhiệm 100% về bảo hành, đổi trả và hỗ trợ kỹ thuật qua Telegram/Zalo cho khách. Bạn chỉ cần chia sẻ mã giảm giá.

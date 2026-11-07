@@ -36,6 +36,9 @@ deploy.token
 # Telegram sessions
 tele-*.json
 
+# Agent workspaces
+.agents/teamwork/
+
 # Operating System Files
 .DS_Store
 Thumbs.db

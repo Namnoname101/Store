@@ -59,24 +59,24 @@ export default function CartDrawer() {
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex justify-end bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-[60] flex justify-end bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
       onClick={closeCart}
     >
       <div
-        className="relative flex h-full w-full max-w-md flex-col border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl animate-in slide-in-from-right duration-200"
+        className="relative flex h-full w-full max-w-md flex-col border-l border-border bg-card/95 backdrop-blur-xl shadow-2xl animate-in slide-in-from-right duration-300 text-card-foreground"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <div className="flex items-center gap-2">
-            <ShoppingBag className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            <h2 className="text-base font-bold text-slate-900 dark:text-white">
+            <ShoppingBag className="h-5 w-5 text-primary" />
+            <h2 className="text-base font-bold text-foreground">
               Giỏ hàng ({items.length})
             </h2>
           </div>
           <button
             onClick={closeCart}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl p-2 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-ring"
             aria-label="Đóng giỏ hàng"
           >
             <X className="h-5 w-5" />
@@ -85,15 +85,15 @@ export default function CartDrawer() {
 
         {/* Selection Bar */}
         {items.length > 0 && (
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/40 px-5 py-2.5 text-xs text-slate-600 dark:text-slate-400">
+          <div className="flex items-center justify-between border-b border-border bg-muted/40 px-5 py-2.5 text-xs text-muted-foreground">
             <button
               onClick={() => selectAll(!isAllSelected)}
-              className="flex items-center gap-2 font-medium hover:text-blue-600 transition-colors"
+              className="min-h-[44px] flex items-center gap-2 font-medium hover:text-primary transition-colors focus-visible:ring-2 focus-visible:ring-ring rounded-lg px-1"
             >
               {isAllSelected ? (
-                <CheckSquare className="h-4 w-4 text-blue-600" />
+                <CheckSquare className="h-4 w-4 text-primary" />
               ) : (
-                <Square className="h-4 w-4 text-slate-400" />
+                <Square className="h-4 w-4 text-muted-foreground" />
               )}
               <span>Chọn tất cả ({items.length})</span>
             </button>
@@ -107,28 +107,28 @@ export default function CartDrawer() {
             items.map((item) => (
               <div
                 key={item.productId}
-                className={`flex flex-col gap-2 rounded-xl border p-3 transition-all ${
+                className={`flex flex-col gap-2.5 rounded-2xl border p-3.5 transition-all ${
                   item.selected
-                    ? "border-blue-500/30 bg-blue-50/20 dark:bg-blue-950/10"
-                    : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 opacity-80"
+                    ? "border-primary/40 bg-primary/5 shadow-xs"
+                    : "border-border/70 bg-card/50 opacity-70"
                 }`}
               >
                 <div className="flex items-start gap-3">
                   {/* Select Checkbox */}
                   <button
                     onClick={() => toggleSelectItem(item.productId)}
-                    className="mt-1 text-slate-400 hover:text-blue-600 shrink-0"
+                    className="min-h-[44px] min-w-[44px] flex items-center justify-center -ml-2 text-muted-foreground hover:text-primary shrink-0 focus-visible:ring-2 focus-visible:ring-ring rounded-lg"
                     aria-label={item.selected ? "Bỏ chọn" : "Chọn sản phẩm"}
                   >
                     {item.selected ? (
-                      <CheckSquare className="h-4 w-4 text-blue-600" />
+                      <CheckSquare className="h-4 w-4 text-primary" />
                     ) : (
-                      <Square className="h-4 w-4 text-slate-400" />
+                      <Square className="h-4 w-4 text-muted-foreground" />
                     )}
                   </button>
 
                   {/* Thumbnail 4:3 */}
-                  <div className="relative aspect-[4/3] w-16 shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                  <div className="relative aspect-[4/3] w-16 shrink-0 overflow-hidden rounded-xl border border-border bg-secondary flex items-center justify-center">
                     {item.thumbnailUrl ? (
                       <img
                         src={item.thumbnailUrl}
@@ -136,7 +136,7 @@ export default function CartDrawer() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <ShoppingBag className="h-6 w-6 text-slate-400" />
+                      <ShoppingBag className="h-6 w-6 text-muted-foreground" />
                     )}
                   </div>
 
@@ -145,17 +145,17 @@ export default function CartDrawer() {
                     <Link
                       href={`/products/${item.slug}`}
                       onClick={closeCart}
-                      className="block text-xs font-semibold text-slate-900 dark:text-slate-100 line-clamp-2 hover:text-blue-600 leading-snug"
+                      className="block text-xs font-semibold text-foreground line-clamp-2 hover:text-primary leading-snug transition-colors"
                     >
                       {item.title}
                     </Link>
 
                     <div className="mt-1 flex items-baseline gap-2">
-                      <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
+                      <span className="text-sm font-bold text-primary font-mono">
                         {formatVND(item.price)}
                       </span>
                       {item.originalPrice && item.originalPrice > item.price && (
-                        <span className="text-[10px] text-slate-400 line-through">
+                        <span className="text-[10px] text-muted-foreground line-through font-mono">
                           {formatVND(item.originalPrice)}
                         </span>
                       )}
@@ -165,8 +165,9 @@ export default function CartDrawer() {
                   {/* Delete button */}
                   <button
                     onClick={() => removeFromCart(item.productId)}
-                    className="rounded-lg p-1 text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 transition-colors"
+                    className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors focus-visible:ring-2 focus-visible:ring-ring shrink-0"
                     title="Xóa khỏi giỏ"
+                    aria-label="Xóa sản phẩm"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -174,8 +175,8 @@ export default function CartDrawer() {
 
                 {/* SMM Target Link if required */}
                 {item.requiresLink && (
-                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80">
-                    <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-1">
+                  <div className="pt-2 border-t border-border">
+                    <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
                       Link kênh / bài viết:
                     </label>
                     <div className="relative">
@@ -184,40 +185,42 @@ export default function CartDrawer() {
                         placeholder="https://tiktok.com/@... hoặc link bài viết"
                         value={item.targetLink || ""}
                         onChange={(e) => updateItemLink(item.productId, e.target.value)}
-                        className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-1.5 pl-7 pr-2 text-xs text-slate-900 dark:text-white focus:border-blue-600 focus:outline-none"
+                        className="w-full min-h-[44px] rounded-xl border border-border bg-secondary/60 py-2.5 pl-9 pr-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors"
                       />
-                      <Globe className="absolute left-2 top-2 h-3.5 w-3.5 text-blue-500" />
+                      <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary pointer-events-none" />
                     </div>
                   </div>
                 )}
 
                 {/* Stepper Row */}
                 <div className="flex items-center justify-between pt-1 text-xs">
-                  <span className="text-slate-500 text-[11px]">
+                  <span className="text-muted-foreground text-[11px]">
                     Thành tiền:{" "}
-                    <strong className="text-slate-800 dark:text-slate-200">
+                    <strong className="text-foreground font-mono">
                       {formatVND(item.price * item.quantity)}
                     </strong>
                   </span>
 
-                  <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-0.5">
+                  <div className="flex items-center rounded-xl border border-border bg-secondary/50 p-0.5">
                     <button
                       type="button"
                       disabled={item.quantity <= (item.minQuantity || 1)}
                       onClick={() => updateQuantity(item.productId, -1)}
-                      className="flex h-6 w-6 items-center justify-center rounded text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-30"
+                      className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-foreground hover:bg-background disabled:opacity-30 transition-colors focus-visible:ring-2 focus-visible:ring-ring"
+                      aria-label="Giảm số lượng"
                     >
-                      <Minus className="h-3 w-3" />
+                      <Minus className="h-4 w-4" />
                     </button>
-                    <span className="w-9 text-center font-bold text-slate-900 dark:text-white text-xs">
+                    <span className="w-10 text-center font-mono font-bold text-foreground text-xs">
                       {item.quantity}
                     </span>
                     <button
                       type="button"
                       onClick={() => updateQuantity(item.productId, 1)}
-                      className="flex h-6 w-6 items-center justify-center rounded text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                      className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-foreground hover:bg-background transition-colors focus-visible:ring-2 focus-visible:ring-ring"
+                      aria-label="Tăng số lượng"
                     >
-                      <Plus className="h-3 w-3" />
+                      <Plus className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
@@ -226,18 +229,18 @@ export default function CartDrawer() {
           ) : (
             /* Empty State */
             <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 mb-3">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary text-muted-foreground mb-3">
                 <PackageX className="h-8 w-8" />
               </div>
-              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+              <h3 className="text-sm font-bold text-foreground">
                 Giỏ hàng trống
               </h3>
-              <p className="mt-1 text-xs text-slate-500 max-w-xs">
+              <p className="mt-1 text-xs text-muted-foreground max-w-xs">
                 Chưa có sản phẩm nào trong giỏ hàng.
               </p>
               <button
                 onClick={closeCart}
-                className="mt-4 rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
+                className="mt-4 min-h-[44px] rounded-xl bg-primary px-5 py-2.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm"
               >
                 Xem sản phẩm
               </button>
@@ -247,10 +250,10 @@ export default function CartDrawer() {
 
         {/* Footer / Total & Checkout CTA */}
         {items.length > 0 && (
-          <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/60 p-5 space-y-3 shrink-0">
+          <div className="border-t border-border bg-card/80 p-5 space-y-3 shrink-0">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-500">Tạm tính ({selectedCount} mục):</span>
-              <span className="text-base font-extrabold text-blue-600 dark:text-blue-400">
+              <span className="text-muted-foreground">Tạm tính ({selectedCount} mục):</span>
+              <span className="text-base font-extrabold text-primary font-mono">
                 {formatVND(selectedSubtotal)}
               </span>
             </div>
@@ -259,7 +262,7 @@ export default function CartDrawer() {
               <Link
                 href="/cart"
                 onClick={closeCart}
-                className="flex h-10 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                className="flex h-11 min-h-[44px] items-center justify-center rounded-xl border border-border bg-secondary text-xs font-semibold text-secondary-foreground hover:bg-secondary/80 transition-colors focus-visible:ring-2 focus-visible:ring-ring"
               >
                 Xem giỏ hàng
               </Link>
@@ -267,14 +270,14 @@ export default function CartDrawer() {
               <button
                 onClick={handleCheckoutSelected}
                 disabled={selectedItems.length === 0}
-                className="flex h-10 items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-3 text-xs font-bold text-white hover:bg-blue-700 disabled:opacity-50 transition-all shadow-md shadow-blue-600/20"
+                className="flex h-11 min-h-[44px] items-center justify-center gap-1.5 rounded-xl bg-primary px-3 text-xs font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-all shadow-md shadow-primary/20 focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <span>Thanh toán</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </div>
 
-            <div className="text-[11px] text-slate-400 text-center">
+            <div className="text-[11px] text-muted-foreground text-center">
               <span>Đơn hàng được giữ trong 15 phút sau khi tạo đơn</span>
             </div>
           </div>

@@ -29,6 +29,7 @@ import {
   ArrowUpRight,
   Info,
 } from "lucide-react";
+import { DEFAULT_CLAUDE_MODEL_ID } from "@/lib/constants/ai-models";
 
 interface UsageData {
   totalCost?: number;
@@ -314,32 +315,32 @@ export default function CheckUsageClient() {
     <div className="w-full max-w-6xl mx-auto space-y-8 px-4 sm:px-6 py-6">
       {/* Hero Header */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1.5 text-xs font-semibold text-purple-400 backdrop-blur-sm">
-          <Zap className="h-3.5 w-3.5 text-purple-400" />
+        <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1.5 text-xs font-semibold text-purple-700 dark:text-purple-300 backdrop-blur-sm">
+          <Zap className="h-3.5 w-3.5 text-purple-700 dark:text-purple-300" />
           <span>Hệ Thống Tra Cứu Quota & Usage Thời Gian Thực</span>
         </div>
 
-        <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+        <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
           Kiểm Tra Hạn Mức{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">
             API Claude & Cursor
           </span>
         </h1>
 
-        <p className="max-w-2xl mx-auto text-xs sm:text-sm text-slate-400">
+        <p className="max-w-2xl mx-auto text-xs sm:text-sm text-muted-foreground">
           Tra cứu số dư credit, hạn mức ngày, nhật ký request và tình trạng hoạt động của API Key mua tại KhoDEE hoặc đối tác.
         </p>
       </div>
 
       {/* Input Box Card */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 sm:p-7 shadow-2xl backdrop-blur-md">
-        <label className="block text-xs sm:text-sm font-semibold text-slate-200 mb-2.5">
+      <div className="rounded-2xl border border-border bg-card p-5 sm:p-7 shadow-xs backdrop-blur-md">
+        <label className="block text-xs sm:text-sm font-semibold text-foreground mb-2.5">
           Nhập mã API Key (sk-ant-api... hoặc sk-...)
         </label>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="relative flex-1">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-foreground">
               <Key className="h-4 w-4" />
             </div>
 
@@ -351,14 +352,14 @@ export default function CheckUsageClient() {
                 if (e.key === "Enter") fetchUsageData(apiKey);
               }}
               placeholder="Dán mã API Key tại đây (sk-ant-...)"
-              className="w-full rounded-xl border border-slate-700/80 bg-slate-950/80 pl-10 pr-24 py-3 text-sm font-mono text-slate-100 placeholder-slate-500 focus:border-indigo-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 transition-all"
+              className="w-full min-h-[44px] rounded-xl border border-input bg-background pl-10 pr-24 py-2.5 text-sm font-mono text-foreground placeholder-muted-foreground focus:border-primary focus:outline-hidden focus:ring-2 focus:ring-primary/20 transition-all"
             />
 
-            <div className="absolute inset-y-0 right-0 pr-2 flex items-center gap-1">
+            <div className="absolute inset-y-0 right-0 pr-1.5 flex items-center gap-1">
               <button
                 type="button"
                 onClick={() => setShowKey(!showKey)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+                className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
                 title={showKey ? "Ẩn Key" : "Hiện Key"}
               >
                 {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -367,7 +368,7 @@ export default function CheckUsageClient() {
               <button
                 type="button"
                 onClick={handlePaste}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+                className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
                 title="Dán từ Clipboard"
               >
                 <ClipboardPaste className="h-4 w-4" />
@@ -379,7 +380,7 @@ export default function CheckUsageClient() {
             type="button"
             disabled={loading || !apiKey.trim()}
             onClick={() => fetchUsageData(apiKey)}
-            className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 text-white font-semibold text-sm px-6 py-3 shadow-lg shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98] shrink-0"
+            className="min-h-[44px] inline-flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm px-6 py-2.5 shadow-xs disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98] shrink-0"
           >
             {loading ? (
               <>
@@ -397,9 +398,9 @@ export default function CheckUsageClient() {
 
         {/* Status notice */}
         {errorMsg && (
-          <div className="mt-4 flex flex-col gap-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300">
+          <div className="mt-4 flex flex-col gap-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-700 dark:text-rose-300">
             <div className="flex items-start gap-2.5">
-              <AlertCircle className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" />
+              <AlertCircle className="h-4 w-4 text-rose-700 dark:text-rose-400 shrink-0 mt-0.5" />
               <span className="leading-relaxed font-medium">{errorMsg}</span>
             </div>
             {directUrl && (
@@ -408,10 +409,10 @@ export default function CheckUsageClient() {
                   href={directUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/25 hover:bg-rose-500/35 border border-rose-500/40 text-white font-bold transition-all shadow-sm"
+                  className="min-h-[44px] inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold transition-all shadow-sm"
                 >
                   <span>Mở cổng tra cứu trực tiếp của NCC (GenzShop)</span>
-                  <ArrowUpRight className="h-4 w-4 text-rose-300" />
+                  <ArrowUpRight className="h-4 w-4 text-rose-100" />
                 </a>
               </div>
             )}
@@ -419,13 +420,13 @@ export default function CheckUsageClient() {
         )}
 
         {/* Fallback direct link note */}
-        <div className="mt-3 flex items-center justify-between text-[11px] text-slate-400">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground">
           <span>💡 Nếu hệ thống tự động gặp tường lửa NCC, bạn có thể tra cứu trực tiếp:</span>
           <a
             href="https://genzshop.vn/check-usage"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-indigo-400 hover:text-indigo-300 font-semibold hover:underline"
+            className="min-h-[44px] inline-flex items-center gap-1 text-primary hover:underline font-semibold"
           >
             <span>Cổng NCC GenzShop</span>
             <ArrowUpRight className="h-3 w-3" />
@@ -433,8 +434,8 @@ export default function CheckUsageClient() {
         </div>
 
         {successMsg && (
-          <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-300">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+          <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-700 dark:text-emerald-300">
+            <CheckCircle2 className="h-4 w-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
             <span>{successMsg}</span>
           </div>
         )}
@@ -446,44 +447,44 @@ export default function CheckUsageClient() {
           {/* Top Metric Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Card 1: Còn lại */}
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 backdrop-blur-sm relative overflow-hidden">
-              <div className="flex items-center justify-between text-slate-400 mb-2">
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-xs relative overflow-hidden">
+              <div className="flex items-center justify-between text-muted-foreground mb-2">
                 <span className="text-xs font-medium uppercase tracking-wider">Hạn mức khả dụng</span>
-                <Zap className="h-4 w-4 text-emerald-400" />
+                <Zap className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-extrabold text-white font-mono tracking-tight">
+                <span className="text-3xl font-extrabold text-foreground font-mono tracking-tight">
                   {remainingPercent.toFixed(1)}%
                 </span>
-                <span className="text-xs text-emerald-400 font-semibold">Còn lại</span>
+                <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">Còn lại</span>
               </div>
-              <div className="mt-3 w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div className="mt-3 w-full bg-muted h-2 rounded-full overflow-hidden">
                 <div
                   className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500"
                   style={{ width: `${remainingPercent}%` }}
                 />
               </div>
-              <p className="mt-2 text-[11px] text-slate-400">
-                Key: <code className="text-slate-300 font-mono">{maskKey(apiKey)}</code>
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                Key: <code className="text-foreground font-mono font-medium">{maskKey(apiKey)}</code>
               </p>
             </div>
 
             {/* Card 2: Chi phí & Hạn mức */}
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 backdrop-blur-sm">
-              <div className="flex items-center justify-between text-slate-400 mb-2">
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-xs">
+              <div className="flex items-center justify-between text-muted-foreground mb-2">
                 <span className="text-xs font-medium uppercase tracking-wider">Tổng chi phí</span>
-                <DollarSign className="h-4 w-4 text-blue-400" />
+                <DollarSign className="h-4 w-4 text-blue-500 dark:text-blue-400" />
               </div>
-              <div className="text-3xl font-extrabold text-white font-mono tracking-tight">
+              <div className="text-3xl font-extrabold text-foreground font-mono tracking-tight">
                 {formatUsd(usageData.totalCost)}
               </div>
-              <p className="mt-2 text-xs text-slate-400">
+              <p className="mt-2 text-xs text-muted-foreground">
                 Hạn mức tối đa:{" "}
-                <span className="font-semibold text-slate-200">
+                <span className="font-semibold text-foreground">
                   {usageData.costLimit ? formatUsd(usageData.costLimit) : "Không giới hạn"}
                 </span>
               </p>
-              <div className="mt-3 w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div className="mt-3 w-full bg-muted h-2 rounded-full overflow-hidden">
                 <div
                   className="bg-blue-500 h-full rounded-full transition-all duration-500"
                   style={{ width: `${creditUsedPercent}%` }}
@@ -492,42 +493,42 @@ export default function CheckUsageClient() {
             </div>
 
             {/* Card 3: Tổng Requests */}
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 backdrop-blur-sm">
-              <div className="flex items-center justify-between text-slate-400 mb-2">
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-xs">
+              <div className="flex items-center justify-between text-muted-foreground mb-2">
                 <span className="text-xs font-medium uppercase tracking-wider">Tổng Requests</span>
-                <TrendingUp className="h-4 w-4 text-purple-400" />
+                <TrendingUp className="h-4 w-4 text-purple-500 dark:text-purple-400" />
               </div>
-              <div className="text-3xl font-extrabold text-white font-mono tracking-tight">
+              <div className="text-3xl font-extrabold text-foreground font-mono tracking-tight">
                 {formatCompactNumber(usageData.totalRequests)}
               </div>
-              <p className="mt-2 text-xs text-slate-400">
+              <p className="mt-2 text-xs text-muted-foreground">
                 Hôm nay đã dùng:{" "}
-                <span className="font-semibold text-purple-300 font-mono">
+                <span className="font-semibold text-purple-600 dark:text-purple-300 font-mono">
                   {formatUsd(usageData.dailyCostUsed)}
                 </span>
               </p>
-              <p className="mt-1 text-[11px] text-slate-500">
+              <p className="mt-1 text-[11px] text-muted-foreground">
                 Hạn mức ngày: {usageData.dailyCostLimit ? formatUsd(usageData.dailyCostLimit) : "Mặc định"}
               </p>
             </div>
 
             {/* Card 4: Tổng Tokens */}
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 backdrop-blur-sm">
-              <div className="flex items-center justify-between text-slate-400 mb-2">
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-xs">
+              <div className="flex items-center justify-between text-muted-foreground mb-2">
                 <span className="text-xs font-medium uppercase tracking-wider">Tổng Tokens</span>
-                <Cpu className="h-4 w-4 text-amber-400" />
+                <Cpu className="h-4 w-4 text-amber-600 dark:text-amber-400" />
               </div>
-              <div className="text-3xl font-extrabold text-white font-mono tracking-tight">
+              <div className="text-3xl font-extrabold text-foreground font-mono tracking-tight">
                 {formatCompactNumber(usageData.totalTokens)}
               </div>
-              <div className="mt-2 flex items-center justify-between text-xs text-slate-400">
+              <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
                 <span>Hết hạn:</span>
-                <span className="text-slate-300 font-medium">{formatDate(usageData.expiresAt)}</span>
+                <span className="text-foreground font-medium">{formatDate(usageData.expiresAt)}</span>
               </div>
-              <div className="mt-1 flex items-center justify-between text-xs text-slate-400">
+              <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
                 <span>Trạng thái:</span>
-                <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   {usageData.status || "Hoạt động"}
                 </span>
               </div>
@@ -535,117 +536,117 @@ export default function CheckUsageClient() {
           </div>
 
           {/* Tab Navigation */}
-          <div className="border-b border-slate-800 flex items-center gap-1 sm:gap-2 overflow-x-auto pb-1 text-sm font-semibold">
+          <div className="border-b border-border flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 text-sm font-semibold">
             <button
               type="button"
               onClick={() => handleTabChange("overview")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all whitespace-nowrap ${
+              className={`min-h-[44px] flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all whitespace-nowrap ${
                 activeTab === "overview"
-                  ? "bg-slate-800 text-white shadow-sm border border-slate-700"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+                  ? "bg-primary text-primary-foreground shadow-xs border border-primary/20"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
               }`}
             >
-              <Layers className="h-4 w-4 text-indigo-400" />
+              <Layers className={`h-4 w-4 ${activeTab === "overview" ? "text-primary-foreground" : "text-indigo-600 dark:text-indigo-400"}`} />
               <span>Tổng quan</span>
             </button>
 
             <button
               type="button"
               onClick={() => handleTabChange("daily")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all whitespace-nowrap ${
+              className={`min-h-[44px] flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all whitespace-nowrap ${
                 activeTab === "daily"
-                  ? "bg-slate-800 text-white shadow-sm border border-slate-700"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+                  ? "bg-primary text-primary-foreground shadow-xs border border-primary/20"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
               }`}
             >
-              <Calendar className="h-4 w-4 text-cyan-400" />
+              <Calendar className={`h-4 w-4 ${activeTab === "daily" ? "text-primary-foreground" : "text-cyan-700 dark:text-cyan-400"}`} />
               <span>Theo ngày ({dailyData.length})</span>
             </button>
 
             <button
               type="button"
               onClick={() => handleTabChange("overage")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all whitespace-nowrap ${
+              className={`min-h-[44px] flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all whitespace-nowrap ${
                 activeTab === "overage"
-                  ? "bg-slate-800 text-white shadow-sm border border-slate-700"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+                  ? "bg-primary text-primary-foreground shadow-xs border border-primary/20"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
               }`}
             >
-              <Activity className="h-4 w-4 text-emerald-400" />
+              <Activity className={`h-4 w-4 ${activeTab === "overage" ? "text-primary-foreground" : "text-emerald-600 dark:text-emerald-400"}`} />
               <span>Vượt mức (Overage)</span>
             </button>
 
             <button
               type="button"
               onClick={() => handleTabChange("requests")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all whitespace-nowrap ${
+              className={`min-h-[44px] flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all whitespace-nowrap ${
                 activeTab === "requests"
-                  ? "bg-slate-800 text-white shadow-sm border border-slate-700"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+                  ? "bg-primary text-primary-foreground shadow-xs border border-primary/20"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
               }`}
             >
-              <ListOrdered className="h-4 w-4 text-purple-400" />
+              <ListOrdered className={`h-4 w-4 ${activeTab === "requests" ? "text-primary-foreground" : "text-purple-600 dark:text-purple-400"}`} />
               <span>Lịch sử Request</span>
             </button>
           </div>
 
           {/* TAB 1: OVERVIEW DETAILS */}
           {activeTab === "overview" && (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 space-y-5">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Info className="h-4 w-4 text-indigo-400" />
+            <div className="rounded-2xl border border-border bg-card text-card-foreground p-6 space-y-5 shadow-xs">
+              <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+                <Info className="h-4 w-4 text-primary" />
                 <span>Chi tiết thông số kỹ thuật Key</span>
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
-                  <span className="text-slate-400">Mã Key nhận dạng:</span>
-                  <span className="font-mono font-semibold text-slate-200">{maskKey(apiKey)}</span>
+                <div className="flex items-center justify-between p-3.5 rounded-xl bg-muted/40 border border-border/80">
+                  <span className="text-muted-foreground">Mã Key nhận dạng:</span>
+                  <span className="font-mono font-semibold text-foreground">{maskKey(apiKey)}</span>
                 </div>
 
-                <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
-                  <span className="text-slate-400">Gói phân hạng (Tier):</span>
-                  <span className="font-semibold text-indigo-300">{usageData.tierName || "Gói Tiêu Chuẩn"}</span>
+                <div className="flex items-center justify-between p-3.5 rounded-xl bg-muted/40 border border-border/80">
+                  <span className="text-muted-foreground">Gói phân hạng (Tier):</span>
+                  <span className="font-semibold text-primary">{usageData.tierName || "Gói Tiêu Chuẩn"}</span>
                 </div>
 
-                <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
-                  <span className="text-slate-400">Hạn mức Token:</span>
-                  <span className="font-semibold text-slate-200 font-mono">
+                <div className="flex items-center justify-between p-3.5 rounded-xl bg-muted/40 border border-border/80">
+                  <span className="text-muted-foreground">Hạn mức Token:</span>
+                  <span className="font-semibold text-foreground font-mono">
                     {usageData.tokenLimit ? formatCompactNumber(usageData.tokenLimit) : "Không giới hạn"}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
-                  <span className="text-slate-400">Hạn mức Chi phí (Cost limit):</span>
-                  <span className="font-semibold text-slate-200 font-mono">
+                <div className="flex items-center justify-between p-3.5 rounded-xl bg-muted/40 border border-border/80">
+                  <span className="text-muted-foreground">Hạn mức Chi phí (Cost limit):</span>
+                  <span className="font-semibold text-foreground font-mono">
                     {usageData.costLimit ? formatUsd(usageData.costLimit) : "Không giới hạn"}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
-                  <span className="text-slate-400">Chi phí tiêu thụ hôm nay:</span>
-                  <span className="font-semibold text-emerald-400 font-mono">
+                <div className="flex items-center justify-between p-3.5 rounded-xl bg-muted/40 border border-border/80">
+                  <span className="text-muted-foreground">Chi phí tiêu thụ hôm nay:</span>
+                  <span className="font-semibold text-emerald-700 dark:text-emerald-400 font-mono">
                     {formatUsd(usageData.dailyCostUsed)}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
-                  <span className="text-slate-400">Thời gian hết hạn:</span>
-                  <span className="font-medium text-slate-200">{formatDate(usageData.expiresAt)}</span>
+                <div className="flex items-center justify-between p-3.5 rounded-xl bg-muted/40 border border-border/80">
+                  <span className="text-muted-foreground">Thời gian hết hạn:</span>
+                  <span className="font-medium text-foreground">{formatDate(usageData.expiresAt)}</span>
                 </div>
               </div>
 
               {/* Quick Guide Link Banner */}
-              <div className="mt-6 rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div className="text-xs sm:text-sm text-indigo-200">
+              <div className="mt-6 rounded-xl border border-primary/20 bg-primary/5 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="text-xs sm:text-sm text-foreground">
                   Bạn cần kết nối Key này vào <strong>VS Code</strong>, <strong>Claude Desktop</strong> hoặc <strong>Cursor</strong>?
                 </div>
                 <Link
                   href="/huong-dan/api-claude"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-lg transition-all shadow-sm shrink-0"
+                  className="min-h-[44px] inline-flex items-center gap-1.5 text-xs font-bold text-primary-foreground bg-primary hover:bg-primary/90 px-4 py-2.5 rounded-xl transition-all shadow-xs shrink-0"
                 >
                   <span>Xem hướng dẫn kết nối 5 nền tảng</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
             </div>
@@ -653,23 +654,23 @@ export default function CheckUsageClient() {
 
           {/* TAB 2: DAILY TABLE */}
           {activeTab === "daily" && (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 space-y-4">
+            <div className="rounded-2xl border border-border bg-card text-card-foreground p-6 space-y-4 shadow-xs">
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-cyan-400" />
+                <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-cyan-700 dark:text-cyan-400" />
                   <span>Lịch sử sử dụng theo ngày</span>
                 </h3>
-                <span className="text-xs text-slate-400">Tổng cộng {dailyData.length} ngày</span>
+                <span className="text-xs text-muted-foreground">Tổng cộng {dailyData.length} ngày</span>
               </div>
 
               {dailyData.length === 0 ? (
-                <div className="text-center py-10 text-slate-500 text-sm">
+                <div className="text-center py-10 text-muted-foreground text-sm">
                   Chưa có dữ liệu tiêu thụ theo ngày cho API Key này.
                 </div>
               ) : (
-                <div className="overflow-x-auto rounded-xl border border-slate-800">
+                <div className="overflow-x-auto rounded-xl border border-border">
                   <table className="w-full text-left text-xs sm:text-sm">
-                    <thead className="bg-slate-950/80 text-slate-400 font-semibold border-b border-slate-800">
+                    <thead className="bg-muted/50 text-muted-foreground font-semibold border-b border-border">
                       <tr>
                         <th className="py-3 px-4">Ngày</th>
                         <th className="py-3 px-4 text-right">Lượt gọi</th>
@@ -680,7 +681,7 @@ export default function CheckUsageClient() {
                         <th className="py-3 px-4 text-right">Chi phí (USD)</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60 font-mono text-slate-300">
+                    <tbody className="divide-y divide-border font-mono text-muted-foreground">
                       {dailyData.map((row, idx) => {
                         const reqs = row.daily_requests ?? row.requests ?? 0;
                         const inputT = row.daily_input_tokens ?? row.input_tokens ?? 0;
@@ -690,14 +691,14 @@ export default function CheckUsageClient() {
                         const cost = row.daily_cost ?? row.cost ?? 0;
 
                         return (
-                          <tr key={idx} className="hover:bg-slate-800/40 transition-colors">
-                            <td className="py-3 px-4 font-sans font-medium text-slate-200">{row.date}</td>
+                          <tr key={idx} className="hover:bg-muted/30 transition-colors">
+                            <td className="py-3 px-4 font-sans font-medium text-foreground">{row.date}</td>
                             <td className="py-3 px-4 text-right">{formatCompactNumber(reqs)}</td>
-                            <td className="py-3 px-4 text-right text-slate-400">{formatCompactNumber(inputT)}</td>
-                            <td className="py-3 px-4 text-right text-slate-400">{formatCompactNumber(outputT)}</td>
-                            <td className="py-3 px-4 text-right text-cyan-400">{formatCompactNumber(cachedT)}</td>
-                            <td className="py-3 px-4 text-right font-bold text-white">{formatCompactNumber(totalT)}</td>
-                            <td className="py-3 px-4 text-right font-bold text-emerald-400">{formatUsd(cost)}</td>
+                            <td className="py-3 px-4 text-right text-muted-foreground">{formatCompactNumber(inputT)}</td>
+                            <td className="py-3 px-4 text-right text-muted-foreground">{formatCompactNumber(outputT)}</td>
+                            <td className="py-3 px-4 text-right text-cyan-700 dark:text-cyan-400">{formatCompactNumber(cachedT)}</td>
+                            <td className="py-3 px-4 text-right font-bold text-foreground">{formatCompactNumber(totalT)}</td>
+                            <td className="py-3 px-4 text-right font-bold text-emerald-700 dark:text-emerald-400">{formatUsd(cost)}</td>
                           </tr>
                         );
                       })}
@@ -710,43 +711,43 @@ export default function CheckUsageClient() {
 
           {/* TAB 3: OVERAGE */}
           {activeTab === "overage" && (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 space-y-5">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Activity className="h-4 w-4 text-emerald-400" />
+            <div className="rounded-2xl border border-border bg-card text-card-foreground p-6 space-y-5 shadow-xs">
+              <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+                <Activity className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
                 <span>Trạng thái Overage (Tiêu dùng vượt mức)</span>
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 text-sm">
-                  <span className="text-slate-400 block text-xs">Trạng thái Overage</span>
+                <div className="p-4 rounded-xl bg-muted/40 border border-border text-sm">
+                  <span className="text-muted-foreground block text-xs">Trạng thái Overage</span>
                   <span
                     className={`inline-block mt-2 font-bold px-2.5 py-1 rounded-full text-xs ${
                       overageData?.allow_overage || overageData?.allowOverage
-                        ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                        : "bg-slate-800 text-slate-400 border border-slate-700"
+                        ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30"
+                        : "bg-muted text-muted-foreground border border-border"
                     }`}
                   >
                     {overageData?.allow_overage || overageData?.allowOverage ? "Đang Bật" : "Không áp dụng"}
                   </span>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 text-sm">
-                  <span className="text-slate-400 block text-xs">Hôm nay tiêu vượt</span>
-                  <span className="text-xl font-bold font-mono text-white mt-1 block">
+                <div className="p-4 rounded-xl bg-muted/40 border border-border text-sm">
+                  <span className="text-muted-foreground block text-xs">Hôm nay tiêu vượt</span>
+                  <span className="text-xl font-bold font-mono text-foreground mt-1 block">
                     {formatUsd(overageData?.today_overage_amount || overageData?.todayOverageAmount)}
                   </span>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 text-sm">
-                  <span className="text-slate-400 block text-xs">Tổng chi phí vượt mức</span>
-                  <span className="text-xl font-bold font-mono text-amber-400 mt-1 block">
+                <div className="p-4 rounded-xl bg-muted/40 border border-border text-sm">
+                  <span className="text-muted-foreground block text-xs">Tổng chi phí vượt mức</span>
+                  <span className="text-xl font-bold font-mono text-amber-700 dark:text-amber-400 mt-1 block">
                     {formatUsd(overageData?.total_overage || overageData?.totalOverage)}
                   </span>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 text-sm">
-                  <span className="text-slate-400 block text-xs">Ngày Reset tiếp theo</span>
-                  <span className="text-xs font-semibold text-slate-300 mt-2 block">
+                <div className="p-4 rounded-xl bg-muted/40 border border-border text-sm">
+                  <span className="text-muted-foreground block text-xs">Ngày Reset tiếp theo</span>
+                  <span className="text-xs font-semibold text-foreground mt-2 block">
                     {formatDate(overageData?.overage_reset_at || overageData?.overageResetAt)}
                   </span>
                 </div>
@@ -754,21 +755,21 @@ export default function CheckUsageClient() {
 
               {/* Overage Days Table if any */}
               {overageData?.days && overageData.days.length > 0 && (
-                <div className="overflow-x-auto rounded-xl border border-slate-800 mt-4">
+                <div className="overflow-x-auto rounded-xl border border-border mt-4">
                   <table className="w-full text-left text-xs sm:text-sm">
-                    <thead className="bg-slate-950/80 text-slate-400 font-semibold border-b border-slate-800">
+                    <thead className="bg-muted/50 text-muted-foreground font-semibold border-b border-border">
                       <tr>
                         <th className="py-3 px-4">Ngày</th>
                         <th className="py-3 px-4 text-right">Chi phí thực tế</th>
                         <th className="py-3 px-4 text-right">Chi phí vượt mức</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60 font-mono text-slate-300">
+                    <tbody className="divide-y divide-border font-mono text-muted-foreground">
                       {overageData.days.map((row, idx) => (
-                        <tr key={idx} className="hover:bg-slate-800/40">
-                          <td className="py-3 px-4 font-sans text-slate-200">{row.date}</td>
+                        <tr key={idx} className="hover:bg-muted/30">
+                          <td className="py-3 px-4 font-sans text-foreground">{row.date}</td>
                           <td className="py-3 px-4 text-right">{formatUsd(row.daily_cost)}</td>
-                          <td className="py-3 px-4 text-right font-bold text-amber-400">
+                          <td className="py-3 px-4 text-right font-bold text-amber-700 dark:text-amber-400">
                             {formatUsd(row.overage_cost)}
                           </td>
                         </tr>
@@ -782,10 +783,10 @@ export default function CheckUsageClient() {
 
           {/* TAB 4: REQUESTS LOG */}
           {activeTab === "requests" && (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 space-y-4">
+            <div className="rounded-2xl border border-border bg-card text-card-foreground p-6 space-y-4 shadow-xs">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <ListOrdered className="h-4 w-4 text-purple-400" />
+                <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+                  <ListOrdered className="h-4 w-4 text-primary" />
                   <span>Nhật ký Request chi tiết (Gần nhất)</span>
                 </h3>
 
@@ -793,38 +794,38 @@ export default function CheckUsageClient() {
                   type="button"
                   onClick={() => fetchRequests(apiKey, requestsPage)}
                   disabled={requestsLoading}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 transition-colors"
+                  className="min-h-[44px] flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card hover:bg-muted/40 text-xs font-semibold text-foreground transition-colors"
                 >
-                  <RefreshCw className={`h-3.5 w-3.5 ${requestsLoading ? "animate-spin" : ""}`} />
+                  <RefreshCw className={`h-4 w-4 ${requestsLoading ? "animate-spin" : ""}`} />
                   <span>Làm mới nhật ký</span>
                 </button>
               </div>
 
               {/* Summary of Loaded Requests */}
               {requestsPayload?.summary && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs font-mono">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 rounded-xl bg-muted/40 border border-border text-xs font-mono">
                   <div>
-                    <span className="text-slate-500 block">Tổng Input:</span>
-                    <span className="text-slate-200 font-bold">
+                    <span className="text-muted-foreground block">Tổng Input:</span>
+                    <span className="text-foreground font-bold">
                       {formatCompactNumber(requestsPayload.summary.inputTokens)}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block">Tổng Output:</span>
-                    <span className="text-slate-200 font-bold">
+                    <span className="text-muted-foreground block">Tổng Output:</span>
+                    <span className="text-foreground font-bold">
                       {formatCompactNumber(requestsPayload.summary.outputTokens)}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block">Cache Read / Write:</span>
-                    <span className="text-cyan-400 font-bold">
+                    <span className="text-muted-foreground block">Cache Read / Write:</span>
+                    <span className="text-cyan-700 dark:text-cyan-400 font-bold">
                       {formatCompactNumber(requestsPayload.summary.cacheRead)} /{" "}
                       {formatCompactNumber(requestsPayload.summary.cacheWrite)}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block">Tổng Chi Phí:</span>
-                    <span className="text-emerald-400 font-bold">
+                    <span className="text-muted-foreground block">Tổng Chi Phí:</span>
+                    <span className="text-emerald-700 dark:text-emerald-400 font-bold">
                       {formatUsd(requestsPayload.summary.totalCost || requestsPayload.summary.cost)}
                     </span>
                   </div>
@@ -833,18 +834,18 @@ export default function CheckUsageClient() {
 
               {/* Requests Table */}
               {requestsLoading ? (
-                <div className="text-center py-12 text-slate-400 flex flex-col items-center gap-2">
-                  <RefreshCw className="h-5 w-5 animate-spin text-purple-400" />
+                <div className="text-center py-12 text-muted-foreground flex flex-col items-center gap-2">
+                  <RefreshCw className="h-5 w-5 animate-spin text-primary" />
                   <span>Đang tải danh sách request...</span>
                 </div>
               ) : !requestsPayload?.requests || requestsPayload.requests.length === 0 ? (
-                <div className="text-center py-10 text-slate-500 text-sm">
+                <div className="text-center py-10 text-muted-foreground text-sm">
                   Chưa có nhật ký request nào cho API Key này.
                 </div>
               ) : (
-                <div className="overflow-x-auto rounded-xl border border-slate-800">
+                <div className="overflow-x-auto rounded-xl border border-border">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-950/80 text-slate-400 font-semibold border-b border-slate-800">
+                    <thead className="bg-muted/50 text-muted-foreground font-semibold border-b border-border">
                       <tr>
                         <th className="py-3 px-3">Thời gian</th>
                         <th className="py-3 px-3">Mô hình (Model)</th>
@@ -856,29 +857,29 @@ export default function CheckUsageClient() {
                         <th className="py-3 px-3 text-right">Chi phí</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60 font-mono text-slate-300">
+                    <tbody className="divide-y divide-border font-mono text-muted-foreground">
                       {requestsPayload.requests.map((r, idx) => (
-                        <tr key={idx} className="hover:bg-slate-800/40">
-                          <td className="py-2.5 px-3 whitespace-nowrap text-slate-400 font-sans">
+                        <tr key={idx} className="hover:bg-muted/30">
+                          <td className="py-2.5 px-3 whitespace-nowrap text-muted-foreground font-sans">
                             {formatDate(r.timestamp || r.created_at || r.time)}
                           </td>
                           <td className="py-2.5 px-3">
-                            <span className="px-2 py-0.5 rounded-md bg-purple-500/10 border border-purple-500/20 text-purple-300 font-semibold">
-                              {r.model || "claude-3-5-sonnet"}
+                            <span className="px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary font-mono font-semibold text-xs">
+                              {r.model || DEFAULT_CLAUDE_MODEL_ID}
                             </span>
                           </td>
-                          <td className="py-2.5 px-3 text-right text-slate-400">{formatCompactNumber(r.input_tokens)}</td>
-                          <td className="py-2.5 px-3 text-right text-slate-400">{formatCompactNumber(r.output_tokens)}</td>
-                          <td className="py-2.5 px-3 text-right text-cyan-400">
+                          <td className="py-2.5 px-3 text-right text-muted-foreground">{formatCompactNumber(r.input_tokens)}</td>
+                          <td className="py-2.5 px-3 text-right text-muted-foreground">{formatCompactNumber(r.output_tokens)}</td>
+                          <td className="py-2.5 px-3 text-right text-cyan-700 dark:text-cyan-400">
                             {formatCompactNumber(r.cache_read_tokens || r.cache_creation_tokens)}
                           </td>
-                          <td className="py-2.5 px-3 text-right text-amber-400">
+                          <td className="py-2.5 px-3 text-right text-amber-700 dark:text-amber-400">
                             {r.reasoning_tokens ? formatCompactNumber(r.reasoning_tokens) : "--"}
                           </td>
-                          <td className="py-2.5 px-3 text-right text-slate-400">
+                          <td className="py-2.5 px-3 text-right text-muted-foreground">
                             {r.latency ? `${Math.round(r.latency)}ms` : "--"}
                           </td>
-                          <td className="py-2.5 px-3 text-right font-bold text-emerald-400">{formatUsd(r.cost)}</td>
+                          <td className="py-2.5 px-3 text-right font-bold text-emerald-700 dark:text-emerald-400">{formatUsd(r.cost)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -888,8 +889,8 @@ export default function CheckUsageClient() {
 
               {/* Pagination Controls */}
               {requestsPayload && (requestsPayload.total || 0) > requestsLimit && (
-                <div className="flex items-center justify-between pt-3 border-t border-slate-800 text-xs">
-                  <span className="text-slate-400">
+                <div className="flex items-center justify-between pt-3 border-t border-border text-xs">
+                  <span className="text-muted-foreground">
                     Trang {requestsPage} / {Math.ceil((requestsPayload.total || 0) / requestsLimit)} (Tổng{" "}
                     {requestsPayload.total} requests)
                   </span>
@@ -899,7 +900,8 @@ export default function CheckUsageClient() {
                       type="button"
                       disabled={requestsPage <= 1 || requestsLoading}
                       onClick={() => fetchRequests(apiKey, requestsPage - 1)}
-                      className="p-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-40"
+                      className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-xl border border-border bg-card text-foreground hover:bg-muted/40 disabled:opacity-40 transition-colors"
+                      title="Trang trước"
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </button>
@@ -909,7 +911,8 @@ export default function CheckUsageClient() {
                         requestsPage >= Math.ceil((requestsPayload.total || 0) / requestsLimit) || requestsLoading
                       }
                       onClick={() => fetchRequests(apiKey, requestsPage + 1)}
-                      className="p-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-40"
+                      className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-xl border border-border bg-card text-foreground hover:bg-muted/40 disabled:opacity-40 transition-colors"
+                      title="Trang sau"
                     >
                       <ChevronRight className="h-4 w-4" />
                     </button>
@@ -924,32 +927,32 @@ export default function CheckUsageClient() {
       {/* Empty State / How to use guide when no data yet */}
       {!usageData && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-4">
-          <div className="rounded-2xl border border-slate-800/80 bg-slate-900/40 p-5 space-y-2.5">
-            <div className="h-9 w-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-2.5 shadow-xs">
+            <div className="h-10 w-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
               <Zap className="h-5 w-5" />
             </div>
-            <h4 className="text-sm font-bold text-slate-100">Cập nhật tức thời</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <h4 className="text-sm font-bold text-foreground">Cập nhật tức thời</h4>
+            <p className="text-xs text-muted-foreground leading-relaxed">
               Dữ liệu được truy vấn trực tiếp từ hệ thống đối tác máy chủ, đảm bảo số dư và lưu lượng luôn đồng bộ 100%.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-800/80 bg-slate-900/40 p-5 space-y-2.5">
-            <div className="h-9 w-9 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-2.5 shadow-xs">
+            <div className="h-10 w-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
               <ShieldCheck className="h-5 w-5" />
             </div>
-            <h4 className="text-sm font-bold text-slate-100">Bảo mật Token</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <h4 className="text-sm font-bold text-foreground">Bảo mật Token</h4>
+            <p className="text-xs text-muted-foreground leading-relaxed">
               Mã Key của bạn không bao giờ bị lưu trữ vào cơ sở dữ liệu khi tra cứu. Kết nối mã hóa SSL chuẩn bảo mật cao.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-800/80 bg-slate-900/40 p-5 space-y-2.5">
-            <div className="h-9 w-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-2.5 shadow-xs">
+            <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
               <BarChart3 className="h-5 w-5" />
             </div>
-            <h4 className="text-sm font-bold text-slate-100">Đầy đủ 4 danh mục</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <h4 className="text-sm font-bold text-foreground">Đầy đủ 4 danh mục</h4>
+            <p className="text-xs text-muted-foreground leading-relaxed">
               Theo dõi hạn mức tổng thể, bảng phân tích theo từng ngày, thông số overage và toàn bộ lịch sử các request.
             </p>
           </div>

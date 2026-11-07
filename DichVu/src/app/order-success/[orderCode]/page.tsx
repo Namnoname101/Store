@@ -152,7 +152,7 @@ export default async function OrderSuccessPage({
       </div>
 
       {/* Return Home Navigation */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-slate-200/90 dark:border-zinc-800/80 bg-white/95 dark:bg-[#0b0f19] p-5 shadow-sm dark:shadow-none">
         <div className="text-xs text-slate-400 text-center sm:text-left">
           Đơn hàng đã được lưu trữ trong hệ thống.
           {order.customerEmail ? (
@@ -164,7 +164,7 @@ export default async function OrderSuccessPage({
 
         <Link
           href="/"
-          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-xs font-bold text-white transition-all shadow-md shadow-blue-600/30 hover:scale-[1.02] shrink-0"
+          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-5 py-2.5 text-xs font-bold text-white transition-all shadow-sm shadow-blue-500/25 shrink-0"
         >
           <span>Khám phá thêm sản phẩm khác</span>
           <ArrowRight className="h-4 w-4" />

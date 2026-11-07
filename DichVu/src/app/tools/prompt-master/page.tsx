@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function PromptMasterPage() {
   return (
-    <div className="min-h-screen bg-slate-50/60 dark:bg-[#070b14] py-10 sm:py-16">
+    <div className="min-h-screen bg-background text-foreground py-10 sm:py-16">
       <PromptMasterClient />
     </div>
   );

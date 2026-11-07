@@ -42,62 +42,70 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
   // ==========================================
   // 2. CÁC GÓI CODEX API
   // ==========================================
-  "codex-credit-10usd": {
-    title: "Hướng dẫn kích hoạt Codex API & ChatGPT bằng KhoDee-helper (1-Click)",
+    "codex-credit-10usd": {
+    title: "Hướng dẫn kích hoạt Codex API & ChatGPT bằng DaiTruong-helper (1-Click)",
     steps: [
       {
-        text: "Tải công cụ hỗ trợ cấu hình tự động KhoDee-helper.exe (dành cho Windows). Giải nén và mở file trực tiếp mà không cần cài đặt.",
+        text: "Bước 1 (Dành cho người mới): Cài đặt ứng dụng ChatGPT Desktop hoặc OpenAI Codex từ website chính thức của OpenAI (https://openai.com/chatgpt/download/) nếu máy bạn chưa cài.",
+        caption: "Bước 1: Tải và cài đặt phần mềm chính thức từ OpenAI",
+      },
+      {
+        text: "Bước 2: Tải công cụ cấu hình 1-Click DaiTruong-helper.zip (59 KB) tại trang cửa hàng. Giải nén và mở DaiTruong-helper.exe (không cần cài đặt).",
         image: "/images/guides/codex/step-1-open.png",
-        caption: "Bước 1: Khởi chạy KhoDee-helper.exe trên máy tính",
+        caption: "Bước 2: Khởi chạy DaiTruong-helper.exe trên máy tính",
       },
       {
-        text: "Sao chép mã API Key (sk-...) được bàn giao ở trên và dán vào ô nhập. Phần mềm tự động kiểm tra tên Token và số dư Quota khả dụng trực tiếp từ hệ thống.",
+        text: "Bước 3: Dán mã API Key (sk-...) được bàn giao ở trên vào ô nhập. Hệ thống tự động xác thực và hiển thị số dư Quota khả dụng.",
         image: "/images/guides/codex/step-2-key.png",
-        caption: "Bước 2: Dán mã API Key, hệ thống tự động xác thực số dư Quota",
+        caption: "Bước 3: Dán mã API Key, hệ thống tự động xác thực số dư Quota",
       },
       {
-        text: "Bấm nút 'Kích hoạt Codex'. Công cụ sẽ tự động thiết lập 100% tệp cấu hình config.toml và auth.json chuẩn xác vào thư mục %USERPROFILE%\\.codex chỉ trong 1 giây.",
+        text: "Bước 4: Bấm nút 'Kích hoạt Codex'. Tool sẽ tự động thiết lập 100% tệp cấu hình config.toml và auth.json chuẩn xác vào thư mục %USERPROFILE%\\.codex trong 1 giây.",
         image: "/images/guides/codex/step-3-activate.png",
-        caption: "Bước 3: Bấm 'Kích hoạt Codex' để tự động cấu hình toàn bộ hệ thống",
+        caption: "Bước 4: Bấm 'Kích hoạt Codex' để tự động cấu hình toàn bộ hệ thống",
       },
       {
-        text: "Bấm nút 'Mở ứng dụng ChatGPT' để khởi chạy ngay ứng dụng ChatGPT Windows App và bắt đầu lập trình cùng mô hình AI đỉnh cao gpt-6.1-sol.",
+        text: "Bước 5: Bấm nút 'Mở ứng dụng' để khởi chạy ngay ChatGPT Desktop / Codex và bắt đầu lập trình AI tốc độ cao.",
         image: "/images/guides/codex/step-4-chatgpt.png",
-        caption: "Bước 4: Bấm 'Mở ứng dụng ChatGPT' để bắt đầu sử dụng ngay lập tức",
+        caption: "Bước 5: Bấm 'Mở ứng dụng' để bắt đầu sử dụng ngay lập tức",
       },
-      "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Dán mã API Key này theo hướng dẫn tại /huong-dan/codex.",
-      "Kiểm tra hạn mức & lịch sử request thực tế thời gian thực tại: /developer/usage",
+      "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Điền Base URL: https://daitruongstore.fly.dev/v1 và dán API Key.",
+      "Tra cứu hạn mức & lịch sử request thực tế thời gian thực tại: /developer/usage",
     ],
-    note: "Hạn mức 5.000.000 quota points bảo lưu vĩnh viễn, tối ưu cho lập trình và ứng dụng ChatGPT qua các mô hình OpenAI GPT (GPT-4.5, OpenAI o3, o1, GPT-4o).",
+    note: "Hạn mức 5.000.000 quota points bảo lưu vĩnh viễn, tối ưu cho lập trình và ứng dụng ChatGPT qua các mô hình GPT-6 series (Astra, Sol, Luna), OpenAI o3 & o3-mini, o1 & o1-pro, GPT-4.5 High-EQ.",
     docsUrl: "/huong-dan/codex",
   },
-  "codex-credit-50usd": {
-    title: "Hướng dẫn kích hoạt Codex API & ChatGPT bằng KhoDee-helper (1-Click)",
+    "codex-credit-50usd": {
+    title: "Hướng dẫn kích hoạt Codex API & ChatGPT bằng DaiTruong-helper (1-Click)",
     steps: [
       {
-        text: "Tải công cụ hỗ trợ cấu hình tự động KhoDee-helper.exe (dành cho Windows). Giải nén và mở file trực tiếp mà không cần cài đặt.",
+        text: "Bước 1 (Dành cho người mới): Cài đặt ứng dụng ChatGPT Desktop hoặc OpenAI Codex từ website chính thức của OpenAI (https://openai.com/chatgpt/download/) nếu máy bạn chưa cài.",
+        caption: "Bước 1: Tải và cài đặt phần mềm chính thức từ OpenAI",
+      },
+      {
+        text: "Bước 2: Tải công cụ cấu hình 1-Click DaiTruong-helper.zip (59 KB) tại trang cửa hàng. Giải nén và mở DaiTruong-helper.exe (không cần cài đặt).",
         image: "/images/guides/codex/step-1-open.png",
-        caption: "Bước 1: Khởi chạy KhoDee-helper.exe trên máy tính",
+        caption: "Bước 2: Khởi chạy DaiTruong-helper.exe trên máy tính",
       },
       {
-        text: "Sao chép mã API Key (sk-...) được bàn giao ở trên và dán vào ô nhập. Phần mềm tự động kiểm tra tên Token và số dư Quota khả dụng trực tiếp từ hệ thống.",
+        text: "Bước 3: Dán mã API Key (sk-...) được bàn giao ở trên vào ô nhập. Hệ thống tự động xác thực và hiển thị số dư Quota khả dụng.",
         image: "/images/guides/codex/step-2-key.png",
-        caption: "Bước 2: Dán mã API Key, hệ thống tự động xác thực số dư Quota",
+        caption: "Bước 3: Dán mã API Key, hệ thống tự động xác thực số dư Quota",
       },
       {
-        text: "Bấm nút 'Kích hoạt Codex'. Công cụ sẽ tự động thiết lập 100% tệp cấu hình config.toml và auth.json chuẩn xác vào thư mục %USERPROFILE%\\.codex chỉ trong 1 giây.",
+        text: "Bước 4: Bấm nút 'Kích hoạt Codex'. Tool sẽ tự động thiết lập 100% tệp cấu hình config.toml và auth.json chuẩn xác vào thư mục %USERPROFILE%\\.codex trong 1 giây.",
         image: "/images/guides/codex/step-3-activate.png",
-        caption: "Bước 3: Bấm 'Kích hoạt Codex' để tự động cấu hình toàn bộ hệ thống",
+        caption: "Bước 4: Bấm 'Kích hoạt Codex' để tự động cấu hình toàn bộ hệ thống",
       },
       {
-        text: "Bấm nút 'Mở ứng dụng ChatGPT' để khởi chạy ngay ứng dụng ChatGPT Windows App và bắt đầu lập trình cùng mô hình AI đỉnh cao gpt-6.1-sol.",
+        text: "Bước 5: Bấm nút 'Mở ứng dụng' để khởi chạy ngay ChatGPT Desktop / Codex và bắt đầu lập trình AI tốc độ cao.",
         image: "/images/guides/codex/step-4-chatgpt.png",
-        caption: "Bước 4: Bấm 'Mở ứng dụng ChatGPT' để bắt đầu sử dụng ngay lập tức",
+        caption: "Bước 5: Bấm 'Mở ứng dụng' để bắt đầu sử dụng ngay lập tức",
       },
-      "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Dán mã API Key này theo hướng dẫn tại /huong-dan/codex.",
-      "Kiểm tra hạn mức & lịch sử request thực tế thời gian thực tại: /developer/usage",
+      "Tùy chọn cấu hình thủ công cho Cursor / VS Code / Cline: Chọn OpenAI Compatible > Điền Base URL: https://daitruongstore.fly.dev/v1 và dán API Key.",
+      "Tra cứu hạn mức & lịch sử request thực tế thời gian thực tại: /developer/usage",
     ],
-    note: "Gói 25.000.000 quota points tối ưu cho lập trình viên làm việc chuyên nghiệp hàng ngày với Cursor & ChatGPT Desktop qua mô hình GPT.",
+    note: "Hạn mức 25.000.000 quota points bảo lưu vĩnh viễn, tối ưu cho lập trình và ứng dụng ChatGPT qua các mô hình GPT-6 series (Astra, Sol, Luna), OpenAI o3 & o3-mini, o1 & o1-pro, GPT-4.5 High-EQ.",
     docsUrl: "/huong-dan/codex",
   },
 
@@ -113,11 +121,11 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Tự động hóa lập trình trực tiếp trong Terminal của VS Code",
       },
       {
-        text: "2. Claude AI Desktop (1-Click Khodee Gateway): Tải KhodeeGateway.exe (Google Drive) > Dán API Key > Bấm START. Tool tự động kiểm tra hạn mức, cấu hình và tự mở khóa tính năng Import chat từ Claude.ai. Xem hướng dẫn tại /huong-dan/api-claude.",
+        text: "2. Claude AI Desktop (1-Click DaiTruong Gateway): Tải DaiTruongGateway.exe (Google Drive) > Dán API Key > Bấm START. Tool tự động kiểm tra hạn mức, cấu hình và tự mở khóa tính năng Import chat từ Claude.ai. Xem hướng dẫn tại /huong-dan/api-claude.",
         caption: "Ứng dụng desktop chính thức của Claude trên PC/Mac",
       },
       {
-        text: "3. OpenClaw Agent: Khởi tạo openclaw onboard --install-daemon, dán cấu hình vào ~/.openclaw/openclaw.json để chạy Claude Opus 4.7 & Sonnet 4.6.",
+        text: "3. OpenClaw Agent: Khởi tạo openclaw onboard --install-daemon, dán cấu hình vào ~/.openclaw/openclaw.json để chạy Claude Opus 5.5 & Sonnet 5.5 (Thế hệ Claude 5.5 & 5.6).",
         caption: "Framework AI Agent chạy ngầm đa nhiệm",
       },
       {

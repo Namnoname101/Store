@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function CodexPage() {
   return (
-    <div className="min-h-screen bg-slate-50/60 dark:bg-[#070b14] py-8 sm:py-12">
+    <div className="min-h-screen bg-slate-50/60 dark:bg-[#0b0f19] py-8 sm:py-12">
       <CodexTopupClient />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 mt-12 space-y-4">

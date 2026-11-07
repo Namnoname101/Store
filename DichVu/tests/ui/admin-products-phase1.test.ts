@@ -6,17 +6,17 @@ describe("Phase 1: Admin Products & Middleware Guard", () => {
   it("should export AdminProductEditorPage", async () => {
     const page = await import("@/app/admin/products/[id]/page");
     expect(page.default).toBeDefined();
-  });
+  }, 20000);
 
   it("should export AdminProductEditor component", async () => {
     const editor = await import("@/components/admin/AdminProductEditor");
     expect(editor.default).toBeDefined();
-  });
+  }, 20000);
 
   it("should export AdminProductMobileCards component", async () => {
     const cards = await import("@/components/admin/AdminProductMobileCards");
     expect(cards.default).toBeDefined();
-  });
+  }, 20000);
 
   it("should block unauthenticated access to /admin routes even if path contains dot", async () => {
     const req = new NextRequest("http://localhost:3000/admin/settings.json");

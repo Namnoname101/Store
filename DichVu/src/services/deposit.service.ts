@@ -97,6 +97,7 @@ export interface DepositStatusResponse {
   isExpired: boolean;
   paidAt?: string | null;
   expiresAt: string;
+  createdAt: string;
   bankInfo: DepositBankInfo;
   qrCodeUrl: string;
 }
@@ -148,6 +149,7 @@ export async function getDepositOrderStatus(
     isExpired: currentStatus === DepositStatus.EXPIRED,
     paidAt: deposit.paidAt ? deposit.paidAt.toISOString() : null,
     expiresAt: deposit.expiresAt.toISOString(),
+    createdAt: deposit.createdAt ? deposit.createdAt.toISOString() : new Date().toISOString(),
     bankInfo,
     qrCodeUrl,
   };

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function DeveloperUsagePage() {
   return (
-    <div className="min-h-screen bg-slate-50/60 dark:bg-[#070b14] py-8 sm:py-12">
+    <div className="min-h-screen bg-background text-foreground py-8 sm:py-12">
       <UsageDashboardClient />
     </div>
   );

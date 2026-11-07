@@ -154,7 +154,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="mt-10 pt-6 border-t border-slate-200 dark:border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
           <div>
-            © {new Date().getFullYear()} KhoDEE. Bản quyền thuộc về hệ thống cung cấp tài nguyên MMO.
+            © {new Date().getFullYear()} DaiTruong Store. Bản quyền thuộc về hệ thống cung cấp tài nguyên MMO.
           </div>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1 text-emerald-500 font-mono">

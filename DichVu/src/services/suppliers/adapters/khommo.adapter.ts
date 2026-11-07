@@ -164,7 +164,7 @@ export class KhoMmoAdapter implements ISupplierAdapter {
 
       if (deliveredKeys.length === 0) {
         const parsed = extractDeliveredSecret(JSON.stringify(orderData));
-        if (parsed) deliveredKeys.push(parsed);
+        if (parsed.content) deliveredKeys.push(parsed.content);
       }
 
       return {

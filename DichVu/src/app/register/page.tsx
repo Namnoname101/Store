@@ -72,27 +72,27 @@ function RegisterForm() {
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Card */}
-        <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 p-8 shadow-2xl backdrop-blur-xl">
-          <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-card text-card-foreground p-8 shadow-xs backdrop-blur-xl">
+          <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
 
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 mb-4 shadow-inner">
+            <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 text-primary mb-4 shadow-inner">
               <UserPlus className="h-7 w-7" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
               Đăng ký tài khoản
             </h1>
-            <p className="mt-2 text-sm text-slate-400">
+            <p className="mt-2 text-sm text-muted-foreground">
               Tạo tài khoản để nạp tiền ví, thanh toán 1 chạm và nhận ưu đãi độc quyền
             </p>
           </div>
 
           {/* Error Banner */}
           {error && (
-            <div className="mb-6 flex items-center gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-sm text-red-400">
-              <AlertCircle className="h-5 w-5 shrink-0 text-red-400" />
+            <div className="mb-6 flex items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/10 p-3.5 text-sm text-destructive">
+              <AlertCircle className="h-5 w-5 shrink-0" />
               <span>{error}</span>
             </div>
           )}
@@ -100,8 +100,8 @@ function RegisterForm() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-slate-300 mb-1.5">
-                Tên đăng nhập <span className="text-red-400">*</span>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-foreground mb-1.5">
+                Tên đăng nhập <span className="text-destructive">*</span>
               </label>
               <div className="relative">
                 <input
@@ -110,15 +110,15 @@ function RegisterForm() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Ví dụ: quocbao99"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950/70 py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:border-indigo-500 focus:bg-slate-950 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                  className="w-full min-h-[44px] rounded-xl border border-input bg-background py-2.5 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all"
                 />
-                <User className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-slate-300 mb-1.5">
-                Email nhận thông báo <span className="text-slate-500 font-normal lowercase">(không bắt buộc)</span>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-foreground mb-1.5">
+                Email nhận thông báo <span className="text-muted-foreground font-normal lowercase">(không bắt buộc)</span>
               </label>
               <div className="relative">
                 <input
@@ -126,15 +126,15 @@ function RegisterForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950/70 py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:border-indigo-500 focus:bg-slate-950 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                  className="w-full min-h-[44px] rounded-xl border border-input bg-background py-2.5 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all"
                 />
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-slate-300 mb-1.5">
-                Mật khẩu (tối thiểu 6 ký tự) <span className="text-red-400">*</span>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-foreground mb-1.5">
+                Mật khẩu (tối thiểu 6 ký tự) <span className="text-destructive">*</span>
               </label>
               <div className="relative">
                 <input
@@ -143,15 +143,15 @@ function RegisterForm() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950/70 py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:border-indigo-500 focus:bg-slate-950 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                  className="w-full min-h-[44px] rounded-xl border border-input bg-background py-2.5 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all"
                 />
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-slate-300 mb-1.5">
-                Xác nhận lại mật khẩu <span className="text-red-400">*</span>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-foreground mb-1.5">
+                Xác nhận lại mật khẩu <span className="text-destructive">*</span>
               </label>
               <div className="relative">
                 <input
@@ -160,19 +160,19 @@ function RegisterForm() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950/70 py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:border-indigo-500 focus:bg-slate-950 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                  className="w-full min-h-[44px] rounded-xl border border-input bg-background py-2.5 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all"
                 />
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               </div>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/30 hover:from-indigo-500 hover:to-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-60 transition-all cursor-pointer"
+              className="w-full min-h-[44px] mt-2 flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary/90 py-3 text-sm font-bold text-primary-foreground shadow-xs disabled:opacity-60 transition-all cursor-pointer active:scale-95"
             >
               {loading ? (
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
               ) : (
                 <>
                   <span>Hoàn tất đăng ký</span>
@@ -183,11 +183,11 @@ function RegisterForm() {
           </form>
 
           {/* Footer Link */}
-          <div className="mt-6 pt-6 border-t border-slate-800 text-center text-sm text-slate-400">
+          <div className="mt-6 pt-6 border-t border-border text-center text-sm text-muted-foreground">
             Đã có tài khoản?{" "}
             <Link
               href={`/login${callbackUrl !== "/profile" ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ""}`}
-              className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
+              className="font-semibold text-primary hover:underline transition-colors min-h-[44px] inline-flex items-center"
             >
               Đăng nhập ngay
             </Link>

@@ -5,9 +5,9 @@ import { CartProvider } from "@/contexts/CartContext";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "KhoDEE - Kho Tài Khoản & Dịch Vụ Số. Uy tín, thanh toán nhanh gọn 24/7.",
+  title: "KhoDEE V2 - Chợ Tài Nguyên Số & Key Bản Quyền Tự Động 24/7",
   description:
-    "KhoDEE - Cung cấp tài khoản AI, API AI, tài nguyên và dịch vụ MMO tự động uy tín 24/7.",
+    "KhoDEE V2 - Hệ thống cung cấp API AI (Claude, Codex, OpenAI), Tài Khoản Bản Quyền & Nguyên Liệu Số tự động uy tín 24/7 qua VietQR.",
 };
 
 export default function RootLayout({
@@ -25,7 +25,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="font-sans min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-white antialiased flex flex-col selection:bg-blue-600 selection:text-white transition-colors duration-150 overflow-x-hidden w-full max-w-full"
+        className="font-sans min-h-screen bg-background text-foreground antialiased flex flex-col selection:bg-primary selection:text-primary-foreground transition-colors duration-150 overflow-x-hidden w-full max-w-full"
       >
         <ThemeProvider>
           <CartProvider>

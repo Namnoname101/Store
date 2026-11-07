@@ -107,7 +107,7 @@ export default function Navbar() {
             <div className="font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5 text-sm sm:text-base leading-tight">
               <span>Kho</span>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">DEE</span>
-              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-500/30">MMO HUB</span>
+              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20 dark:border-blue-500/30">V2</span>
             </div>
           </Link>
         </div>
@@ -123,7 +123,10 @@ export default function Navbar() {
             }`}
           >
             <span>Kho Hàng</span>
-            <span className="px-1.5 py-0.5 rounded-full bg-blue-500/10 dark:bg-blue-500/20 text-[10px] text-blue-600 dark:text-blue-300 font-bold">124</span>
+            <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold inline-flex items-center gap-1">
+              <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+              Live
+            </span>
           </Link>
           <Link
             href="/topup"
@@ -191,7 +194,7 @@ export default function Navbar() {
                     <Terminal className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                     <div className="flex flex-col">
                       <span className="font-semibold text-xs">Kích Hoạt App ChatGPT (1-Click)</span>
-                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Tool KhoDee-helper cho ChatGPT Windows & IDE</span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Tool KhoDEE-helper cho ChatGPT Windows & IDE</span>
                     </div>
                   </Link>
                   <Link
@@ -370,7 +373,7 @@ export default function Navbar() {
               <span>📊 Kiểm Tra Dung Lượng API Claude / Cursor</span>
             </Link>
             <Link href="/huong-dan/codex" onClick={() => setIsMobileMenuOpen(false)} className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2 text-emerald-500 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors col-span-2 font-bold">
-              <span>🚀 Kích Hoạt Ứng Dụng ChatGPT (1-Click KhoDee)</span>
+              <span>🚀 Kích Hoạt Ứng Dụng ChatGPT (1-Click KhoDEE)</span>
             </Link>
             <Link href="/huong-dan/api-claude" onClick={() => setIsMobileMenuOpen(false)} className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-2 text-indigo-500 dark:text-indigo-400 hover:bg-indigo-500/20 transition-colors col-span-2 font-bold">
               <span>📖 Hướng Dẫn Cấu Hình API Claude</span>
@@ -391,7 +394,7 @@ export default function Navbar() {
                 Đăng nhập tài khoản →
               </Link>
             )}
-            <span className="text-[10px] text-slate-400 font-mono">KhoDEE</span>
+            <span className="text-[10px] text-slate-400 font-mono">KhoDEE V2</span>
           </div>
         </div>
       )}
