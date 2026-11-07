@@ -11,6 +11,8 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-flash-lite-latest";
 // Internal API base URL – same host as the Next.js app
 const APP_INTERNAL_URL = process.env.NEXTAUTH_URL || process.env.APP_URL || "http://localhost:3000";
+// Secret header for bypassing admin auth on internal API calls
+const CRON_SECRET = process.env.CRON_SECRET || "";
 
 if (!BOT_TOKEN) {
   console.warn("[AssistantDaemon] TELEGRAM_ASSISTANT_BOT_TOKEN not provided. Assistant daemon disabled.");
@@ -497,9 +499,11 @@ async function handleRetryOrder(orderCode) {
  */
 async function refreshSupplierBalance(supplierId) {
   try {
+    const headers = { "Content-Type": "application/json" };
+    if (CRON_SECRET) headers["x-internal-secret"] = CRON_SECRET;
     const res = await fetch(`${APP_INTERNAL_URL}/api/admin/suppliers/${supplierId}/balance`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
     });
     if (res.ok) {
       const data = await res.json();
