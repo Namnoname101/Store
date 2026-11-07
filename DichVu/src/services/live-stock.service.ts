@@ -25,7 +25,7 @@ const inFlightRequests = new Map<string, Promise<LiveStockResult>>();
 
 /**
  * Checks live stock for a product on-demand.
- * Uses Single-Flight Request Deduplication to prevent spamming upstream bots
+ * Uses Single-Flight Request Deduplication to prevent spamming upstream bots/APIs
  * when multiple users access the same product simultaneously.
  */
 export async function getLiveProductStock(
@@ -128,6 +128,45 @@ async function executeLiveStockCheck(productIdOrSlug: string): Promise<LiveStock
       liveSupplierStock = Math.max(0, info.inStock);
       supplierPrice = info.price;
 
+      // If primary supplier is out of stock, check alternative suppliers for fallback stock
+      if (liveSupplierStock === 0 && product.supplierMapping?.customConfig) {
+        try {
+          const parsed = JSON.parse(product.supplierMapping.customConfig);
+          if (Array.isArray(parsed.alternativeSuppliers)) {
+            for (const alt of parsed.alternativeSuppliers) {
+              const altSupplier = await prisma.supplier.findFirst({
+                where: {
+                  OR: [
+                    { code: alt.supplierCode },
+                    { id: alt.supplierId },
+                  ],
+                  isActive: true,
+                },
+              });
+              if (altSupplier) {
+                const altAdapter = getSupplierAdapter(altSupplier.type);
+                const altInfo = await altAdapter.fetchProductInfo(
+                  {
+                    baseUrl: altSupplier.baseUrl,
+                    apiKey: altSupplier.apiKey,
+                    apiSecret: altSupplier.apiSecret,
+                  },
+                  alt.supplierProductCode
+                );
+                if (altInfo.inStock > 0) {
+                  liveSupplierStock += altInfo.inStock;
+                  if (!supplierPrice || supplierPrice <= 0) {
+                    supplierPrice = altInfo.price;
+                  }
+                }
+              }
+            }
+          }
+        } catch {
+          // ignore customConfig parsing errors
+        }
+      }
+
       // Persist updated stock & code if detected
       await prisma.supplierProductMapping.update({
         where: { id: product.supplierMapping.id },
@@ -178,8 +217,4 @@ async function executeLiveStockCheck(productIdOrSlug: string): Promise<LiveStock
     lastCheckedAt: new Date().toISOString(),
     fromCache: false,
   };
-}
-
-export function clearLiveStockCache(): void {
-  stockCache.clear();
 }

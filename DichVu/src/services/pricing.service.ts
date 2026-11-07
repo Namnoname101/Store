@@ -71,7 +71,7 @@ export function calculateRetailPrice(
 /**
  * Synchronizes single product price and stock status directly from upstream supplier.
  * Updates supplier mapping price, recalculates retail price, and handles auto-pausing
- * when product is out of stock.
+ * when product is out of stock. Supports multi-supplier fallback checks.
  */
 export async function syncProductFromSupplier(
   mappingId: string
@@ -106,10 +106,49 @@ export async function syncProductFromSupplier(
     mapping.supplierProductCode
   );
 
-  const shouldBeActive = info.inStock > 0;
+  let totalStock = Math.max(0, info.inStock);
+  let effectiveSupplierPrice = info.price > 0 ? info.price : mapping.supplierPrice;
+
+  // Check alternative suppliers if primary supplier is out of stock
+  if (totalStock === 0 && mapping.customConfig) {
+    try {
+      const parsed = JSON.parse(mapping.customConfig);
+      if (Array.isArray(parsed.alternativeSuppliers)) {
+        for (const alt of parsed.alternativeSuppliers) {
+          const altSupplier = await prisma.supplier.findFirst({
+            where: {
+              OR: [{ code: alt.supplierCode }, { id: alt.supplierId }],
+              isActive: true,
+            },
+          });
+          if (altSupplier) {
+            const altAdapter = getSupplierAdapter(altSupplier.type);
+            const altInfo = await altAdapter.fetchProductInfo(
+              {
+                baseUrl: altSupplier.baseUrl,
+                apiKey: altSupplier.apiKey,
+                apiSecret: altSupplier.apiSecret,
+              },
+              alt.supplierProductCode
+            );
+            if (altInfo.inStock > 0) {
+              totalStock += altInfo.inStock;
+              if (effectiveSupplierPrice <= 0) {
+                effectiveSupplierPrice = altInfo.price;
+              }
+            }
+          }
+        }
+      }
+    } catch {
+      // ignore parse errors
+    }
+  }
+
+  const shouldBeActive = totalStock > 0;
   // Price Lock Guard: if isAutoSync is false, preserve the admin's manual fixed price
   const targetRetailPrice = mapping.isAutoSync
-    ? calculateRetailPrice(info.price, mapping.markupType, mapping.markupValue)
+    ? calculateRetailPrice(effectiveSupplierPrice, mapping.markupType, mapping.markupValue)
     : mapping.product.price;
 
   const [updatedMapping, updatedProduct] = await prisma.$transaction([
@@ -117,8 +156,8 @@ export async function syncProductFromSupplier(
       where: { id: mappingId },
       data: {
         supplierProductCode: info.supplierProductCode || mapping.supplierProductCode,
-        supplierPrice: info.price,
-        supplierStock: Math.max(0, info.inStock),
+        supplierPrice: effectiveSupplierPrice,
+        supplierStock: totalStock,
         lastSyncAt: new Date(),
       },
     }),
@@ -142,7 +181,7 @@ export async function syncProductFromSupplier(
     oldRetailPrice: mapping.product.price,
     newRetailPrice: updatedProduct.price,
     retailPrice: updatedProduct.price,
-    inStock: info.inStock,
+    inStock: totalStock,
     isActive: updatedProduct.isActive,
     isPaused: !updatedProduct.isActive,
   };
