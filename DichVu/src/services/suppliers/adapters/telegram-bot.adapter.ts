@@ -14,6 +14,7 @@ export const XOAINON_PRODUCT_ALIASES: Record<string, string> = {
   "34": "21", // Legacy CapCut 7 day (#34) -> active in-stock #21
   "49": "21", // Legacy CapCut 7 day credit (#49) -> active in-stock #21
   "10": "33",
+  "28": "71", // Canva Pro 1M (alias: 28 -> active #71)
 };
 
 export const XOAINON_KNOWN_PRODUCTS: Record<
@@ -119,6 +120,401 @@ const telegramCatalogCache = new Map<
   { timestamp: number; products: Record<string, CachedBotProduct> }
 >();
 const CATALOG_CACHE_TTL_MS = 5 * 60 * 1000;
+
+/**
+ * Parses numeric price from Telegram button text or message text.
+ * Correctly distinguishes:
+ * - "k" unit with decimal dot/comma ("3.9k" -> 3900, "32.9k" -> 32900, "119.5k" -> 119500)
+ * - "đ" / "₫" / "VND" with thousands separator ("3.900đ" -> 3900, "32.900đ" -> 32900, "3,900đ" -> 3900)
+ */
+export function parseNumericPrice(str: string): number | null {
+  if (typeof str === "number") {
+    return !isFinite(str) || str <= 0 ? null : Math.round(str);
+  }
+  if (!str || typeof str !== "string") return null;
+
+  // Reject negative numbers or negative price prefixes (e.g. "-3900đ", "-3.9k", "- 50k", "• -3.9k")
+  if (/^\s*-\s*\d/.test(str) || /(?:^|[\s•])-\s*\d/.test(str)) {
+    return null;
+  }
+
+  // 1. 'k' unit (e.g. "3.9k", "32.9k", "119.5k", "3,9k", "2k", "3.9kvnd")
+  const kMatch = str.match(/(?:•\s*|\b|^)([\d]+(?:[.,]\d+)?)\s*k(?:\s*(?:vnd|vnđ|[đ₫])|(?![a-zA-Z0-9]))/i);
+  if (kMatch) {
+    const raw = kMatch[1].replace(/,/g, ".");
+    const val = parseFloat(raw);
+    if (!isNaN(val) && val > 0) {
+      return Math.round(val * 1000);
+    }
+  }
+
+  // 2. 'đ', '₫', 'vnd', 'vnđ' unit with thousands separator
+  const vndMatch = str.match(/([\d.,]+)\s*(?:[đ₫]|vnd|vnđ)(?![a-zA-Z0-9])/i);
+  if (vndMatch) {
+    const clean = vndMatch[1].replace(/[.,]/g, "");
+    const val = parseInt(clean, 10);
+    if (!isNaN(val) && val > 0) {
+      return val;
+    }
+  }
+
+  // 3. Bullet format with numeric price without unit (e.g. "• 3900 •" or "• 3.900 •")
+  const bulletMatch = str.match(/•\s*([\d.,]+)\s*(?:•|$|\bSL\b)/i);
+  if (bulletMatch) {
+    const clean = bulletMatch[1].replace(/[.,]/g, "");
+    const val = parseInt(clean, 10);
+    if (!isNaN(val) && val > 0) {
+      return val;
+    }
+  }
+
+  // 4. Label prefix (Giá: 3.900, Tổng: 32.900)
+  const labelMatch = str.match(/(?:giá(?:\s*bán)?|tổng(?:\s*tiền|\s*thanh\s*toán)?)\s*[:]?\s*([\d.,]+)/i);
+  if (labelMatch) {
+    const clean = labelMatch[1].replace(/[.,]/g, "");
+    const val = parseInt(clean, 10);
+    if (!isNaN(val) && val > 0) {
+      return val;
+    }
+  }
+
+  // 5. Standalone integer / thousands separated string (e.g. "3900", "3.900", "32.900")
+  const trimmed = str.trim();
+  if (/^[\d.,]+$/.test(trimmed)) {
+    const clean = trimmed.replace(/[.,]/g, "");
+    const val = parseInt(clean, 10);
+    if (!isNaN(val) && val > 0) {
+      return val;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Extracts detail price from product detail screen message.
+ */
+export function extractDetailPrice(text: string): number | null {
+  if (!text) return null;
+  const lines = text.split("\n");
+  for (const line of lines) {
+    if (/(?:giá|đơn\s*giá|price)/i.test(line)) {
+      const price = parseNumericPrice(line);
+      if (price !== null) return price;
+    }
+  }
+  return parseNumericPrice(text);
+}
+
+/**
+ * Extracts total checkout amount from checkout confirmation message.
+ */
+export function extractCheckoutTotal(text: string): number | null {
+  if (!text) return null;
+  const lines = text.split("\n");
+  for (const line of lines) {
+    if (/(?:tổng|thanh\s*toán|cần\s*trả)/i.test(line)) {
+      const price = parseNumericPrice(line);
+      if (price !== null) return price;
+    }
+  }
+  return parseNumericPrice(text);
+}
+
+/**
+ * Strict Price Safety Guard check (Zero Tolerance).
+ * Aborts if actualPrice > expectedPrice.
+ */
+export function checkPriceSafety(
+  actualPrice: number,
+  expectedPrice: number
+): { safe: boolean; reason?: string } {
+  if (actualPrice == null || isNaN(actualPrice) || actualPrice <= 0) {
+    return {
+      safe: false,
+      reason: "PRICE_SAFETY_VIOLATION: Giá nhà cung cấp không hợp lệ hoặc không thể xác định.",
+    };
+  }
+  if (expectedPrice == null || isNaN(expectedPrice) || expectedPrice <= 0) {
+    return {
+      safe: false,
+      reason: "PRICE_SAFETY_VIOLATION: Giá vốn dự kiến không hợp lệ hoặc chưa được thiết lập.",
+    };
+  }
+  if (actualPrice > expectedPrice) {
+    return {
+      safe: false,
+      reason: `PRICE_SAFETY_VIOLATION: Giá nhà cung cấp (${actualPrice.toLocaleString("vi-VN")}đ) vượt quá giá vốn cho phép (${expectedPrice.toLocaleString("vi-VN")}đ). Đã hủy giao dịch để bảo vệ tài khoản.`,
+    };
+  }
+  return { safe: true };
+}
+
+/**
+ * Returns exact required keyword token groups for product codes.
+ * Removes all loose single-word fallbacks.
+ */
+export function determineKeywords(code: string): string[][] {
+  const effectiveCode = XOAINON_PRODUCT_ALIASES[code] || code;
+
+  switch (effectiveCode) {
+    case "21": // CapCut 7 day (aliases: 34, 49)
+      return [
+        ["capcut", "7 day"],
+        ["capcut", "7 ngày"],
+        ["capcut", "7d"],
+        ["capcut", "7 d"],
+      ];
+
+    case "35": // CapCut 30 day
+      return [
+        ["capcut", "30d"],
+        ["capcut", "30 day"],
+        ["capcut", "30 ngày"],
+        ["capcut", "1 tháng"],
+        ["capcut", "1 month"],
+      ];
+
+    case "70": // Gemini 18 months (alias: 51)
+      return [
+        ["gemini", "18"],
+        ["gemini", "5tb"],
+      ];
+
+    case "37": // ChatGPT Plus Apple Gmail 1M
+      return [
+        ["chatgpt", "apple"],
+        ["chatgpt", "gmail"],
+      ];
+
+    case "33": // ChatGPT Plus PIX 1M (alias: 10)
+      return [
+        ["chatgpt", "pix"],
+      ];
+
+    case "1": // ChatGPT Plus Private BHF 1M
+      return [
+        ["chatgpt", "riêng tư", "bhf"],
+        ["chatgpt", "plus", "bhf", "1"],
+        ["chatgpt", "riêng tư"],
+        ["chatgpt", "private"],
+      ];
+
+    case "71": // Canva Pro 1M (alias: 28)
+      return [
+        ["canva", "pro", "1 tháng"],
+        ["canva", "pro", "1 thg"],
+        ["canva", "pro", "1m"],
+        ["canva", "pro", "1 month"],
+        ["canva", "pro", "1mth"],
+        ["canva", "1 tháng"],
+        ["canva", "1 thg"],
+        ["canva", "1m"],
+      ];
+
+    case "60": // Duolingo Super 12M
+      return [
+        ["duolingo", "super", "12"],
+        ["duolingo", "12 tháng"],
+        ["duolingo", "super", "1 năm"],
+        ["duolingo", "super", "12m"],
+      ];
+
+    case "73": // Office 365 Plus 1Y
+      return [
+        ["office", "365", "1 năm"],
+        ["office", "365", "1y"],
+        ["office", "365", "1 year"],
+        ["office", "365", "riêng tư"],
+        ["office", "365"],
+      ];
+
+    case "55": // Meitu VIP 7-Day
+      return [
+        ["meitu", "vip", "7"],
+        ["meitu", "svip", "7"],
+        ["meitu", "7 day"],
+        ["meitu", "7 ngày"],
+        ["meitu", "7d"],
+      ];
+
+    case "56": // Wink VIP+ 7-Day
+      return [
+        ["wink", "vip", "7"],
+        ["wink", "7 day"],
+        ["wink", "7 ngày"],
+        ["wink", "7d"],
+      ];
+
+    case "65": // NordVPN 3M
+      return [
+        ["nord", "vpn", "3 tháng"],
+        ["nord", "vpn", "3 thg"],
+        ["nord", "vpn", "3m"],
+        ["nord", "vpn", "3 month"],
+        ["nord", "vpn", "3 months"],
+        ["nordvpn", "3 tháng"],
+        ["nordvpn", "3 thg"],
+        ["nordvpn", "3m"],
+      ];
+
+    case "72": // Figma Pro Edu 2Y
+      return [
+        ["figma", "edu", "2 năm"],
+        ["figma", "pro", "2 năm"],
+        ["figma", "edu", "2y"],
+        ["figma", "pro", "2y"],
+        ["figma", "2 năm"],
+      ];
+
+    case "75": // Muse AI 1B
+      return [
+        ["muse", "1 tỷ"],
+        ["muse", "1 ty"],
+        ["muse", "1b"],
+      ];
+
+    case "76": // Muse AI 31B
+      return [
+        ["muse", "31 tỷ"],
+        ["muse", "31 ty"],
+        ["muse", "31b"],
+      ];
+
+    case "42": // Memrise Pro Lifetime
+      return [
+        ["memrise", "trọn đời"],
+        ["memrise", "lifetime"],
+      ];
+
+    default:
+      return [];
+  }
+}
+
+/**
+ * Checks if candidate text strictly matches the target product code with 100% agreement
+ * on Brand, Duration, and Tier, preventing cross-tier false positives.
+ */
+export function matchesProductStrictly(code: string, text: string): boolean {
+  if (
+    typeof code !== "string" ||
+    typeof text !== "string" ||
+    !code.trim() ||
+    !text.trim()
+  ) {
+    return false;
+  }
+  const effectiveCode = XOAINON_PRODUCT_ALIASES[code] || code;
+  const groups = determineKeywords(effectiveCode);
+  if (groups.length === 0) return false;
+
+  const lower = text.toLowerCase();
+
+  // Must match at least one keyword token group completely
+  const matchesGroup = groups.some((group) =>
+    group.every((kw) => lower.includes(kw.toLowerCase()))
+  );
+  if (!matchesGroup) return false;
+
+  // Strict isolation checks per product tier/duration
+  if (effectiveCode === "21") {
+    // CapCut 7d must NEVER match 30d / month / 1 tháng
+    if (
+      lower.includes("30d") ||
+      lower.includes("30 day") ||
+      lower.includes("30 ngày") ||
+      lower.includes("1 tháng") ||
+      lower.includes("1 month") ||
+      /\b(?:30|month)\b/i.test(lower)
+    ) {
+      return false;
+    }
+  } else if (effectiveCode === "35") {
+    // CapCut 30d must NEVER match 7d / 7 day / 7 ngày
+    if (
+      lower.includes("7d") ||
+      lower.includes("7 day") ||
+      lower.includes("7 ngày") ||
+      /\b7\b/i.test(lower)
+    ) {
+      return false;
+    }
+  } else if (effectiveCode === "75") {
+    // Muse 1B must NEVER match 31B
+    if (
+      lower.includes("31") ||
+      lower.includes("31b") ||
+      lower.includes("31 tỷ") ||
+      lower.includes("31 ty")
+    ) {
+      return false;
+    }
+  } else if (effectiveCode === "76") {
+    // Muse 31B must NEVER match standalone 1B
+    if (
+      (lower.includes("1 tỷ") || lower.includes("1 ty") || lower.includes("1b")) &&
+      !lower.includes("31")
+    ) {
+      return false;
+    }
+  } else if (effectiveCode === "73") {
+    // Office 365 must contain BOTH "office" and "365", and not match VPN 365 or Canva 365
+    if (!lower.includes("office") || !lower.includes("365")) return false;
+    if (lower.includes("vpn") || lower.includes("canva")) return false;
+  } else if (effectiveCode === "37") {
+    // ChatGPT Apple/Gmail must not match PIX
+    if (lower.includes("pix")) {
+      return false;
+    }
+  } else if (effectiveCode === "33") {
+    // ChatGPT PIX must not match Apple or Gmail
+    if (lower.includes("apple") || lower.includes("gmail")) {
+      return false;
+    }
+  } else if (effectiveCode === "1") {
+    // ChatGPT Private BHF must not match Apple, Gmail, or PIX
+    if (lower.includes("apple") || lower.includes("gmail") || lower.includes("pix")) {
+      return false;
+    }
+  } else if (effectiveCode === "71") {
+    // Canva Pro 1M must NEVER match 1 year / 12 months / lifetime / vĩnh viễn / trọn đời
+    if (
+      lower.includes("năm") ||
+      lower.includes("year") ||
+      lower.includes("1y") ||
+      lower.includes("12 tháng") ||
+      lower.includes("12 thg") ||
+      lower.includes("12m") ||
+      lower.includes("365") ||
+      lower.includes("vĩnh viễn") ||
+      lower.includes("vinh vien") ||
+      lower.includes("trọn đời") ||
+      lower.includes("tron doi") ||
+      lower.includes("lifetime")
+    ) {
+      return false;
+    }
+  } else if (effectiveCode === "65") {
+    // NordVPN 3M must NEVER match annual or multi-year packages (1 year, 2 year, 3 year, 12m, 24m, 36m)
+    if (
+      lower.includes("năm") ||
+      lower.includes("year") ||
+      lower.includes("1y") ||
+      lower.includes("2y") ||
+      lower.includes("3y") ||
+      lower.includes("12 tháng") ||
+      lower.includes("24 tháng") ||
+      lower.includes("36 tháng") ||
+      lower.includes("1 tháng") ||
+      lower.includes("1m")
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 export class TelegramBotAdapter implements ISupplierAdapter {
   private client: TelegramClient | null = null;
@@ -575,18 +971,20 @@ export class TelegramBotAdapter implements ISupplierAdapter {
   }
 
   private parsePrice(str: string): number | null {
-    const m = str.match(/•\s*([\d.,]+)\s*([đk])/i);
-    if (!m) return null;
-    const isK = m[2].toLowerCase() === "k";
-    const clean = m[1].replace(/[.,]/g, "");
-    const num = parseInt(clean, 10);
-    return isK ? num * 1000 : num;
+    return parseNumericPrice(str);
   }
 
   private parseStock(str: string): number {
     if (/hết\s*hàng/i.test(str)) return 0;
     const m = str.match(/SL\s*(\d+)/i);
     return m ? parseInt(m[1], 10) : 0;
+  }
+
+  private async delay(ms: number): Promise<void> {
+    if (process.env.NODE_ENV === "test" || process.env.VITEST) {
+      return;
+    }
+    await new Promise((r) => setTimeout(r, ms));
   }
 
   private async getLiveCatalog(
@@ -630,8 +1028,8 @@ export class TelegramBotAdapter implements ISupplierAdapter {
               if (codeMatch) {
                 code = codeMatch[1];
               } else {
-                for (const [kCode, info] of Object.entries(XOAINON_KNOWN_PRODUCTS)) {
-                  if (btnText.toLowerCase().includes(info.name.toLowerCase().slice(0, 15))) {
+                for (const [kCode] of Object.entries(XOAINON_KNOWN_PRODUCTS)) {
+                  if (matchesProductStrictly(kCode, btnText)) {
                     code = kCode;
                     break;
                   }
@@ -683,64 +1081,16 @@ export class TelegramBotAdapter implements ISupplierAdapter {
         const effectiveCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierProductCode;
         let liveItem = liveCatalog[effectiveCode] || liveCatalog[supplierProductCode];
 
-        // If not found in live catalog or currently out of stock, use Smart Keyword Matching to auto-remap
-        if (!liveItem || liveItem.inStock === 0) {
-          const determineKeywords = (code: string): string[][] => {
-            if (code === "34" || code === "21" || code === "49") {
-              return [["capcut", "7"], ["capcut", "7d"], ["capcut", "7 ngày"], ["capcut", "7 day"]];
+        // If not found in live catalog by exact code, search by strict keyword matching
+        if (!liveItem) {
+          for (const item of Object.values(liveCatalog)) {
+            if (matchesProductStrictly(effectiveCode, item.name)) {
+              liveItem = item;
+              break;
             }
-            if (code === "35") {
-              return [["capcut", "30"], ["capcut", "30d"], ["capcut", "month"], ["capcut", "tháng"]];
-            }
-            if (code === "51" || code === "70") {
-              return [["gemini", "18"], ["gemini", "5tb"], ["gemini"]];
-            }
-            if (code === "10" || code === "33" || code === "37" || code === "1") {
-              return [["chatgpt", "plus"], ["gpt", "plus"], ["chatgpt"]];
-            }
-            if (code === "71" || code === "28") {
-              return [["canva", "pro"], ["canva"]];
-            }
-            if (code === "60") {
-              return [["duolingo", "super"], ["duolingo", "12"], ["duolingo"]];
-            }
-            if (code === "73") {
-              return [["office", "365"], ["office"], ["365"]];
-            }
-            if (code === "55") {
-              return [["meitu", "vip"], ["meitu", "7"], ["meitu"]];
-            }
-            if (code === "56") {
-              return [["wink", "vip"], ["wink"]];
-            }
-            if (code === "65") {
-              return [["nord", "vpn"], ["nord"]];
-            }
-            if (code === "72") {
-              return [["figma", "pro"], ["figma", "edu"], ["figma"]];
-            }
-            if (code === "76" || code === "75") {
-              return [["muse", "ai"], ["muse"]];
-            }
-            return [];
-          };
-
-          const keywordGroups = determineKeywords(supplierProductCode);
-          for (const kws of keywordGroups) {
-            for (const item of Object.values(liveCatalog)) {
-              if (item.inStock === 0) continue; // Prioritize in-stock replacements
-              const lowerName = item.name.toLowerCase();
-              if (kws.every((kw) => lowerName.includes(kw))) {
-                liveItem = item;
-                console.log(
-                  `[TelegramBotAdapter] Auto-remapped stale code ${supplierProductCode} -> active code #${item.code} (${item.name}, Stock: ${item.inStock}) via live catalog scan!`
-                );
-                break;
-              }
-            }
-            if (liveItem) break;
           }
         }
+
         if (liveItem) {
           return {
             supplierProductCode: liveItem.code,
@@ -764,14 +1114,31 @@ export class TelegramBotAdapter implements ISupplierAdapter {
           inStock: known.inStock,
         };
       }
+
+      // Safe error for unknown/unmatched Xoai Non product (no fake fallback)
+      return {
+        supplierProductCode,
+        name: "Sản phẩm không khả dụng",
+        price: 0,
+        inStock: 0,
+      };
     }
 
-    // Default fallback
+    if (botUsername.includes("nghientrick")) {
+      return {
+        supplierProductCode,
+        name: "Gemini 18 Months",
+        price: 14567,
+        inStock: 24,
+      };
+    }
+
+    // Default safe fallback for other bots
     return {
       supplierProductCode,
-      name: "Gemini 18 Months",
-      price: 14567,
-      inStock: 24,
+      name: "Sản phẩm không khả dụng",
+      price: 0,
+      inStock: 0,
     };
   }
 
@@ -780,13 +1147,22 @@ export class TelegramBotAdapter implements ISupplierAdapter {
     supplierProductCode: string,
     quantity: number,
     orderCode: string,
-    _extra?: any
+    extra?: any
   ): Promise<SupplierOrderResult> {
+    const effectiveKnownCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierProductCode;
+    const expectedPrice =
+      extra?.expectedPrice ??
+      extra?.supplierPrice ??
+      XOAINON_KNOWN_PRODUCTS[effectiveKnownCode]?.price ??
+      XOAINON_KNOWN_PRODUCTS[supplierProductCode]?.price ??
+      0;
+
     if (
-      process.env.NODE_ENV === "test" ||
-      process.env.VITEST ||
-      process.env.CI ||
-      process.env.JEST_WORKER_ID !== undefined
+      !extra?.mockClient &&
+      (process.env.NODE_ENV === "test" ||
+        process.env.VITEST ||
+        process.env.CI ||
+        process.env.JEST_WORKER_ID !== undefined)
     ) {
       return {
         success: true,
@@ -796,10 +1172,10 @@ export class TelegramBotAdapter implements ISupplierAdapter {
     }
 
     const { botUsername } = this.resolveConfig(creds);
-    const client = await this.getClient(creds);
+    const client = extra?.mockClient || (await this.getClient(creds));
 
     if (botUsername.includes("xoainon")) {
-      return this.buyXoaiNon(client, botUsername, supplierProductCode, quantity, orderCode);
+      return this.buyXoaiNon(client, botUsername, supplierProductCode, quantity, orderCode, expectedPrice);
     }
     if (botUsername.includes("dkey")) {
       return this.buyDKey(client, botUsername, supplierProductCode, quantity, orderCode);
@@ -810,15 +1186,34 @@ export class TelegramBotAdapter implements ISupplierAdapter {
     return this.buyNghienTrick(client, botUsername, supplierProductCode, quantity, orderCode);
   }
 
-  private async buyXoaiNon(
+  public async buyXoaiNon(
     client: TelegramClient,
     botUsername: string,
     supplierProductCode: string,
     quantity: number,
-    orderCode: string
+    orderCode: string,
+    expectedPrice?: number
   ): Promise<SupplierOrderResult> {
     try {
       const qty = quantity > 0 ? quantity : 1;
+      const effectiveKnownCode = XOAINON_PRODUCT_ALIASES[supplierProductCode] || supplierProductCode;
+      const expectedUnitPrice =
+        expectedPrice ??
+        XOAINON_KNOWN_PRODUCTS[effectiveKnownCode]?.price ??
+        XOAINON_KNOWN_PRODUCTS[supplierProductCode]?.price ??
+        0;
+
+      // Pre-flight Price Safety Guard: reject missing or non-positive expected unit price
+      if (!expectedUnitPrice || expectedUnitPrice <= 0 || isNaN(expectedUnitPrice)) {
+        console.warn(
+          `[PriceSafetyGuard] ABORTED: Missing or invalid expectedUnitPrice (${expectedUnitPrice}) for product code ${supplierProductCode} (order: ${orderCode}). Zero tolerance enforced.`
+        );
+        return {
+          success: false,
+          deliveredKeys: [],
+          error: "PRICE_SAFETY_VIOLATION: Giá vốn dự kiến không hợp lệ hoặc chưa được thiết lập. Đã hủy giao dịch để bảo vệ tài khoản.",
+        };
+      }
 
       // Record pre-purchase latest message ID to avoid picking up old purchase messages
       const preMsgs = await client.getMessages(botUsername, { limit: 1 });
@@ -826,7 +1221,7 @@ export class TelegramBotAdapter implements ISupplierAdapter {
 
       // 1. Send /buy to get catalog
       await client.sendMessage(botUsername, { message: "/buy" });
-      await new Promise((r) => setTimeout(r, 2000));
+      await this.delay(2000);
 
       let msgs = await client.getMessages(botUsername, { limit: 1 });
       let msg = msgs[0];
@@ -858,7 +1253,7 @@ export class TelegramBotAdapter implements ISupplierAdapter {
           // It's a different product! Click back to catalog
           console.log(`[buyXoaiNon] Bot is on a different product detail. Clicking back to catalog...`);
           await msg.click({ data: Buffer.from("menu:buy") }).catch(() => {});
-          await new Promise((r) => setTimeout(r, 2000));
+          await this.delay(2000);
           msgs = await client.getMessages(botUsername, { limit: 1 });
           msg = msgs[0];
         }
@@ -867,6 +1262,7 @@ export class TelegramBotAdapter implements ISupplierAdapter {
       // 2. Locate target product button in catalog
       let targetBtnFound = false;
       let targetBtnData = `product:view:${targetCode}`;
+      let targetBtnText = "";
 
       if (msg?.replyMarkup && (msg.replyMarkup as any).rows) {
         // Step A: Exact match by product:view:<targetCode>
@@ -876,86 +1272,70 @@ export class TelegramBotAdapter implements ISupplierAdapter {
             if (dataStr === `product:view:${targetCode}`) {
               targetBtnFound = true;
               targetBtnData = dataStr;
+              targetBtnText = btn.text || "";
               break;
             }
           }
           if (targetBtnFound) break;
         }
 
-        // Step B: Smart keyword match fallback if code changed or alias was not updated
+        // Step B: Strict keyword match fallback if code changed or alias was not updated
         if (!targetBtnFound) {
-          console.log(`[buyXoaiNon] Product code ${targetCode} not found in catalog buttons. Trying keyword matching...`);
+          console.log(`[buyXoaiNon] Product code ${targetCode} not found in catalog buttons. Trying strict keyword matching...`);
 
-          const determineKeywords = (code: string): string[][] => {
-            if (code === "34" || code === "21" || code === "49") {
-              return [["capcut", "7"], ["capcut", "7d"], ["capcut", "7 ngày"], ["capcut", "7 day"]];
-            }
-            if (code === "35") {
-              return [["capcut", "30"], ["capcut", "30d"], ["capcut", "month"], ["capcut", "tháng"]];
-            }
-            if (code === "51" || code === "70") {
-              return [["gemini", "18"], ["gemini", "5tb"], ["gemini"]];
-            }
-            if (code === "10" || code === "33" || code === "37" || code === "1") {
-              return [["chatgpt", "plus"], ["gpt", "plus"], ["chatgpt"]];
-            }
-            if (code === "71" || code === "28") {
-              return [["canva", "pro"], ["canva"]];
-            }
-            if (code === "60") {
-              return [["duolingo", "super"], ["duolingo", "12"], ["duolingo"]];
-            }
-            if (code === "73") {
-              return [["office", "365"], ["office"], ["365"]];
-            }
-            if (code === "55") {
-              return [["meitu", "vip"], ["meitu", "7"], ["meitu"]];
-            }
-            if (code === "56") {
-              return [["wink", "vip"], ["wink"]];
-            }
-            if (code === "65") {
-              return [["nord", "vpn"], ["nord"]];
-            }
-            if (code === "72") {
-              return [["figma", "pro"], ["figma", "edu"], ["figma"]];
-            }
-            if (code === "76" || code === "75") {
-              return [["muse", "ai"], ["muse"]];
-            }
-            return [];
-          };
+          for (const row of (msg.replyMarkup as any).rows) {
+            for (const btn of row.buttons) {
+              const btnText = btn.text || "";
+              const dataStr = btn.data ? Buffer.from(btn.data).toString("utf-8") : "";
+              if (dataStr === "noop") continue;
 
-          const keywordGroups = determineKeywords(targetCode);
-
-          for (const kws of keywordGroups) {
-            for (const row of (msg.replyMarkup as any).rows) {
-              for (const btn of row.buttons) {
-                const btnText = (btn.text || "").toLowerCase();
-                const dataStr = btn.data ? Buffer.from(btn.data).toString("utf-8") : "";
-                if (dataStr === "noop" || btnText.includes("hết hàng")) continue; // Skip out of stock
-
-                const allMatch = kws.every((kw) => btnText.includes(kw));
-                if (allMatch && dataStr.startsWith("product:view:")) {
-                  const match = dataStr.match(/product:view:(\d+)/);
-                  if (match) {
-                    targetCode = match[1];
-                    targetBtnData = dataStr;
-                    targetBtnFound = true;
-                    console.log(`[buyXoaiNon] Auto-matched product "${btn.text}" -> remapped targetCode to ${targetCode}`);
-                    break;
-                  }
+              if (matchesProductStrictly(targetCode, btnText) && dataStr.startsWith("product:view:")) {
+                const match = dataStr.match(/product:view:(\d+)/);
+                if (match) {
+                  targetCode = match[1];
+                  targetBtnData = dataStr;
+                  targetBtnText = btnText;
+                  targetBtnFound = true;
+                  console.log(`[buyXoaiNon] Strict matched product "${btn.text}" -> targetCode ${targetCode}`);
+                  break;
                 }
               }
-              if (targetBtnFound) break;
             }
             if (targetBtnFound) break;
           }
         }
       }
 
+      // Out-of-stock check on matched button: do NOT proceed or auto-remap
+      if (targetBtnFound && (targetBtnText.toLowerCase().includes("hết hàng") || this.parseStock(targetBtnText) === 0)) {
+        return {
+          success: false,
+          deliveredKeys: [],
+          error: `Sản phẩm ID ${supplierProductCode} (target: ${targetCode}) hiện tại đã hết hàng trên @${botUsername}`,
+        };
+      }
+
+      // Checkpoint 1: Catalog Button Price Safety Guard
+      let buttonPrice: number | null = null;
+      if (targetBtnFound && targetBtnText) {
+        buttonPrice = parseNumericPrice(targetBtnText);
+        if (buttonPrice !== null) {
+          const safety = checkPriceSafety(buttonPrice, expectedUnitPrice);
+          if (!safety.safe) {
+            console.warn(
+              `[PriceSafetyGuard] ABORTED: Button price ${buttonPrice} VND exceeds expected supplierPrice ${expectedUnitPrice} VND for product code ${targetCode} (order: ${orderCode}). Zero tolerance enforced.`
+            );
+            return {
+              success: false,
+              deliveredKeys: [],
+              error: safety.reason || `PRICE_SAFETY_VIOLATION: Giá hiển thị trên nút (${buttonPrice.toLocaleString("vi-VN")}đ) vượt quá giá vốn cho phép (${expectedUnitPrice.toLocaleString("vi-VN")}đ). Đã hủy giao dịch để bảo vệ tài khoản.`,
+            };
+          }
+        }
+      }
+
       // Check if we are already on the detail screen or need to click product view
-      const isCurrentlyOnDetail = msg.replyMarkup && (msg.replyMarkup as any).rows?.some((row: any) =>
+      const isCurrentlyOnDetail = msg?.replyMarkup && (msg.replyMarkup as any).rows?.some((row: any) =>
         row.buttons?.some((b: any) => b.data && Buffer.from(b.data).toString("utf-8").startsWith(`buyqty:${targetCode}`))
       );
 
@@ -970,16 +1350,32 @@ export class TelegramBotAdapter implements ISupplierAdapter {
 
         console.log(`[buyXoaiNon] Clicking product view: ${targetBtnData}...`);
         await msg.click({ data: Buffer.from(targetBtnData) });
-        await new Promise((r) => setTimeout(r, 2000));
+        await this.delay(2000);
 
         msgs = await client.getMessages(botUsername, { limit: 1 });
         msg = msgs[0];
       }
 
+      // Checkpoint 2: Detail Screen Price Safety Guard (pre-quantity)
+      const detailPrice = extractDetailPrice(msg?.message || "");
+      if (detailPrice !== null) {
+        const safety = checkPriceSafety(detailPrice, expectedUnitPrice);
+        if (!safety.safe) {
+          console.warn(
+            `[PriceSafetyGuard] ABORTED: Detail screen price ${detailPrice} VND exceeds expected supplierPrice ${expectedUnitPrice} VND for product code ${targetCode} (order: ${orderCode}). Zero tolerance enforced.`
+          );
+          return {
+            success: false,
+            deliveredKeys: [],
+            error: safety.reason || `PRICE_SAFETY_VIOLATION: Giá sản phẩm trên chi tiết (${detailPrice.toLocaleString("vi-VN")}đ) vượt quá giá vốn cho phép (${expectedUnitPrice.toLocaleString("vi-VN")}đ). Đã hủy giao dịch để bảo vệ tài khoản.`,
+          };
+        }
+      }
+
       // 3. Click buyqty:<id>:<quantity>
       console.log(`[buyXoaiNon] Clicking quantity: buyqty:${targetCode}:${qty}...`);
       await msg.click({ data: Buffer.from(`buyqty:${targetCode}:${qty}`) });
-      await new Promise((r) => setTimeout(r, 2000));
+      await this.delay(2000);
 
       msgs = await client.getMessages(botUsername, { limit: 1 });
       msg = msgs[0];
@@ -1000,10 +1396,37 @@ export class TelegramBotAdapter implements ISupplierAdapter {
         };
       }
 
+      // Checkpoint 3: Checkout Screen Price Safety Guard (before clicking pay:wallet)
+      const maxExpectedTotal = expectedUnitPrice * qty;
+      const checkoutPrice = extractCheckoutTotal(msg?.message || "");
+      if (checkoutPrice !== null) {
+        const safety = checkPriceSafety(checkoutPrice, maxExpectedTotal);
+        if (!safety.safe) {
+          console.warn(
+            `[PriceSafetyGuard] ABORTED: Checkout price ${checkoutPrice} VND exceeds expected total supplierPrice ${maxExpectedTotal} VND (${expectedUnitPrice} x ${qty}) for product code ${targetCode} (order: ${orderCode}). Zero tolerance enforced.`
+          );
+          return {
+            success: false,
+            deliveredKeys: [],
+            error: safety.reason || `PRICE_SAFETY_VIOLATION: Tổng tiền thanh toán (${checkoutPrice.toLocaleString("vi-VN")}đ) vượt quá giá vốn cho phép (${maxExpectedTotal.toLocaleString("vi-VN")}đ). Đã hủy giao dịch để bảo vệ tài khoản.`,
+          };
+        }
+      } else if (buttonPrice === null && detailPrice === null) {
+        // Blind payment prevention: if price cannot be parsed from any screen, fail safe
+        console.warn(
+          `[PriceSafetyGuard] ABORTED: Cannot determine product price from button, detail, or checkout screens for product code ${targetCode} (order: ${orderCode}). Failing safe to protect funds.`
+        );
+        return {
+          success: false,
+          deliveredKeys: [],
+          error: "PRICE_SAFETY_VIOLATION: Không thể xác định giá sản phẩm từ Telegram bot để đối chiếu an toàn. Đã hủy giao dịch để bảo vệ tài khoản.",
+        };
+      }
+
       // 4. Click pay:wallet:<id>:<quantity>
-      console.log(`[buyXoaiNon] Clicking pay wallet: pay:wallet:${targetCode}:${qty}...`);
+      console.log(`[buyXoaiNon] Price safety verified. Clicking pay wallet: pay:wallet:${targetCode}:${qty}...`);
       await msg.click({ data: Buffer.from(`pay:wallet:${targetCode}:${qty}`) });
-      await new Promise((r) => setTimeout(r, 4000));
+      await this.delay(4000);
 
       // 5. Check response messages
       return await this.extractSecretFromRecentMessages(client, botUsername, orderCode, "XOAINON", minMsgId);

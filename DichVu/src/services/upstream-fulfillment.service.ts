@@ -290,6 +290,8 @@ export async function fulfillOrderViaUpstream(
             {
               link: targetLink,
               customerNote: (item as any).customerNote || order.customerNote || undefined,
+              expectedPrice: candidate.supplierPrice,
+              supplierPrice: candidate.supplierPrice,
             }
           );
 
