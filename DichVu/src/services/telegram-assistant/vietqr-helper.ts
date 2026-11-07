@@ -64,8 +64,8 @@ export async function sendSupplierTopupQR(opts: {
   isUrgentOrder?: boolean;
 }): Promise<boolean> {
   const bankId = opts.supplier.depositBankId || "MB";
-  const accountNo = opts.supplier.depositAccountNo || "0388888888";
-  const accountName = opts.supplier.depositAccountName || "SHOP XOAI NON";
+  const accountNo = opts.supplier.depositAccountNo || "";
+  const accountName = opts.supplier.depositAccountName || opts.supplier.name;
   const syntax = opts.supplier.depositSyntax || `NAP ${opts.chatId}`;
 
   const qrBuffer = await generateVietQRPngBuffer({

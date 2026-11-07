@@ -550,9 +550,13 @@ async function handleSupplierBalances() {
   for (const s of suppliers) {
     text += `${getSupplierIcon(s.name, s.code)} <b>${escapeHtml(s.name)}</b> (<code>${escapeHtml(s.code)}</code>)\n`;
     text += `• Số dư ví: <b>${(s.currentBalance || 0).toLocaleString("vi-VN")}đ</b>\n`;
-    text += `• Ngân hàng nạp: <b>${escapeHtml(s.depositBankId || "MB")}</b> | STK: <code>${escapeHtml(s.depositAccountNo || "0388888888")}</code>\n`;
-    text += `• Chủ TK: <b>${escapeHtml(s.depositAccountName || "Chưa cập nhật")}</b>\n`;
-    text += `• Cú pháp: <code>${escapeHtml(s.depositSyntax || "NAP " + ADMIN_CHAT_ID)}</code>\n`;
+    if (s.depositAccountNo && s.depositAccountNo !== "0388888888") {
+      text += `• Ngân hàng nạp: <b>${escapeHtml(s.depositBankId || "MB")}</b> | STK: <code>${escapeHtml(s.depositAccountNo)}</code>\n`;
+      text += `• Chủ TK: <b>${escapeHtml(s.depositAccountName || s.name)}</b>\n`;
+      text += `• Cú pháp: <code>${escapeHtml(s.depositSyntax || "NAP " + ADMIN_CHAT_ID)}</code>\n`;
+    } else {
+      text += `• Nạp tiền: <i>${s.type && s.type.includes("API") ? "Nạp qua cổng API hoặc Bot đối tác" : "Xem chi tiết tại web NCC"}</i>\n`;
+    }
     text += `• Sản phẩm: <b>${s.mappings.length}</b> sản phẩm\n\n`;
   }
   text += "👉 <i>Bấm nút bên dưới để tạo mã VietQR nạp tiền vào ví bot nguồn.</i>";
