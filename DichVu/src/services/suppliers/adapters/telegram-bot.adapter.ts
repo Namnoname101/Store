@@ -11,8 +11,8 @@ const { StringSession } = sessions;
 // Known product catalog from @shopxoainon_bot
 export const XOAINON_PRODUCT_ALIASES: Record<string, string> = {
   "51": "70",
-  "34": "49",
-  "21": "49", // CapCut 7 day credit BHF (#21) is out of stock -> map to active in-stock #49
+  "34": "21", // Legacy CapCut 7 day (#34) -> active in-stock #21
+  "49": "21", // Legacy CapCut 7 day credit (#49) -> active in-stock #21
   "10": "33",
 };
 
@@ -20,6 +20,11 @@ export const XOAINON_KNOWN_PRODUCTS: Record<
   string,
   { name: string; price: number; inStock: number }
 > = {
+  "21": {
+    name: "Capcut Pro 7 day BHF",
+    price: 3900,
+    inStock: 13,
+  },
   "49": {
     name: "Capcut Pro 7 ngày 500 Credit BH6D",
     price: 5500,
@@ -27,8 +32,8 @@ export const XOAINON_KNOWN_PRODUCTS: Record<
   },
   "35": {
     name: "Capcut Pro 30d full Date - BHF",
-    price: 38800,
-    inStock: 35,
+    price: 32900,
+    inStock: 11,
   },
   "60": {
     name: "Duolingo Super 12 Tháng Chính Chủ",
@@ -682,10 +687,10 @@ export class TelegramBotAdapter implements ISupplierAdapter {
         if (!liveItem || liveItem.inStock === 0) {
           const determineKeywords = (code: string): string[][] => {
             if (code === "34" || code === "21" || code === "49") {
-              return [["capcut", "7"], ["capcut", "bhf"], ["capcut"]];
+              return [["capcut", "7"], ["capcut", "7d"], ["capcut", "7 ngày"], ["capcut", "7 day"]];
             }
             if (code === "35") {
-              return [["capcut", "30"], ["capcut", "month"], ["capcut", "date"]];
+              return [["capcut", "30"], ["capcut", "30d"], ["capcut", "month"], ["capcut", "tháng"]];
             }
             if (code === "51" || code === "70") {
               return [["gemini", "18"], ["gemini", "5tb"], ["gemini"]];
@@ -883,10 +888,10 @@ export class TelegramBotAdapter implements ISupplierAdapter {
 
           const determineKeywords = (code: string): string[][] => {
             if (code === "34" || code === "21" || code === "49") {
-              return [["capcut", "7"], ["capcut", "bhf"], ["capcut"]];
+              return [["capcut", "7"], ["capcut", "7d"], ["capcut", "7 ngày"], ["capcut", "7 day"]];
             }
             if (code === "35") {
-              return [["capcut", "30"], ["capcut", "month"], ["capcut", "date"]];
+              return [["capcut", "30"], ["capcut", "30d"], ["capcut", "month"], ["capcut", "tháng"]];
             }
             if (code === "51" || code === "70") {
               return [["gemini", "18"], ["gemini", "5tb"], ["gemini"]];

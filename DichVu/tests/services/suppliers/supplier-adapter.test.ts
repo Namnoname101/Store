@@ -560,6 +560,35 @@ describe("Supplier Adapter Engine", () => {
       expect(infoDuo.name).toContain("Duolingo Super");
       expect(infoDuo.price).toBe(19800);
       expect(infoDuo.inStock).toBeGreaterThan(0);
+
+      // CapCut 7 day (active #21)
+      const infoCapcut7 = await adapter.fetchProductInfo(
+        { baseUrl: "shopxoainon_bot", apiKey: "test" },
+        "21"
+      );
+      expect(infoCapcut7.supplierProductCode).toBe("21");
+      expect(infoCapcut7.name).toContain("Capcut Pro 7");
+      expect(infoCapcut7.price).toBe(3900);
+      expect(infoCapcut7.inStock).toBe(13);
+
+      // CapCut 7 day legacy alias (#34 -> #21)
+      const infoCapcutLegacy = await adapter.fetchProductInfo(
+        { baseUrl: "shopxoainon_bot", apiKey: "test" },
+        "34"
+      );
+      expect(infoCapcutLegacy.supplierProductCode).toBe("21");
+      expect(infoCapcutLegacy.name).toContain("Capcut Pro 7");
+      expect(infoCapcutLegacy.price).toBe(3900);
+
+      // CapCut 30 day (#35)
+      const infoCapcut30 = await adapter.fetchProductInfo(
+        { baseUrl: "shopxoainon_bot", apiKey: "test" },
+        "35"
+      );
+      expect(infoCapcut30.supplierProductCode).toBe("35");
+      expect(infoCapcut30.name).toContain("Capcut Pro 30");
+      expect(infoCapcut30.price).toBe(32900);
+      expect(infoCapcut30.inStock).toBe(11);
     });
   });
 });

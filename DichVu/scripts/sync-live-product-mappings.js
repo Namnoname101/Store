@@ -15,7 +15,7 @@ async function main() {
       where: { id: capcut7.id },
       data: {
         isActive: true,
-        price: 21000,
+        price: 19000,
         fulfillmentType: "API_DROPSHIP",
       },
     });
@@ -24,9 +24,9 @@ async function main() {
       await prisma.supplierProductMapping.update({
         where: { id: capcut7.supplierMapping.id },
         data: {
-          supplierProductCode: "49",
-          supplierPrice: 5500,
-          supplierStock: 117,
+          supplierProductCode: "21",
+          supplierPrice: 3900,
+          supplierStock: 13,
           isAutoSync: true,
           lastSyncAt: new Date(),
         },
@@ -45,8 +45,8 @@ async function main() {
       where: { id: capcut30.supplierMapping.id },
       data: {
         supplierProductCode: "35",
-        supplierPrice: 38800,
-        supplierStock: 35,
+        supplierPrice: 32900,
+        supplierStock: 11,
         lastSyncAt: new Date(),
       },
     });

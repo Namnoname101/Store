@@ -293,8 +293,8 @@ async function main() {
     update: {
       supplierId: supplier.id,
       supplierProductCode: "35",
-      supplierPrice: 42800,
-      supplierStock: 13,
+      supplierPrice: 32900,
+      supplierStock: 11,
       markupType: "PERCENTAGE",
       markupValue: 50,
       isAutoSync: true,
@@ -374,9 +374,9 @@ Mở khóa trọn bộ tính năng cao cấp của CapCut Pro trên Máy tính (
     where: { productId: capcut7d.id },
     update: {
       supplierId: supplier.id,
-      supplierProductCode: "34",
-      supplierPrice: 3000,
-      supplierStock: 25,
+      supplierProductCode: "21",
+      supplierPrice: 3900,
+      supplierStock: 13,
       markupType: "FIXED_AMOUNT",
       markupValue: 16000,
       isAutoSync: true,
