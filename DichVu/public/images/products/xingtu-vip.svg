@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750">
+  <defs>
+    <radialGradient id="xtBg" cx="50%" cy="38%" r="65%">
+      <stop offset="0%" stop-color="#2a0518"/>
+      <stop offset="60%" stop-color="#15020c"/>
+      <stop offset="100%" stop-color="#070004"/>
+    </radialGradient>
+    <filter id="xtGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="40" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <linearGradient id="xtCard" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="xtGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF2A85"/>
+      <stop offset="50%" stop-color="#FF6584"/>
+      <stop offset="100%" stop-color="#FFB199"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="750" fill="url(#xtBg)"/>
+  <circle cx="600" cy="270" r="260" fill="#FF2A85" opacity="0.22" filter="url(#xtGlow)"/>
+  <rect x="220" y="75" width="760" height="600" rx="36" fill="url(#xtCard)" stroke="#FF2A85" stroke-opacity="0.4" stroke-width="1.5"/>
+
+  <!-- Xingtu Camera & Star Logo -->
+  <g transform="translate(600, 260)">
+    <circle cx="0" cy="0" r="115" fill="#17030d" stroke="#FF2A85" stroke-width="2.5" filter="url(#xtGlow)"/>
+    <!-- Stylized Camera Body -->
+    <rect x="-60" y="-45" width="120" height="90" rx="24" fill="none" stroke="url(#xtGrad)" stroke-width="8"/>
+    <!-- Camera Lens -->
+    <circle cx="0" cy="0" r="28" fill="none" stroke="url(#xtGrad)" stroke-width="7"/>
+    <!-- Shutter Flash Dot -->
+    <circle cx="36" cy="-26" r="6" fill="#FF6584"/>
+    <!-- Four-point Sparkle Star -->
+    <path d="M52 -45 Q52 -25 72 -25 Q52 -25 52 -5 Q52 -25 32 -25 Q52 -25 52 -45 Z" fill="#FFE082"/>
+  </g>
+
+  <!-- Titles -->
+  <g transform="translate(600, 480)" text-anchor="middle">
+    <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="900" letter-spacing="2">
+      XINGTU VIP 30 NGÀY
+    </text>
+    <g transform="translate(0, 52)">
+      <rect x="-270" y="-22" width="540" height="44" rx="22" fill="#FF2A85" fill-opacity="0.2" stroke="#FF2A85" stroke-width="1.5"/>
+      <text x="0" y="7" fill="#ff94b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" letter-spacing="1">
+        CHỈNH ẢNH DOUYIN • MỞ KHÓA BỘ LỌC AI
+      </text>
+    </g>
+  </g>
+</svg>

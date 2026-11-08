@@ -3,26 +3,20 @@ const prisma = new PrismaClient();
 
 async function main() {
   const sups = await prisma.supplier.findMany({
-    include: {
-      mappings: {
-        include: { product: true }
-      }
+    select: {
+      code: true,
+      name: true,
+      depositBankId: true,
+      depositAccountNo: true,
+      depositAccountName: true,
+      depositSyntax: true,
+      currentBalance: true,
     }
   });
 
-  console.log('--- ALL SUPPLIERS ---');
+  console.log('--- ALL SUPPLIER BANK DETAILS IN DB ---');
   for (const s of sups) {
-    console.log({
-      id: s.id,
-      name: s.name,
-      code: s.code,
-      type: s.type,
-      balance: s.balance,
-      isActive: s.isActive,
-      baseUrl: s.baseUrl,
-      apiKey: s.apiKey ? s.apiKey.slice(0, 8) + '...' : null,
-      mappings: s.mappings.map(m => `${m.product.title} (code: ${m.supplierProductCode}, stock: ${m.supplierStock}, price: ${m.supplierPrice})`)
-    });
+    console.log(s);
   }
 }
 
