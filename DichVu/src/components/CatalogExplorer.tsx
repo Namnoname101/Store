@@ -148,6 +148,10 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
       "windows",
       "adobe",
       "duolingo",
+      "xingtu",
+      "quizlet",
+      "photoroom",
+      "figma",
       "vpn",
       "nordvpn",
       "netflix",
@@ -260,6 +264,14 @@ export function matchProductBrand(product: FlattenedProduct, brandId: string): b
       return titleLower.includes("capcut");
     case "canva":
       return titleLower.includes("canva");
+    case "figma":
+      return titleLower.includes("figma") || slugLower.includes("figma");
+    case "xingtu":
+      return titleLower.includes("xingtu") || slugLower.includes("xingtu") || titleLower.includes("醒图");
+    case "photoroom":
+      return titleLower.includes("photoroom") || slugLower.includes("photoroom");
+    case "quizlet":
+      return titleLower.includes("quizlet") || slugLower.includes("quizlet");
     case "duolingo":
       return titleLower.includes("duolingo");
     case "meitu":

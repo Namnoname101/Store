@@ -35,6 +35,9 @@ export function normalizeBrandName(name?: string | null): string {
   if (lower.includes("facebook") || lower.includes("fb")) return "facebook";
   if (lower.includes("instagram") || lower.includes("ig")) return "instagram";
   if (lower.includes("duolingo")) return "duolingo";
+  if (lower.includes("xingtu") || lower.includes("醒图") || lower.includes("tinh tu")) return "xingtu";
+  if (lower.includes("quizlet")) return "quizlet";
+  if (lower.includes("photoroom")) return "photoroom";
   if (lower.includes("nordvpn") || lower.includes("vpn")) return "nordvpn";
   return "default";
 }
@@ -429,6 +432,55 @@ export default function BrandLogo({ brandName, className = "w-4 h-4", size = 16 
           <path d="M2 5.5V18.5C2 19.3 2.7 20 3.5 20H6V11.5L12 16L18 11.5V20H20.5C21.3 20 22 19.3 22 18.5V5.5C22 4.4 20.7 3.8 19.8 4.4L12 10.2L4.2 4.4C3.3 3.8 2 4.4 2 5.5Z" fill="#EA4335" />
           <path d="M18 20H20.5C21.3 20 22 19.3 22 18.5V9.5L18 12.5V20Z" fill="#4285F4" />
           <path d="M2 9.5V18.5C2 19.3 2.7 20 3.5 20H6V12.5L2 9.5Z" fill="#34A853" />
+        </svg>
+      );
+
+    case "xingtu":
+      return (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={className}
+        >
+          <rect x="2" y="5" width="20" height="15" rx="4" stroke="#FF2A85" strokeWidth="2" />
+          <circle cx="12" cy="12.5" r="4.5" stroke="#FF6584" strokeWidth="2" />
+          <circle cx="17.5" cy="8" r="1.2" fill="#FFB199" />
+          <path d="M19 3 Q19 5 21 5 Q19 5 19 7 Q19 5 17 5 Q19 5 19 3 Z" fill="#FFE082" />
+        </svg>
+      );
+
+    case "quizlet":
+      return (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={className}
+        >
+          <circle cx="11" cy="11" r="7.5" stroke="#3CCFCF" strokeWidth="2.5" />
+          <path d="M15.5 15.5 L20.5 20.5" stroke="#4257B2" strokeWidth="3" strokeLinecap="round" />
+          <circle cx="20.5" cy="20.5" r="1.2" fill="#00E5FF" />
+        </svg>
+      );
+
+    case "photoroom":
+      return (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={className}
+        >
+          <rect x="3" y="3" width="11" height="15" rx="3" stroke="#9333EA" strokeWidth="2" />
+          <rect x="9.5" y="6.5" width="11.5" height="14.5" rx="3" fill="#9333EA" fillOpacity="0.25" stroke="#EC4899" strokeWidth="1.8" />
+          <path d="M19 2 Q19 4 21 4 Q19 4 19 6 Q19 4 17 4 Q19 4 19 2 Z" fill="#F472B6" />
         </svg>
       );
 
