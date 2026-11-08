@@ -180,8 +180,14 @@ export function isDisallowedShortTermApiPackage(product: {
   const slug = (product.slug || "").toLowerCase();
   const text = `${title} ${desc} ${slug}`;
 
-  // Meitu & CapCut products are editing software accounts, not short-term API keys
-  if (text.includes("meitu") || text.includes("capcut")) {
+  // Creative & design software accounts are legitimate tools, not short-term API keys
+  if (
+    text.includes("meitu") ||
+    text.includes("capcut") ||
+    text.includes("wink") ||
+    text.includes("photoroom") ||
+    text.includes("xingtu")
+  ) {
     return false;
   }
 
