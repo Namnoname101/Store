@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750">
+  <defs>
+    <radialGradient id="adBg" cx="50%" cy="38%" r="65%">
+      <stop offset="0%" stop-color="#2a0808"/>
+      <stop offset="55%" stop-color="#140303"/>
+      <stop offset="100%" stop-color="#050101"/>
+    </radialGradient>
+    <filter id="adGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="40" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <linearGradient id="adCard" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="adGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF0000"/>
+      <stop offset="50%" stop-color="#FF3366"/>
+      <stop offset="100%" stop-color="#990033"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="750" fill="url(#adBg)"/>
+  <circle cx="600" cy="270" r="260" fill="#FF0000" opacity="0.22" filter="url(#adGlow)"/>
+  <rect x="220" y="75" width="760" height="600" rx="36" fill="url(#adCard)" stroke="#FF0000" stroke-opacity="0.38" stroke-width="1.5"/>
+
+  <!-- Adobe Creative Cloud Badge Logo -->
+  <g transform="translate(600, 260)">
+    <circle cx="0" cy="0" r="115" fill="#180404" stroke="#FF0000" stroke-width="2.5" filter="url(#adGlow)"/>
+    <!-- Adobe 'A' Iconic Symbol -->
+    <g transform="translate(-48, -55) scale(1.0)">
+      <polygon points="0,110 38,0 60,0 22,110" fill="#FF0000"/>
+      <polygon points="96,110 58,0 36,0 74,110" fill="#FF3366"/>
+      <polygon points="66,74 86,110 42,110" fill="#FF0000"/>
+    </g>
+  </g>
+
+  <!-- Titles -->
+  <g transform="translate(600, 480)" text-anchor="middle">
+    <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="900" letter-spacing="2">
+      ADOBE ALL APPS 1 THÁNG
+    </text>
+    <g transform="translate(0, 52)">
+      <rect x="-260" y="-22" width="520" height="44" rx="22" fill="#FF0000" fill-opacity="0.18" stroke="#FF0000" stroke-width="1.5"/>
+      <text x="0" y="7" fill="#ff7088" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" letter-spacing="1">
+        TÀI KHOẢN CẤP SẴN • GIAO NGAY • 2 THIẾT BỊ
+      </text>
+    </g>
+  </g>
+</svg>
