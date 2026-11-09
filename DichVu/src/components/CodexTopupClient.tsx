@@ -71,6 +71,29 @@ export default function CodexTopupClient() {
   const [paymentStatus, setPaymentStatus] = useState<string>("PENDING");
   const [copiedMemo, setCopiedMemo] = useState(false);
 
+  // Authentication state for mandatory account-bound orders
+  const [currentUser, setCurrentUser] = useState<{ id: string; username: string } | null>(null);
+  const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch("/api/auth/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isMounted && data?.authenticated && data?.user) {
+          setCurrentUser(data.user);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (isMounted) setIsLoadingAuth(false);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   // Load saved keys if user is logged in
   useEffect(() => {
     setIsLoadingSavedKeys(true);

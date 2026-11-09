@@ -70,9 +70,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 3. User session check
+    // 3. User session check (Mandatory authentication)
     const authUser = await getAuthenticatedUser(req);
-    const userId = authUser?.userId || binding?.userId || null;
+    if (!authUser || !authUser.userId) {
+      return NextResponse.json(
+        {
+          error: "Vui lòng đăng nhập hoặc tạo tài khoản để tiến hành nạp credit và lưu lịch sử vào tài khoản của bạn.",
+          requireAuth: true,
+        },
+        { status: 401 }
+      );
+    }
+    const userId = authUser.userId;
 
     // 4. Find or ensure Category & Product exists
     let category = await prisma.category.findFirst({

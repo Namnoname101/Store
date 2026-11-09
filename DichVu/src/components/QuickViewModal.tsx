@@ -21,6 +21,7 @@ import type { ProductCardProps } from "@/components/ProductCard";
 import { formatVND, getProductTypeInfo } from "@/lib/product-types";
 import { useCart } from "@/contexts/CartContext";
 import { resolveProductThumbnail } from "@/lib/catalog-grouping";
+import AuthRequiredModal from "@/components/AuthRequiredModal";
 
 interface QuickViewModalProps {
   product: ProductCardProps["product"] | null;
@@ -91,6 +92,29 @@ export default function QuickViewModal({
   } | null>(null);
 
   const [imgError, setImgError] = useState(false);
+
+  // Authentication state for mandatory account-bound orders
+  const [currentUser, setCurrentUser] = useState<{ id: string; username: string } | null>(null);
+  const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch("/api/auth/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isMounted && data?.authenticated && data?.user) {
+          setCurrentUser(data.user);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (isMounted) setIsLoadingAuth(false);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Reset state on product change or modal open
   useEffect(() => {

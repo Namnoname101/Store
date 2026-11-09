@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { formatVND, getProductTypeInfo } from "@/lib/product-types";
+import AuthRequiredModal from "@/components/AuthRequiredModal";
 
 export default function CartPage() {
   const router = useRouter();
@@ -68,6 +69,29 @@ export default function CartPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [itemErrors, setItemErrors] = useState<Record<string, string>>({});
+
+  // Authentication state for mandatory account-bound orders
+  const [currentUser, setCurrentUser] = useState<{ id: string; username: string } | null>(null);
+  const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch("/api/auth/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isMounted && data?.authenticated && data?.user) {
+          setCurrentUser(data.user);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (isMounted) setIsLoadingAuth(false);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Dynamic coupon re-evaluation when selectedSubtotal changes
   useEffect(() => {

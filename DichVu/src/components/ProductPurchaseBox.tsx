@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { formatVND } from "@/lib/product-types";
 import { useCart } from "@/contexts/CartContext";
+import AuthRequiredModal from "@/components/AuthRequiredModal";
 
 interface ProductPurchaseBoxProps {
   productId: string;
@@ -101,6 +102,29 @@ export default function ProductPurchaseBox({
   const [customerKeyUsername, setCustomerKeyUsername] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Authentication state for mandatory account-bound orders
+  const [currentUser, setCurrentUser] = useState<{ id: string; username: string } | null>(null);
+  const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch("/api/auth/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isMounted && data?.authenticated && data?.user) {
+          setCurrentUser(data.user);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (isMounted) setIsLoadingAuth(false);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Codex API Key verification state
   const [isVerifyingKey, setIsVerifyingKey] = useState<boolean>(false);
