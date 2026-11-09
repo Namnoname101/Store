@@ -7,6 +7,7 @@ import {
 } from "@/lib/prisma";
 import { getSupplierAdapter } from "@/services/suppliers/adapter.registry";
 import { fulfillCodexCreditOrder, isCodexProduct } from "@/services/codex-fulfillment.service";
+import { releaseExpiredReservations } from "@/services/inventory.service";
 import {
   notifyFulfillmentSuccess,
   notifyFulfillmentFailure,
@@ -144,6 +145,9 @@ export async function fulfillOrderViaUpstream(
       continue;
     }
 
+    // Release any expired reservations first
+    await releaseExpiredReservations();
+
     // Check if there are available warehouse items that can fulfill the remaining needed
     const availableWarehouseItems = await prisma.productItem.findMany({
       where: {
@@ -152,6 +156,7 @@ export async function fulfillOrderViaUpstream(
       },
       take: quantityNeeded,
       orderBy: { createdAt: "asc" },
+      select: { id: true },
     });
 
     if (availableWarehouseItems.length > 0) {
@@ -170,6 +175,47 @@ export async function fulfillOrderViaUpstream(
 
       totalKeysDelivered += updateResult.count;
       quantityNeeded -= updateResult.count;
+    }
+
+    // If still needing items, check for items RESERVED by UNPAID orders
+    // (A real paid order takes absolute priority over unconfirmed/abandoned carts to save supplier balance)
+    if (quantityNeeded > 0) {
+      const unconfirmedReservedItems = await prisma.productItem.findMany({
+        where: {
+          productId: item.productId,
+          status: ItemStatus.RESERVED,
+          orderId: { not: order.id },
+          order: {
+            status: {
+              in: [OrderStatus.PENDING, OrderStatus.EXPIRED, OrderStatus.CANCELLED],
+            },
+          },
+        },
+        take: quantityNeeded,
+        orderBy: { createdAt: "asc" },
+        select: { id: true },
+      });
+
+      if (unconfirmedReservedItems.length > 0) {
+        const reclaimIds = unconfirmedReservedItems.map((ri) => ri.id);
+        const updateResult = await prisma.productItem.updateMany({
+          where: {
+            id: { in: reclaimIds },
+            status: ItemStatus.RESERVED,
+          },
+          data: {
+            status: ItemStatus.SOLD,
+            orderId: order.id,
+            reservedUntil: null,
+          },
+        });
+
+        totalKeysDelivered += updateResult.count;
+        quantityNeeded -= updateResult.count;
+        console.log(
+          `[Fulfillment] Reclaimed ${updateResult.count} warehouse item(s) from unpaid order(s) for paid order ${order.orderCode}`
+        );
+      }
     }
 
     // If completely fulfilled from warehouse, skip calling external supplier

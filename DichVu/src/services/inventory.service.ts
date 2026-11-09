@@ -1,4 +1,4 @@
-import { prisma, ItemStatus, FulfillmentType } from "@/lib/prisma";
+import { prisma, ItemStatus, FulfillmentType, OrderStatus } from "@/lib/prisma";
 import type { ProductItem } from "@prisma/client";
 
 /**
@@ -151,33 +151,133 @@ export async function commitReservedItemsToSold(
   txClient?: any
 ): Promise<ProductItem[]> {
   const execute = async (tx: any) => {
+    // 1. Release expired reservations first
+    await tx.productItem.updateMany({
+      where: {
+        status: ItemStatus.RESERVED,
+        reservedUntil: {
+          lt: new Date(),
+        },
+      },
+      data: {
+        status: ItemStatus.AVAILABLE,
+        orderId: null,
+        reservedUntil: null,
+      },
+    });
+
+    // 2. Commit any items already reserved for this specific order
     const reservedItems = await tx.productItem.findMany({
       where: {
         orderId,
         status: ItemStatus.RESERVED,
       },
+      select: { id: true },
     });
 
-    if (reservedItems.length === 0) {
-      return [];
+    if (reservedItems.length > 0) {
+      const itemIds = reservedItems.map((item: any) => item.id);
+      await tx.productItem.updateMany({
+        where: {
+          id: { in: itemIds },
+          status: ItemStatus.RESERVED,
+        },
+        data: {
+          status: ItemStatus.SOLD,
+          reservedUntil: null,
+        },
+      });
     }
 
-    const itemIds = reservedItems.map((item: any) => item.id);
-
-    await tx.productItem.updateMany({
-      where: {
-        id: { in: itemIds },
-        status: ItemStatus.RESERVED,
-      },
-      data: {
-        status: ItemStatus.SOLD,
-        reservedUntil: null,
+    // 3. Check if the order needs additional items from local warehouse
+    // (e.g. order was created when inventory was temporarily reserved by an unconfirmed/abandoned cart)
+    const order = await tx.order.findUnique({
+      where: { id: orderId },
+      include: {
+        orderItems: true,
       },
     });
+
+    if (order && order.orderItems) {
+      for (const orderItem of order.orderItems) {
+        const soldCount = await tx.productItem.count({
+          where: {
+            orderId,
+            productId: orderItem.productId,
+            status: ItemStatus.SOLD,
+          },
+        });
+
+        let needed = orderItem.quantity - soldCount;
+        if (needed <= 0) continue;
+
+        // Try available warehouse items first
+        const availableItems = await tx.productItem.findMany({
+          where: {
+            productId: orderItem.productId,
+            status: ItemStatus.AVAILABLE,
+          },
+          take: needed,
+          orderBy: { createdAt: "asc" },
+          select: { id: true },
+        });
+
+        if (availableItems.length > 0) {
+          const availIds = availableItems.map((ai: any) => ai.id);
+          const updateResult = await tx.productItem.updateMany({
+            where: {
+              id: { in: availIds },
+              status: ItemStatus.AVAILABLE,
+            },
+            data: {
+              status: ItemStatus.SOLD,
+              orderId,
+              reservedUntil: null,
+            },
+          });
+          needed -= updateResult.count;
+        }
+
+        // If still needing items, prioritize this paid order over any unconfirmed/unpaid reservations
+        if (needed > 0) {
+          const unconfirmedItems = await tx.productItem.findMany({
+            where: {
+              productId: orderItem.productId,
+              status: ItemStatus.RESERVED,
+              orderId: { not: orderId },
+              order: {
+                status: {
+                  in: [OrderStatus.PENDING, OrderStatus.EXPIRED, OrderStatus.CANCELLED],
+                },
+              },
+            },
+            take: needed,
+            orderBy: { createdAt: "asc" },
+            select: { id: true },
+          });
+
+          if (unconfirmedItems.length > 0) {
+            const reclaimIds = unconfirmedItems.map((ri: any) => ri.id);
+            await tx.productItem.updateMany({
+              where: {
+                id: { in: reclaimIds },
+                status: ItemStatus.RESERVED,
+              },
+              data: {
+                status: ItemStatus.SOLD,
+                orderId,
+                reservedUntil: null,
+              },
+            });
+          }
+        }
+      }
+    }
 
     return await tx.productItem.findMany({
       where: {
-        id: { in: itemIds },
+        orderId,
+        status: ItemStatus.SOLD,
       },
     });
   };

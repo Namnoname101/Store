@@ -289,7 +289,51 @@ export async function createOrder(data: CreateOrderInput) {
         });
       }
 
-      // Reserve stock: prioritize available warehouse stock for all items
+      // 1. Release expired reservations first
+      await tx.productItem.updateMany({
+        where: {
+          status: ItemStatus.RESERVED,
+          reservedUntil: { lt: new Date() },
+        },
+        data: {
+          status: ItemStatus.AVAILABLE,
+          orderId: null,
+          reservedUntil: null,
+        },
+      });
+
+      // 2. If logged-in user has previous uncompleted PENDING orders holding reservations for these products,
+      // release them so the user's latest checkout can claim warehouse stock immediately.
+      if (data.userId) {
+        const productIds = data.items.map((i) => i.productId);
+        const userPendingItems = await tx.productItem.findMany({
+          where: {
+            status: ItemStatus.RESERVED,
+            productId: { in: productIds },
+            order: {
+              userId: data.userId,
+              status: OrderStatus.PENDING,
+            },
+          },
+          select: { id: true },
+        });
+
+        if (userPendingItems.length > 0) {
+          await tx.productItem.updateMany({
+            where: {
+              id: { in: userPendingItems.map((upi: any) => upi.id) },
+              status: ItemStatus.RESERVED,
+            },
+            data: {
+              status: ItemStatus.AVAILABLE,
+              orderId: null,
+              reservedUntil: null,
+            },
+          });
+        }
+      }
+
+      // 3. Reserve stock: prioritize available warehouse stock for all items
       for (const item of data.items) {
         const product = productMap.get(item.productId)!;
         const availCount = await tx.productItem.count({
