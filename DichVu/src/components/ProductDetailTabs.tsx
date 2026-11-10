@@ -16,6 +16,10 @@ import {
   Sparkles,
   Terminal,
   Cpu,
+  AlertTriangle,
+  XCircle,
+  ShieldAlert,
+  Bot,
 } from "lucide-react";
 import CodexApiGuideHub from "@/components/CodexApiGuideHub";
 import { AI_FRONTIER_MODELS, DEFAULT_CLAUDE_MODEL_ID } from "@/lib/constants/ai-models";
@@ -42,6 +46,7 @@ export interface ProductDetailTabsProps {
   isCodex?: boolean;
   isClaude?: boolean;
   isApiKeyProduct?: boolean;
+  isChatGPT?: boolean;
 }
 
 export default function ProductDetailTabs({
@@ -50,6 +55,7 @@ export default function ProductDetailTabs({
   isCodex = false,
   isClaude = false,
   isApiKeyProduct = false,
+  isChatGPT = false,
 }: ProductDetailTabsProps) {
   const [activeTab, setActiveTab] = useState<"overview" | "technical">("overview");
   const [copiedSnippet, setCopiedSnippet] = useState<string | null>(null);
@@ -161,6 +167,113 @@ main();`,
           aria-labelledby="tab-overview"
           className="space-y-6 sm:space-y-8 animate-in fade-in duration-200"
         >
+          {/* Dedicated ChatGPT Plus Feature & Warranty Specification Card */}
+          {isChatGPT && (
+            <div className="space-y-6">
+              {/* Feature Highlights Grid */}
+              <div className="rounded-2xl border border-primary/20 bg-primary/5 p-6 sm:p-7 shadow-xs">
+                <div className="flex items-center gap-2 mb-3">
+                  <Bot className="h-5 w-5 text-primary" />
+                  <h3 className="text-base font-bold text-foreground">
+                    Sức mạnh AI thế hệ mới nhất của OpenAI được mở khóa
+                  </h3>
+                </div>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-4">
+                  Tài khoản bản quyền kích hoạt đầy đủ 100% tính năng cao cấp của gói ChatGPT Plus (Không chia sẻ cookie, không giới hạn tính năng):
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  <div className="p-3 rounded-xl bg-card border border-border shadow-2xs">
+                    <span className="text-[11px] font-bold text-primary block">GPT-6 &amp; GPT-5</span>
+                    <span className="text-[10px] text-muted-foreground">Mô hình Frontier hàng đầu</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-card border border-border shadow-2xs">
+                    <span className="text-[11px] font-bold text-primary block">OpenAI o3 &amp; o1</span>
+                    <span className="text-[10px] text-muted-foreground">Tư duy suy luận logic sâu</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-card border border-border shadow-2xs">
+                    <span className="text-[11px] font-bold text-primary block">GPT-4.5 High-EQ</span>
+                    <span className="text-[10px] text-muted-foreground">Cảm xúc &amp; văn phong tự nhiên</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-card border border-border shadow-2xs">
+                    <span className="text-[11px] font-bold text-primary block">DALL·E 3 HD</span>
+                    <span className="text-[10px] text-muted-foreground">Vẽ ảnh AI sắc nét không giới hạn</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-card border border-border shadow-2xs">
+                    <span className="text-[11px] font-bold text-primary block">Canvas Pro</span>
+                    <span className="text-[10px] text-muted-foreground">Soạn thảo code &amp; bài viết</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-card border border-border shadow-2xs">
+                    <span className="text-[11px] font-bold text-primary block">Advanced Voice</span>
+                    <span className="text-[10px] text-muted-foreground">Nói chuyện thời gian thực</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-card border border-border shadow-2xs">
+                    <span className="text-[11px] font-bold text-primary block">Phân tích File</span>
+                    <span className="text-[10px] text-muted-foreground">Đọc PDF, Excel, ảnh chụp</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-card border border-border shadow-2xs">
+                    <span className="text-[11px] font-bold text-primary block">GPT Store</span>
+                    <span className="text-[10px] text-muted-foreground">Hàng ngàn AI Custom Agents</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Strict Transparent Warranty Rules (Quy định nhà cung cấp - Tránh mất lòng) */}
+              <div className="rounded-2xl border border-border bg-card p-6 sm:p-7 shadow-xs">
+                <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+                  <div className="flex items-center gap-2">
+                    <ShieldAlert className="h-5 w-5 text-amber-500" />
+                    <h3 className="text-base font-bold text-foreground">
+                      Chính sách bảo hành &amp; Quy định sử dụng (Minh bạch - Tránh mất lòng)
+                    </h3>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                    Bảo hành 1 Đổi 1 trong 30 ngày
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
+                  Để đảm bảo quyền lợi tối đa cho khách hàng và vận hành đúng tiêu chuẩn nhà cung cấp, xin quý khách lưu ý các điều kiện bảo hành rõ ràng bên dưới:
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Cột được bảo hành */}
+                  <div className="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 dark:bg-emerald-950/20 space-y-3">
+                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-xs sm:text-sm">
+                      <CheckCircle2 className="h-4 w-4 shrink-0" />
+                      <span>ĐƯỢC BẢO HÀNH (1 ĐỔI 1 HOẶC HOÀN TIỀN)</span>
+                    </div>
+                    <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside leading-relaxed">
+                      <li>Tài khoản bị mất gói Plus trước thời hạn do lỗi từ OpenAI hoặc hệ thống cấp phát.</li>
+                      <li>Tài khoản sai mật khẩu ngay khi nhận bàn giao (báo hỗ trợ xử lý trong 15 phút).</li>
+                      <li>Hỗ trợ đổi tài khoản mới tương đương trong vòng 15 - 30 phút (tối đa 24h).</li>
+                      <li>Trường hợp tạm thời hết tài khoản đổi, hệ thống hoàn tiền theo tỷ lệ số ngày còn lại chưa sử dụng.</li>
+                    </ul>
+                  </div>
+
+                  {/* Cột từ chối bảo hành */}
+                  <div className="p-4 rounded-xl border border-destructive/20 bg-destructive/5 dark:bg-destructive/10 space-y-3">
+                    <div className="flex items-center gap-2 text-destructive font-bold text-xs sm:text-sm">
+                      <XCircle className="h-4 w-4 shrink-0" />
+                      <span>TỪ CHỐI BẢO HÀNH (CÁC TRƯỜNG HỢP VI PHẠM)</span>
+                    </div>
+                    <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside leading-relaxed">
+                      <li>Khách hàng tự ý thay đổi Email tài khoản được cấp.</li>
+                      <li>Khách hàng tự ý bấm hủy gói (Cancel Subscription) hoặc can thiệp thông tin Billing trong Cài đặt OpenAI.</li>
+                      <li>Vi phạm chính sách nội dung của OpenAI: Sử dụng prompt độc hại, tạo nội dung NSFW/18+, bạo lực, spam bot quá tải khiến OpenAI khóa vĩnh viễn (Terminated / Suspended).</li>
+                      <li>Chia sẻ tài khoản tràn lan cho nhiều người, đổi quá nhiều địa chỉ IP lạ cùng lúc khiến OpenAI gắn cờ (Flagged).</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="mt-4 p-3 rounded-xl bg-secondary/50 border border-border flex items-start gap-2.5 text-xs text-muted-foreground">
+                  <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+                  <span>
+                    <strong className="text-foreground">Khuyến nghị sử dụng:</strong> Quý khách nên đăng nhập trên 1-2 thiết bị cá nhân (trình duyệt web hoặc ứng dụng ChatGPT chính thức) và không chia sẻ công khai để tài khoản luôn hoạt động mượt mà và ổn định nhất.
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Product Description */}
           <div className="rounded-2xl border border-border bg-card p-6 sm:p-7 shadow-xs">
             <h2 className="text-base font-bold text-foreground mb-3 flex items-center gap-2">

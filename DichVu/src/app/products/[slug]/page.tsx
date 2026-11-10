@@ -82,6 +82,12 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     product.title.toLowerCase().includes("follow");
 
   const titleLower = product.title.toLowerCase();
+  const isChatGPT =
+    product.slug.toLowerCase().includes("chatgpt") ||
+    titleLower.includes("chatgpt") ||
+    titleLower.includes("openai") ||
+    titleLower.includes("gpt-4");
+
   const isCodex =
     product.slug.toLowerCase().includes("codex") ||
     product.slug.toLowerCase().includes("cdx") ||
@@ -102,6 +108,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Hệ thống tự động khởi tạo theo link mục tiêu"
     : isCodex
     ? "Nạp vào Key có sẵn hoặc cấp Key mới tức thì 24/7"
+    : isChatGPT
+    ? "Tài khoản (Email | Mật khẩu) bàn giao tức thì 24/7"
     : product.type === "LICENSE_KEY"
     ? "Mã bản quyền / API Key cấp tức thì sau thanh toán"
     : product.type === "ACCOUNT"
@@ -114,6 +122,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Bảo lưu vĩnh viễn (Dùng đến khi hết Quota)"
     : isClaude
     ? "Bảo lưu theo hạn mức Credit / Request đã chọn"
+    : isChatGPT
+    ? "30 ngày bản quyền Plus đầy đủ (Full date)"
     : titleLower.includes("18 tháng")
     ? "18 tháng đầy đủ (Full date)"
     : titleLower.includes("12 tháng") || titleLower.includes("1 năm")
@@ -128,6 +138,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Bảo hành duy trì số lượng trong 30 ngày"
     : isApiKeyProduct
     ? "Bảo đảm kết nối ổn định & bảo lưu hạn mức trọn vẹn"
+    : isChatGPT
+    ? "1 đổi 1 trong 30 ngày (Bảo hành chuẩn nhà cung cấp)"
     : titleLower.includes("gemini") || titleLower.includes("duolingo")
     ? "1 đổi 1 trong 24h kích hoạt & hỗ trợ suốt 18 tháng"
     : "Bảo hành 1 đổi 1 trong suốt thời hạn sử dụng gói";
@@ -282,6 +294,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             isCodex={isCodex}
             isClaude={isClaude}
             isApiKeyProduct={isApiKeyProduct}
+            isChatGPT={isChatGPT}
           />
         </div>
 

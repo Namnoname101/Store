@@ -280,6 +280,33 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
     ],
     note: "Tài khoản cấp sẵn bảo hành Full 30 ngày (1 đổi 1 nếu lỗi). Vui lòng KHÔNG thay đổi email đăng nhập của tài khoản để duy trì chế độ bảo hành.",
   },
+
+  // ==========================================
+  // 14. CHATGPT PLUS 1 THÁNG
+  // ==========================================
+  "chatgpt-plus-1-thang": {
+    title: "Hướng dẫn đăng nhập & Quy định sử dụng tài khoản ChatGPT Plus",
+    steps: [
+      {
+        text: "Bước 1: Truy cập website chính thức https://chatgpt.com hoặc mở ứng dụng ChatGPT chính thức trên iOS / Android / macOS / Windows.",
+        caption: "Bước 1: Mở trình duyệt và truy cập trang chính thức của OpenAI",
+      },
+      {
+        text: "Bước 2: Bấm nút 'Log in' và nhập thông tin Email | Mật khẩu được cung cấp ở bảng bàn giao phía trên.",
+        caption: "Bước 2: Đăng nhập với tài khoản được bàn giao",
+      },
+      {
+        text: "Bước 3: Sau khi đăng nhập, kiểm tra huy hiệu 'ChatGPT Plus' ở góc trái hoặc vào Settings > Subscription để xác nhận gói hoạt động.",
+        caption: "Bước 3: Xác nhận trạng thái Plus bản quyền",
+      },
+      {
+        text: "Bước 4: Trải nghiệm toàn bộ mô hình Frontier AI: GPT-6 series (Astra, Sol, Luna), OpenAI o3, o1, GPT-4.5 High-EQ, tạo ảnh DALL·E 3, Canvas và Advanced Voice.",
+        caption: "Bước 4: Sử dụng đầy đủ tính năng cao cấp của OpenAI",
+      },
+    ],
+    note: "ĐIỀU KIỆN BẢO HÀNH (TRÁNH MẤT LÒNG): Bảo hành 1 ĐỔI 1 trọn vẹn 30 ngày nếu tài khoản mất gói Plus do lỗi hệ thống/OpenAI. TỪ CHỐI BẢO HÀNH nếu: tự ý đổi Email tài khoản; tự ý bấm hủy gói (Cancel Subscription) trong phần cài đặt OpenAI; vi phạm chính sách OpenAI (spam bot, tạo nội dung NSFW/18+, bạo lực khiến OpenAI đình chỉ/khóa nick); hoặc chia sẻ đăng nhập tràn lan nhiều IP/thiết bị bất thường cùng lúc.",
+    docsUrl: "https://help.openai.com",
+  },
 };
 
 /**
@@ -378,6 +405,17 @@ export function resolveProductInstruction(params: {
   // 2.13 Photoroom
   if (cleanSlug.includes("photoroom") || cleanTitle.includes("photoroom")) {
     return PRODUCT_GUIDES["photoroom-max-7-ngay"];
+  }
+
+  // 2.14 ChatGPT & OpenAI Accounts
+  if (
+    cleanSlug.includes("chatgpt") ||
+    cleanTitle.includes("chatgpt") ||
+    cleanSlug.includes("openai") ||
+    cleanTitle.includes("openai") ||
+    cleanTitle.includes("gpt-4")
+  ) {
+    return PRODUCT_GUIDES["chatgpt-plus-1-thang"];
   }
 
   // 3. Fallback theo Product Type mặc định
