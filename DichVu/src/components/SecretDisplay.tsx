@@ -359,7 +359,7 @@ export default function SecretDisplay({
     }
 
     content += "\nCHÍNH SÁCH BẢO HÀNH & HỖ TRỢ:\n";
-    content += "- Bảo hành 1-đổi-1 trọn thời gian sử dụng theo cam kết từng gói sản phẩm.\n";
+    content += "- Bảo hành 1-đổi-1 theo đúng chính sách và thời hạn của từng gói sản phẩm.\n";
     content += "- Hỗ trợ kỹ thuật 24/7 qua Telegram: https://t.me/daitruongstore\n";
     content += "- Website chính thức: https://daitruongstore.fly.dev\n";
 

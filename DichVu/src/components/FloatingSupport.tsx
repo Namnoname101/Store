@@ -118,7 +118,7 @@ export default function FloatingSupport() {
 
           <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-center gap-1.5 text-[10px] text-slate-500">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Cam kết hoàn tiền & bảo hành 100% nếu có lỗi</span>
+            <span>Cam kết hỗ trợ & bảo hành đúng chính sách từng gói</span>
           </div>
         </div>
       )}

@@ -141,17 +141,24 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "90 ngày (3 tháng)"
     : "Theo gói dịch vụ đã chọn";
 
+  const isSuno = slug.includes("suno") || titleLower.includes("suno");
+  const isHMA = slug.includes("hma") || titleLower.includes("hma");
+
   const warrantyLabel = isSMM
-    ? "Bảo hành duy trì số lượng trong 30 ngày"
+    ? "Bảo hành duy trì số lượng theo server"
     : isApiKeyProduct
     ? "Bảo đảm kết nối ổn định & bảo lưu hạn mức trọn vẹn"
     : isChatGPTBHF
     ? "1 Đổi 1 Trọn Vẹn 30 Ngày (Gói BHF Cao Cấp)"
     : isChatGPT
     ? "Bảo hành đăng nhập 24H (Gói Tiết Kiệm - Chuẩn NCC)"
+    : isSuno
+    ? "Bảo hành đăng nhập 24H & 2.500 Credits ban đầu"
+    : isHMA
+    ? "Bảo hành kích hoạt 5 thiết bị trong suốt thời hạn key"
     : titleLower.includes("gemini") || titleLower.includes("duolingo")
-    ? "1 đổi 1 trong 24h kích hoạt & hỗ trợ suốt 18 tháng"
-    : "Bảo hành 1 đổi 1 trong suốt thời hạn sử dụng gói";
+    ? "1 đổi 1 trong 24h kích hoạt & hỗ trợ suốt thời hạn"
+    : "Bảo hành 1 đổi 1 theo đúng cam kết từng gói";
 
   const unitLabel = product.title.toLowerCase().includes("follow")
     ? "follow"

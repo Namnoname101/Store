@@ -519,7 +519,7 @@ export default function QuickViewModal({
               <ShieldCheck className="h-4 w-4 text-accent shrink-0" />
               <div>
                 <span className="font-semibold block text-foreground">Bảo hành 1:1</span>
-                <span className="text-muted-foreground text-[11px]">Trọn thời hạn gói</span>
+                <span className="text-muted-foreground text-[11px]">Theo cam kết gói</span>
               </div>
             </div>
             <div className="flex items-center gap-2">

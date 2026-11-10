@@ -63,6 +63,46 @@ export default function ProductDetailTabs({
   const [copiedSnippet, setCopiedSnippet] = useState<string | null>(null);
   const [activeSnippetLang, setActiveSnippetLang] = useState<"curl" | "python" | "typescript">("curl");
 
+  // Dynamic warranty commitment based on supplier policy
+  const slugLower = (product.slug || "").toLowerCase();
+  const catSlugLower = (product.category?.slug || "").toLowerCase();
+  const titleLower = (product.title || "").toLowerCase();
+
+  const warrantyCommitment = isChatGPTBHF
+    ? {
+        title: "1-Đổi-1 trọn 30 ngày (Gói BHF)",
+        desc: "Bảo hành 1 đổi 1 hoặc cấp lại Plus trong suốt 30 ngày sử dụng nếu phát sinh lỗi kỹ thuật từ hệ thống.",
+      }
+    : isChatGPT
+    ? {
+        title: "Bảo hành đăng nhập 24H (Chuẩn NCC)",
+        desc: "Đổi mới tức thì trong 24 giờ đầu nếu sai mật khẩu hoặc tài khoản chưa kích hoạt Plus từ nhà cung cấp.",
+      }
+    : isApiKeyProduct || isCodex || isClaude
+    ? {
+        title: "Bảo lưu Quota & Kết nối API",
+        desc: "Cam kết số dư credit khả dụng chuẩn xác và đường truyền API ổn định theo thông số niêm yết.",
+      }
+    : slugLower.includes("suno") || titleLower.includes("suno")
+    ? {
+        title: "Bảo hành login 24H & 2.500 Credits",
+        desc: "Bảo hành đăng nhập thành công và chuẩn xác số dư 2.500 credits ban đầu trong 24 giờ đầu theo chính sách NCC.",
+      }
+    : slugLower.includes("hma") || titleLower.includes("hma")
+    ? {
+        title: "Bảo hành kích hoạt bản quyền 5 thiết bị",
+        desc: "Bảo hành 1 đổi 1 trong suốt thời hạn sử dụng nếu key phát sinh lỗi kích hoạt trên ứng dụng HMA.",
+      }
+    : catSlugLower.includes("smm") || product.type === "CUSTOM"
+    ? {
+        title: "Bảo hành duy trì số lượng",
+        desc: "Cam kết xử lý và bù tụt số lượng tương tác theo đúng chính sách và thời hạn của từng server.",
+      }
+    : {
+        title: "Bảo hành 1-Đổi-1 theo cam kết gói",
+        desc: "Mọi trục trặc kỹ thuật được xử lý đổi mới hoặc hoàn lại tương ứng theo đúng chính sách niêm yết của nhà cung cấp.",
+      };
+
   const handleCopy = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedSnippet(id);
@@ -359,7 +399,7 @@ main();`,
                   Đồng hành &amp; Bảo hành 1:1
                 </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Bảo hành 1 đổi 1 trong suốt thời hạn gói. Hỗ trợ kỹ thuật viên Zalo &amp; Telegram 24/7.
+                  Bảo hành 1 đổi 1 theo đúng chính sách niêm yết của gói. Kỹ thuật viên hỗ trợ Zalo &amp; Telegram 24/7.
                 </p>
               </div>
             </div>
@@ -369,7 +409,7 @@ main();`,
           <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6 sm:p-7 shadow-xs">
             <h2 className="text-base font-bold text-foreground mb-4 flex items-center gap-2">
               <ShieldCheck className="h-5 w-5 text-accent" />
-              <span>4 Cam kết dịch vụ &amp; Bảo hành chuẩn mực KhoDEE</span>
+              <span>4 Cam kết dịch vụ &amp; Trách nhiệm chuẩn mực KhoDEE</span>
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -378,9 +418,9 @@ main();`,
                   <ShieldCheck className="h-4 w-4" />
                 </div>
                 <div>
-                  <h4 className="text-xs sm:text-sm font-bold text-foreground">1-Đổi-1 trọn thời hạn gói</h4>
+                  <h4 className="text-xs sm:text-sm font-bold text-foreground">{warrantyCommitment.title}</h4>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Mọi trục trặc kỹ thuật được xử lý đổi mới hoặc hoàn lại tương ứng mà không phụ thu.
+                    {warrantyCommitment.desc}
                   </p>
                 </div>
               </div>
