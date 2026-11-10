@@ -143,6 +143,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   const isSuno = slug.includes("suno") || titleLower.includes("suno");
   const isHMA = slug.includes("hma") || titleLower.includes("hma");
+  const isGeminiKBH = slug.includes("gemini") && (slug.includes("family") || slug.includes("kbh") || titleLower.includes("kbh"));
 
   const warrantyLabel = isSMM
     ? "Bảo hành duy trì số lượng theo server"
@@ -152,6 +153,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "1 Đổi 1 Trọn Vẹn 30 Ngày (Gói BHF Cao Cấp)"
     : isChatGPT
     ? "Bảo hành đăng nhập 24H (Gói Tiết Kiệm - Chuẩn NCC)"
+    : isGeminiKBH
+    ? "Bảo hành đăng nhập 2H (Gói Trải Nghiệm - KBH)"
     : isSuno
     ? "Bảo hành đăng nhập 24H & 2.500 Credits ban đầu"
     : isHMA

@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="gemBg" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#140b2e"/>
+      <stop offset="45%" stop-color="#090517"/>
+      <stop offset="85%" stop-color="#03010a"/>
+      <stop offset="100%" stop-color="#010005"/>
+    </radialGradient>
+
+    <!-- Gemini Brand Gradient -->
+    <linearGradient id="geminiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1ba0e2"/>
+      <stop offset="25%" stop-color="#4285f4"/>
+      <stop offset="50%" stop-color="#9b72cb"/>
+      <stop offset="75%" stop-color="#d96570"/>
+      <stop offset="100%" stop-color="#f2994a"/>
+    </linearGradient>
+
+    <!-- Gold Accent Gradient -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffd166"/>
+      <stop offset="100%" stop-color="#f77f00"/>
+    </linearGradient>
+
+    <!-- Card Background Glass -->
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"/>
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="35" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="15" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Deep Cosmic Background -->
+  <rect width="1200" height="750" fill="url(#gemBg)"/>
+
+  <!-- Ambient Light Auras -->
+  <circle cx="600" cy="270" r="280" fill="#4285f4" opacity="0.18" filter="url(#neonGlow)"/>
+  <circle cx="600" cy="270" r="200" fill="#9b72cb" opacity="0.22" filter="url(#neonGlow)"/>
+  <circle cx="350" cy="480" r="180" fill="#1ba0e2" opacity="0.12" filter="url(#neonGlow)"/>
+  <circle cx="850" cy="480" r="180" fill="#d96570" opacity="0.12" filter="url(#neonGlow)"/>
+
+  <!-- Subtle Constellation Stars -->
+  <g opacity="0.3" fill="#ffffff">
+    <circle cx="200" cy="150" r="2"/>
+    <circle cx="280" cy="220" r="1.5"/>
+    <circle cx="950" cy="160" r="2"/>
+    <circle cx="1020" cy="240" r="1.5"/>
+    <circle cx="180" cy="550" r="1.5"/>
+    <circle cx="1000" cy="580" r="2"/>
+  </g>
+
+  <!-- Glassmorphic Card Frame -->
+  <rect x="180" y="60" width="840" height="630" rx="36" fill="url(#cardGrad)" stroke="#9b72cb" stroke-opacity="0.3" stroke-width="1.5"/>
+
+  <!-- Top Pill Badge: Frontier Model & Antigravity -->
+  <g transform="translate(600, 115)">
+    <rect x="-240" y="-18" width="480" height="36" rx="18" fill="#1e123d" stroke="url(#geminiGrad)" stroke-width="1.5"/>
+    <circle cx="-210" cy="0" r="5" fill="#4285f4" filter="url(#softGlow)"/>
+    <text x="-195" y="5" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" fill="#ffffff" letter-spacing="2">
+      GEMINI 4 ARGON • GOOGLE ANTIGRAVITY
+    </text>
+    <rect x="145" y="-12" width="75" height="24" rx="12" fill="#4285f4" fill-opacity="0.3"/>
+    <text x="182" y="4" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="900" fill="#70a1ff" text-anchor="middle" letter-spacing="1">
+      5TB CLOUD
+    </text>
+  </g>
+
+  <!-- Central Gemini 4 Argon Emblem -->
+  <g transform="translate(600, 270)">
+    <!-- Outer Glow Ring -->
+    <circle cx="0" cy="0" r="110" fill="#080318" stroke="url(#geminiGrad)" stroke-width="2.5" filter="url(#softGlow)"/>
+
+    <!-- Gemini 4-Point AI Spark Icon -->
+    <path d="M0 -75 C2 -22 22 -2 75 0 C22 2 2 22 0 75 C-2 22 -22 2 -75 0 C-22 -2 -2 -22 0 -75 Z" fill="url(#geminiGrad)" filter="url(#softGlow)"/>
+    <!-- Inner Core Sparkle -->
+    <path d="M0 -42 C1 -12 12 -1 42 0 C12 1 1 12 0 42 C-1 12 -12 1 -42 0 C-12 -1 -1 -12 0 -42 Z" fill="#ffffff" opacity="0.9"/>
+    
+    <!-- Family Head Badge in bottom right of circle -->
+    <g transform="translate(75, 75)">
+      <circle cx="0" cy="0" r="28" fill="#1e123d" stroke="#ffd166" stroke-width="2"/>
+      <path d="M-8 -6 A5 5 0 1 1 2 -6 A5 5 0 1 1 -8 -6 M-14 8 C-14 3 -8 1 -3 1 C2 1 8 3 8 8 Z" fill="#ffd166"/>
+      <path d="M4 -8 A4 4 0 1 1 12 -8 A4 4 0 1 1 4 -8 M7 6 C7 3 11 2 14 2 C17 2 20 3 20 6 Z" fill="#ffd166" opacity="0.75"/>
+    </g>
+  </g>
+
+  <!-- Big Typography: Title & Subtitle -->
+  <text x="600" y="440" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="2">
+    GEMINI PRO 5TB
+  </text>
+  
+  <text x="600" y="480" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="800" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="3">
+    CHỦ FAMILY • TẶNG 5TB GOOGLE ONE
+  </text>
+
+  <text x="600" y="515" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="600" fill="#a5b4fc" text-anchor="middle" letter-spacing="1">
+    Kích hoạt sẵn Gemini 4 Argon &amp; 3.8 Flash • Thêm tối đa 5 thành viên Family
+  </text>
+
+  <!-- Bottom Spec Feature Badges (4 Bento Pills) -->
+  <g transform="translate(600, 580)">
+    <!-- Pill 1: 5TB Cloud -->
+    <g transform="translate(-330, 0)">
+      <rect x="0" y="0" width="150" height="48" rx="14" fill="#140b2e" stroke="#4285f4" stroke-opacity="0.5" stroke-width="1.2"/>
+      <text x="75" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#93c5fd" text-anchor="middle" letter-spacing="1">LƯU TRỮ</text>
+      <text x="75" y="39" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">5000 GB DRIVE</text>
+    </g>
+
+    <!-- Pill 2: Family Head -->
+    <g transform="translate(-165, 0)">
+      <rect x="0" y="0" width="155" height="48" rx="14" fill="#140b2e" stroke="#ffd166" stroke-opacity="0.5" stroke-width="1.2"/>
+      <text x="77" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#fde047" text-anchor="middle" letter-spacing="1">CHỦ FAMILY</text>
+      <text x="77" y="39" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">+5 GMAIL KHÁC</text>
+    </g>
+
+    <!-- Pill 3: Model AI -->
+    <g transform="translate(5, 0)">
+      <rect x="0" y="0" width="155" height="48" rx="14" fill="#140b2e" stroke="#9b72cb" stroke-opacity="0.5" stroke-width="1.2"/>
+      <text x="77" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#d8b4fe" text-anchor="middle" letter-spacing="1">AGENTIC AI</text>
+      <text x="77" y="39" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">ARGON 4 &amp; 3.8</text>
+    </g>
+
+    <!-- Pill 4: Cấp Acc 2FA -->
+    <g transform="translate(175, 0)">
+      <rect x="0" y="0" width="155" height="48" rx="14" fill="#140b2e" stroke="#10b981" stroke-opacity="0.5" stroke-width="1.2"/>
+      <text x="77" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#6ee7b7" text-anchor="middle" letter-spacing="1">BÀN GIAO</text>
+      <text x="77" y="39" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">MAIL | PASS | 2FA</text>
+    </g>
+  </g>
+</svg>

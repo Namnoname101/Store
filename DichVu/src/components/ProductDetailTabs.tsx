@@ -83,6 +83,11 @@ export default function ProductDetailTabs({
         title: "Bảo lưu Quota & Kết nối API",
         desc: "Cam kết số dư credit khả dụng chuẩn xác và đường truyền API ổn định theo thông số niêm yết.",
       }
+    : (slugLower.includes("gemini") && (slugLower.includes("family") || slugLower.includes("kbh") || titleLower.includes("kbh")))
+    ? {
+        title: "Bảo hành đăng nhập 2H (Gói Trải Nghiệm - KBH)",
+        desc: "Bảo hành 1 đổi 1 trong 2 giờ đầu nếu sai mật khẩu hoặc lỗi 2FA lúc nhận. Sau khi đăng nhập thành công: Không bảo hành thời gian sử dụng theo chính sách NCC.",
+      }
     : slugLower.includes("suno") || titleLower.includes("suno")
     ? {
         title: "Bảo hành login 24H & 2.500 Credits",
