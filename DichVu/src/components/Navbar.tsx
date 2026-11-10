@@ -48,7 +48,14 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isGuidesOpen, setIsGuidesOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [user, setUser] = useState<{ id: string; username: string; balance: number; role?: string } | null>(null);
+  const [user, setUser] = useState<{
+    id: string;
+    username: string;
+    balance: number;
+    role?: string;
+    isAffiliate?: boolean;
+    affiliateCode?: string | null;
+  } | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const guidesTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
@@ -57,22 +64,33 @@ export default function Navbar() {
   const { openCart, itemCount } = useCart();
 
   useEffect(() => {
-    fetch("/api/auth/me")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.authenticated && data?.user) {
-          setUser(data.user);
-        } else {
-          setUser(null);
-        }
-      })
-      .catch(() => setUser(null))
-      .finally(() => setIsLoadingUser(false));
+    const checkAuth = () => {
+      fetch("/api/auth/me")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.authenticated && data?.user) {
+            setUser(data.user);
+          } else {
+            setUser(null);
+          }
+        })
+        .catch(() => setUser(null))
+        .finally(() => setIsLoadingUser(false));
+    };
+
+    checkAuth();
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("auth-change", checkAuth);
+    }
 
     return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("auth-change", checkAuth);
+      }
       if (guidesTimeoutRef.current) clearTimeout(guidesTimeoutRef.current);
     };
-  }, []);
+  }, [pathname]);
 
   const handleGuidesEnter = () => {
     if (guidesTimeoutRef.current) clearTimeout(guidesTimeoutRef.current);
@@ -175,17 +193,34 @@ export default function Navbar() {
             {isGuidesOpen && (
               <div className="absolute top-full left-0 pt-1.5 w-64 sm:w-72 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                 <div className="rounded-2xl border border-slate-200/90 dark:border-zinc-800/80 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl shadow-2xl p-2 flex flex-col gap-1">
-                  <Link
-                    href="/ctv"
-                    onClick={() => setIsGuidesOpen(false)}
-                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl bg-emerald-500/5 hover:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 transition-colors"
-                  >
-                    <Sparkles className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                    <div className="flex flex-col">
-                      <span className="font-semibold text-xs">Kiếm Tiền CTV (0đ Vốn)</span>
-                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Chính sách hoa hồng hấp dẫn</span>
-                    </div>
-                  </Link>
+                  {user?.isAffiliate ? (
+                    <Link
+                      href="/dashboard/affiliate"
+                      onClick={() => setIsGuidesOpen(false)}
+                      className="flex items-start gap-2.5 px-3 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 transition-colors"
+                    >
+                      <Sparkles className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-semibold text-xs">Bảng Quản Lý CTV</span>
+                          <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase">CTV</span>
+                        </div>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Hoa hồng, link giới thiệu & rút tiền</span>
+                      </div>
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/ctv"
+                      onClick={() => setIsGuidesOpen(false)}
+                      className="flex items-start gap-2.5 px-3 py-2 rounded-xl bg-emerald-500/5 hover:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 transition-colors"
+                    >
+                      <Sparkles className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-xs">Kiếm Tiền CTV (0đ Vốn)</span>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Chính sách hoa hồng hấp dẫn</span>
+                      </div>
+                    </Link>
+                  )}
                   <Link
                     href="/huong-dan/codex"
                     onClick={() => setIsGuidesOpen(false)}
@@ -360,9 +395,24 @@ export default function Navbar() {
             <Link href="/topup" onClick={() => setIsMobileMenuOpen(false)} className="p-3 rounded-xl bg-slate-50 dark:bg-[#131926] border border-slate-200/80 dark:border-zinc-800/80 flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:bg-slate-100 dark:hover:bg-[#1c2538] transition-colors">
               <span>🎁 Nạp Ví (+5%)</span>
             </Link>
-            <Link href="/ctv" onClick={() => setIsMobileMenuOpen(false)} className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors col-span-2 font-bold">
-              <span>💸 Kiếm Tiền CTV Sinh Viên (0đ Vốn)</span>
-            </Link>
+            {user?.isAffiliate ? (
+              <Link
+                href="/dashboard/affiliate"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors col-span-2 font-bold"
+              >
+                <span>💼 Bảng Quản Lý CTV</span>
+                <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-[10px] uppercase font-bold">CTV</span>
+              </Link>
+            ) : (
+              <Link
+                href="/ctv"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors col-span-2 font-bold"
+              >
+                <span>💸 Kiếm Tiền CTV Sinh Viên (0đ Vốn)</span>
+              </Link>
+            )}
             <Link href="/lookup" onClick={() => setIsMobileMenuOpen(false)} className="p-3 rounded-xl bg-slate-50 dark:bg-[#131926] border border-slate-200/80 dark:border-zinc-800/80 flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-[#1c2538] text-slate-800 dark:text-zinc-100 transition-colors">
               <span>🔍 Tra Cứu Đơn</span>
             </Link>

@@ -26,7 +26,10 @@ export default function AffiliateLandingPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [isPolicyView, setIsPolicyView] = useState(false);
   const [customCode, setCustomCode] = useState("");
   const [bankName, setBankName] = useState("");
   const [bankAccountNumber, setBankAccountNumber] = useState("");
@@ -36,18 +39,39 @@ export default function AffiliateLandingPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/auth/me")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.user) {
-          setUser(data.user);
-          if (data.user.isAffiliate) {
-            router.push("/dashboard/affiliate");
+    const isPolicy = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("view") === "policy";
+    if (isPolicy) {
+      setIsPolicyView(true);
+    }
+
+    const checkAuth = () => {
+      fetch("/api/auth/me")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.authenticated && data?.user) {
+            setUser(data.user);
+            if (data.user.isAffiliate && !isPolicy) {
+              setIsRedirecting(true);
+              router.replace("/dashboard/affiliate");
+              return;
+            }
           }
-        }
-      })
-      .catch(() => {})
-      .finally(() => setIsLoading(false));
+        })
+        .catch(() => {})
+        .finally(() => setIsLoading(false));
+    };
+
+    checkAuth();
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("auth-change", checkAuth);
+    }
+
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("auth-change", checkAuth);
+      }
+    };
   }, [router]);
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -74,13 +98,27 @@ export default function AffiliateLandingPage() {
       });
 
       const data = await res.json();
+      if (res.status === 401) {
+        setUser(null);
+        router.push("/login?callbackUrl=/ctv");
+        return;
+      }
+
       if (!res.ok || !data.success) {
         throw new Error(data.message || "Đăng ký thất bại");
       }
 
+      setIsRegistered(true);
+      if (data?.affiliateCode) {
+        setUser((prev: any) => ({ ...prev, isAffiliate: true, affiliateCode: data.affiliateCode }));
+      }
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("auth-change"));
+      }
+
       setMessage("Đăng ký thành công! Đang chuyển hướng tới trang quản lý CTV...");
       setTimeout(() => {
-        router.push("/dashboard/affiliate");
+        router.replace("/dashboard/affiliate");
       }, 1200);
     } catch (err: any) {
       setError(err?.message || "Đã xảy ra lỗi, vui lòng thử lại");
@@ -88,6 +126,19 @@ export default function AffiliateLandingPage() {
       setIsRegistering(false);
     }
   };
+
+  if (isLoading || isRedirecting || (user?.isAffiliate && !isRegistered && !isPolicyView)) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-8 space-y-4">
+        <div className="w-8 h-8 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
+        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+          {isRedirecting || (user?.isAffiliate && !isPolicyView)
+            ? "Đang chuyển hướng tới Bảng Quản Lý CTV..."
+            : "Đang kiểm tra thông tin tài khoản..."}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 selection:bg-emerald-500 selection:text-black transition-colors">
@@ -258,88 +309,143 @@ export default function AffiliateLandingPage() {
             </div>
           )}
 
-          <form onSubmit={handleRegister} className="space-y-4 text-left">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                Mã Giảm Giá Bạn Muốn Đặt (Tùy chọn)
-              </label>
-              <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500">
-                  CTV_
+          {/* Account recognition status */}
+          {user?.isAffiliate ? (
+            <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs space-y-3 text-center">
+              <div className="flex items-center justify-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                <span className="font-bold text-sm">Bạn đã là Cộng tác viên chính thức của KhoDEE!</span>
+              </div>
+              <p className="text-slate-600 dark:text-slate-400">
+                Tài khoản: <strong>{user.username}</strong> • Mã giới thiệu: <strong className="font-mono text-emerald-600 dark:text-emerald-400">{user.affiliateCode || "Đang hoạt động"}</strong>
+              </p>
+              <div className="pt-1">
+                <Link
+                  href="/dashboard/affiliate"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs transition-colors"
+                >
+                  <span>Đi Tới Bảng Quản Lý CTV</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+          ) : user ? (
+            <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-700 dark:text-blue-300 text-xs flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                <span>
+                  Tài khoản nhận diện: <strong className="font-semibold text-slate-900 dark:text-white">{user.username}</strong> ({user.email || "Đã đăng nhập"})
                 </span>
-                <input
-                  type="text"
-                  placeholder="NAM_IT, THAO99..."
-                  value={customCode}
-                  onChange={(e) => setCustomCode(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, ""))}
-                  maxLength={15}
-                  className="w-full pl-14 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-zinc-800/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-white text-sm font-mono uppercase tracking-wider outline-none transition-colors"
-                />
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Để trống hệ thống sẽ tự sinh theo tên tài khoản của bạn.
-              </p>
+              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-blue-500/20 text-blue-600 dark:text-blue-400">
+                Sẵn sàng kích hoạt
+              </span>
             </div>
+          ) : (
+            <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs flex items-center justify-between">
+              <span>Bạn chưa đăng nhập. Hãy đăng nhập để kích hoạt tài khoản CTV ngay.</span>
+              <Link
+                href="/login?callbackUrl=/ctv"
+                className="font-bold underline text-amber-700 dark:text-amber-400 hover:text-amber-600 ml-2 shrink-0"
+              >
+                Đăng nhập ngay →
+              </Link>
+            </div>
+          )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          {!user?.isAffiliate && (
+            <form onSubmit={handleRegister} className="space-y-4 text-left">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                  Tên Ngân Hàng Rút Tiền
+                  Mã Giảm Giá Bạn Muốn Đặt (Tùy chọn)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500">
+                    CTV_
+                  </span>
+                  <input
+                    type="text"
+                    placeholder={user?.username ? user.username.toUpperCase().replace(/[^A-Z0-9_]/g, "") : "NAM_IT, THAO99..."}
+                    value={customCode}
+                    onChange={(e) => setCustomCode(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, "").replace(/^CTV_/, ""))}
+                    maxLength={15}
+                    className="w-full pl-14 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-zinc-800/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-white text-sm font-mono uppercase tracking-wider outline-none transition-colors"
+                  />
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  {user?.username
+                    ? `Để trống hệ thống sẽ tự sinh mã: CTV_${user.username.toUpperCase().replace(/[^A-Z0-9_]/g, "")}`
+                    : "Để trống hệ thống sẽ tự sinh theo tên tài khoản của bạn."}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    Tên Ngân Hàng Rút Tiền
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="MB, VCB, Techcombank..."
+                    value={bankName}
+                    onChange={(e) => setBankName(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-zinc-800/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-white text-sm outline-none transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    Số Tài Khoản (STK)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="0987654321..."
+                    value={bankAccountNumber}
+                    onChange={(e) => setBankAccountNumber(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-zinc-800/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-white text-sm font-mono outline-none transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Tên Chủ Thẻ (In hoa không dấu)
                 </label>
                 <input
                   type="text"
-                  placeholder="MB, VCB, Techcombank..."
-                  value={bankName}
-                  onChange={(e) => setBankName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-zinc-800/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-white text-sm outline-none transition-colors"
+                  placeholder="NGUYEN VAN A"
+                  value={bankAccountName}
+                  onChange={(e) => setBankAccountName(e.target.value.toUpperCase())}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-zinc-800/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-white text-sm uppercase tracking-wider outline-none transition-colors"
                 />
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Thông tin ngân hàng có thể cập nhật lại bất kỳ lúc nào trong trang cá nhân.
+                </p>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                  Số Tài Khoản (STK)
-                </label>
-                <input
-                  type="text"
-                  placeholder="0987654321..."
-                  value={bankAccountNumber}
-                  onChange={(e) => setBankAccountNumber(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-zinc-800/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-white text-sm font-mono outline-none transition-colors"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                Tên Chủ Thẻ (In hoa không dấu)
-              </label>
-              <input
-                type="text"
-                placeholder="NGUYEN VAN A"
-                value={bankAccountName}
-                onChange={(e) => setBankAccountName(e.target.value.toUpperCase())}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-zinc-800/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-white text-sm uppercase tracking-wider outline-none transition-colors"
-              />
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Thông tin ngân hàng có thể cập nhật lại bất kỳ lúc nào trong trang cá nhân.
-              </p>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isRegistering}
-              className="w-full mt-4 py-3.5 rounded-xl font-bold text-sm bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
-            >
-              {isRegistering ? (
-                <span>Đang khởi tạo mã CTV...</span>
-              ) : (
-                <>
-                  <span>Xác Nhận Đăng Ký Làm CTV</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={isRegistering || isRegistered}
+                className="w-full mt-4 py-3.5 rounded-xl font-bold text-sm bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
+              >
+                {isRegistering ? (
+                  <span>Đang khởi tạo mã CTV...</span>
+                ) : isRegistered ? (
+                  <span>Đăng ký thành công! Đang chuyển hướng...</span>
+                ) : user ? (
+                  <>
+                    <span>Kích Hoạt Tài Khoản CTV Ngay</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                ) : (
+                  <>
+                    <span>Đăng Nhập & Kích Hoạt CTV</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </form>
+          )}
         </div>
 
         {/* FAQ Section */}

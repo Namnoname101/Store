@@ -17,6 +17,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: true, data });
   } catch (error: any) {
     console.error("[Affiliate Dashboard Error]:", error);
+    if (error?.message === "Không tìm thấy người dùng") {
+      return NextResponse.json(
+        { success: false, message: "Phiên đăng nhập không tồn tại hoặc đã hết hạn" },
+        { status: 401 }
+      );
+    }
     return NextResponse.json(
       { success: false, message: error?.message || "Lỗi tải thông tin CTV" },
       { status: 500 }

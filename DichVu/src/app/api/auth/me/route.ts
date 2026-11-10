@@ -26,6 +26,8 @@ export async function GET(req: NextRequest) {
         balance: true,
         totalDeposited: true,
         createdAt: true,
+        isAffiliate: true,
+        affiliateCode: true,
       },
     });
 

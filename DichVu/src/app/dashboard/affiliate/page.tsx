@@ -25,11 +25,13 @@ export default function AffiliateDashboardPage() {
   const router = useRouter();
   const [data, setData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
   // Withdrawal modal state
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+  const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [bankName, setBankName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
@@ -39,16 +41,34 @@ export default function AffiliateDashboardPage() {
   const [withdrawSuccess, setWithdrawSuccess] = useState<string | null>(null);
 
   const fetchData = async () => {
+    setIsLoading(true);
+    setLoadError(null);
     try {
       const res = await fetch("/api/affiliate");
       if (res.status === 401) {
-        router.push("/login?callbackUrl=/dashboard/affiliate");
+        router.replace("/login?callbackUrl=/dashboard/affiliate");
         return;
       }
-      const json = await res.json();
-      if (json.success) {
+      if (!res.ok) {
+        // Double check session with /api/auth/me to avoid spurious redirects
+        const meRes = await fetch("/api/auth/me");
+        const meData = await meRes.json().catch(() => null);
+        if (!meData?.authenticated) {
+          router.replace("/login?callbackUrl=/dashboard/affiliate");
+          return;
+        }
+        if (!meData?.user?.isAffiliate) {
+          router.replace("/ctv");
+          return;
+        }
+        // Verified affiliate user experiencing server error: display error, do NOT redirect to /ctv
+        setLoadError("Không thể tải thông tin CTV từ hệ thống. Vui lòng thử lại sau.");
+        return;
+      }
+      const json = await res.json().catch(() => ({}));
+      if (json.success && json.data) {
         if (!json.data.isAffiliate) {
-          router.push("/ctv");
+          router.replace("/ctv");
           return;
         }
         setData(json.data);
@@ -57,9 +77,24 @@ export default function AffiliateDashboardPage() {
           setAccountNumber(json.data.bankInfo.bankAccountNumber || "");
           setAccountName(json.data.bankInfo.bankAccountName || "");
         }
+      } else {
+        // Check if unauthenticated or non-affiliate before defaulting
+        const meRes = await fetch("/api/auth/me");
+        const meData = await meRes.json().catch(() => null);
+        if (!meData?.authenticated) {
+          router.replace("/login?callbackUrl=/dashboard/affiliate");
+          return;
+        }
+        if (!meData?.user?.isAffiliate) {
+          router.replace("/ctv");
+          return;
+        }
+        setLoadError(json?.message || "Không thể tải dữ liệu CTV. Vui lòng thử lại sau.");
+        return;
       }
     } catch (err) {
-      console.error(err);
+      console.error("[Affiliate Dashboard Fetch Error]:", err);
+      setLoadError("Lỗi kết nối mạng khi tải dữ liệu CTV. Vui lòng kiểm tra đường truyền và thử lại.");
     } finally {
       setIsLoading(false);
     }
@@ -67,6 +102,16 @@ export default function AffiliateDashboardPage() {
 
   useEffect(() => {
     fetchData();
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("auth-change", fetchData);
+    }
+
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("auth-change", fetchData);
+      }
+    };
   }, [router]);
 
   const handleCopyCode = () => {
@@ -131,8 +176,29 @@ export default function AffiliateDashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-zinc-100 flex flex-col items-center justify-center p-8 space-y-4">
         <div className="animate-spin rounded-full h-8 w-8 border-2 border-emerald-500 border-t-transparent" />
+        <p className="text-sm text-slate-500 dark:text-zinc-400 font-medium">Đang kiểm tra quyền truy cập CTV...</p>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-zinc-100 flex flex-col items-center justify-center p-8 space-y-4 text-center">
+        <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto border border-rose-500/20">
+          <AlertCircle className="w-6 h-6" />
+        </div>
+        <div className="space-y-1">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Không Thể Tải Dữ Liệu CTV</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm">{loadError}</p>
+        </div>
+        <button
+          onClick={fetchData}
+          className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors cursor-pointer"
+        >
+          Thử lại
+        </button>
       </div>
     );
   }
@@ -167,12 +233,13 @@ export default function AffiliateDashboardPage() {
               <CreditCard className="w-4 h-4" />
               <span>Yêu Cầu Rút Tiền</span>
             </button>
-            <Link
-              href="/ctv"
-              className="px-4 py-2.5 rounded-xl font-semibold text-xs bg-slate-50 dark:bg-[#131926] hover:bg-slate-100 dark:hover:bg-[#1c2538] text-slate-700 dark:text-zinc-300 border border-slate-200/90 dark:border-zinc-800/90 transition-colors"
+            <button
+              type="button"
+              onClick={() => setIsPolicyModalOpen(true)}
+              className="px-4 py-2.5 rounded-xl font-semibold text-xs bg-slate-50 dark:bg-[#131926] hover:bg-slate-100 dark:hover:bg-[#1c2538] text-slate-700 dark:text-zinc-300 border border-slate-200/90 dark:border-zinc-800/90 transition-colors cursor-pointer"
             >
               Thể lệ & Bảng giá
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -491,6 +558,144 @@ export default function AffiliateDashboardPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Policy & Commission Rates Modal */}
+      {isPolicyModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="w-full max-w-2xl p-6 rounded-3xl bg-white dark:bg-[#0f172a] border border-slate-200/90 dark:border-zinc-800/90 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-zinc-800/80 pb-4">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-emerald-500 shrink-0" />
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                  Chính Sách & Bảng Tỷ Lệ Hoa Hồng CTV
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPolicyModalOpen(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Rates Table */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                1. Tỷ lệ hoa hồng theo nhóm sản phẩm
+              </h4>
+              <div className="overflow-x-auto rounded-2xl border border-slate-200/90 dark:border-zinc-800/80">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-100 dark:bg-slate-800/60 font-semibold text-slate-700 dark:text-zinc-300">
+                    <tr>
+                      <th className="py-2.5 px-3">Danh Mục</th>
+                      <th className="py-2.5 px-3">Sản phẩm tiêu biểu</th>
+                      <th className="py-2.5 px-3 text-center">Hoa Hồng</th>
+                      <th className="py-2.5 px-3 text-right">Mức Kiếm</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-zinc-800/60">
+                    <tr>
+                      <td className="py-2.5 px-3 font-semibold text-slate-900 dark:text-white">Tài Khoản AI & Nâng Cấp</td>
+                      <td className="py-2.5 px-3 text-[11px] text-slate-500 dark:text-zinc-400">ChatGPT Plus, Claude Pro, Midjourney...</td>
+                      <td className="py-2.5 px-3 text-center">
+                        <span className="inline-block px-2 py-0.5 rounded-full font-bold font-mono bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                          10% – 20%
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3 text-right font-semibold text-emerald-500">+10k – 50k / đơn</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2.5 px-3 font-semibold text-slate-900 dark:text-white">Phần Mềm & Học Tập</td>
+                      <td className="py-2.5 px-3 text-[11px] text-slate-500 dark:text-zinc-400">Canva Pro, CapCut Pro, Gemini Pro 5TB, Office 365...</td>
+                      <td className="py-2.5 px-3 text-center">
+                        <span className="inline-block px-2 py-0.5 rounded-full font-bold font-mono bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                          15%
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3 text-right font-semibold text-emerald-500">+3k – 15k / đơn</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2.5 px-3 font-semibold text-slate-900 dark:text-white">API AI & Lập Trình</td>
+                      <td className="py-2.5 px-3 text-[11px] text-slate-500 dark:text-zinc-400">Claude API, Cursor IDE, Codex, DeepSeek, Grok...</td>
+                      <td className="py-2.5 px-3 text-center">
+                        <span className="inline-block px-2 py-0.5 rounded-full font-bold font-mono bg-blue-500/10 text-blue-500 border border-blue-500/20">
+                          8% – 10%
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3 text-right font-semibold text-emerald-500">+2.5k – 110k / đơn</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Tiers & Progression */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                2. Cấp bậc Cộng Tác Viên
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/90 dark:border-zinc-800/80 space-y-1">
+                  <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <Award className="w-4 h-4 text-slate-400" />
+                    <span>NEWBIE</span>
+                  </div>
+                  <div className="text-[11px] text-slate-500 dark:text-zinc-400">0 – 9 đơn hoàn tất</div>
+                  <div className="font-mono font-semibold text-emerald-500">10% hoa hồng cơ bản</div>
+                </div>
+                <div className="p-3.5 rounded-2xl bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/20 space-y-1">
+                  <div className="font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
+                    <Award className="w-4 h-4 text-blue-500" />
+                    <span>PRO</span>
+                  </div>
+                  <div className="text-[11px] text-slate-500 dark:text-zinc-400">Từ 10 đơn hoàn tất</div>
+                  <div className="font-mono font-semibold text-emerald-500">15% hoa hồng</div>
+                </div>
+                <div className="p-3.5 rounded-2xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-1">
+                  <div className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                    <Award className="w-4 h-4 text-amber-500" />
+                    <span>MASTER</span>
+                  </div>
+                  <div className="text-[11px] text-slate-500 dark:text-zinc-400">Từ 50 đơn hoàn tất</div>
+                  <div className="font-mono font-semibold text-emerald-500">20% hoa hồng VIP</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Withdrawal Rules & Trust */}
+            <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-2">
+              <div className="font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                <span>Quy định rút tiền & Hỗ trợ kỹ thuật</span>
+              </div>
+              <ul className="list-disc list-inside space-y-1 text-slate-700 dark:text-slate-300">
+                <li>Rút tiền tự do từ <strong>50.000đ</strong>, không giới hạn số lần trong tháng.</li>
+                <li>Hệ thống duyệt và chuyển khoản VietQR tự động trong vòng 24h.</li>
+                <li>KhoDEE chịu 100% trách nhiệm bảo hành đơn hàng cho khách của bạn.</li>
+              </ul>
+            </div>
+
+            <div className="pt-2 flex items-center justify-between">
+              <Link
+                href="/ctv?view=policy"
+                target="_blank"
+                className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+              >
+                <span>Xem trang thể lệ công khai</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Link>
+              <button
+                type="button"
+                onClick={() => setIsPolicyModalOpen(false)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white transition-colors cursor-pointer"
+              >
+                Đóng
+              </button>
+            </div>
           </div>
         </div>
       )}

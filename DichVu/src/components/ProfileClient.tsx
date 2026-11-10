@@ -152,13 +152,23 @@ export default function ProfileClient() {
                 {user?.email || "Chưa cập nhật email"} • Tham gia từ {new Date(user?.createdAt).toLocaleDateString("vi-VN")}
               </p>
               <div className="mt-2">
-                <Link
-                  href="/dashboard/affiliate"
-                  className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline font-semibold"
-                >
-                  <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
-                  <span>Chương trình Tiếp thị Liên kết (CTV / Affiliate) →</span>
-                </Link>
+                {user?.isAffiliate ? (
+                  <Link
+                    href="/dashboard/affiliate"
+                    className="inline-flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-semibold"
+                  >
+                    <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+                    <span>Bảng Quản Lý CTV ({user.affiliateCode || "CTV"}) →</span>
+                  </Link>
+                ) : (
+                  <Link
+                    href="/ctv"
+                    className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline font-semibold"
+                  >
+                    <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+                    <span>Đăng Ký Kiếm Tiền CTV (0đ Vốn) →</span>
+                  </Link>
+                )}
               </div>
             </div>
           </div>

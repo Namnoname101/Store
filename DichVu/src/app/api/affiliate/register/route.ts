@@ -25,6 +25,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(result);
   } catch (error: any) {
     console.error("[Affiliate Register Error]:", error);
+    if (error?.message === "Không tìm thấy người dùng") {
+      return NextResponse.json(
+        { success: false, message: "Phiên đăng nhập không tồn tại hoặc đã hết hạn" },
+        { status: 401 }
+      );
+    }
     return NextResponse.json(
       { success: false, message: error?.message || "Lỗi đăng ký CTV" },
       { status: 400 }

@@ -135,6 +135,39 @@ describe("User Auth API Endpoints", () => {
     expect(data.user.username).toBe("meuser");
     expect(data.user.balance).toBe(150000);
     expect(data.user.totalDeposited).toBe(200000);
+    expect(data.user.isAffiliate).toBe(false);
+    expect(data.user.affiliateCode).toBeNull();
+  });
+
+  it("GET /api/auth/me should return isAffiliate and affiliateCode for affiliate user", async () => {
+    const user = await prisma.user.create({
+      data: {
+        username: "ctv_me_user",
+        passwordHash: "dummyhash",
+        balance: 50000,
+        isAffiliate: true,
+        affiliateCode: "CTV_ME_USER",
+      },
+    });
+
+    const token = await createUserSessionToken({
+      userId: user.id,
+      username: user.username!,
+      role: "CUSTOMER",
+    });
+
+    const req = new NextRequest("http://localhost:3000/api/auth/me", {
+      headers: {
+        cookie: `${USER_COOKIE_NAME}=${token}`,
+      },
+    });
+
+    const res = await meHandler(req);
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.authenticated).toBe(true);
+    expect(data.user.isAffiliate).toBe(true);
+    expect(data.user.affiliateCode).toBe("CTV_ME_USER");
   });
 
   it("POST /api/auth/logout should clear cookie", async () => {
