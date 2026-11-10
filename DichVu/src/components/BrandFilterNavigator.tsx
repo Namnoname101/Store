@@ -32,7 +32,7 @@ export const BRAND_NAVIGATOR_ITEMS: BrandFilterItem[] = [
   { id: "quizlet", name: "Quizlet Plus", query: "quizlet", iconKey: "quizlet", badge: "TEACHER", hoverBorder: "hover:border-cyan-400" },
   { id: "duolingo", name: "Duolingo", query: "duolingo", iconKey: "duolingo", badge: "SUPER", hoverBorder: "hover:border-lime-500" },
   { id: "meitu", name: "Meitu VIP", query: "meitu", iconKey: "meitu", badge: "VIP", hoverBorder: "hover:border-pink-500" },
-  { id: "adobe", name: "Adobe", query: "adobe", iconKey: "adobe", badge: "ALL", hoverBorder: "hover:border-red-500" },
+  { id: "adobe", name: "Adobe", query: "adobe", iconKey: "adobe", badge: "ALL/EXP", hoverBorder: "hover:border-red-500" },
   { id: "office", name: "Office 365", query: "office", iconKey: "microsoft", badge: "1 NĂM", hoverBorder: "hover:border-amber-500" },
   { id: "windows", name: "Key Windows", query: "windows", iconKey: "windows", badge: "PRO", hoverBorder: "hover:border-sky-500" },
   { id: "tiktok", name: "TikTok", query: "tiktok", iconKey: "tiktok", badge: "BUFF", hoverBorder: "hover:border-pink-500" },
@@ -41,6 +41,10 @@ export const BRAND_NAVIGATOR_ITEMS: BrandFilterItem[] = [
   { id: "nordvpn", name: "NordVPN", query: "nordvpn", iconKey: "nordvpn", badge: "VPN", hoverBorder: "hover:border-blue-400" },
   { id: "netflix", name: "Netflix", query: "netflix", iconKey: "netflix", badge: "4K", hoverBorder: "hover:border-rose-500" },
   { id: "youtube", name: "YouTube", query: "youtube", iconKey: "youtube", badge: "PREMIUM", hoverBorder: "hover:border-red-600" },
+  { id: "suno", name: "Suno AI", query: "suno", iconKey: "suno", badge: "2500 CRE", hoverBorder: "hover:border-pink-500" },
+  { id: "hma", name: "HMA VPN", query: "hma", iconKey: "hma", badge: "5 THIẾT BỊ", hoverBorder: "hover:border-sky-400" },
+  { id: "kling", name: "Kling AI", query: "kling", iconKey: "kling", badge: "VIDEO AI", hoverBorder: "hover:border-amber-400" },
+  { id: "muse", name: "MUSE AI", query: "muse", iconKey: "muse", badge: "31 TỶ", hoverBorder: "hover:border-purple-400" },
 ];
 
 export interface BrandFilterNavigatorProps {

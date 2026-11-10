@@ -25,6 +25,10 @@ export const BRAND_DEFINITIONS: BrandDef[] = [
   { key: "tiktok", name: "TikTok", keywords: ["tiktok", "douyin"] },
   { key: "facebook", name: "Facebook", keywords: ["facebook", "fb"] },
   { key: "meitu", name: "Meitu VIP", keywords: ["meitu"] },
+  { key: "suno", name: "Suno AI", keywords: ["suno"] },
+  { key: "hma", name: "HMA VPN", keywords: ["hma"] },
+  { key: "kling", name: "Kling AI Video", keywords: ["kling"] },
+  { key: "muse", name: "MUSE AI", keywords: ["muse"] },
 ];
 
 export const BRAND_FALLBACK_IMAGES: Record<string, string> = {

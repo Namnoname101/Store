@@ -38,6 +38,10 @@ export function normalizeBrandName(name?: string | null): string {
   if (lower.includes("xingtu") || lower.includes("醒图") || lower.includes("tinh tu")) return "xingtu";
   if (lower.includes("quizlet")) return "quizlet";
   if (lower.includes("photoroom")) return "photoroom";
+  if (lower.includes("suno")) return "suno";
+  if (lower.includes("hma")) return "hma";
+  if (lower.includes("kling")) return "kling";
+  if (lower.includes("muse")) return "muse";
   if (lower.includes("nordvpn") || lower.includes("vpn")) return "nordvpn";
   return "default";
 }
@@ -494,6 +498,70 @@ export default function BrandLogo({ brandName, className = "w-4 h-4", size = 16 
           className={`text-blue-500 ${className}`}
         >
           <path d="M12 2L2 22h20L12 2zm0 5l6.5 13h-13L12 7z" />
+        </svg>
+      );
+
+    case "suno":
+      return (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={className}
+        >
+          <rect x="2" y="10" width="3" height="4" rx="1.5" fill="#FF007A" />
+          <rect x="7" y="6" width="3" height="12" rx="1.5" fill="#FF5400" />
+          <rect x="12" y="3" width="3" height="18" rx="1.5" fill="#FF007A" />
+          <rect x="17" y="7" width="3" height="10" rx="1.5" fill="#FFBD00" />
+          <rect x="22" y="10" width="3" height="4" rx="1.5" fill="#FF5400" />
+        </svg>
+      );
+
+    case "hma":
+      return (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={className}
+        >
+          <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z" fill="#00D2FF" fillOpacity="0.2" stroke="#00D2FF" strokeWidth="2" strokeLinejoin="round" />
+          <circle cx="12" cy="10" r="2.5" fill="#00D2FF" />
+          <path d="M12 12.5v4" stroke="#00D2FF" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      );
+
+    case "kling":
+      return (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={className}
+        >
+          <rect x="2" y="4" width="20" height="16" rx="4" stroke="#F59E0B" strokeWidth="2" />
+          <polygon points="10,8 16,12 10,16" fill="#F59E0B" />
+        </svg>
+      );
+
+    case "muse":
+      return (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={className}
+        >
+          <circle cx="12" cy="12" r="9" stroke="#A855F7" strokeWidth="2" />
+          <circle cx="12" cy="12" r="4" fill="#A855F7" />
         </svg>
       );
 

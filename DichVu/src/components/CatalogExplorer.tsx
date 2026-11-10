@@ -295,7 +295,15 @@ export function matchProductBrand(product: FlattenedProduct, brandId: string): b
         !titleLower.includes("canva")
       );
     case "nordvpn":
-      return titleLower.includes("nordvpn") || (titleLower.includes("vpn") && !titleLower.includes("vps"));
+      return titleLower.includes("nordvpn") || slugLower.includes("nordvpn");
+    case "hma":
+      return titleLower.includes("hma") || slugLower.includes("hma");
+    case "suno":
+      return titleLower.includes("suno") || slugLower.includes("suno");
+    case "kling":
+      return titleLower.includes("kling") || slugLower.includes("kling");
+    case "muse":
+      return titleLower.includes("muse") || slugLower.includes("muse");
     case "netflix":
       return titleLower.includes("netflix");
     case "youtube":
