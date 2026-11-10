@@ -88,6 +88,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     titleLower.includes("openai") ||
     titleLower.includes("gpt-4");
 
+  const isChatGPTBHF =
+    product.slug.toLowerCase().includes("bhf") ||
+    titleLower.includes("bhf") ||
+    titleLower.includes("bảo hành full");
+
   const isCodex =
     product.slug.toLowerCase().includes("codex") ||
     product.slug.toLowerCase().includes("cdx") ||
@@ -122,8 +127,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Bảo lưu vĩnh viễn (Dùng đến khi hết Quota)"
     : isClaude
     ? "Bảo lưu theo hạn mức Credit / Request đã chọn"
+    : isChatGPTBHF
+    ? "30 ngày bảo hành Full Date (BHF)"
     : isChatGPT
-    ? "30 ngày bản quyền Plus đầy đủ (Full date)"
+    ? "30 ngày sử dụng (BH đăng nhập 24H)"
     : titleLower.includes("18 tháng")
     ? "18 tháng đầy đủ (Full date)"
     : titleLower.includes("12 tháng") || titleLower.includes("1 năm")
@@ -138,8 +145,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Bảo hành duy trì số lượng trong 30 ngày"
     : isApiKeyProduct
     ? "Bảo đảm kết nối ổn định & bảo lưu hạn mức trọn vẹn"
+    : isChatGPTBHF
+    ? "1 Đổi 1 Trọn Vẹn 30 Ngày (Gói BHF Cao Cấp)"
     : isChatGPT
-    ? "1 đổi 1 trong 30 ngày (Bảo hành chuẩn nhà cung cấp)"
+    ? "Bảo hành đăng nhập 24H (Gói Tiết Kiệm - Chuẩn NCC)"
     : titleLower.includes("gemini") || titleLower.includes("duolingo")
     ? "1 đổi 1 trong 24h kích hoạt & hỗ trợ suốt 18 tháng"
     : "Bảo hành 1 đổi 1 trong suốt thời hạn sử dụng gói";
@@ -295,6 +304,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             isClaude={isClaude}
             isApiKeyProduct={isApiKeyProduct}
             isChatGPT={isChatGPT}
+            isChatGPTBHF={isChatGPTBHF}
           />
         </div>
 

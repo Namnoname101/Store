@@ -282,10 +282,10 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
   },
 
   // ==========================================
-  // 14. CHATGPT PLUS 1 THÁNG
+  // 14. CHATGPT PLUS 1 THÁNG (TIẾT KIỆM - BH 24H)
   // ==========================================
   "chatgpt-plus-1-thang": {
-    title: "Hướng dẫn đăng nhập & Quy định sử dụng tài khoản ChatGPT Plus",
+    title: "Hướng dẫn đăng nhập & Quy định sử dụng ChatGPT Plus (Gói Tiết Kiệm - BH 24H)",
     steps: [
       {
         text: "Bước 1: Truy cập website chính thức https://chatgpt.com hoặc mở ứng dụng ChatGPT chính thức trên iOS / Android / macOS / Windows.",
@@ -304,7 +304,34 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 4: Sử dụng đầy đủ tính năng cao cấp của OpenAI",
       },
     ],
-    note: "ĐIỀU KIỆN BẢO HÀNH (TRÁNH MẤT LÒNG): Bảo hành 1 ĐỔI 1 trọn vẹn 30 ngày nếu tài khoản mất gói Plus do lỗi hệ thống/OpenAI. TỪ CHỐI BẢO HÀNH nếu: tự ý đổi Email tài khoản; tự ý bấm hủy gói (Cancel Subscription) trong phần cài đặt OpenAI; vi phạm chính sách OpenAI (spam bot, tạo nội dung NSFW/18+, bạo lực khiến OpenAI đình chỉ/khóa nick); hoặc chia sẻ đăng nhập tràn lan nhiều IP/thiết bị bất thường cùng lúc.",
+    note: "QUY ĐỊNH BẢO HÀNH (GÓI TIẾT KIỆM): Bảo hành đăng nhập & kiểm tra Plus chuẩn trong 24H đầu (1 đổi 1 ngay nếu sai pass hoặc không có Plus). Sau 24H hết thời hạn bảo hành từ nhà cung cấp (không bảo hành tụt Plus hoặc đợt quét tài khoản từ OpenAI sau 24h). Nếu cần bảo hành trọn vẹn 30 ngày, quý khách nên chọn gói BHF.",
+    docsUrl: "https://help.openai.com",
+  },
+
+  // ==========================================
+  // 15. CHATGPT PLUS 1 THÁNG BHF (BẢO HÀNH FULL 30 NGÀY)
+  // ==========================================
+  "chatgpt-plus-1-thang-bhf": {
+    title: "Hướng dẫn đăng nhập & Quy định sử dụng ChatGPT Plus (Bảo Hành Full 30 Ngày - BHF)",
+    steps: [
+      {
+        text: "Bước 1: Truy cập website chính thức https://chatgpt.com hoặc mở ứng dụng ChatGPT chính thức trên iOS / Android / macOS / Windows.",
+        caption: "Bước 1: Mở trình duyệt và truy cập trang chính thức của OpenAI",
+      },
+      {
+        text: "Bước 2: Bấm nút 'Log in' và nhập thông tin Email | Mật khẩu được cung cấp ở bảng bàn giao phía trên.",
+        caption: "Bước 2: Đăng nhập với tài khoản được bàn giao",
+      },
+      {
+        text: "Bước 3: Sau khi đăng nhập, kiểm tra huy hiệu 'ChatGPT Plus' ở góc trái hoặc vào Settings > Subscription để xác nhận gói hoạt động.",
+        caption: "Bước 3: Xác nhận trạng thái Plus bản quyền",
+      },
+      {
+        text: "Bước 4: Trải nghiệm toàn bộ mô hình Frontier AI: GPT-6 series (Astra, Sol, Luna), OpenAI o3, o1, GPT-4.5 High-EQ, tạo ảnh DALL·E 3, Canvas và Advanced Voice.",
+        caption: "Bước 4: Sử dụng đầy đủ tính năng cao cấp của OpenAI",
+      },
+    ],
+    note: "ĐIỀU KIỆN BẢO HÀNH CAO CẤP (BHF 30 NGÀY): Bảo hành 1 ĐỔI 1 trọn vẹn 30 ngày nếu tài khoản mất gói Plus hoặc lỗi trong suốt thời gian sử dụng. TỪ CHỐI BẢO HÀNH nếu: tự ý đổi Email tài khoản; tự ý bấm hủy gói (Cancel Subscription) trong phần Billing; vi phạm chính sách OpenAI (spam bot, tạo nội dung NSFW/18+, bạo lực khiến OpenAI đình chỉ/khóa nick); hoặc chia sẻ đăng nhập tràn lan nhiều IP/thiết bị bất thường cùng lúc.",
     docsUrl: "https://help.openai.com",
   },
 };
@@ -407,7 +434,16 @@ export function resolveProductInstruction(params: {
     return PRODUCT_GUIDES["photoroom-max-7-ngay"];
   }
 
-  // 2.14 ChatGPT & OpenAI Accounts
+  // 2.14 ChatGPT Plus BHF (Full 30 Ngày)
+  if (
+    cleanSlug.includes("bhf") ||
+    cleanTitle.includes("bhf") ||
+    cleanTitle.includes("bảo hành full")
+  ) {
+    return PRODUCT_GUIDES["chatgpt-plus-1-thang-bhf"];
+  }
+
+  // 2.15 ChatGPT Plus Tiết Kiệm (BH 24H)
   if (
     cleanSlug.includes("chatgpt") ||
     cleanTitle.includes("chatgpt") ||

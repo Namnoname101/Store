@@ -47,6 +47,7 @@ export interface ProductDetailTabsProps {
   isClaude?: boolean;
   isApiKeyProduct?: boolean;
   isChatGPT?: boolean;
+  isChatGPTBHF?: boolean;
 }
 
 export default function ProductDetailTabs({
@@ -56,6 +57,7 @@ export default function ProductDetailTabs({
   isClaude = false,
   isApiKeyProduct = false,
   isChatGPT = false,
+  isChatGPTBHF = false,
 }: ProductDetailTabsProps) {
   const [activeTab, setActiveTab] = useState<"overview" | "technical">("overview");
   const [copiedSnippet, setCopiedSnippet] = useState<string | null>(null);
@@ -226,12 +228,18 @@ main();`,
                       Chính sách bảo hành &amp; Quy định sử dụng (Minh bạch - Tránh mất lòng)
                     </h3>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                    Bảo hành 1 Đổi 1 trong 30 ngày
+                  <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                    isChatGPTBHF
+                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                      : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                  }`}>
+                    {isChatGPTBHF ? "Bảo hành Full 30 Ngày 1 Đổi 1 (BHF)" : "Bảo hành đăng nhập 24H (Gói Tiết Kiệm)"}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
-                  Để đảm bảo quyền lợi tối đa cho khách hàng và vận hành đúng tiêu chuẩn nhà cung cấp, xin quý khách lưu ý các điều kiện bảo hành rõ ràng bên dưới:
+                  {isChatGPTBHF
+                    ? "Gói cao cấp được nhà cung cấp cam kết bảo hành 1 đổi 1 hoặc cấp lại Plus trong suốt 30 ngày sử dụng nếu phát sinh lỗi kỹ thuật:"
+                    : "Gói giá rẻ tiết kiệm hơn 70% so với giá gốc, áp dụng đúng chính sách nhà cung cấp: bảo hành đăng nhập & kiểm tra Plus chuẩn trong 24 giờ đầu:"}
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -239,23 +247,36 @@ main();`,
                   <div className="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 dark:bg-emerald-950/20 space-y-3">
                     <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-xs sm:text-sm">
                       <CheckCircle2 className="h-4 w-4 shrink-0" />
-                      <span>ĐƯỢC BẢO HÀNH (1 ĐỔI 1 HOẶC HOÀN TIỀN)</span>
+                      <span>{isChatGPTBHF ? "ĐƯỢC BẢO HÀNH (1 ĐỔI 1 SUỐT 30 NGÀY)" : "ĐƯỢC BẢO HÀNH (TRONG 24H ĐẦU)"}</span>
                     </div>
                     <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside leading-relaxed">
-                      <li>Tài khoản bị mất gói Plus trước thời hạn do lỗi từ OpenAI hoặc hệ thống cấp phát.</li>
-                      <li>Tài khoản sai mật khẩu ngay khi nhận bàn giao (báo hỗ trợ xử lý trong 15 phút).</li>
-                      <li>Hỗ trợ đổi tài khoản mới tương đương trong vòng 15 - 30 phút (tối đa 24h).</li>
-                      <li>Trường hợp tạm thời hết tài khoản đổi, hệ thống hoàn tiền theo tỷ lệ số ngày còn lại chưa sử dụng.</li>
+                      {isChatGPTBHF ? (
+                        <>
+                          <li>Tài khoản bị mất gói Plus, lỗi subscription do lỗi từ OpenAI hoặc hệ thống trong suốt 30 ngày.</li>
+                          <li>Tài khoản không đăng nhập được ngay từ đầu do sai lệch thông tin mật khẩu.</li>
+                          <li>Hỗ trợ đổi mới hoặc cấp lại Plus nhanh chóng trong 15 - 30 phút (tối đa 24h).</li>
+                          <li>Trường hợp tạm thời hết tài khoản đổi, hệ thống hoàn tiền theo tỷ lệ số ngày còn lại chưa sử dụng.</li>
+                        </>
+                      ) : (
+                        <>
+                          <li>Cam kết tài khoản có tích xanh Plus chuẩn 100%, đăng nhập thành công tại chatgpt.com.</li>
+                          <li>Trong vòng 24 giờ đầu nếu sai pass hoặc không có gói Plus &rarr; 1 ĐỔI 1 MỚI NGAY LẬP TỨC.</li>
+                          <li>Hỗ trợ kiểm tra tài khoản và hướng dẫn đăng nhập trực tuyến 24/7.</li>
+                        </>
+                      )}
                     </ul>
                   </div>
 
-                  {/* Cột từ chối bảo hành */}
+                  {/* Cột từ chối bảo hành / Hết hạn */}
                   <div className="p-4 rounded-xl border border-destructive/20 bg-destructive/5 dark:bg-destructive/10 space-y-3">
                     <div className="flex items-center gap-2 text-destructive font-bold text-xs sm:text-sm">
                       <XCircle className="h-4 w-4 shrink-0" />
-                      <span>TỪ CHỐI BẢO HÀNH (CÁC TRƯỜNG HỢP VI PHẠM)</span>
+                      <span>{isChatGPTBHF ? "TỪ CHỐI BẢO HÀNH (CÁC TRƯỜNG HỢP VI PHẠM)" : "TỪ CHỐI &amp; QUY ĐỊNH SAU 24H"}</span>
                     </div>
                     <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside leading-relaxed">
+                      {!isChatGPTBHF && (
+                        <li><strong>Sau 24 giờ:</strong> Hết thời hạn bảo hành từ nhà cung cấp (không bảo hành tụt Plus hoặc đợt quét tài khoản từ OpenAI sau 24h).</li>
+                      )}
                       <li>Khách hàng tự ý thay đổi Email tài khoản được cấp.</li>
                       <li>Khách hàng tự ý bấm hủy gói (Cancel Subscription) hoặc can thiệp thông tin Billing trong Cài đặt OpenAI.</li>
                       <li>Vi phạm chính sách nội dung của OpenAI: Sử dụng prompt độc hại, tạo nội dung NSFW/18+, bạo lực, spam bot quá tải khiến OpenAI khóa vĩnh viễn (Terminated / Suspended).</li>
@@ -264,7 +285,20 @@ main();`,
                   </div>
                 </div>
 
-                <div className="mt-4 p-3 rounded-xl bg-secondary/50 border border-border flex items-start gap-2.5 text-xs text-muted-foreground">
+                {!isChatGPTBHF && (
+                  <div className="mt-4 p-3 rounded-xl bg-primary/10 border border-primary/20 flex items-start gap-2.5 text-xs text-foreground">
+                    <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                    <span>
+                      <strong>Bạn cần sự an tâm và bảo hành suốt 30 ngày?</strong> Quý khách có thể chọn{" "}
+                      <Link href="/products/chatgpt-plus-1-thang-bhf" className="font-bold text-primary underline hover:text-primary/80">
+                        Gói ChatGPT Plus 1 Tháng Riêng Tư - BHF (Bảo Hành Full 30 Ngày)
+                      </Link>{" "}
+                      để được cam kết 1 đổi 1 trong suốt 30 ngày làm việc.
+                    </span>
+                  </div>
+                )}
+
+                <div className="mt-3 p-3 rounded-xl bg-secondary/50 border border-border flex items-start gap-2.5 text-xs text-muted-foreground">
                   <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
                   <span>
                     <strong className="text-foreground">Khuyến nghị sử dụng:</strong> Quý khách nên đăng nhập trên 1-2 thiết bị cá nhân (trình duyệt web hoặc ứng dụng ChatGPT chính thức) và không chia sẻ công khai để tài khoản luôn hoạt động mượt mà và ổn định nhất.
