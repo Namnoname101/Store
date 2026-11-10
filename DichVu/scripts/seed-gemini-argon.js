@@ -33,7 +33,7 @@ async function main() {
   const product = await prisma.product.upsert({
     where: { slug: 'gemini-pro-argon-4-family-5tb' },
     update: {
-      title: 'Tài Khoản Gemini Pro 5TB, Argon 4 (Chủ Family) - Gói Trải Nghiệm KBH',
+      title: 'Tài Khoản Gemini Pro 5TB, Argon 4 Hạn 2 Năm (Chủ Family) - Gói KBH',
       price: 79000,
       originalPrice: 180000,
       description: 'Tài khoản Google Gemini Pro bản quyền (Chủ Family) sở hữu 5TB lưu trữ Google One, kích hoạt sẵn mô hình Gemini 4 Argon và Gemini 3.8 Flash trong Google Antigravity & AI Studio. Được toàn quyền mời tối đa 5 tài khoản Gmail khác vào nhóm Family để cùng dùng chung quyền lợi.',
@@ -44,7 +44,7 @@ async function main() {
       isActive: true,
     },
     create: {
-      title: 'Tài Khoản Gemini Pro 5TB, Argon 4 (Chủ Family) - Gói Trải Nghiệm KBH',
+      title: 'Tài Khoản Gemini Pro 5TB, Argon 4 Hạn 2 Năm (Chủ Family) - Gói KBH',
       slug: 'gemini-pro-argon-4-family-5tb',
       price: 79000,
       originalPrice: 180000,

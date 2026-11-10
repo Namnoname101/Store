@@ -121,6 +121,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Tài khoản riêng tư / Link kích hoạt chính chủ"
     : "Bàn giao tự động qua hệ thống 24/7";
 
+  const isSuno = slug.includes("suno") || titleLower.includes("suno");
+  const isHMA = slug.includes("hma") || titleLower.includes("hma");
+  const isGeminiKBH = slug.includes("gemini") && (slug.includes("family") || slug.includes("kbh") || titleLower.includes("kbh") || titleLower.includes("2 năm"));
+
   const durationLabel = isSMM
     ? "Hoàn thành theo số lượng đặt mua"
     : isCodex
@@ -131,6 +135,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "30 ngày bảo hành Full Date (BHF)"
     : isChatGPT
     ? "30 ngày sử dụng (BH đăng nhập 24H)"
+    : isGeminiKBH || titleLower.includes("2 năm") || slug.includes("2-nam")
+    ? "24 tháng (Hạn 2 năm) - Gói KBH"
+    : isSuno
+    ? "30 ngày sử dụng (2.500 Credits)"
     : titleLower.includes("18 tháng")
     ? "18 tháng đầy đủ (Full date)"
     : titleLower.includes("12 tháng") || titleLower.includes("1 năm")
@@ -140,10 +148,6 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     : titleLower.includes("3 tháng")
     ? "90 ngày (3 tháng)"
     : "Theo gói dịch vụ đã chọn";
-
-  const isSuno = slug.includes("suno") || titleLower.includes("suno");
-  const isHMA = slug.includes("hma") || titleLower.includes("hma");
-  const isGeminiKBH = slug.includes("gemini") && (slug.includes("family") || slug.includes("kbh") || titleLower.includes("kbh"));
 
   const warrantyLabel = isSMM
     ? "Bảo hành duy trì số lượng theo server"

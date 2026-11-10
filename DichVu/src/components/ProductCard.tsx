@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight, Eye } from "lucide-react";
+import { ArrowRight, Eye, Clock } from "lucide-react";
 import type { Product } from "@prisma/client";
 import { formatVND, getProductTypeInfo, getProductBadgeLabel } from "@/lib/product-types";
 import { resolveProductThumbnail } from "@/lib/catalog-grouping";
@@ -91,6 +91,16 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
               {typeInfo.shortLabel}
             </span>
           </div>
+
+          {/* Duration Pill at bottom-left */}
+          {durationBadge && (
+            <div className="absolute bottom-2.5 left-2.5">
+              <span className="inline-flex items-center gap-1 rounded-md bg-slate-900/90 border border-amber-500/40 px-2 py-0.5 text-[11px] font-bold font-mono text-amber-300 shadow-md backdrop-blur-md">
+                <Clock className="h-3 w-3 text-amber-400 shrink-0" />
+                {durationBadge}
+              </span>
+            </div>
+          )}
 
           {/* Discount Badge */}
           {discountPercent > 0 && (
