@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750">
+  <defs>
+    <radialGradient id="aeBg" cx="50%" cy="38%" r="65%">
+      <stop offset="0%" stop-color="#2a082e"/>
+      <stop offset="55%" stop-color="#140417"/>
+      <stop offset="100%" stop-color="#060108"/>
+    </radialGradient>
+    <filter id="aeGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="40" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <linearGradient id="aeCard" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="aeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7B2CBF"/>
+      <stop offset="45%" stop-color="#C72C81"/>
+      <stop offset="75%" stop-color="#FF5400"/>
+      <stop offset="100%" stop-color="#FFBD00"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="750" fill="url(#aeBg)"/>
+  <circle cx="600" cy="270" r="260" fill="#C72C81" opacity="0.22" filter="url(#aeGlow)"/>
+  <rect x="220" y="75" width="760" height="600" rx="36" fill="url(#aeCard)" stroke="#C72C81" stroke-opacity="0.38" stroke-width="1.5"/>
+
+  <!-- Adobe Express Logo -->
+  <g transform="translate(600, 260)">
+    <circle cx="0" cy="0" r="115" fill="#17031c" stroke="url(#aeGrad)" stroke-width="2.5" filter="url(#aeGlow)"/>
+    <!-- Express Ribbon Shape -->
+    <path d="M-40,-45 C-5,-65 30,-30 10,-5 C-10,20 -30,10 -35,35 C-40,60 15,65 40,40" fill="none" stroke="url(#aeGrad)" stroke-width="14" stroke-linecap="round"/>
+    <circle cx="28" cy="-42" r="7" fill="#FFBD00"/>
+  </g>
+
+  <!-- Titles -->
+  <g transform="translate(600, 480)" text-anchor="middle">
+    <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="900" letter-spacing="2">
+      ADOBE EXPRESS 12 THÁNG
+    </text>
+    <g transform="translate(0, 52)">
+      <rect x="-290" y="-22" width="580" height="44" rx="22" fill="#C72C81" fill-opacity="0.18" stroke="#FF5400" stroke-width="1.5"/>
+      <text x="0" y="7" fill="#ffb0d5" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" letter-spacing="1">
+        BẢN QUYỀN 1 NĂM • TẠO ẢNH FIREFLY AI • XÓA PHÔNG 4K
+      </text>
+    </g>
+  </g>
+</svg>

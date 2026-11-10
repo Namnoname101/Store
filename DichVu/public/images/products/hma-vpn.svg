@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750">
+  <defs>
+    <radialGradient id="hmaBg" cx="50%" cy="38%" r="65%">
+      <stop offset="0%" stop-color="#082032"/>
+      <stop offset="55%" stop-color="#05131e"/>
+      <stop offset="100%" stop-color="#02080d"/>
+    </radialGradient>
+    <filter id="hmaGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="40" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <linearGradient id="hmaCard" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="hmaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00D2FF"/>
+      <stop offset="50%" stop-color="#00A8FF"/>
+      <stop offset="100%" stop-color="#0055FF"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="750" fill="url(#hmaBg)"/>
+  <circle cx="600" cy="270" r="260" fill="#00A8FF" opacity="0.22" filter="url(#hmaGlow)"/>
+  <rect x="220" y="75" width="760" height="600" rx="36" fill="url(#hmaCard)" stroke="#00D2FF" stroke-opacity="0.38" stroke-width="1.5"/>
+
+  <!-- HMA Shield & Key Badge Logo -->
+  <g transform="translate(600, 260)">
+    <circle cx="0" cy="0" r="115" fill="#061a29" stroke="#00D2FF" stroke-width="2.5" filter="url(#hmaGlow)"/>
+    <!-- Shield Icon -->
+    <path d="M-45,-40 C-45,-40 0,-60 0,-60 C0,-60 45,-40 45,-40 C45,20 20,55 0,70 C-20,55 -45,20 -45,-40 Z" fill="none" stroke="url(#hmaGrad)" stroke-width="5" stroke-linejoin="round"/>
+    <!-- Keyhole / Key Symbol -->
+    <circle cx="0" cy="-5" r="14" fill="#00D2FF"/>
+    <path d="M-5,5 L5,5 L9,38 L-9,38 Z" fill="#00D2FF"/>
+    <rect x="-12" y="24" width="24" height="5" rx="2.5" fill="#061a29"/>
+  </g>
+
+  <!-- Titles -->
+  <g transform="translate(600, 480)" text-anchor="middle">
+    <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="900" letter-spacing="2">
+      KEY HMA VPN 1 THÁNG
+    </text>
+    <g transform="translate(0, 52)">
+      <rect x="-270" y="-22" width="540" height="44" rx="22" fill="#00A8FF" fill-opacity="0.18" stroke="#00D2FF" stroke-width="1.5"/>
+      <text x="0" y="7" fill="#70d8ff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" letter-spacing="1">
+        BẢN QUYỀN CHÍNH HÃNG • 5 THIẾT BỊ • ĐỔI IP TỐC ĐỘ CAO
+      </text>
+    </g>
+  </g>
+</svg>
