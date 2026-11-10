@@ -180,13 +180,23 @@ export function isDisallowedShortTermApiPackage(product: {
   const slug = (product.slug || "").toLowerCase();
   const text = `${title} ${desc} ${slug}`;
 
-  // Creative & design software accounts are legitimate tools, not short-term API keys
+  // Non-API products (consumer software, creative accounts, VPN, entertainment) are legitimate tools
   if (
+    text.includes("suno") ||
+    text.includes("hma") ||
+    text.includes("adobe") ||
+    text.includes("chatgpt") ||
     text.includes("meitu") ||
     text.includes("capcut") ||
     text.includes("wink") ||
     text.includes("photoroom") ||
-    text.includes("xingtu")
+    text.includes("xingtu") ||
+    text.includes("kling") ||
+    text.includes("muse") ||
+    text.includes("netflix") ||
+    text.includes("spotify") ||
+    text.includes("vpn") ||
+    text.includes("zoom")
   ) {
     return false;
   }

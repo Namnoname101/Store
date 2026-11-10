@@ -1,13 +1,10 @@
 const fs = require('fs');
-const path = 'DichVu/src/lib/catalog-grouping.ts';
-let content = fs.readFileSync(path, 'utf8');
+const path = require('path');
 
-const target = `  // Meitu & CapCut products are editing software accounts, not short-term API keys
-  if (text.includes("meitu") || text.includes("capcut")) {
-    return false;
-  }`;
+const filePath = path.join(__dirname, '../src/lib/catalog-grouping.ts');
+let content = fs.readFileSync(filePath, 'utf8');
 
-const replacement = `  // Creative & design software accounts are legitimate tools, not short-term API keys
+const target = `  // Creative & design software accounts are legitimate tools, not short-term API keys
   if (
     text.includes("meitu") ||
     text.includes("capcut") ||
@@ -18,15 +15,33 @@ const replacement = `  // Creative & design software accounts are legitimate too
     return false;
   }`;
 
-if (content.includes(target)) {
-  content = content.replace(target, replacement);
-  fs.writeFileSync(path, content, 'utf8');
-  console.log('Successfully updated catalog-grouping.ts (LF)');
-} else if (content.includes(target.replace(/\n/g, '\r\n'))) {
-  content = content.replace(target.replace(/\n/g, '\r\n'), replacement.replace(/\n/g, '\r\n'));
-  fs.writeFileSync(path, content, 'utf8');
-  console.log('Successfully updated catalog-grouping.ts (CRLF)');
+const replacement = `  // Non-API products (consumer software, creative accounts, VPN, entertainment) are legitimate tools
+  if (
+    text.includes("suno") ||
+    text.includes("hma") ||
+    text.includes("adobe") ||
+    text.includes("chatgpt") ||
+    text.includes("meitu") ||
+    text.includes("capcut") ||
+    text.includes("wink") ||
+    text.includes("photoroom") ||
+    text.includes("xingtu") ||
+    text.includes("kling") ||
+    text.includes("muse") ||
+    text.includes("netflix") ||
+    text.includes("spotify") ||
+    text.includes("vpn") ||
+    text.includes("zoom")
+  ) {
+    return false;
+  }`;
+
+const normalize = s => s.replace(/\r\n/g, '\n');
+content = normalize(content);
+if (content.includes(normalize(target))) {
+  content = content.replace(normalize(target), normalize(replacement));
+  fs.writeFileSync(filePath, content, 'utf8');
+  console.log('Successfully updated catalog-grouping.ts');
 } else {
-  console.error('Target not found!');
-  process.exit(1);
+  console.error('Target not found in catalog-grouping.ts');
 }
