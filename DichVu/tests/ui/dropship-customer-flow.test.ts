@@ -28,7 +28,8 @@ describe("Dropshipping Customer Flow & White-Label Refund Request", () => {
         upstreamStatus: UpstreamStatus.FAILED,
         upstreamError: "Simulated supplier out of stock error",
         expiresAt: new Date(Date.now() + 15 * 60 * 1000),
-        paidAt: new Date(),
+        paidAt: new Date(Date.now() - 35 * 60 * 1000),
+        createdAt: new Date(Date.now() - 35 * 60 * 1000),
       },
     });
     testOrderId = order.id;

@@ -118,6 +118,8 @@ export interface SecretDisplayProps {
     quantity: number;
     product: Partial<Product>;
   }>;
+  paidAt?: string | Date | null;
+  createdAt?: string | Date | null;
 }
 
 export default function SecretDisplay({
@@ -127,10 +129,35 @@ export default function SecretDisplay({
   accessToken,
   deliveredItems,
   orderItems,
+  paidAt,
+  createdAt,
 }: SecretDisplayProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [copiedAll, setCopiedAll] = useState<boolean>(false);
   const [activeEnvTab, setActiveEnvTab] = useState<"cursor" | "vscode" | "cli">("cursor");
+
+  const [orderPaidAt, setOrderPaidAt] = useState<string | Date | null>(paidAt || null);
+  const [orderCreatedAt, setOrderCreatedAt] = useState<string | Date | null>(createdAt || null);
+  const [canRefund, setCanRefund] = useState<boolean>(false);
+  const [countdownRemaining, setCountdownRemaining] = useState<number>(0);
+
+  // 30-minute fulfillment window countdown
+  useEffect(() => {
+    const REFUND_WINDOW_MS = 30 * 60 * 1000; // 30 minutes
+    const updateCountdown = () => {
+      const refTime = orderPaidAt || orderCreatedAt;
+      if (!refTime) return;
+      const startTime = new Date(refTime).getTime();
+      const elapsed = Date.now() - startTime;
+      const remainingSec = Math.max(0, Math.ceil((REFUND_WINDOW_MS - elapsed) / 1000));
+      setCountdownRemaining(remainingSec);
+      setCanRefund(remainingSec <= 0);
+    };
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+    return () => clearInterval(timer);
+  }, [orderPaidAt, orderCreatedAt]);
 
   const [currentUpstreamStatus, setCurrentUpstreamStatus] = useState<
     string | undefined
@@ -221,6 +248,12 @@ export default function SecretDisplay({
             }
             if (data.refundInfo && !currentRefundInfo) {
               setCurrentRefundInfo(data.refundInfo);
+            }
+            if (data.paidAt && !orderPaidAt) {
+              setOrderPaidAt(data.paidAt);
+            }
+            if (data.createdAt && !orderCreatedAt) {
+              setOrderCreatedAt(data.createdAt);
             }
             if (
               data.upstreamStatus === "COMPLETED" ||
@@ -441,31 +474,29 @@ export default function SecretDisplay({
     );
   }
 
-  // CASE 2: FAILED Status & Self-Service Refund Form
-  if (currentUpstreamStatus === "FAILED") {
+  // When no delivered items yet (Pending, Processing, Failed upstream, or Manual fulfillment)
+  if (!validDeliveredItems || validDeliveredItems.length === 0) {
+    const isClaudeOrder = orderItems?.some((item) => {
+      const slug = (item.product?.slug || "").toLowerCase();
+      const title = (item.product?.title || "").toLowerCase();
+      return slug.includes("claude") || slug.startsWith("cla-") || title.includes("claude");
+    });
+
+    const isCodexOrder = orderItems?.some((item) => {
+      const slug = (item.product?.slug || "").toLowerCase();
+      const title = (item.product?.title || "").toLowerCase();
+      return slug.includes("codex") || slug.startsWith("cdx") || title.includes("codex");
+    });
+
+    const minutes = Math.floor(countdownRemaining / 60);
+    const seconds = countdownRemaining % 60;
+    const formattedTimer = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
     return (
       <div className="space-y-6">
-        {/* Issue Notification */}
-        <div className="rounded-2xl border border-amber-500/30 bg-card text-card-foreground p-6 sm:p-8 shadow-sm">
-          <div className="flex items-start gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
-              <AlertCircle className="h-5 w-5" />
-            </div>
-            <div className="flex-1">
-              <div className="inline-flex items-center gap-1.5 rounded-md bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-400 mb-2 font-mono">
-                <span>HỆ THỐNG CẤP PHÁT</span>
-              </div>
-              <h3 className="text-lg font-bold text-foreground mb-1.5">
-                Cấp phát tạm thời bị gián đoạn
-              </h3>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                Máy chủ cấp phát đang quá tải. Đơn hàng của bạn được bảo đảm an toàn 100%. Bạn có thể gửi thông tin tài khoản bên dưới để nhận hoàn tiền ngay lập tức hoặc chờ hỗ trợ.
-              </p>
-            </div>
-          </div>
-        </div>
+        <BuffProgressCard orderCode={orderCode} />
 
-        {/* Existing refund request or self-service form */}
+        {/* State A: Refund already requested */}
         {currentRefundInfo || refundSuccessMsg ? (
           <div className="rounded-2xl border border-emerald-500/30 bg-card text-card-foreground p-6 sm:p-8 shadow-sm">
             <div className="flex items-center gap-3 mb-4">
@@ -503,183 +534,200 @@ export default function SecretDisplay({
               </div>
             </div>
           </div>
+        ) : canRefund ? (
+          /* State B: Over 30 minutes without keys -> Unlock 100% self-service refund form */
+          <div className="space-y-6">
+            <div className="rounded-2xl border border-amber-500/30 bg-card text-card-foreground p-6 sm:p-8 shadow-sm">
+              <div className="flex items-start gap-4">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
+                  <AlertCircle className="h-5 w-5" />
+                </div>
+                <div className="flex-1">
+                  <div className="inline-flex items-center gap-1.5 rounded-md bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-400 mb-2 font-mono">
+                    <span>HỆ THỐNG CẤP PHÁT</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground mb-1.5">
+                    Cấp phát vượt quá thời gian dự kiến (30 phút)
+                  </h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                    Thành thật xin lỗi quý khách vì sự chậm trễ này do máy chủ cấp phát dịch vụ tạm thời gián đoạn. Đơn hàng của bạn được bảo đảm an toàn 100%. Quý khách có thể gửi thông tin tài khoản bên dưới để nhận hoàn tiền 100% tự động hoặc chờ hỗ trợ.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-border bg-card text-card-foreground p-6 sm:p-8 shadow-sm">
+              <div className="mb-6">
+                <h4 className="text-base font-bold text-foreground mb-1">
+                  Yêu cầu hoàn tiền 100% tự động
+                </h4>
+                <p className="text-xs text-muted-foreground">
+                  Nhập số tài khoản ngân hàng để hệ thống hoàn lại tiền cho bạn:
+                </p>
+              </div>
+
+              {refundError && (
+                <div className="mb-5 flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3.5 text-xs text-destructive dark:text-rose-300">
+                  <AlertCircle className="h-4 w-4 shrink-0 text-destructive mt-0.5" />
+                  <span>{refundError}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmitRefund} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-foreground mb-1.5">
+                    Tên ngân hàng thụ hưởng <span className="text-destructive">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={refundBank}
+                    onChange={(e) => setRefundBank(e.target.value)}
+                    placeholder="Ví dụ: MBBank, Vietcombank, Techcombank..."
+                    className="min-h-[44px] w-full rounded-xl border border-input bg-secondary px-3.5 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-foreground mb-1.5">
+                      Số tài khoản ngân hàng <span className="text-destructive">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={refundAccountNo}
+                      onChange={(e) => setRefundAccountNo(e.target.value)}
+                      placeholder="Nhập số tài khoản..."
+                      className="min-h-[44px] w-full font-mono rounded-xl border border-input bg-secondary px-3.5 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-foreground mb-1.5">
+                      Họ và tên chủ tài khoản <span className="text-destructive">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={refundAccountName}
+                      onChange={(e) => setRefundAccountName(e.target.value)}
+                      placeholder="Ví dụ: NGUYEN VAN A"
+                      className="min-h-[44px] w-full uppercase rounded-xl border border-input bg-secondary px-3.5 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-foreground mb-1.5">
+                    Ghi chú thêm (tùy chọn)
+                  </label>
+                  <input
+                    type="text"
+                    value={refundNote}
+                    onChange={(e) => setRefundNote(e.target.value)}
+                    placeholder="Ghi chú thêm nếu có..."
+                    className="min-h-[44px] w-full rounded-xl border border-input bg-secondary px-3.5 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
+                  />
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={isSubmittingRefund}
+                    className="min-h-[44px] flex w-full items-center justify-center gap-2 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 py-3 px-6 text-xs font-bold transition-all shadow-sm disabled:opacity-50 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {isSubmittingRefund ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin text-primary-foreground" />
+                        <span>Đang gửi thông tin...</span>
+                      </>
+                    ) : (
+                      <span>Gửi yêu cầu hoàn tiền ngay</span>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         ) : (
-          <div className="rounded-2xl border border-border bg-card text-card-foreground p-6 sm:p-8 shadow-sm">
-            <div className="mb-6">
-              <h4 className="text-base font-bold text-foreground mb-1">
-                Yêu cầu hoàn tiền 100% tự động
-              </h4>
-              <p className="text-xs text-muted-foreground">
-                Nhập số tài khoản ngân hàng để hệ thống hoàn lại tiền cho bạn:
-              </p>
-            </div>
+          /* State C: Within 30 minutes -> Reassurance card with active 30-min countdown timer */
+          !isBuffService && (
+            <div className="relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-b from-amber-500/10 via-card to-card p-6 sm:p-8 text-center shadow-lg backdrop-blur-md">
+              {/* Top decorative accent */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-amber-500/60 blur-xs rounded-full" />
 
-            {refundError && (
-              <div className="mb-5 flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3.5 text-xs text-destructive dark:text-rose-300">
-                <AlertCircle className="h-4 w-4 shrink-0 text-destructive mt-0.5" />
-                <span>{refundError}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmitRefund} className="space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-foreground mb-1.5">
-                  Tên ngân hàng thụ hưởng <span className="text-destructive">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={refundBank}
-                  onChange={(e) => setRefundBank(e.target.value)}
-                  placeholder="Ví dụ: MBBank, Vietcombank, Techcombank..."
-                  className="min-h-[44px] w-full rounded-xl border border-input bg-secondary px-3.5 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
-                />
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 ring-8 ring-amber-500/5">
+                <Clock className="h-8 w-8 animate-pulse text-amber-600 dark:text-amber-300" />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-foreground mb-1.5">
-                    Số tài khoản ngân hàng <span className="text-destructive">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={refundAccountNo}
-                    onChange={(e) => setRefundAccountNo(e.target.value)}
-                    placeholder="Nhập số tài khoản..."
-                    className="min-h-[44px] w-full font-mono rounded-xl border border-input bg-secondary px-3.5 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-foreground mb-1.5">
-                    Họ và tên chủ tài khoản <span className="text-destructive">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={refundAccountName}
-                    onChange={(e) => setRefundAccountName(e.target.value)}
-                    placeholder="Ví dụ: NGUYEN VAN A"
-                    className="min-h-[44px] w-full uppercase rounded-xl border border-input bg-secondary px-3.5 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-foreground mb-1.5">
-                  Ghi chú thêm (tùy chọn)
-                </label>
-                <input
-                  type="text"
-                  value={refundNote}
-                  onChange={(e) => setRefundNote(e.target.value)}
-                  placeholder="Ghi chú thêm nếu có..."
-                  className="min-h-[44px] w-full rounded-xl border border-input bg-secondary px-3.5 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all"
-                />
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={isSubmittingRefund}
-                  className="min-h-[44px] flex w-full items-center justify-center gap-2 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 py-3 px-6 text-xs font-bold transition-all shadow-sm disabled:opacity-50 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  {isSubmittingRefund ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin text-primary-foreground" />
-                      <span>Đang gửi thông tin...</span>
-                    </>
-                  ) : (
-                    <span>Gửi yêu cầu hoàn tiền ngay</span>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Fallback if no delivered items yet (Waiting for manual key fulfillment or upstream generation)
-  if (!validDeliveredItems || validDeliveredItems.length === 0) {
-    const isClaudeOrder = orderItems?.some((item) => {
-      const slug = (item.product?.slug || "").toLowerCase();
-      const title = (item.product?.title || "").toLowerCase();
-      return slug.includes("claude") || slug.startsWith("cla-") || title.includes("claude");
-    });
-
-    const isCodexOrder = orderItems?.some((item) => {
-      const slug = (item.product?.slug || "").toLowerCase();
-      const title = (item.product?.title || "").toLowerCase();
-      return slug.includes("codex") || slug.startsWith("cdx") || title.includes("codex");
-    });
-
-    return (
-      <div className="space-y-6">
-        <BuffProgressCard orderCode={orderCode} />
-        {!isBuffService && (
-          <div className="relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-b from-amber-500/10 via-card to-card p-6 sm:p-8 text-center shadow-lg backdrop-blur-md">
-            {/* Top decorative accent */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-amber-500/60 blur-xs rounded-full" />
-
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 ring-8 ring-amber-500/5">
-              <Clock className="h-8 w-8 animate-pulse text-amber-600 dark:text-amber-300" />
-            </div>
-
-            <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/15 px-3.5 py-1 text-xs font-semibold text-amber-700 dark:text-amber-300 mb-3 shadow-xs">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-              </span>
-              <span>ĐÃ THANH TOÁN THÀNH CÔNG • ĐANG CẤP PHÁT MÃ</span>
-            </div>
-
-            <h3 className="text-xl sm:text-2xl font-extrabold text-foreground mb-2 tracking-tight">
-              Đang chuẩn bị mã riêng cho bạn... 🚀
-            </h3>
-
-            <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
-              Bạn vui lòng đợi trong giây lát nha! Shop đang cập nhật key thủ công riêng cho đơn hàng này, cập nhật xong hệ thống sẽ{" "}
-              <strong className="text-amber-700 dark:text-amber-300 font-semibold">tự động hiển thị mã ngay tại màn hình này</strong> mà không cần bấm tải lại trang!
-            </p>
-
-            {/* Status pills */}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs">
-              <div className="flex items-center gap-2 rounded-xl bg-secondary/80 border border-border px-3.5 py-2 text-foreground">
-                <span className="text-muted-foreground">Mã đơn hàng:</span>
-                <strong className="text-amber-600 dark:text-amber-400 font-mono text-sm">#{orderCode}</strong>
-              </div>
-
-              <div className="flex items-center gap-2 rounded-xl bg-secondary/80 border border-border px-3.5 py-2 text-emerald-600 dark:text-emerald-400">
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/15 px-3.5 py-1 text-xs font-semibold text-amber-700 dark:text-amber-300 mb-3 shadow-xs">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
                 </span>
-                <span>Tự động kiểm tra trực tiếp (Auto-live 3s)</span>
+                <span>ĐÃ THANH TOÁN THÀNH CÔNG • ĐANG CẤP PHÁT MÃ</span>
               </div>
 
-              <div className="flex items-center gap-2 rounded-xl bg-secondary/80 border border-border px-3.5 py-2 text-foreground">
-                <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                <span>Thời gian xử lý: 1 - 5 phút</span>
+              <h3 className="text-xl sm:text-2xl font-extrabold text-foreground mb-2 tracking-tight">
+                Đang chuẩn bị mã riêng cho bạn... 🚀
+              </h3>
+
+              <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
+                Bạn vui lòng đợi trong giây lát nha! Shop đang điều phối nguồn cấp hoặc cập nhật key riêng cho đơn hàng này, cập nhật xong hệ thống sẽ{" "}
+                <strong className="text-amber-700 dark:text-amber-300 font-semibold">tự động hiển thị mã ngay tại màn hình này</strong> mà không cần bấm tải lại trang!
+              </p>
+
+              {/* 30-Minute Countdown Box */}
+              <div className="my-6 mx-auto max-w-sm rounded-2xl border border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/15 p-4 text-center shadow-xs">
+                <div className="flex items-center justify-center gap-2 text-xs font-semibold text-amber-700 dark:text-amber-300 uppercase tracking-wider mb-1">
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>Thời gian cấp phát dự kiến (Tối đa 30p)</span>
+                </div>
+                <div className="text-3xl sm:text-4xl font-black font-mono text-amber-600 dark:text-amber-400 tracking-wider">
+                  {formattedTimer}
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-2 leading-relaxed">
+                  Nếu sau 30 phút hệ thống chưa cấp được mã, mục <strong>hoàn tiền 100% tự động</strong> sẽ xuất hiện ngay tại đây.
+                </p>
+              </div>
+
+              {/* Status pills */}
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs">
+                <div className="flex items-center gap-2 rounded-xl bg-secondary/80 border border-border px-3.5 py-2 text-foreground">
+                  <span className="text-muted-foreground">Mã đơn hàng:</span>
+                  <strong className="text-amber-600 dark:text-amber-400 font-mono text-sm">#{orderCode}</strong>
+                </div>
+
+                <div className="flex items-center gap-2 rounded-xl bg-secondary/80 border border-border px-3.5 py-2 text-emerald-600 dark:text-emerald-400">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  <span>Tự động kiểm tra trực tiếp (Auto-live 3s)</span>
+                </div>
+
+                <div className="flex items-center gap-2 rounded-xl bg-secondary/80 border border-border px-3.5 py-2 text-foreground">
+                  <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span>Cam kết bảo hành 100%</span>
+                </div>
+              </div>
+
+              {/* Telegram help link */}
+              <div className="mt-6 pt-5 border-t border-border flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+                <span>Cần nhận hỗ trợ gấp?</span>
+                <a
+                  href={`https://t.me/daitruongstore?text=${encodeURIComponent(`Chào shop, mình cần hỗ trợ đơn hàng #${orderCode}`)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary hover:underline font-semibold inline-flex items-center gap-1.5 transition-colors"
+                >
+                  <Send className="h-3.5 w-3.5" />
+                  <span>Nhắn tin qua Telegram Shop (Hỗ trợ 24/7)</span>
+                </a>
               </div>
             </div>
-
-            {/* Telegram help link */}
-            <div className="mt-6 pt-5 border-t border-border flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
-              <span>Cần nhận hỗ trợ gấp?</span>
-              <a
-                href={`https://t.me/daitruongstore?text=${encodeURIComponent(`Chào shop, mình cần hỗ trợ đơn hàng #${orderCode}`)}`}
-                target="_blank"
-                rel="noreferrer"
-                className="text-primary hover:underline font-semibold inline-flex items-center gap-1.5 transition-colors"
-              >
-                <Send className="h-3.5 w-3.5" />
-                <span>Nhắn tin qua Telegram Shop (Hỗ trợ 24/7)</span>
-              </a>
-            </div>
-          </div>
+          )
         )}
 
         {/* Preview guide while customer waits */}

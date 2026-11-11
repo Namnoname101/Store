@@ -119,6 +119,7 @@ export async function GET(
       deltaVietQrUrl,
       refundInfo: isTokenValid && order.refundInfo ? JSON.parse(order.refundInfo) : null,
       paidAt: order.paidAt ?? null,
+      createdAt: order.createdAt ?? null,
       deliveredItems: isTokenValid ? (order.deliveredItems ?? []) : [],
       vietQrUrl: order.vietQrUrl,
       expiresAt: order.expiresAt,

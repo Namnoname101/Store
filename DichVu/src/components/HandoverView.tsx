@@ -10,6 +10,7 @@ export interface HandoverOrderData {
   orderCode: string;
   totalAmount: number;
   paidAt?: string | Date | null;
+  createdAt?: string | Date | null;
   status?: string;
   upstreamStatus?: string | null;
   customerEmail?: string | null;
@@ -61,6 +62,8 @@ export default function HandoverView({ order }: HandoverViewProps) {
         deliveredItems={order.deliveredItems || []}
         orderItems={order.orderItems || []}
         accessToken={order.accessToken}
+        paidAt={order.paidAt}
+        createdAt={(order as any).createdAt}
       />
 
       {/* Return Home Navigation */}

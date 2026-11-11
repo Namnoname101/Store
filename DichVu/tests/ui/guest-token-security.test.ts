@@ -83,6 +83,7 @@ describe("Task 5: Guest Order AccessToken Security & 30-Day TTL Guard", () => {
     const order = await createOrder({
       items: [{ productId: prodId, quantity: 1 }],
     });
+    await prisma.order.update({ where: { id: order.id }, data: { paidAt: new Date(Date.now() - 35 * 60 * 1000), createdAt: new Date(Date.now() - 35 * 60 * 1000) } });
 
     // Mark PAID and assign secret key
     await prisma.order.update({
@@ -131,6 +132,7 @@ describe("Task 5: Guest Order AccessToken Security & 30-Day TTL Guard", () => {
     const order = await createOrder({
       items: [{ productId: prodId, quantity: 1 }],
     });
+    await prisma.order.update({ where: { id: order.id }, data: { paidAt: new Date(Date.now() - 35 * 60 * 1000), createdAt: new Date(Date.now() - 35 * 60 * 1000) } });
 
     // Backdate order to 31 days ago
     const oldDate = new Date(Date.now() - 31 * 24 * 60 * 60 * 1000);
@@ -160,6 +162,7 @@ describe("Task 5: Guest Order AccessToken Security & 30-Day TTL Guard", () => {
     const order = await createOrder({
       items: [{ productId: prodId, quantity: 1 }],
     });
+    await prisma.order.update({ where: { id: order.id }, data: { paidAt: new Date(Date.now() - 35 * 60 * 1000), createdAt: new Date(Date.now() - 35 * 60 * 1000) } });
 
     // Request refund WITHOUT token
     const reqNoToken = new Request(

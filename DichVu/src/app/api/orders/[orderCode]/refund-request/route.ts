@@ -54,6 +54,32 @@ export async function POST(request: Request, { params }: RouteParams) {
       );
     }
 
+    // 30-minute fulfillment window guard: Shop owner has 30 minutes to fulfill / deposit before refund is allowed
+    const REFUND_WAIT_TIME_MS = 30 * 60 * 1000; // 30 minutes
+    const orderTime = order.paidAt
+      ? new Date(order.paidAt).getTime()
+      : new Date(order.createdAt).getTime();
+    const elapsed = Date.now() - orderTime;
+
+    if (elapsed < REFUND_WAIT_TIME_MS) {
+      const remainingMinutes = Math.max(1, Math.ceil((REFUND_WAIT_TIME_MS - elapsed) / (60 * 1000)));
+      return NextResponse.json(
+        {
+          error: `Đơn hàng đang trong thời gian xử lý và cấp phát (tối đa 30 phút). Quý khách vui lòng đợi thêm ${remainingMinutes} phút nữa hoặc liên hệ CSKH.`,
+          canRequestRefund: false,
+          remainingMinutes,
+        },
+        { status: 400 }
+      );
+    }
+
+    if (order.upstreamStatus === "COMPLETED") {
+      return NextResponse.json(
+        { error: "Đơn hàng đã hoàn tất cấp phát mã thành công, không thể gửi yêu cầu hoàn tiền." },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json().catch(() => null);
     if (!body || typeof body !== "object") {
       return NextResponse.json(
@@ -131,6 +157,7 @@ export async function GET(_request: Request, { params }: RouteParams) {
         accessToken: true,
         userId: true,
         createdAt: true,
+        paidAt: true,
         refundInfo: true,
       },
     });
@@ -164,10 +191,20 @@ export async function GET(_request: Request, { params }: RouteParams) {
       );
     }
 
+    const REFUND_WAIT_TIME_MS = 30 * 60 * 1000;
+    const orderTime = order.paidAt
+      ? new Date(order.paidAt).getTime()
+      : new Date(order.createdAt).getTime();
+    const elapsed = Date.now() - orderTime;
+    const canRequestRefund = elapsed >= REFUND_WAIT_TIME_MS;
+    const remainingSeconds = Math.max(0, Math.ceil((REFUND_WAIT_TIME_MS - elapsed) / 1000));
+
     if (!order.refundInfo) {
       return NextResponse.json({
         hasRefundRequest: false,
         refundInfo: null,
+        canRequestRefund,
+        remainingSeconds,
       });
     }
 
@@ -181,6 +218,8 @@ export async function GET(_request: Request, { params }: RouteParams) {
     return NextResponse.json({
       hasRefundRequest: true,
       refundInfo: parsedInfo,
+      canRequestRefund,
+      remainingSeconds,
     });
   } catch (error: any) {
     return NextResponse.json(

@@ -148,6 +148,8 @@ export default async function OrderSuccessPage({
           deliveredItems={order.deliveredItems}
           orderItems={order.orderItems}
           accessToken={order.accessToken}
+          paidAt={order.paidAt}
+          createdAt={order.createdAt}
         />
       </div>
 
