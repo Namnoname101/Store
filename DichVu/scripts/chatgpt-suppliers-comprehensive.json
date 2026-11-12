@@ -1,0 +1,292 @@
+{
+  "botCommandSpecs": {
+    "shopxoainon": {
+      "username": "shopxoainon_bot",
+      "name": "Shop Xoài Non",
+      "architecture": "CUSTOM_INLINE_CALLBACK",
+      "commands": {
+        "menu": "/start",
+        "buy": "/buy",
+        "balance": "/balance",
+        "history": "/history"
+      },
+      "navigation": {
+        "type": "DIRECT_BUY_MENU",
+        "action": "Send /buy directly to receive all products inline. Click product:view:<id> for details, click buy:<id>:<qty> to purchase."
+      }
+    },
+    "dshop": {
+      "username": "mmo_dshop_bot",
+      "name": "MMO D-Shop",
+      "architecture": "CATEGORIZED_INLINE",
+      "commands": {
+        "start": "/start",
+        "me": "/me",
+        "top": "/top"
+      },
+      "navigation": {
+        "type": "START_THEN_BUY_THEN_CAT",
+        "action": "Send /start -> Click callback 'buy' -> Select category 'cat:4' (ChatGPT) -> Select product 'prod:4:<index>'."
+      }
+    },
+    "chodaumoi": {
+      "username": "chodaumoi_bot",
+      "name": "Chợ Đầu Mối MMO",
+      "architecture": "REPLY_KEYBOARD_TEXT",
+      "commands": {
+        "start": "/start",
+        "productsText": "Sản phẩm",
+        "walletText": "Ví",
+        "historyText": "Lịch sử"
+      },
+      "navigation": {
+        "type": "TEXT_REPLY_BUTTONS",
+        "action": "Send /start -> Send text message 'Sản phẩm' (ReplyKeyboardMarkup) -> Receive categories -> Click category."
+      }
+    },
+    "dkey": {
+      "username": "dkeyshop_bot",
+      "name": "DKeyShop MMO",
+      "architecture": "CANBOSO_INLINE",
+      "commands": {
+        "start": "/start",
+        "products": "/sanpham",
+        "balance": "/sodu"
+      },
+      "navigation": {
+        "type": "SLASH_COMMAND",
+        "action": "Send /sanpham or send /start and click 'Sản phẩm'."
+      }
+    },
+    "hxn": {
+      "username": "ShopHXN_bot",
+      "name": "HXN Shop MMO",
+      "architecture": "CANBOSO_INLINE",
+      "commands": {
+        "start": "/start",
+        "products": "/sanpham"
+      },
+      "navigation": {
+        "type": "SLASH_COMMAND",
+        "action": "Send /sanpham or send /start and click 'Sản phẩm'."
+      }
+    },
+    "khommo": {
+      "username": "KhoMMO_Market_bot",
+      "name": "Kho MMO Market",
+      "architecture": "CUSTOM_INLINE",
+      "commands": {
+        "start": "/start",
+        "buy": "/buy"
+      },
+      "navigation": {
+        "type": "START_THEN_SHOP",
+        "action": "Send /start -> Click inline button '🛒 Mua hàng'."
+      }
+    },
+    "nghientrick": {
+      "username": "nghientrickshop_bot",
+      "name": "Nghiện Trick Shop",
+      "architecture": "INLINE_SHOPCAT",
+      "commands": {
+        "start": "/start",
+        "me": "/me"
+      },
+      "navigation": {
+        "type": "START_THEN_MENU_SHOP",
+        "action": "Send /start -> Click callback 'menu_shop' -> Browse shopcat_<id>."
+      }
+    },
+    "hihistore": {
+      "username": "hihistorebot",
+      "name": "PQV Store (HiHiStore)",
+      "architecture": "CANBOSO_CAT_VIEW",
+      "commands": {
+        "start": "/start",
+        "products": "/sanpham"
+      },
+      "navigation": {
+        "type": "SLASH_SANPHAM",
+        "action": "Send /sanpham -> Browse cat_view_<id>."
+      }
+    }
+  },
+  "results": {
+    "xoainon": [
+      {
+        "botUsername": "shopxoainon_bot",
+        "botName": "Shop Xoài Non",
+        "commandUsed": "/buy",
+        "buttonText": "❌ ChatGPT Plus 1 tháng riêng tư mail Icloud UPI- KBH • 69.800đ • Hết hàng",
+        "callbackData": "noop",
+        "isOutOfStock": true,
+        "id": "noop",
+        "stock": 0,
+        "price": "Hết hàng",
+        "warranty": "Theo tiêu chuẩn"
+      },
+      {
+        "botUsername": "shopxoainon_bot",
+        "botName": "Shop Xoài Non",
+        "commandUsed": "/buy",
+        "buttonText": "🧠 Chatgpt plus 1 tháng pay PIX riêng tư - Bh24h • 135.400đ • SL 9",
+        "callbackData": "product:view:33",
+        "isOutOfStock": false,
+        "id": "33",
+        "fullDetails": "🛍️ THÔNG TIN SẢN PHẨM\n━━━━━━━━━━━━━━━━\n🧠 Chatgpt plus 1 tháng pay PIX riêng tư - Bh24h\n\nĐịnh dạng :  Email|Mật khẩu|2FA \nChatGPT Plus pay PIX,  - PIX Pay\nTài khoản riêng tư, chuẩn, đã test live trâu, phù hợp cho ae về viết kịch bản , nội dung, code , sáng tạo, ....\n\nÝ nghĩa từng phần:\n- Phần 1: Email đăng nhập\n- Phần 2: Mật khẩu\n- Phần 3: Khoá bí mật 2FA (dùng để lấy mã xác thực 6 số)\n\n--- CÁCH ĐĂNG NHẬP ---\n\n⚠️ LƯU Ý QUAN TRỌNG: KHÔNG bấm vào nút \"Tiếp tục với Google\" (Continue with Google)!\n\n1. Truy cập https://chatgpt.com và chọn \"Log in\".\n2. Nhập hoặc dán địa chỉ Email vào ô nhập liệu rồi bấm \"Continue\" (Tuyệt đối không chọn nút đăng nhập nhanh bằng Google).\n3. Nhập Mật khẩu và bấm \"Continue\".\n4. Khi hệ thống yêu cầu mã xác thực 6 chữ số (2FA / Authenticator App):\n   - Mở trang web https://2fa.live\n   - Dán chuỗi mã khoá 2FA (phần thứ 3) vào ô và bấm \"Submit\".\n   - Sao chép 6 số hiển thị ra màn hình.\n   - Nhập 6 số đó vào ô xác thực trên ChatGPT để hoàn tất đăng nhập.\n\n⚠️ *LƯU Ý SẢN PHẨM*\nThời gian bảo hành: Bảo hành 24 giờ\n\nQuý khách login tài khoản sử dụng, không cần thay đổi pass hoặc 2fa tránh bị khóa acc, xóa 2fa sẽ không bảo hành\nKhông được thay đổi email của tài khoản , nếu thay đổi => không bảo hành\nKhách hàng sử dụng Codex thì phải tự xác minh sms, mẹo lấy số sms giá rẻ tại https://bom.so/lgnQix\n\nKhuyến nghị sử dụng: Nên giữ nguyên mật khẩu và 2FA mặc định để tài khoản duy trì độ ổn định cao nhất, hạn chế tối đa nguy cơ bị hệ thống ChatGPT quét checkpoint/khóa.\n🆔 Mã SP: #33\n💵 Giá bán: 135.400đ ≈ 5.208 USDT\n📦 Tồn kho: 9\n💰 Số dư ví: 137.999đ\n✅ Ví đủ mua từ 1 tài khoản.\n━━━━━━━━━━━━━━━━\n👇 Chọn số lượng muốn mua bên dưới:",
+        "price": "135.400đ",
+        "stock": 9,
+        "warranty": "Bảo hành 24 giờ",
+        "accountFormat": "Email|Mật khẩu|2FA"
+      },
+      {
+        "botUsername": "shopxoainon_bot",
+        "botName": "Shop Xoài Non",
+        "commandUsed": "/buy",
+        "buttonText": "🧠 Chatgpt Plus pay Apple Gmail 1 thg riêng tư - BH 24H • 109.000đ • SL 49",
+        "callbackData": "product:view:37",
+        "isOutOfStock": false,
+        "id": "37",
+        "fullDetails": "🛍️ THÔNG TIN SẢN PHẨM\n━━━━━━━━━━━━━━━━\n🧠 Chatgpt Plus pay Apple Gmail 1 thg riêng tư - BH 24H\n\nĐịnh dạng: Email | Pass | 2FA\nMail Gmail, Googlemail\n\nLoại tài khoản: Tài khoản cấp riêng tư (Dùng riêng)\nÝ nghĩa từng phần:\n- Phần 1: Email đăng nhập\n- Phần 2: Mật khẩu\n- Phần 3: Khoá bí mật 2FA (dùng để lấy mã xác thực 6 số)\n\n--- CÁCH ĐĂNG NHẬP ---\n\n⚠️ LƯU Ý QUAN TRỌNG: KHÔNG bấm vào nút \"Tiếp tục với Google\" (Continue with Google)!\n\n1. Truy cập https://chatgpt.com và chọn \"Log in\".\n2. Nhập hoặc dán địa chỉ Email vào ô nhập liệu rồi bấm \"Continue\" (Tuyệt đối không chọn nút đăng nhập nhanh bằng Google).\n3. Nhập Mật khẩu và bấm \"Continue\".\n4. Khi hệ thống yêu cầu mã xác thực 6 chữ số (2FA / Authenticator App):\n   - Mở trang web https://2fa.live\n   - Dán chuỗi mã khoá 2FA (phần thứ 3) vào ô và bấm \"Submit\".\n   - Sao chép 6 số hiển thị ra màn hình.\n   - Nhập 6 số đó vào ô xác thực trên ChatGPT để hoàn tất đăng nhập.\nDành cho khách dùng Codex: Cần tự liên kết/xác minh số điện thoại cá nhân để kích hoạt sử dụng (Mẹo thuê SMS giá rẻ: bom.so/lgnQix).\n\n⚠️ LƯU Ý & CHÍNH SÁCH BẢO HÀNH\nThời gian bảo hành: 24 giờ tính từ thời điểm tạo đơn hàng thành công.\nQuy định về 2FA: TUYỆT ĐỐI KHÔNG XÓA 2FA (chỉ hỗ trợ đổi sang mã 2FA cá nhân). Tài khoản bị xóa hoàn toàn 2FA sẽ từ chối bảo hành.\nKhuyến nghị sử dụng: Nên giữ nguyên mật khẩu và 2FA mặc định để tài khoản duy trì độ ổn định cao nhất, hạn chế tối đa nguy cơ bị hệ thống ChatGPT quét checkpoint/khóa.\n🆔 Mã SP: #37\n💵 Giá bán: 109.000đ ≈ 4.193 USDT\n🎁 KM: Mua từ 10 giảm 5% — 104K/acc, 4$\n└ Hết hạn khuyến mãi: 10:46 03/12/2026\n📦 Tồn kho: 49\n💰 Số dư ví: 137.999đ\n✅ Ví đủ mua từ 1 tài khoản.\n━━━━━━━━━━━━━━━━\n👇 Chọn số lượng muốn mua bên dưới:",
+        "price": "109.000đ",
+        "stock": 49,
+        "warranty": "24 giờ tính từ thời điểm tạo đơn hàng thành công.",
+        "accountFormat": "Email | Pass | 2FA"
+      },
+      {
+        "botUsername": "shopxoainon_bot",
+        "botName": "Shop Xoài Non",
+        "commandUsed": "/buy",
+        "buttonText": "🧠 ChatGPT Plus 1 tháng riêng tư  - BHF • 188.000đ • SL 18",
+        "callbackData": "product:view:1",
+        "isOutOfStock": false,
+        "id": "1",
+        "fullDetails": "🛍️ THÔNG TIN SẢN PHẨM\n━━━━━━━━━━━━━━━━\n🧠 ChatGPT Plus 1 tháng riêng tư  - BHF\n\nĐịnh dạng :  Email|Mật khẩu|2FA \nTài khoản riêng tư, đổi được pass thoải mái, Hàng siêu trâu mail trâu, chuẩn, đã test live trâu, phù hợp cho ae về viết kịch bản , nội dung, code , sáng tạo, ....\n\nÝ nghĩa từng phần:\n- Phần 1: Email đăng nhập\n- Phần 2: Mật khẩu\n- Phần 3: Khoá bí mật 2FA (dùng để lấy mã xác thực 6 số)\n\n--- CÁCH ĐĂNG NHẬP ---\n\n⚠️ LƯU Ý QUAN TRỌNG: KHÔNG bấm vào nút \"Tiếp tục với Google\" (Continue with Google)!\n\n1. Truy cập https://chatgpt.com và chọn \"Log in\".\n2. Nhập hoặc dán địa chỉ Email vào ô nhập liệu rồi bấm \"Continue\" (Tuyệt đối không chọn nút đăng nhập nhanh bằng Google).\n3. Nhập Mật khẩu và bấm \"Continue\".\n4. Khi hệ thống yêu cầu mã xác thực 6 chữ số (2FA / Authenticator App):\n   - Mở trang web https://2fa.live\n   - Dán chuỗi mã khoá 2FA (phần thứ 3) vào ô và bấm \"Submit\".\n   - Sao chép 6 số hiển thị ra màn hình.\n   - Nhập 6 số đó vào ô xác thực trên ChatGPT để hoàn tất đăng nhập.\n\n⚠️ *LƯU Ý SẢN PHẨM*\nThời gian bảo hành: 30 ngày\nĐược đổi pass thoải mái, không được xóa 2Fa , chỉ được thay đổi 2Fa - khách hàng xóa 2FA thì sẽ không được bảo hành\nKhách hàng sử dụng Codex thì phải tự xác minh sms, mẹo lấy số sms giá rẻ tại https://bom.so/lgnQix\n\nKhuyến nghị sử dụng: Nên giữ nguyên mật khẩu và 2FA mặc định để tài khoản duy trì độ ổn định cao nhất, hạn chế tối đa nguy cơ bị hệ thống ChatGPT quét checkpoint/khóa.\n🆔 Mã SP: #1\n💵 Giá bán: 188.000đ ≈ 7.231 USDT\n📦 Tồn kho: 18\n💰 Số dư ví: 137.999đ\n⚠️ Ví chưa đủ để mua 1 tài khoản.\n━━━━━━━━━━━━━━━━\n👇 Chọn số lượng muốn mua bên dưới:",
+        "price": "188.000đ",
+        "stock": 18,
+        "warranty": "30 ngày",
+        "accountFormat": "Email|Mật khẩu|2FA"
+      }
+    ],
+    "dshop": [
+      {
+        "botUsername": "mmo_dshop_bot",
+        "botName": "MMO D-Shop",
+        "commandUsed": "/start -> buy -> cat:4",
+        "buttonText": "🔴 ChatGPT Free offer Plus 2Month  50% | SL: 0 | 80.000 ₫ · 3.1 USDT",
+        "callbackData": "prod:4:0",
+        "isOutOfStock": true,
+        "stock": 0,
+        "price": "80.000đ",
+        "accountFormat": "Tài khoản TK/MK (Email|Pass)",
+        "warranty": "Theo mô tả"
+      },
+      {
+        "botUsername": "mmo_dshop_bot",
+        "botName": "MMO D-Shop",
+        "commandUsed": "/start -> buy -> cat:4",
+        "buttonText": "🟢 ChatGPT Free offer Plus 3Month  50% | SL: 4 | 120.000 ₫ · 4.65 USDT",
+        "callbackData": "prod:4:1",
+        "isOutOfStock": false,
+        "stock": 4,
+        "price": "120.000đ",
+        "accountFormat": "Tài khoản TK/MK (Email|Pass)",
+        "warranty": "Theo mô tả"
+      },
+      {
+        "botUsername": "mmo_dshop_bot",
+        "botName": "MMO D-Shop",
+        "commandUsed": "/start -> buy -> cat:4",
+        "buttonText": "🟢 ChatGPT Free đã verify phone codex | SL: 129 | 4.000 ₫ · 0.16 USDT",
+        "callbackData": "prod:4:2",
+        "isOutOfStock": false,
+        "stock": 129,
+        "price": "4.000đ",
+        "accountFormat": "Tài khoản TK/MK (Email|Pass)",
+        "warranty": "Theo mô tả"
+      },
+      {
+        "botUsername": "mmo_dshop_bot",
+        "botName": "MMO D-Shop",
+        "commandUsed": "/start -> buy -> cat:4",
+        "buttonText": "🟢 GPT Free Gmail/ICloud offer Free 1 Month | SL: 55 | 12.000 ₫ · 0.47 USDT",
+        "callbackData": "prod:4:3",
+        "isOutOfStock": false,
+        "stock": 55,
+        "price": "12.000đ",
+        "accountFormat": "Tài khoản TK/MK (Email|Pass)",
+        "warranty": "Theo mô tả"
+      },
+      {
+        "botUsername": "mmo_dshop_bot",
+        "botName": "MMO D-Shop",
+        "commandUsed": "/start -> buy -> cat:4",
+        "buttonText": "🔴 GPT Plus Pay Money - Top Tier 1 (BHF) | SL: 0 | 350.000 ₫ · 13.57 USDT",
+        "callbackData": "prod:4:4",
+        "isOutOfStock": true,
+        "stock": 0,
+        "price": "350.000đ",
+        "accountFormat": "Tài khoản TK/MK (Email|Pass)",
+        "warranty": "Bảo hành Full 30 ngày"
+      },
+      {
+        "botUsername": "mmo_dshop_bot",
+        "botName": "MMO D-Shop",
+        "commandUsed": "/start -> buy -> cat:4",
+        "buttonText": "🔴 🔥 ChatGPT Plus - ICL/GM (KBH) | SL: 0 | 85.000 ₫ · 3.29 USDT",
+        "callbackData": "prod:4:5",
+        "isOutOfStock": true,
+        "stock": 0,
+        "price": "85.000đ",
+        "accountFormat": "Tài khoản TK/MK (Email|Pass)",
+        "warranty": "Không bảo hành"
+      }
+    ],
+    "chodaumoi": [
+      {
+        "botUsername": "chodaumoi_bot",
+        "botName": "Chợ Đầu Mối MMO",
+        "commandUsed": "Text: 'Sản phẩm'",
+        "buttonText": "ChatGPT",
+        "callbackData": "category|ChatGPT"
+      },
+      {
+        "botUsername": "chodaumoi_bot",
+        "botName": "Chợ Đầu Mối MMO",
+        "commandUsed": "Text: 'Sản phẩm'",
+        "buttonText": "Grammarly AI Pro 1 Tháng BHF (85k) — (Còn hàng)",
+        "callbackData": "product|ds_mrxt21"
+      }
+    ],
+    "dkey": [],
+    "hihistore": [
+      {
+        "botUsername": "hihistorebot",
+        "botName": "PQV Store (HiHiStore)",
+        "commandUsed": "/sanpham",
+        "buttonText": "🛡️ AI (8)",
+        "callbackData": "cat_view_cat_53b29d0b"
+      },
+      {
+        "botUsername": "hihistorebot",
+        "botName": "PQV Store (HiHiStore)",
+        "commandUsed": "/sanpham",
+        "buttonText": "🛡️ Mail (1)",
+        "callbackData": "cat_view_cat_32948291"
+      }
+    ],
+    "nghientrick": [
+      {
+        "botUsername": "nghientrickshop_bot",
+        "botName": "Nghiện Trick Shop",
+        "commandUsed": "/start -> menu_shop",
+        "buttonText": "CHAT GPT PLUS K12 - 2 Năm",
+        "callbackData": "shopcat_3f37dc97dd",
+        "isOutOfStock": true,
+        "price": "N/A",
+        "stock": 0,
+        "warranty": "K12 - 2 Năm (Tạm hết hàng)"
+      }
+    ]
+  }
+}

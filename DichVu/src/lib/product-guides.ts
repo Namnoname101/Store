@@ -445,6 +445,275 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
     note: "QUY ĐỊNH BẢO HÀNH (GÓI TRẢI NGHIỆM - KBH): Bảo hành đăng nhập thành công và chuẩn xác thông tin tài khoản trong 2 giờ đầu (1 đổi 1 ngay nếu sai mật khẩu hoặc lỗi 2FA lúc nhận). Sau khi đăng nhập thành công: KHÔNG BẢO HÀNH THỜI GIAN SỬ DỤNG theo đúng chính sách của nhà cung cấp. LƯU Ý: Gmail này bị khóa hộp thư đến (không nhận được email/OTP bên ngoài) và chỉ dùng cho các dịch vụ Google (Gemini, Drive 5TB, Antigravity, NotebookLM). Khuyến cáo không lưu trữ tài liệu kinh doanh quan trọng duy nhất.",
     docsUrl: "https://gemini.google.com",
   },
+
+  // ==========================================
+  // 20. SLOT CHATGPT BUSINESS 1 THÁNG (BHF 30 NGÀY)
+  // ==========================================
+  "slot-chatgpt-business-1-thang": {
+    title: "Hướng dẫn đăng nhập & Quy định sử dụng Slot ChatGPT Business (Dùng Chung - BHF 30 Ngày)",
+    steps: [
+      {
+        text: "Bước 1: Mở trình duyệt web truy cập https://chatgpt.com hoặc tải ứng dụng ChatGPT chính thức trên máy tính / điện thoại.",
+        caption: "Bước 1: Truy cập trang chính thức của OpenAI",
+      },
+      {
+        text: "Bước 2: Bấm nút 'Log in' và đăng nhập bằng thông tin Email | Mật khẩu được cung cấp ở trên (không bấm 'Tiếp tục với Google').",
+        caption: "Bước 2: Đăng nhập bằng tài khoản được bàn giao",
+      },
+      {
+        text: "Bước 3: Sau khi vào tài khoản, bấm vào tên tài khoản ở góc dưới bên trái màn hình > Chọn chuyển đổi sang không gian làm việc 'Business Workspace'.",
+        caption: "Bước 3: Chuyển đổi sang Workspace Business để kích hoạt quyền lợi",
+      },
+      {
+        text: "Bước 4: Sử dụng toàn bộ tính năng cao cấp: GPT-4o, o3-mini, Canvas, tạo ảnh DALL-E với hạn mức tin nhắn cao hơn gói Plus thông thường. Toàn bộ lịch sử trò chuyện của bạn là riêng tư 100%.",
+        caption: "Bước 4: Trải nghiệm tính năng ChatGPT Business bản quyền",
+      },
+    ],
+    note: "ĐIỀU KIỆN BẢO HÀNH (BHF 30 NGÀY TỪ NCC): Bảo hành 1 ĐỔI 1 trọn vẹn 30 ngày nếu mất quyền thành viên hoặc Workspace bị gián đoạn kỹ thuật. TỪ CHỐI BẢO HÀNH NẾU: Khách hàng tự ý can thiệp phần Billing / Cài đặt quản trị của Workspace; tự ý bấm rời nhóm (Leave Workspace); vi phạm chính sách của OpenAI dẫn đến bị đình chỉ tài khoản.",
+    docsUrl: "https://help.openai.com",
+  },
+
+  // ==========================================
+  // 21. TÀI KHOẢN CHATGPT FREE VERIFY PHONE (CODEX / CURSOR / API)
+  // ==========================================
+  "chatgpt-free-verify-phone": {
+    title: "Hướng dẫn sử dụng Tài khoản ChatGPT Free Đã Kích Hoạt Phone (Codex / Cursor / API)",
+    steps: [
+      {
+        text: "Bước 1: Truy cập https://chatgpt.com và chọn 'Log in'. Nhập Email và Mật khẩu được cấp ở trên (Đăng nhập bằng form Email & Pass, không bấm Tiếp tục với Google).",
+        caption: "Bước 1: Đăng nhập tài khoản ChatGPT Free",
+      },
+      {
+        text: "Bước 2: Tài khoản đã được kích hoạt sẵn số điện thoại quốc tế (SMS Verified), bạn có thể bắt đầu chat ngay mà không lo bị chặn checkpoint đòi SĐT.",
+        caption: "Bước 2: Tài khoản đã kích hoạt SMS sẵn sàng sử dụng",
+      },
+      {
+        text: "Bước 3 (Dành cho Developer / Coder): Truy cập https://platform.openai.com để tạo API Key hoặc trích xuất Session Token / Refresh Token.",
+        caption: "Bước 3: Lấy Token cho các công cụ lập trình AI",
+      },
+      {
+        text: "Bước 4: Tích hợp ngay vào Cursor, VS Code (Roo Code, Cline, Continue), Aider hoặc OpenAI Codex để lập trình AI mượt mà.",
+        caption: "Bước 4: Sử dụng trong môi trường phát triển mã nguồn",
+      },
+    ],
+    note: "QUY ĐỊNH BẢO HÀNH TỪ NCC: Bảo hành đăng nhập thành công lần đầu và tài khoản đã kích hoạt phone chuẩn 100% (1 đổi 1 ngay nếu sai mật khẩu hoặc lỗi lúc nhận). ĐÂY LÀ TÀI KHOẢN FREE ĐÃ VERIFY SMS (không phải gói trả phí Plus). TỪ CHỐI BẢO HÀNH sau khi đã đăng nhập thành công nếu khách hàng vi phạm chính sách của OpenAI hoặc tự ý thay đổi email tài khoản.",
+    docsUrl: "https://platform.openai.com",
+  },
+
+  // ==========================================
+  // 22. CAPCUT PRO 7 NGÀY (BHF - CHUẨN NCC)
+  // ==========================================
+  "capcut-pro-7-ngay": {
+    title: "Hướng dẫn đăng nhập & Quy định CapCut Pro 7 Ngày (BHF - Chuẩn NCC)",
+    steps: [
+      {
+        text: "Bước 1: Mở ứng dụng CapCut trên máy tính (PC / Mac) hoặc điện thoại (iOS / Android).",
+        caption: "Bước 1: Khởi động phần mềm CapCut",
+      },
+      {
+        text: "Bước 2: Bấm nút 'Đăng nhập' (Sign In) > Chọn phương thức 'Đăng nhập bằng Email' (Sign in with Email).",
+        caption: "Bước 2: Chọn đăng nhập bằng tài khoản Email",
+      },
+      {
+        text: "Bước 3: Nhập Email và Mật khẩu được cung cấp ở bảng bàn giao phía trên.",
+        caption: "Bước 3: Điền đúng thông tin tài khoản được cấp",
+      },
+      {
+        text: "Bước 4: Kiểm tra biểu tượng 'Pro' trên hồ sơ tài khoản: Xuất video 4K sắc nét, sử dụng kho hiệu ứng Pro, xóa phông nền AI và tạo phụ đề tự động.",
+        caption: "Bước 4: Tận hưởng trọn bộ tính năng CapCut Pro",
+      },
+    ],
+    note: "QUY ĐỊNH BẮT BUỘC TỪ NCC XOÀI NON: Bảo hành 1 ĐỔI 1 trong 7 ngày nếu tài khoản mất Pro. BẮT BUỘC CHỈ SỬ DỤNG TRÊN 1 THIẾT BỊ DUY NHẤT. TUYỆT ĐỐI KHÔNG ĐĂNG XUẤT (LOGOUT), KHÔNG XÓA APP ĐỂ TRÁNH MẤT PRO. Nếu vi phạm quy định đăng nhập nhiều máy hoặc logout, nhà cung cấp sẽ từ chối bảo hành.",
+    docsUrl: "https://www.capcut.com",
+  },
+
+  // ==========================================
+  // 23. CAPCUT PRO 30 NGÀY (FULL DATE - BHF)
+  // ==========================================
+  "capcut-pro-30-ngay": {
+    title: "Hướng dẫn đăng nhập & Quy định CapCut Pro 30 Ngày (Full Date - BHF)",
+    steps: [
+      {
+        text: "Bước 1: Mở ứng dụng CapCut trên máy tính (PC / Mac) hoặc điện thoại (iOS / Android).",
+        caption: "Bước 1: Mở ứng dụng CapCut chính hãng",
+      },
+      {
+        text: "Bước 2: Chọn 'Đăng nhập' > Chọn 'Đăng nhập bằng Email' và điền Email | Mật khẩu được cấp.",
+        caption: "Bước 2: Đăng nhập tài khoản CapCut Pro 30 ngày",
+      },
+      {
+        text: "Bước 3: Kiểm tra thời hạn 30 ngày trong phần quản lý tài khoản và sử dụng full tính năng Pro, kho mẫu và âm thanh bản quyền.",
+        caption: "Bước 3: Sử dụng đầy đủ tính năng CapCut Pro Full Date",
+      },
+    ],
+    note: "QUY ĐỊNH BẢO HÀNH TỪ NCC: Bảo hành 1 ĐỔI 1 trọn vẹn 30 ngày nếu tài khoản bị mất Pro trong thời gian sử dụng. Khách hàng sử dụng trên 1 thiết bị cá nhân, không chia sẻ cho nhiều người và không thay đổi thông tin email tài khoản.",
+    docsUrl: "https://www.capcut.com",
+  },
+
+  // ==========================================
+  // 24. DUOLINGO SUPER 12 THÁNG
+  // ==========================================
+  "duolingo-super-12-thang": {
+    title: "Hướng dẫn kích hoạt & Sử dụng Duolingo Super 12 Tháng",
+    steps: [
+      {
+        text: "Bước 1: Tải ứng dụng Duolingo trên điện thoại hoặc truy cập website https://www.duolingo.com.",
+        caption: "Bước 1: Truy cập nền tảng học ngoại ngữ Duolingo",
+      },
+      {
+        text: "Bước 2: Đăng nhập bằng tài khoản được cấp hoặc mở đường link tham gia nhóm Family được bàn giao ở trên.",
+        caption: "Bước 2: Đăng nhập hoặc kích hoạt gói Super",
+      },
+      {
+        text: "Bước 3: Xác nhận biểu tượng Super: Học tập không giới hạn trái tim (Unlimited Hearts), không có quảng cáo làm phiền, mở khóa bài kiểm tra cấp độ và luyện phát âm thông minh.",
+        caption: "Bước 3: Trải nghiệm học ngoại ngữ Super 12 tháng",
+      },
+    ],
+    note: "BẢN QUYỀN 12 THÁNG TỪ NCC: Bảo hành 1 đổi 1 hoặc khôi phục quyền lợi Super trong suốt 12 tháng nếu phát sinh lỗi gián đoạn từ hệ thống.",
+    docsUrl: "https://www.duolingo.com",
+  },
+
+  // ==========================================
+  // 25. FIGMA PRO EDUCATION 2 NĂM
+  // ==========================================
+  "figma-pro-education-2-nam": {
+    title: "Hướng dẫn đăng nhập & Sử dụng Figma Pro Education 2 Năm",
+    steps: [
+      {
+        text: "Bước 1: Truy cập https://www.figma.com và bấm nút 'Log in'.",
+        caption: "Bước 1: Truy cập Figma chính hãng",
+      },
+      {
+        text: "Bước 2: Nhập thông tin Email và Password tài khoản Figma Pro Education được bàn giao ở trên.",
+        caption: "Bước 2: Đăng nhập tài khoản được cấp",
+      },
+      {
+        text: "Bước 3: Vào Workspace Team Education Pro được cấp sẵn: Thoải mái tạo không giới hạn dự án (Unlimited Files), lịch sử phiên bản vĩnh viễn, chia sẻ quyền Dev Mode và sử dụng Figma AI.",
+        caption: "Bước 3: Thiết kế UI/UX chuyên nghiệp với Figma Pro",
+      },
+    ],
+    note: "BẢN QUYỀN 2 NĂM TỪ NCC: Bảo hành 1 đổi 1 trọn vẹn 2 năm theo chính sách giáo dục của Figma. Vui lòng không thay đổi email tài khoản.",
+    docsUrl: "https://help.figma.com",
+  },
+
+  // ==========================================
+  // 26. MICROSOFT OFFICE 365 PLUS 1 NĂM
+  // ==========================================
+  "office-365-1-nam": {
+    title: "Hướng dẫn đăng nhập & Kích hoạt Microsoft Office 365 Plus (1 Năm)",
+    steps: [
+      {
+        text: "Bước 1: Truy cập cổng quản trị chính thức của Microsoft tại https://portal.office.com",
+        caption: "Bước 1: Mở trang đăng nhập Microsoft 365",
+      },
+      {
+        text: "Bước 2: Nhập Email và Password tạm thời được cung cấp ở trên.",
+        caption: "Bước 2: Đăng nhập với tài khoản được bàn giao",
+      },
+      {
+        text: "Bước 3: Hệ thống Microsoft sẽ yêu cầu cập nhật mật khẩu mới ngay lần đầu đăng nhập. Hãy nhập mật khẩu riêng của bạn để bảo mật tối đa.",
+        caption: "Bước 3: Đổi mật khẩu cá nhân an toàn",
+      },
+      {
+        text: "Bước 4: Bấm 'Cài đặt ứng dụng' (Install Office) để tải bộ ứng dụng Office bản quyền (Word, Excel, PowerPoint, Outlook...) hỗ trợ tối đa 5 thiết bị (PC, Mac, iPhone, Android) và nhận 1TB lưu trữ OneDrive.",
+        caption: "Bước 4: Cài đặt trọn bộ Office bản quyền",
+      },
+    ],
+    note: "BẢN QUYỀN CHÍNH HÃNG 1 NĂM: Bảo hành 1 đổi 1 trong suốt 12 tháng nếu tài khoản gặp sự cố kỹ thuật. Khách hàng sở hữu tài khoản riêng tư và quản lý mật khẩu của chính mình.",
+    docsUrl: "https://support.microsoft.com/office",
+  },
+
+  // ==========================================
+  // 27. CANVA PRO 1 THÁNG
+  // ==========================================
+  "canva-pro-1-thang": {
+    title: "Hướng dẫn đăng nhập & Kích hoạt Canva Pro 1 Tháng",
+    steps: [
+      {
+        text: "Bước 1: Truy cập https://www.canva.com hoặc mở ứng dụng Canva trên điện thoại / máy tính.",
+        caption: "Bước 1: Truy cập Canva",
+      },
+      {
+        text: "Bước 2: Đăng nhập bằng tài khoản được cấp hoặc mở link tham gia đội nhóm Pro được bàn giao.",
+        caption: "Bước 2: Kích hoạt quyền Pro trên tài khoản",
+      },
+      {
+        text: "Bước 3: Xác nhận biểu tượng vương miện Pro: Sử dụng kho 100M+ hình ảnh, đồ họa cao cấp, tính năng Magic Studio AI, xóa phông 1-click và xuất file chất lượng cao.",
+        caption: "Bước 3: Thiết kế không giới hạn với Canva Pro",
+      },
+    ],
+    note: "BẢO HÀNH FULL 30 NGÀY TỪ NCC: Bảo hành 1 đổi 1 trong suốt 30 ngày nếu tài khoản mất quyền Pro.",
+    docsUrl: "https://www.canva.com",
+  },
+
+  // ==========================================
+  // 28. MEITU VIP+ RIÊNG TƯ (7 NGÀY - BHF)
+  // ==========================================
+  "meitu-vip-7-ngay": {
+    title: "Hướng dẫn sử dụng Meitu VIP+ Riêng Tư (7 Ngày - BHF)",
+    steps: [
+      {
+        text: "Bước 1: Mở ứng dụng Meitu trên điện thoại (iOS / Android).",
+        caption: "Bước 1: Khởi động ứng dụng Meitu",
+      },
+      {
+        text: "Bước 2: Vào mục 'Tôi' (Me) > Chọn 'Đăng nhập' bằng Tài khoản & Mật khẩu được cấp ở trên.",
+        caption: "Bước 2: Đăng nhập tài khoản Meitu VIP+",
+      },
+      {
+        text: "Bước 3: Sử dụng các tính năng cao cấp: Làm nét ảnh AI, xóa vật thể AI, chỉnh sửa video HD và bộ lọc màu độc quyền.",
+        caption: "Bước 3: Chỉnh sửa ảnh và video chuyên nghiệp",
+      },
+    ],
+    note: "QUY ĐỊNH BẮT BUỘC TỪ NCC XOÀI NON: BẮT BUỘC chỉ sử dụng trên 1 máy duy nhất. Tuyệt đối không đăng xuất, không đăng nhập máy thứ 2, không xóa app để đảm bảo quyền lợi bảo hành 7 ngày.",
+    docsUrl: "https://www.meitu.com",
+  },
+
+  // ==========================================
+  // 29. WINK VIP+ RIÊNG TƯ (7 NGÀY - BHF)
+  // ==========================================
+  "wink-vip-plus-7-ngay": {
+    title: "Hướng dẫn đăng nhập Wink VIP+ Riêng Tư (7 Ngày - BHF)",
+    steps: [
+      {
+        text: "Bước 1: Mở app Wink trên điện thoại (iOS / Android).",
+        caption: "Bước 1: Khởi động app Wink",
+      },
+      {
+        text: "Bước 2: Đăng nhập bằng tài khoản và mật khẩu được cấp ở trên.",
+        caption: "Bước 2: Đăng nhập tài khoản VIP+",
+      },
+      {
+        text: "Bước 3: Sử dụng trọn vẹn các công cụ phục hồi video AI chất lượng 4K, làm mịn da AI, chống rung và bộ lọc điện ảnh.",
+        caption: "Bước 3: Nâng cấp chất lượng video với Wink AI",
+      },
+    ],
+    note: "BẢO HÀNH 7 NGÀY TỪ NCC: Sử dụng trên 1 thiết bị cá nhân duy nhất, không thay đổi thông tin tài khoản để duy trì quyền lợi bảo hành.",
+    docsUrl: "https://www.meitu.com/wink",
+  },
+
+  // ==========================================
+  // 30. TÀI KHOẢN MUSE AI (31 TỶ TOKEN KBH)
+  // ==========================================
+  "muse-ai-31-ty-token": {
+    title: "Hướng dẫn đăng nhập & Sử dụng Tài khoản MUSE AI (31 Tỷ Token)",
+    steps: [
+      {
+        text: "Bước 1: Truy cập trang web chính thức của Muse AI và chọn 'Log in'.",
+        caption: "Bước 1: Mở trang đăng nhập Muse AI",
+      },
+      {
+        text: "Bước 2: Nhập thông tin Email, Mật khẩu và mã bí mật 2FA (dán chuỗi 2FA vào https://2fa.live để lấy mã số 6 chữ số).",
+        caption: "Bước 2: Đăng nhập và xác thực 2FA",
+      },
+      {
+        text: "Bước 3: Kiểm tra số dư 31 tỷ token khả dụng trong tài khoản để phục vụ tạo video, phân tích và lưu trữ AI.",
+        caption: "Bước 3: Bắt đầu khai thác kho tài nguyên Muse AI",
+      },
+    ],
+    note: "CHÍNH SÁCH BẢO HÀNH TỪ NCC (GÓI KBH): Bảo hành đăng nhập thành công và chuẩn xác số dư 31 tỷ token ban đầu lúc nhận. Sau khi đăng nhập thành công: KHÔNG BẢO HÀNH THỜI GIAN SỬ DỤNG theo đúng chính sách KBH của NCC.",
+    docsUrl: "https://muse.ai",
+  },
 };
 
 /**

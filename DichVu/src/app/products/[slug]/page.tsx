@@ -82,48 +82,60 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     product.title.toLowerCase().includes("follow");
 
   const titleLower = product.title.toLowerCase();
+  const slugLower = product.slug.toLowerCase();
+
   const isChatGPT =
-    product.slug.toLowerCase().includes("chatgpt") ||
+    slugLower.includes("chatgpt") ||
     titleLower.includes("chatgpt") ||
     titleLower.includes("openai") ||
     titleLower.includes("gpt-4");
 
-  const isChatGPTBHF =
-    product.slug.toLowerCase().includes("bhf") ||
-    titleLower.includes("bhf") ||
-    titleLower.includes("bảo hành full");
+  const isChatGPTFree = slugLower.includes("free-verify-phone") || titleLower.includes("free verify phone");
+  const isChatGPTBusiness = slugLower.includes("business") || titleLower.includes("business");
+  const isChatGPTPlusBHF = (slugLower.includes("bhf") || titleLower.includes("bhf") || titleLower.includes("bảo hành full")) && !isChatGPTBusiness;
+  const isChatGPTPlus24H = isChatGPT && !isChatGPTFree && !isChatGPTBusiness && !isChatGPTPlusBHF;
+
+  const isCapCut = slugLower.includes("capcut") || titleLower.includes("capcut");
+  const isCapCut7D = isCapCut && (slugLower.includes("7-ngay") || titleLower.includes("7 ngày"));
+  const isCapCut30D = isCapCut && !isCapCut7D;
 
   const isCodex =
-    product.slug.toLowerCase().includes("codex") ||
-    product.slug.toLowerCase().includes("cdx") ||
+    slugLower.includes("codex") ||
+    slugLower.includes("cdx") ||
     titleLower.includes("codex");
 
   const isClaude =
-    product.slug.toLowerCase().includes("claude") ||
+    slugLower.includes("claude") ||
     titleLower.includes("claude");
 
   const isApiKeyProduct =
     isClaude ||
     isCodex ||
-    product.slug.toLowerCase().includes("api") ||
+    slugLower.includes("api") ||
     titleLower.includes("api") ||
     product.category?.slug === "ai-api";
+
+  const isSuno = slugLower.includes("suno") || titleLower.includes("suno");
+  const isHMA = slugLower.includes("hma") || titleLower.includes("hma");
+  const isGeminiKBH = slugLower.includes("gemini") && (slugLower.includes("family") || slugLower.includes("kbh") || titleLower.includes("kbh") || titleLower.includes("2 năm"));
 
   const deliveryFormat = isSMM
     ? "Hệ thống tự động khởi tạo theo link mục tiêu"
     : isCodex
     ? "Nạp vào Key có sẵn hoặc cấp Key mới tức thì 24/7"
+    : isChatGPTFree
+    ? "Tài khoản Free sạch (Email | Pass) đã SMS Verify sẵn 24/7"
+    : isChatGPTBusiness
+    ? "Tài khoản (Email | Pass) đã vào Workspace Business"
     : isChatGPT
-    ? "Tài khoản (Email | Mật khẩu) bàn giao tức thì 24/7"
+    ? "Tài khoản cấp sẵn (Email | Pass) - Tuyệt đối không xóa 2FA"
+    : isCapCut
+    ? "Tài khoản cấp sẵn (Chỉ dùng 1 máy duy nhất - Không logout)"
     : product.type === "LICENSE_KEY"
     ? "Mã bản quyền / API Key cấp tức thì sau thanh toán"
     : product.type === "ACCOUNT"
     ? "Tài khoản riêng tư / Link kích hoạt chính chủ"
     : "Bàn giao tự động qua hệ thống 24/7";
-
-  const isSuno = slug.includes("suno") || titleLower.includes("suno");
-  const isHMA = slug.includes("hma") || titleLower.includes("hma");
-  const isGeminiKBH = slug.includes("gemini") && (slug.includes("family") || slug.includes("kbh") || titleLower.includes("kbh") || titleLower.includes("2 năm"));
 
   const durationLabel = isSMM
     ? "Hoàn thành theo số lượng đặt mua"
@@ -131,11 +143,19 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Bảo lưu vĩnh viễn (Dùng đến khi hết Quota)"
     : isClaude
     ? "Bảo lưu theo hạn mức Credit / Request đã chọn"
-    : isChatGPTBHF
-    ? "30 ngày bảo hành Full Date (BHF)"
-    : isChatGPT
-    ? "30 ngày sử dụng (BH đăng nhập 24H)"
-    : isGeminiKBH || titleLower.includes("2 năm") || slug.includes("2-nam")
+    : isChatGPTFree
+    ? "Vĩnh viễn (Tài khoản Free cá nhân đã SMS Verify)"
+    : isChatGPTBusiness
+    ? "30 ngày trong Workspace Business (BHF 30D)"
+    : isChatGPTPlusBHF
+    ? "30 ngày bảo hành Full Date (BHF 30D)"
+    : isChatGPTPlus24H
+    ? "30 ngày sử dụng (BH đăng nhập 24H - Gói Tiết Kiệm)"
+    : isCapCut7D
+    ? "7 ngày sử dụng Pro (BHF 7 ngày - 1 Máy)"
+    : isCapCut30D
+    ? "30 ngày sử dụng Pro (BHF 30 ngày - 1 Máy)"
+    : isGeminiKBH || titleLower.includes("2 năm") || slugLower.includes("2-nam")
     ? "24 tháng (Hạn 2 năm) - Gói KBH"
     : isSuno
     ? "30 ngày sử dụng (2.500 Credits)"
@@ -153,10 +173,16 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Bảo hành duy trì số lượng theo server"
     : isApiKeyProduct
     ? "Bảo đảm kết nối ổn định & bảo lưu hạn mức trọn vẹn"
-    : isChatGPTBHF
-    ? "1 Đổi 1 Trọn Vẹn 30 Ngày (Gói BHF Cao Cấp)"
-    : isChatGPT
-    ? "Bảo hành đăng nhập 24H (Gói Tiết Kiệm - Chuẩn NCC)"
+    : isChatGPTFree
+    ? "1 Đổi 1 trong 24H nếu sai pass hoặc chưa SMS Verify"
+    : isChatGPTBusiness
+    ? "1 Đổi 1 trọn vẹn 30 ngày (BHF 30D chuẩn NCC DKey)"
+    : isChatGPTPlusBHF
+    ? "1 Đổi 1 Trọn Vẹn 30 Ngày (BHF 30D - Giữ nguyên 2FA)"
+    : isChatGPTPlus24H
+    ? "Bảo hành đăng nhập 24H (Gói Tiết Kiệm - Chuẩn NCC Xoài Non)"
+    : isCapCut
+    ? "1 Đổi 1 suốt thời hạn (Bắt buộc dùng 1 máy, cấm logout, cấm xóa app)"
     : isGeminiKBH
     ? "Bảo hành đăng nhập 2H (Gói Trải Nghiệm - KBH)"
     : isSuno
@@ -318,7 +344,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             isClaude={isClaude}
             isApiKeyProduct={isApiKeyProduct}
             isChatGPT={isChatGPT}
-            isChatGPTBHF={isChatGPTBHF}
+            isChatGPTBHF={isChatGPTPlusBHF}
           />
         </div>
 
