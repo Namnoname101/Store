@@ -9,10 +9,10 @@ const BOT_TOKEN = process.env.TELEGRAM_ASSISTANT_BOT_TOKEN || process.env.TELEGR
 const ADMIN_CHAT_ID = (process.env.TELEGRAM_ADMIN_CHAT_ID || "").trim();
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-flash-lite-latest";
-// Internal API base URL – same host as the Next.js app
-const APP_INTERNAL_URL = process.env.NEXTAUTH_URL || process.env.APP_URL || "http://localhost:3000";
+// Internal API base URL – always use 127.0.0.1 loopback inside the container
+const APP_INTERNAL_URL = `http://127.0.0.1:${process.env.PORT || 3000}`;
 // Secret header for bypassing admin auth on internal API calls
-const CRON_SECRET = process.env.CRON_SECRET || "";
+const CRON_SECRET = process.env.CRON_SECRET || "daemon-internal-khodee-2024";
 
 if (!BOT_TOKEN) {
   console.warn("[AssistantDaemon] TELEGRAM_ASSISTANT_BOT_TOKEN not provided. Assistant daemon disabled.");
@@ -493,8 +493,8 @@ async function handleRetryOrder(orderCode) {
 // -----------------------------------------------------------------------------
 
 /**
- * Gọi API /api/admin/suppliers/{id}/balance để lấy số dư THỰC từ bot NCC rồi cập nhật DB.
- * Chỉ áp dụng cho các supplier dạng TELEGRAM_BOT (có baseUrl dạng tg://resolve?domain=...).
+ * Gọi API /api/admin/suppliers/{id}/balance để lấy số dư THỰC từ bot/API NCC rồi cập nhật DB.
+ * Áp dụng cho cả TELEGRAM_BOT và các đối tác REST API (HackTim, GenzShop, Canboso, KhoMMO, v.v.)
  * Returns updated balance hoặc null nếu lỗi.
  */
 async function refreshSupplierBalance(supplierId) {
@@ -507,7 +507,10 @@ async function refreshSupplierBalance(supplierId) {
     });
     if (res.ok) {
       const data = await res.json();
-      return data.balance ?? null;
+      return typeof data.balance === "number" ? data.balance : null;
+    } else {
+      const errText = await res.text().catch(() => "");
+      console.warn(`[Daemon] refreshSupplierBalance(${supplierId}) HTTP ${res.status}:`, errText);
     }
   } catch (err) {
     console.warn(`[Daemon] refreshSupplierBalance(${supplierId}) failed:`, err.message);
@@ -516,40 +519,70 @@ async function refreshSupplierBalance(supplierId) {
 }
 
 /**
- * Refresh balance của tất cả Telegram Bot suppliers tuần tự.
- * Chạy trước khi hiển thị danh sách số dư cho admin.
+ * Refresh số dư của tất cả các nhà cung cấp (cả REST API và Telegram Bot).
+ * - API suppliers: chạy đồng thời qua Promise.allSettled để có số dư sau 1s.
+ * - Telegram Bot suppliers: chạy tuần tự với độ trễ ngắn 400ms để tránh flood MTProto.
+ * Trả về Set chứa ID các NCC đã cào live thành công.
  */
-async function refreshAllTelegramBalances(suppliers) {
-  const telegramSuppliers = suppliers.filter(
-    (s) => s.type === "TELEGRAM_BOT" && s.baseUrl && s.baseUrl.includes("tg://")
+async function refreshAllSupplierBalances(suppliers, liveUpdatedSet = new Set()) {
+  // 1. Refresh các NCC dạng REST API đồng thời
+  const apiSuppliers = suppliers.filter((s) => s.type !== "TELEGRAM_BOT");
+  await Promise.allSettled(
+    apiSuppliers.map(async (sup) => {
+      const bal = await refreshSupplierBalance(sup.id);
+      if (bal !== null) {
+        sup.currentBalance = bal;
+        liveUpdatedSet.add(sup.id);
+      }
+    })
   );
+
+  // 2. Refresh các NCC dạng Telegram Bot
+  const telegramSuppliers = suppliers.filter((s) => s.type === "TELEGRAM_BOT");
   for (const sup of telegramSuppliers) {
     const bal = await refreshSupplierBalance(sup.id);
     if (bal !== null) {
-      sup.currentBalance = bal; // update in-memory for display
+      sup.currentBalance = bal;
+      liveUpdatedSet.add(sup.id);
     }
-    // small delay between bots to avoid flooding
-    await new Promise((r) => setTimeout(r, 800));
+    // Độ trễ ngắn giữa các bot
+    await new Promise((r) => setTimeout(r, 400));
   }
+
+  return liveUpdatedSet;
 }
+
+// Giữ alias cho tương thích ngược
+const refreshAllTelegramBalances = refreshAllSupplierBalances;
 
 async function handleSupplierBalances() {
   const suppliers = await prisma.supplier.findMany({
     where: { isActive: true },
     include: { mappings: { include: { product: true } } },
+    orderBy: { type: "asc" },
   });
 
   if (suppliers.length === 0) {
     return "Chưa có nhà cung cấp nào đang hoạt động.";
   }
 
-  // Refresh real-time balances from Telegram bots before displaying
-  await refreshAllTelegramBalances(suppliers);
+  // Refresh real-time balances from ALL suppliers (API & Telegram Bots)
+  const liveUpdatedSet = new Set();
+  await refreshAllSupplierBalances(suppliers, liveUpdatedSet);
 
-  let text = "🏢 <b>DANH SÁCH & SỐ DƯ NHÀ CUNG CẤP:</b>\n\n";
+  const nowStr = new Date().toLocaleTimeString("vi-VN", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+
+  let text = `🏢 <b>DANH SÁCH & SỐ DƯ NHÀ CUNG CẤP:</b>\n<i>(Cập nhật lúc: ${nowStr})</i>\n\n`;
   for (const s of suppliers) {
+    const isLive = liveUpdatedSet.has(s.id);
+    const liveTag = isLive ? " ✅ <i>(vừa cào live)</i>" : " ⚠️ <i>(từ cache)</i>";
     text += `${getSupplierIcon(s.name, s.code)} <b>${escapeHtml(s.name)}</b> (<code>${escapeHtml(s.code)}</code>)\n`;
-    text += `• Số dư ví: <b>${(s.currentBalance || 0).toLocaleString("vi-VN")}đ</b>\n`;
+    text += `• Số dư ví: <b>${(s.currentBalance || 0).toLocaleString("vi-VN")}đ</b>${liveTag}\n`;
     if (s.depositAccountNo && s.depositAccountNo !== "0388888888") {
       text += `• Ngân hàng nạp: <b>${escapeHtml(s.depositBankId || "MB")}</b> | STK: <code>${escapeHtml(s.depositAccountNo)}</code>\n`;
       text += `• Chủ TK: <b>${escapeHtml(s.depositAccountName || s.name)}</b>\n`;
@@ -557,9 +590,9 @@ async function handleSupplierBalances() {
     } else {
       text += `• Nạp tiền: <i>${s.type && s.type.includes("API") ? "Nạp qua cổng API hoặc Bot đối tác" : "Xem chi tiết tại web NCC"}</i>\n`;
     }
-    text += `• Sản phẩm: <b>${s.mappings.length}</b> sản phẩm\n\n`;
+    text += `• Sản phẩm liên kết: <b>${s.mappings.length}</b> sản phẩm\n\n`;
   }
-  text += "👉 <i>Bấm nút bên dưới để tạo mã VietQR nạp tiền vào ví bot nguồn.</i>";
+  text += "👉 <i>Bấm <b>Nạp tiền</b> để tạo mã VietQR nạp tiền vào ví bot nguồn.</i>";
   return text;
 }
 
@@ -1219,13 +1252,23 @@ async function pollUpdates() {
 
             
             if (dataStr === "cmd:supplier_balances") {
+              const waitRes = await sendMessage(
+                cb.message.chat.id,
+                "⏳ <b>Đang cào số dư trực tiếp từ các NCC (Telegram Bot & API)...</b>\n<i>Vui lòng đợi vài giây để hệ thống lấy số dư mới nhất.</i>"
+              );
               const text = await handleSupplierBalances();
-              await sendMessage(cb.message.chat.id, text, {
+              const keyboard = {
                 inline_keyboard: [
+                  [{ text: "🔄 Cào lại số dư", callback_data: "cmd:supplier_balances" }],
                   [{ text: "💳 Nạp tiền ngay", callback_data: "cmd:topup_menu" }],
                   [{ text: "🔙 Về Menu", callback_data: "cmd:main_menu" }],
                 ],
-              });
+              };
+              if (waitRes && waitRes.ok && waitRes.result && waitRes.result.message_id) {
+                await editMessageText(cb.message.chat.id, waitRes.result.message_id, text, keyboard);
+              } else {
+                await sendMessage(cb.message.chat.id, text, keyboard);
+              }
               continue;
             }
 
@@ -1255,8 +1298,8 @@ async function pollUpdates() {
                 where: { OR: [{ code: supCode }, { id: supCode }] },
               });
               if (sup) {
-                // Refresh real-time balance from the actual bot
-                await sendMessage(cb.message.chat.id, `⏳ Đang kiểm tra số dư thực từ bot <b>${escapeHtml(sup.name)}</b>...`);
+                // Refresh real-time balance from the actual bot/API
+                const waitMsg = await sendMessage(cb.message.chat.id, `⏳ Đang kiểm tra số dư thực từ <b>${escapeHtml(sup.name)}</b>...`);
                 const freshBalance = await refreshSupplierBalance(sup.id);
                 const displayBalance = freshBalance !== null ? freshBalance : (sup.currentBalance || 0);
                 const balText =
@@ -1265,13 +1308,18 @@ async function pollUpdates() {
                   (freshBalance !== null ? " ✅ <i>(vừa cập nhật)</i>" : " ⚠️ <i>(từ cache)</i>") + "\n" +
                   `• Ngân hàng nạp: <b>${escapeHtml(sup.depositBankId || "MB")}</b> | STK: <code>${escapeHtml(sup.depositAccountNo || "0388888888")}</code>\n` +
                   `• Cú pháp: <code>${escapeHtml(sup.depositSyntax || "NAP " + ADMIN_CHAT_ID)}</code>`;
-                await sendMessage(cb.message.chat.id, balText, {
+                const kb = {
                   inline_keyboard: [
                     [{ text: "🔄 Refresh lại", callback_data: `check_balance:${sup.code}` }],
                     [{ text: "💳 Nạp tiền vào ví", callback_data: `topup_sup:${sup.code}` }],
                     [{ text: "🔙 Về Menu", callback_data: "cmd:main_menu" }],
                   ],
-                });
+                };
+                if (waitMsg && waitMsg.ok && waitMsg.result && waitMsg.result.message_id) {
+                  await editMessageText(cb.message.chat.id, waitMsg.result.message_id, balText, kb);
+                } else {
+                  await sendMessage(cb.message.chat.id, balText, kb);
+                }
               }
               continue;
             }

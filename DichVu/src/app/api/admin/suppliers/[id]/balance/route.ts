@@ -52,6 +52,7 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
       { status: 200 }
     );
   } catch (error: any) {
+    console.warn(`[SupplierBalanceAPI] Check balance failed for supplier:`, error?.message || error);
     return NextResponse.json(
       { error: error?.message || "Failed to check supplier balance" },
       { status: 500 }
