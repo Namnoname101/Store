@@ -20,7 +20,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { bindingId, packageId, email, customerNote, couponCode, isNewKey, username } = body || {};
+    const { bindingId, packageId, email, customerNote, couponCode, isNewKey, username, quantity } = body || {};
+    const parsedQty = Math.max(1, Math.min(100, Number(quantity) || 1));
 
     let binding: any = null;
     let keyUsername: string | null = null;
@@ -116,7 +117,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 5. Calculate pricing and coupons
-    const subtotalAmount = selectedPkg.priceVnd;
+    const subtotalAmount = selectedPkg.priceVnd * parsedQty;
     let discountAmount = 0;
     let couponId: string | null = null;
 
@@ -174,7 +175,7 @@ export async function POST(req: NextRequest) {
               {
                 productId: product.id,
                 price: selectedPkg.priceVnd,
-                quantity: 1,
+                quantity: parsedQty,
               },
             ],
           },
@@ -187,8 +188,8 @@ export async function POST(req: NextRequest) {
           data: {
             orderId: createdOrder.id,
             bindingId: binding.id,
-            creditUsd: selectedPkg.creditUsd,
-            quotaUnits: selectedPkg.quotaUnits,
+            creditUsd: selectedPkg.creditUsd * parsedQty,
+            quotaUnits: selectedPkg.quotaUnits * parsedQty,
             status: TopupStatus.PENDING,
           },
         });

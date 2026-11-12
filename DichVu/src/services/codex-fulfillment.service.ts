@@ -74,11 +74,11 @@ export async function fulfillCodexCreditOrder(
       };
     }
 
-    const codexItem = order.orderItems.find((item) =>
+    const codexItems = order.orderItems.filter((item) =>
       isCodexProduct(item.product)
     );
 
-    if (!codexItem || !codexItem.product) {
+    if (codexItems.length === 0) {
       return {
         success: false,
         status: "SKIPPED",
@@ -86,14 +86,24 @@ export async function fulfillCodexCreditOrder(
       };
     }
 
-    // Determine creditUsd from product title / slug (e.g. "10$ Credit" -> 10, "50$ Credit" -> 50)
-    let creditUsd = 10;
-    const match = codexItem.product.title.match(/(\d+)\s*\$\s*Credit/i) ||
-      codexItem.product.slug.match(/(\d+)(?:-credit|usd)/i);
-    if (match && match[1]) {
-      creditUsd = Number(match[1]);
+    const primaryCodexItem = codexItems[0];
+
+    // Determine total creditUsd by multiplying unit credit by quantity for all items
+    let totalCreditUsd = 0;
+    for (const item of codexItems) {
+      if (!item.product) continue;
+      let unitCredit = 10;
+      const match =
+        item.product.title.match(/(\d+)\s*\$\s*Credit/i) ||
+        item.product.slug.match(/(\d+)(?:-credit|usd)/i);
+      if (match && match[1]) {
+        unitCredit = Number(match[1]);
+      }
+      const qty = Math.max(1, item.quantity || 1);
+      totalCreditUsd += unitCredit * qty;
     }
 
+    const creditUsd = totalCreditUsd > 0 ? totalCreditUsd : 10;
     const quotaUnits = ModelApiService.usdToQuota(creditUsd);
 
     // Check if customer provided their existing API key in customerNote
@@ -203,7 +213,7 @@ export async function fulfillCodexCreditOrder(
 
       await prisma.productItem.create({
         data: {
-          productId: codexItem.productId,
+          productId: primaryCodexItem.productId,
           secretContent,
           status: ItemStatus.SOLD,
           orderId,

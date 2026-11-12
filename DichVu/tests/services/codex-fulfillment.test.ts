@@ -344,4 +344,68 @@ describe("Codex Auto-Fulfillment Pipeline Tests", () => {
       await prisma.order.delete({ where: { id: customUserOrder.id } }).catch(() => {});
     }
   });
+
+  it("should fulfill multi-quantity order (e.g. qty=2) and grant correct multiplied credit and quota", async () => {
+    // 1. Create order with quantity: 2 for $10 product -> should yield 20$ credit (10,000,000 quota)
+    const multiQtyOrder = await prisma.order.create({
+      data: {
+        orderCode: `ORD_MULTI_QTY_${Date.now()}`,
+        totalAmount: 500000,
+        status: "PAID",
+        paidAt: new Date(),
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        orderItems: {
+          create: {
+            productId: testProductId,
+            price: 250000,
+            quantity: 2,
+          },
+        },
+      },
+    });
+
+    const multiTopup = await prisma.creditTopupOrder.create({
+      data: {
+        orderId: multiQtyOrder.id,
+        bindingId: testBindingId,
+        creditUsd: 20,
+        quotaUnits: 10000000,
+        status: "PENDING",
+      },
+    });
+
+    const applySpy = vi.spyOn(ModelApiService, "applyQuotaTopup").mockResolvedValue({
+      success: true,
+      quotaBefore: 1000000,
+      quotaAdded: 10000000,
+      quotaAfter: 11000000,
+      discrepancyDelta: 0,
+    });
+
+    try {
+      const result = await fulfillCodexCreditOrder(multiQtyOrder.id);
+
+      expect(result.success).toBe(true);
+      expect(result.status).toBe("COMPLETED");
+
+      // Verify applyQuotaTopup was called with creditUsd: 20 (for qty=2)
+      expect(applySpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          creditUsd: 20,
+        })
+      );
+
+      const updatedTopup = await prisma.creditTopupOrder.findUnique({
+        where: { id: multiTopup.id },
+      });
+      expect(updatedTopup?.status).toBe("COMPLETED");
+      expect(updatedTopup?.creditUsd).toBe(20);
+      expect(updatedTopup?.quotaUnits).toBe(10000000);
+    } finally {
+      await prisma.orderItem.deleteMany({ where: { orderId: multiQtyOrder.id } }).catch(() => {});
+      await prisma.productItem.deleteMany({ where: { orderId: multiQtyOrder.id } }).catch(() => {});
+      await prisma.creditTopupOrder.deleteMany({ where: { orderId: multiQtyOrder.id } }).catch(() => {});
+      await prisma.order.delete({ where: { id: multiQtyOrder.id } }).catch(() => {});
+    }
+  });
 });
