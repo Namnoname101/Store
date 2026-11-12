@@ -101,7 +101,7 @@ export async function registerAffiliate(input: RegisterAffiliateInput) {
         maxDiscount: 100000,
         isActive: true,
         affiliateUserId: user.id,
-        affiliateRate: 15.0, // 15% hoa hồng mặc định
+        affiliateRate: 10.0, // 10% hoa hồng mặc định (thay cho 15% cũ để đảm bảo lãi Shop > CTV)
       },
     });
 
@@ -130,19 +130,43 @@ export async function registerAffiliate(input: RegisterAffiliateInput) {
 }
 
 /**
- * Calculates item-aware commission based on product categories.
- * API AI gets 8%, SMM Buff gets 20%, others get 15%.
+ * Calculates item-aware commission based on product categories and specific product slugs.
+ * Guarantees that Shop Net Profit > CTV Commission on 100% of products:
+ * - Adobe Full Apps: 6%
+ * - ChatGPT Plus, Suno AI, Xingtu, Figma: 8%
+ * - API AI & Key: 8%
+ * - SMM Buff: 20%
+ * - Accounts & Software: 10% (fallback default)
  */
-export function getProductCommissionRate(categoryName?: string | null, defaultRate: number = 15.0): number {
-  if (!categoryName) return defaultRate;
-  const lower = categoryName.toLowerCase();
+export function getProductCommissionRate(
+  categoryName?: string | null,
+  defaultRate: number = 10.0,
+  productSlug?: string | null
+): number {
+  const slug = (productSlug || "").toLowerCase();
 
-  if (lower.includes("api") || lower.includes("key ai") || lower.includes("claude")) {
-    return 8.0; // 8% for API AI items
+  if (slug.includes("adobe-full-apps")) {
+    return 6.0; // 6% for Adobe Full Apps to safeguard profit margin
   }
-  if (lower.includes("mxh") || lower.includes("buff") || lower.includes("tiktok") || lower.includes("facebook")) {
-    return 20.0; // 20% for SMM buff items
+  if (
+    slug.includes("chatgpt") ||
+    slug.includes("suno") ||
+    slug.includes("xingtu") ||
+    slug.includes("figma")
+  ) {
+    return 8.0; // 8% for high-cost accounts
   }
+
+  if (categoryName) {
+    const lower = categoryName.toLowerCase();
+    if (lower.includes("api") || lower.includes("key ai") || lower.includes("claude") || lower.includes("codex")) {
+      return 8.0; // 8% for API AI items
+    }
+    if (lower.includes("mxh") || lower.includes("buff") || lower.includes("tiktok") || lower.includes("facebook")) {
+      return 20.0; // 20% for SMM buff items
+    }
+  }
+
   return defaultRate;
 }
 
@@ -193,13 +217,17 @@ export async function processAffiliateCommission(orderId: string, externalTx?: P
     return { processed: false, reason: "Self-referral rejected" };
   }
 
-  const defaultRate = order.coupon.affiliateRate ?? 15.0;
+  const defaultRate = order.coupon.affiliateRate ?? 10.0;
   let totalCommission = 0;
 
   // Calculate per-item commission if items exist, otherwise fallback to order percentage
   if (order.orderItems && order.orderItems.length > 0) {
     for (const item of order.orderItems) {
-      const rate = getProductCommissionRate(item.product?.category?.name, defaultRate);
+      const rate = getProductCommissionRate(
+        item.product?.category?.name,
+        defaultRate,
+        item.product?.slug
+      );
       const itemGross = item.price * item.quantity;
       // Proportional discount allocation
       const itemNet = order.subtotalAmount > 0

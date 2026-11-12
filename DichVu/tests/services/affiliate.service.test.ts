@@ -13,6 +13,12 @@ describe("Affiliate & CTV System Unit Tests", () => {
     expect(getProductCommissionRate("Dịch Vụ MXH (TikTok, Facebook)", 15.0)).toBe(20.0);
     expect(getProductCommissionRate("Học tập & Thiết kế (Canva)", 15.0)).toBe(15.0);
     expect(getProductCommissionRate(null, 15.0)).toBe(15.0);
+
+    // Product-specific overrides to guarantee Shop profit > CTV
+    expect(getProductCommissionRate("Học tập", 10.0, "adobe-full-apps-1-thang")).toBe(6.0);
+    expect(getProductCommissionRate("Tài khoản AI", 10.0, "chatgpt-plus-1-thang")).toBe(8.0);
+    expect(getProductCommissionRate("Tài khoản AI", 10.0, "suno-ai-pro-1-thang")).toBe(8.0);
+    expect(getProductCommissionRate("Tài khoản AI", 10.0, "xingtu-vip-30-ngay")).toBe(8.0);
   });
 
   it("should register a user as an affiliate and create a linked 5% coupon", async () => {
