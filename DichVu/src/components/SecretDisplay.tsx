@@ -48,6 +48,10 @@ export function getProductInstructions(
   return resolveProductInstruction({ slug, title, type, rawSecret });
 }
 
+function cleanSecretToken(val: string): string {
+  return val.trim().replace(/^[`'"]+|[`'"]+$/g, "");
+}
+
 export function parseSecretItem(
   content: string,
   type?: string
@@ -63,12 +67,49 @@ export function parseSecretItem(
 
   const trimmed = content.trim();
 
-  // If designated as ACCOUNT or follows format `username|password` or `username:password`
-  if (type === "ACCOUNT" || trimmed.includes("|")) {
+  // 1. Direct pipe-separated: `username|password` or `username|password|2fa`
+  if (trimmed.includes("|")) {
     const parts = trimmed.split("|");
     if (parts.length >= 2) {
-      const u = parts[0].trim().replace(/^[`'"]+|[`'"]+$/g, "");
-      const p = parts.slice(1).join("|").trim().replace(/^[`'"]+|[`'"]+$/g, "");
+      const u = cleanSecretToken(parts[0]);
+      const p = cleanSecretToken(parts.slice(1).join("|"));
+      if (u && p && !/^(?:email|tài khoản|loại|định dạng)$/i.test(u)) {
+        return {
+          isAccount: true,
+          username: u,
+          password: p,
+          raw: trimmed,
+        };
+      }
+    }
+  }
+
+  // 2. Space / colon / tab separated email + password on same line (e.g. `user@outlook.com 1234567` or `user@outlook.com:1234567`)
+  const emailPassMatch = trimmed.match(
+    /`?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})[^\S\r\n]*[:|\t ][^\S\r\n]*([^\s`\r\n|]+)(?:[^\S\r\n]*\|[^\S\r\n]*([^\s`\r\n]+))?`?/
+  );
+  if (emailPassMatch) {
+    const u = cleanSecretToken(emailPassMatch[1]);
+    const p = cleanSecretToken(emailPassMatch[2]);
+    const extra = emailPassMatch[3] ? cleanSecretToken(emailPassMatch[3]) : "";
+    if (u && p && !/^(?:pass|password|mật khẩu|mk)$/i.test(p)) {
+      return {
+        isAccount: true,
+        username: u,
+        password: extra ? `${p} (2FA: ${extra})` : p,
+        raw: trimmed,
+      };
+    }
+  }
+
+  // 3. Multi-line labeled account (Tài khoản: ... \nMật khẩu: ... or TK: ... \nMK: ...)
+  const labeledMatch = trimmed.match(
+    /(?:(?<!(?:Loại|Tên|Dạng|Định dạng)\s*)(?:Tài\s*khoản|Email|Username|User|TK)):\s*`?([^\n\r`|]+)`?[\s\S]*?(?:Mật\s*khẩu|Pass|Password|MK):\s*`?([^\n\r`|]+)`?/i
+  );
+  if (labeledMatch && labeledMatch[1] && labeledMatch[2]) {
+    const u = cleanSecretToken(labeledMatch[1]);
+    const p = cleanSecretToken(labeledMatch[2]);
+    if (u && p && !/^(?:dùng riêng tư|cá nhân|email \+ mật khẩu)/i.test(u)) {
       return {
         isAccount: true,
         username: u,
@@ -78,9 +119,25 @@ export function parseSecretItem(
     }
   }
 
+  // 4. Scrub any leaked supplier billing/wholesale price/bot balances from fallback display
+  const scrubbed = trimmed
+    .split("\n")
+    .filter((line) => {
+      const l = line.trim();
+      return (
+        !/(?:mã đơn|order id|trans id|🧾)/i.test(l) &&
+        !/(?:thanh toán|giá tiền|giá vốn|số tiền|💵)/i.test(l) &&
+        !/(?:số dư còn lại|số dư ví|số dư|ví của bạn|💰)/i.test(l) &&
+        !/(?:cảm ơn bạn đã mua|cảm ơn quý khách)/i.test(l) &&
+        !/(?:t\.me\/|telegram\.me\/|@\w+_bot)/i.test(l)
+      );
+    })
+    .join("\n")
+    .trim();
+
   return {
     isAccount: false,
-    raw: trimmed,
+    raw: scrubbed || trimmed,
   };
 }
 
@@ -1029,8 +1086,8 @@ export default function SecretDisplay({
                     </span>
                     <span className="font-mono text-xs sm:text-sm font-semibold text-primary tracking-wider break-all select-all">
                       {revealedSecrets[item.id]
-                        ? secretContent
-                        : maskSecret(secretContent, product?.type)}
+                        ? parsed.raw
+                        : maskSecret(parsed.raw, product?.type)}
                     </span>
                   </div>
 

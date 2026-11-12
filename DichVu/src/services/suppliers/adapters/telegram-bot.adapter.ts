@@ -1675,8 +1675,8 @@ export class TelegramBotAdapter implements ISupplierAdapter {
   ): Promise<SupplierOrderResult> {
     const recent = await client.getMessages(botUsername, { limit: 8 });
     let botOrderId = "";
-    let bestCandidate: { content: string; type: string; rawText: string } | null = null;
-    let fallbackTextCandidate: { content: string; type: string; rawText: string } | null = null;
+    let bestCandidate: { content: string; type: string; rawText: string; deliveredKeys?: string[] } | null = null;
+    let fallbackTextCandidate: { content: string; type: string; rawText: string; deliveredKeys?: string[] } | null = null;
 
     for (const m of recent) {
       // If minMsgId is provided, ignore messages that occurred before this purchase
@@ -1729,11 +1729,12 @@ export class TelegramBotAdapter implements ISupplierAdapter {
             if (buf && buf.length > 0) {
               const fileContent = buf.toString("utf-8");
               const parsedDoc = extractDeliveredSecret(fileContent);
+              const docKeys = parsedDoc.deliveredKeys && parsedDoc.deliveredKeys.length > 0 ? parsedDoc.deliveredKeys : [parsedDoc.content];
               if (parsedDoc.content && parsedDoc.type !== "text") {
-                bestCandidate = { content: parsedDoc.content, type: parsedDoc.type, rawText: fileContent };
+                bestCandidate = { content: parsedDoc.content, type: parsedDoc.type, rawText: fileContent, deliveredKeys: docKeys };
                 break;
               } else if (parsedDoc.content && !fallbackTextCandidate && !parsedDoc.isNoticeOnly) {
-                fallbackTextCandidate = { content: parsedDoc.content, type: parsedDoc.type, rawText: fileContent };
+                fallbackTextCandidate = { content: parsedDoc.content, type: parsedDoc.type, rawText: fileContent, deliveredKeys: docKeys };
               }
             }
           } catch (err) {
@@ -1745,12 +1746,13 @@ export class TelegramBotAdapter implements ISupplierAdapter {
       // 2. Check message text
       const parsed = extractDeliveredSecret(text);
       if (parsed.content) {
+        const textKeys = parsed.deliveredKeys && parsed.deliveredKeys.length > 0 ? parsed.deliveredKeys : [parsed.content];
         if (parsed.type !== "text") {
           if (!bestCandidate) {
-            bestCandidate = { content: parsed.content, type: parsed.type, rawText: text };
+            bestCandidate = { content: parsed.content, type: parsed.type, rawText: text, deliveredKeys: textKeys };
           }
         } else if (!fallbackTextCandidate && !parsed.isNoticeOnly) {
-          fallbackTextCandidate = { content: parsed.content, type: parsed.type, rawText: text };
+          fallbackTextCandidate = { content: parsed.content, type: parsed.type, rawText: text, deliveredKeys: textKeys };
         }
       }
     }
@@ -1760,7 +1762,7 @@ export class TelegramBotAdapter implements ISupplierAdapter {
       return {
         success: true,
         upstreamOrderId: botOrderId || `${fallbackPrefix}_${orderCode}`,
-        deliveredKeys: [selected.content],
+        deliveredKeys: selected.deliveredKeys && selected.deliveredKeys.length > 0 ? selected.deliveredKeys : [selected.content],
         rawResponse: { type: selected.type, rawText: selected.rawText, botOrderId },
       };
     }
