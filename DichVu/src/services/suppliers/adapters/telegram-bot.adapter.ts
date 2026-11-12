@@ -64,17 +64,17 @@ export const XOAINON_KNOWN_PRODUCTS: Record<
   "33": {
     name: "Chatgpt plus 1 tháng pay PIX riêng tư - Bh24h",
     price: 135400,
-    inStock: 11,
+    inStock: 9,
   },
   "37": {
     name: "Chatgpt Plus pay Apple Gmail 1 thg - BH 24H",
-    price: 119500,
-    inStock: 9,
+    price: 109000,
+    inStock: 49,
   },
   "1": {
     name: "ChatGPT Plus 1 tháng riêng tư - BHF",
-    price: 219000,
-    inStock: 10,
+    price: 188000,
+    inStock: 18,
   },
   "75": {
     name: "MUSE AI 1 TỶ TOKEN KBH",
@@ -105,6 +105,60 @@ export const XOAINON_KNOWN_PRODUCTS: Record<
     name: "Gemini Pro 18 tháng chính hãng",
     price: 21800,
     inStock: 56,
+  },
+};
+
+export const DKEY_KNOWN_PRODUCTS: Record<
+  string,
+  { name: string; price: number; inStock: number; categoryCode: string }
+> = {
+  "6aa4079751155c938b655d88": {
+    name: "Slot ChatGPT Business dùng chung 1 tháng BHF",
+    price: 119000,
+    inStock: 26,
+    categoryCode: "products_category::d7b2a409b7ed08d2",
+  },
+  "6af3cae3f438034400606787": {
+    name: "ChatGPT Plus GGpay 30D BHF",
+    price: 165000,
+    inStock: 90,
+    categoryCode: "products_category::d7b2a409b7ed08d2",
+  },
+  "6aed24fbed839c4b838b0370": {
+    name: "ChatGPT Plus GGPay 30D BH 24H",
+    price: 115000,
+    inStock: 121,
+    categoryCode: "products_category::d7b2a409b7ed08d2",
+  },
+  "6ae406e9ed8e0e40e4f5c3d0": {
+    name: "Chatgpt Plus Apple Pay 1 tháng BHF",
+    price: 215000,
+    inStock: 92,
+    categoryCode: "products_category::d7b2a409b7ed08d2",
+  },
+};
+
+export const DSHOP_KNOWN_PRODUCTS: Record<
+  string,
+  { name: string; price: number; inStock: number; categoryCode: string }
+> = {
+  "prod:4:2": {
+    name: "ChatGPT Free đã verify phone codex",
+    price: 4000,
+    inStock: 129,
+    categoryCode: "cat:4",
+  },
+  "prod:4:1": {
+    name: "ChatGPT Free offer Plus 3Month 50%",
+    price: 120000,
+    inStock: 4,
+    categoryCode: "cat:4",
+  },
+  "prod:4:3": {
+    name: "GPT Free Gmail/ICloud offer Free 1 Month",
+    price: 12000,
+    inStock: 55,
+    categoryCode: "cat:4",
   },
 };
 
@@ -1124,6 +1178,30 @@ export class TelegramBotAdapter implements ISupplierAdapter {
       };
     }
 
+    if (botUsername.includes("dkey")) {
+      const known = DKEY_KNOWN_PRODUCTS[supplierProductCode];
+      if (known) {
+        return {
+          supplierProductCode,
+          name: known.name,
+          price: known.price,
+          inStock: known.inStock,
+        };
+      }
+    }
+
+    if (botUsername.includes("dshop") || botUsername.includes("mmo_dshop")) {
+      const known = DSHOP_KNOWN_PRODUCTS[supplierProductCode];
+      if (known) {
+        return {
+          supplierProductCode,
+          name: known.name,
+          price: known.price,
+          inStock: known.inStock,
+        };
+      }
+    }
+
     if (botUsername.includes("nghientrick")) {
       return {
         supplierProductCode,
@@ -1527,12 +1605,21 @@ export class TelegramBotAdapter implements ISupplierAdapter {
       msg = msgs[0];
 
       let categoryCode = "";
-      if (supplierProductCode === "6acf7db4452526529250f06e" || supplierProductCode.includes("netflix")) {
+      if (DKEY_KNOWN_PRODUCTS[supplierProductCode]) {
+        categoryCode = DKEY_KNOWN_PRODUCTS[supplierProductCode].categoryCode;
+      } else if (supplierProductCode === "6acf7db4452526529250f06e" || supplierProductCode.includes("netflix")) {
         categoryCode = "products_category::6839ac01fff70f6f";
       } else if (supplierProductCode === "6a3f1008cc06fe4bc3ab8e27" || supplierProductCode.includes("kling")) {
         categoryCode = "products_category::5c7d32ac2d24c7f9";
       } else if (supplierProductCode.includes("wink")) {
         categoryCode = "products_category::675e9bd10c28e5ab";
+      } else if (
+        supplierProductCode.toLowerCase().includes("chatgpt") ||
+        supplierProductCode.toLowerCase().includes("gpt")
+      ) {
+        categoryCode = "products_category::d7b2a409b7ed08d2";
+      } else if (supplierProductCode.toLowerCase().includes("capcut")) {
+        categoryCode = "products_category::e9a30951852e98a2";
       }
 
       if (categoryCode && msg?.replyMarkup && (msg.replyMarkup as any).rows) {
