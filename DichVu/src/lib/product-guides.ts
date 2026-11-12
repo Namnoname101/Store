@@ -292,8 +292,8 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 1: Mở trình duyệt và truy cập trang chính thức của OpenAI",
       },
       {
-        text: "Bước 2: Bấm nút 'Log in' và nhập thông tin Email | Mật khẩu được cung cấp ở bảng bàn giao phía trên.",
-        caption: "Bước 2: Đăng nhập với tài khoản được bàn giao",
+        text: "Bước 2: Bấm nút 'Log in' và nhập thông tin Email | Mật khẩu được cung cấp ở bảng bàn giao phía trên. Nếu hệ thống yêu cầu mã xác thực 2FA: Sao chép mã 2FA Secret được cấp ở trên, mở https://2fa.live và dán vào để lấy mã OTP 6 số đăng nhập.",
+        caption: "Bước 2: Đăng nhập tài khoản & lấy mã OTP 2FA nếu cần",
       },
       {
         text: "Bước 3: Sau khi đăng nhập, kiểm tra huy hiệu 'ChatGPT Plus' ở góc trái hoặc vào Settings > Subscription để xác nhận gói hoạt động.",
@@ -319,8 +319,8 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 1: Mở trình duyệt và truy cập trang chính thức của OpenAI",
       },
       {
-        text: "Bước 2: Bấm nút 'Log in' và nhập thông tin Email | Mật khẩu được cung cấp ở bảng bàn giao phía trên.",
-        caption: "Bước 2: Đăng nhập với tài khoản được bàn giao",
+        text: "Bước 2: Bấm nút 'Log in' và nhập thông tin Email | Mật khẩu được cung cấp ở bảng bàn giao phía trên. Nếu hệ thống yêu cầu mã xác thực 2FA: Sao chép mã 2FA Secret được cấp ở trên, mở https://2fa.live và dán vào để lấy mã OTP 6 số đăng nhập.",
+        caption: "Bước 2: Đăng nhập tài khoản & lấy mã OTP 2FA nếu cần",
       },
       {
         text: "Bước 3: Sau khi đăng nhập, kiểm tra huy hiệu 'ChatGPT Plus' ở góc trái hoặc vào Settings > Subscription để xác nhận gói hoạt động.",

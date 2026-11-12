@@ -43,10 +43,10 @@ export function sanitizeInstructions(text: string, extractedCredentials: string[
 
     // Skip supplier billing / order metadata lines
     if (
-      /(?:mã đơn|mã đơn hàng|mã giao dịch|order id|trans id|🧾)/i.test(trimmed) ||
+      /(?:mã đơn|mã đơn hàng|mã giao dịch|order id|trans id|order\s*#?\d+|đơn\s*(?:hàng)?\s*#?\d*|🧾)/i.test(trimmed) ||
       /(?:thanh toán|giá tiền|giá vốn|số tiền|💵)/i.test(trimmed) ||
       /(?:số dư còn lại|số dư ví|số dư|ví của bạn|💰)/i.test(trimmed) ||
-      /(?:đơn hàng thành công|mua hàng thành công|✅)/i.test(trimmed) ||
+      /(?:đơn hàng.*thành công|mua hàng.*thành công|thành công!|✅|🎉)/i.test(trimmed) ||
       /(?:cảm ơn bạn đã mua|cảm ơn quý khách|thanks for purchasing|chúc bạn một ngày tốt lành)/i.test(trimmed) ||
       /(?:t\.me\/|telegram\.me\/|@\w+_bot)/i.test(trimmed) ||
       /(?:mô tả lúc bán|định dạng: email|loại tài khoản: dùng riêng tư)/i.test(trimmed) ||
@@ -88,6 +88,68 @@ export function sanitizeInstructions(text: string, extractedCredentials: string[
 }
 
 /**
+ * Checks if a URL is merely a general portal, homepage, or utility link (like login portal or 2fa.live)
+ * rather than a genuine single-use claim link or team invite.
+ */
+export function isUtilityOrNonClaimUrl(url: string): boolean {
+  if (!url) return true;
+  const lower = url.toLowerCase();
+
+  // Internal / Social / Messenger links
+  if (lower.includes("t.me/") || lower.includes("telegram.me/") || lower.includes("facebook.com/") || lower.includes("fb.com/")) {
+    return true;
+  }
+
+  // 2FA TOTP portals (convenience tools for customers to get 6-digit OTPs)
+  if (lower.includes("2fa.live") || lower.includes("2fa.online") || lower.includes("authenticator")) {
+    return true;
+  }
+
+  // Login homepages and portals (these accompany account deliveries, they are NOT the delivery itself)
+  if (
+    lower.includes("chatgpt.com") ||
+    lower.includes("openai.com") ||
+    lower.includes("netflix.com") ||
+    lower.includes("spotify.com") ||
+    lower.includes("adobe.com")
+  ) {
+    return true;
+  }
+
+  // Google links (ignore general login/gmail/accounts, only accept Google Family invite)
+  if (lower.includes("google.com") || lower.includes("gmail.com")) {
+    const isGoogleFamilyInvite = lower.includes("families.google.com") || lower.includes("g.co/family") || lower.includes("/invitation");
+    return !isGoogleFamilyInvite;
+  }
+
+  // CapCut (ignore homepage, only accept invite link)
+  if (lower.includes("capcut.com")) {
+    const isCapcutInvite = lower.includes("/invite/") || lower.includes("/join/") || lower.includes("token=");
+    return !isCapcutInvite;
+  }
+
+  // Canva (ignore homepage, only accept brand/join invite link)
+  if (lower.includes("canva.com")) {
+    const isCanvaInvite = lower.includes("/brand/join") || lower.includes("/invite") || lower.includes("token=");
+    return !isCanvaInvite;
+  }
+
+  // YouTube (ignore homepage, only accept family/redeem)
+  if (lower.includes("youtube.com")) {
+    const isYoutubeClaim = lower.includes("/redeem") || lower.includes("/family") || lower.includes("invite");
+    return !isYoutubeClaim;
+  }
+
+  // Microsoft / Office (ignore homepage/login, only accept family/invite/redeem)
+  if (lower.includes("microsoft.com") || lower.includes("office.com")) {
+    const isMsClaim = lower.includes("/redeem") || lower.includes("/invite") || lower.includes("family");
+    return !isMsClaim;
+  }
+
+  return false;
+}
+
+/**
  * Extracts all account credentials (user|pass) from text.
  * Returns array of "username|password" (or "username|password|2fa") strings.
  */
@@ -104,7 +166,7 @@ export function extractAccountsFromText(text: string): string[] {
     if (!cleanU || !cleanP) return;
 
     // Don't mistake descriptive labels or headers for credentials
-    if (/^(?:dùng riêng tư|cá nhân|email \+ mật khẩu|full date|30 ngày|bảo hành|mô tả|thông tin)/i.test(cleanU)) return;
+    if (/^(?:dùng riêng tư|cá nhân|email \+ mật khẩu|full date|30 ngày|bảo hành|mô tả|thông tin|định dạng)/i.test(cleanU)) return;
     if (/^(?:pass|password|mật khẩu|mk)$/i.test(cleanP)) return;
 
     const key = extra ? `${cleanU}|${cleanP}|${cleanPart(extra)}` : `${cleanU}|${cleanP}`;
@@ -112,6 +174,35 @@ export function extractAccountsFromText(text: string): string[] {
       seen.add(key);
       results.push(key);
     }
+  }
+
+  // Format 0: Direct line-by-line inspection for pipe-separated credentials (e.g. `email|pass|2fa`)
+  const lines = text.split("\n");
+  for (const rawLine of lines) {
+    let line = cleanPart(rawLine);
+    if (!line.includes("|")) continue;
+
+    // Strip leading list numbers/bullets: e.g. "1)", "1.", "- ", "* "
+    line = line.replace(/^\s*(?:\d+[\.\)]|[-*•])\s*/, "");
+    // Strip leading label headers: e.g. "Định dạng:", "Tài khoản:", "TK:", "Account:"
+    line = line.replace(/^(?:định\s*dạng|loại\s*(?:tài\s*khoản)?|tài\s*khoản|account|tk|email|thông\s*tin)\s*[:：\-]\s*/i, "");
+
+    const parts = line.split("|").map(cleanPart).filter(Boolean);
+    if (parts.length >= 2) {
+      const u = parts[0];
+      const p = parts[1];
+      const extra = parts.slice(2).join("|");
+
+      const isEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(u);
+      const isUsername = /^[a-zA-Z0-9._-]{3,50}$/.test(u) && !/^(?:email|pass|password|loại|định dạng|http|https)$/i.test(u);
+
+      if ((isEmail || isUsername) && p && !/^(?:pass|password|mật khẩu|mk)$/i.test(p)) {
+        addResult(u, p, extra);
+      }
+    }
+  }
+  if (results.length > 0) {
+    return results;
   }
 
   // Format 1: Explicit labeled fields across lines:
@@ -186,25 +277,10 @@ export function extractDeliveredSecret(rawText: string): ParsedSecret {
     };
   }
 
-  // 2. Check for invite/claim URLs (Google Family, Gemini, Canva, Office, Drive...)
-  // Exclude internal Telegram links (t.me, notificationshop, etc.)
-  const linkMatches = text.match(/https?:\/\/[^\s`"')]+/gi);
-  if (linkMatches && linkMatches.length > 0) {
-    const externalLinks = linkMatches.filter(
-      (url) => !url.includes("t.me/") && !url.includes("telegram.me/") && !url.includes("facebook.com/")
-    );
-    if (externalLinks.length > 0) {
-      return {
-        type: "link",
-        content: externalLinks[0],
-        instructions: sanitizeInstructions(text, [externalLinks[0]]),
-        rawText: text,
-        deliveredKeys: externalLinks,
-      };
-    }
-  }
-
-  // 3. Extract account credentials (user|pass)
+  // 2. CRITICAL: Check account credentials FIRST (user|pass, email|pass|2fa, etc.)
+  // When suppliers deliver accounts (ChatGPT, CapCut, Netflix, etc.), they routinely include
+  // utility links (like https://chatgpt.com, https://2fa.live). Those utility links must NEVER
+  // displace or hide the genuine account credentials!
   const accounts = extractAccountsFromText(text);
   if (accounts.length > 0) {
     return {
@@ -216,7 +292,7 @@ export function extractDeliveredSecret(rawText: string): ParsedSecret {
     };
   }
 
-  // 4. Check for License Key: e.g. "Key: XXXXX-XXXXX" or "Mã kích hoạt: XXXXX" or sk-...
+  // 3. Check for License Key: e.g. "Key: XXXXX-XXXXX" or "Mã kích hoạt: XXXXX" or sk-...
   const keyMatch =
     text.match(/(?:Key|Mã\s*(?:kích\s*hoạt|key|bản\s*quyền|thẻ)):\s*`?([A-Z0-9-]{8,})`?/i) ||
     text.match(/`?(sk-[a-zA-Z0-9_-]{20,})`?/);
@@ -230,6 +306,22 @@ export function extractDeliveredSecret(rawText: string): ParsedSecret {
       rawText: text,
       deliveredKeys: [key],
     };
+  }
+
+  // 4. Check for genuine invite/claim URLs (Google Family, Gemini, Canva, Office...)
+  // Strictly filter out internal Telegram links, social media, and utility/portal URLs (chatgpt.com, 2fa.live, etc.)
+  const linkMatches = text.match(/https?:\/\/[^\s`"')]+/gi);
+  if (linkMatches && linkMatches.length > 0) {
+    const validClaimLinks = linkMatches.filter((url) => !isUtilityOrNonClaimUrl(url));
+    if (validClaimLinks.length > 0) {
+      return {
+        type: "link",
+        content: validClaimLinks[0],
+        instructions: sanitizeInstructions(text, [validClaimLinks[0]]),
+        rawText: text,
+        deliveredKeys: validClaimLinks,
+      };
+    }
   }
 
   // 5. Check if message is merely a delivery notification pointing to an attached file or video

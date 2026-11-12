@@ -59,6 +59,8 @@ export function parseSecretItem(
   isAccount: boolean;
   username?: string;
   password?: string;
+  twoFactor?: string;
+  recoveryEmail?: string;
   raw: string;
 } {
   if (!content) {
@@ -67,17 +69,22 @@ export function parseSecretItem(
 
   const trimmed = content.trim();
 
-  // 1. Direct pipe-separated: `username|password` or `username|password|2fa`
+  // 1. Direct pipe-separated: `username|password` or `username|password|2fa` or `username|password|2fa|recovery`
   if (trimmed.includes("|")) {
-    const parts = trimmed.split("|");
+    const parts = trimmed.split("|").map(cleanSecretToken).filter(Boolean);
     if (parts.length >= 2) {
-      const u = cleanSecretToken(parts[0]);
-      const p = cleanSecretToken(parts.slice(1).join("|"));
+      const u = parts[0];
+      const p = parts[1];
+      const twoFactor = parts[2] || undefined;
+      const recoveryEmail = parts.length > 3 ? parts.slice(3).join(" | ") : undefined;
+
       if (u && p && !/^(?:email|tài khoản|loại|định dạng)$/i.test(u)) {
         return {
           isAccount: true,
           username: u,
           password: p,
+          twoFactor,
+          recoveryEmail,
           raw: trimmed,
         };
       }
@@ -91,12 +98,13 @@ export function parseSecretItem(
   if (emailPassMatch) {
     const u = cleanSecretToken(emailPassMatch[1]);
     const p = cleanSecretToken(emailPassMatch[2]);
-    const extra = emailPassMatch[3] ? cleanSecretToken(emailPassMatch[3]) : "";
+    const extra = emailPassMatch[3] ? cleanSecretToken(emailPassMatch[3]) : undefined;
     if (u && p && !/^(?:pass|password|mật khẩu|mk)$/i.test(p)) {
       return {
         isAccount: true,
         username: u,
-        password: extra ? `${p} (2FA: ${extra})` : p,
+        password: p,
+        twoFactor: extra,
         raw: trimmed,
       };
     }
@@ -109,11 +117,15 @@ export function parseSecretItem(
   if (labeledMatch && labeledMatch[1] && labeledMatch[2]) {
     const u = cleanSecretToken(labeledMatch[1]);
     const p = cleanSecretToken(labeledMatch[2]);
+    const twoFactorMatch = trimmed.match(/(?:2FA|Mã\s*2FA|Two-Factor|OTP\s*Secret):\s*`?([A-Z0-9-]{10,})`?/i);
+    const twoFactor = twoFactorMatch ? cleanSecretToken(twoFactorMatch[1]) : undefined;
+
     if (u && p && !/^(?:dùng riêng tư|cá nhân|email \+ mật khẩu)/i.test(u)) {
       return {
         isAccount: true,
         username: u,
         password: p,
+        twoFactor,
         raw: trimmed,
       };
     }
@@ -427,6 +439,13 @@ export default function SecretDisplay({
       if (parsed.isAccount && parsed.username && parsed.password) {
         content += `  - Tài khoản / Email: ${parsed.username}\n`;
         content += `  - Mật khẩu: ${parsed.password}\n`;
+        if (parsed.twoFactor) {
+          content += `  - Mã bảo mật 2FA Secret Key: ${parsed.twoFactor}\n`;
+          content += `  - Lấy mã OTP 6 số đăng nhập tại: https://2fa.live\n`;
+        }
+        if (parsed.recoveryEmail) {
+          content += `  - Thông tin kèm theo: ${parsed.recoveryEmail}\n`;
+        }
         content += `  - Cú pháp gộp: ${parsed.raw}\n`;
       } else {
         content += `  - Mã bàn giao / Key: ${item.secretContent || ""}\n`;
@@ -890,6 +909,7 @@ export default function SecretDisplay({
           const isCopied = copiedId === item.id;
           const isUsernameCopied = copiedId === `${item.id}-user`;
           const isPasswordCopied = copiedId === `${item.id}-pass`;
+          const is2faCopied = copiedId === `${item.id}-2fa`;
 
           return (
             <div
@@ -1005,6 +1025,97 @@ export default function SecretDisplay({
                     </div>
                   </div>
 
+                  {/* 2FA Secret Key Box (e.g. for ChatGPT Plus / 2FA Accounts) */}
+                  {parsed.twoFactor && (
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-xl border border-amber-500/30 bg-amber-500/5 dark:bg-amber-500/10 p-3 sm:px-3.5 sm:py-2.5">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="block text-[10px] uppercase font-mono font-bold text-amber-600 dark:text-amber-400">
+                            Mã xác thực 2FA (Secret Key)
+                          </span>
+                          <span className="inline-flex items-center rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-300">
+                            Cần để lấy OTP 6 số
+                          </span>
+                        </div>
+                        <span className="block font-mono text-xs sm:text-sm font-bold text-foreground tracking-wider select-all break-all">
+                          {parsed.twoFactor}
+                        </span>
+                        <p className="text-[11px] text-muted-foreground mt-1">
+                          👉 Mở{" "}
+                          <a
+                            href="https://2fa.live"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-primary hover:underline font-bold inline-flex items-center gap-0.5"
+                          >
+                            2fa.live <ExternalLink className="h-2.5 w-2.5 inline" />
+                          </a>{" "}
+                          và dán mã 2FA này vào ô &quot;2FA Secret&quot; để nhận mã OTP 6 số đăng nhập.
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                        <a
+                          href="https://2fa.live"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="min-h-[44px] inline-flex items-center gap-1.5 rounded-xl border border-border bg-secondary hover:bg-secondary/80 px-3 py-2 text-xs font-semibold text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-ring"
+                          title="Mở trang web 2fa.live trong tab mới"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5 text-amber-500" />
+                          <span>Mở 2fa.live</span>
+                        </a>
+
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(`${item.id}-2fa`, parsed.twoFactor!, "mã 2FA")}
+                          className={`min-h-[44px] min-w-[44px] flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-ring ${
+                            is2faCopied
+                              ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                              : "bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25 border border-amber-500/30"
+                          }`}
+                          title="Sao chép mã 2FA Secret"
+                          aria-label="Sao chép mã 2FA Secret"
+                        >
+                          {is2faCopied ? (
+                            <>
+                              <Check className="h-3.5 w-3.5 text-emerald-500" />
+                              <span>Đã chép</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-3.5 w-3.5" />
+                              <span>Chép mã 2FA</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Recovery Email or Additional Information */}
+                  {parsed.recoveryEmail && (
+                    <div className="flex items-center justify-between gap-2 rounded-xl border border-border bg-secondary/50 px-3.5 py-2.5">
+                      <div className="min-w-0">
+                        <span className="block text-[10px] uppercase font-mono font-semibold text-muted-foreground">
+                          Email khôi phục / Thông tin kèm theo
+                        </span>
+                        <span className="block font-mono text-xs sm:text-sm font-semibold text-foreground truncate select-all">
+                          {parsed.recoveryEmail}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(`${item.id}-rec`, parsed.recoveryEmail!, "thông tin kèm theo")}
+                        className="min-h-[44px] min-w-[44px] flex items-center justify-center gap-1 rounded-xl px-3 text-xs font-semibold bg-secondary text-foreground hover:bg-secondary/80 border border-border transition-all"
+                        title="Sao chép thông tin kèm theo"
+                      >
+                        <Copy className="h-3.5 w-3.5" />
+                        <span>Chép</span>
+                      </button>
+                    </div>
+                  )}
+
                   {/* Combined Copy */}
                   <div className="flex justify-end pt-1">
                     <button
@@ -1017,12 +1128,12 @@ export default function SecretDisplay({
                       {isCopied ? (
                         <>
                           <Check className="h-3.5 w-3.5" />
-                          <span>Đã sao chép trọn bộ (user|pass)!</span>
+                          <span>Đã sao chép trọn bộ (Email | Pass{parsed.twoFactor ? " | 2FA" : ""})!</span>
                         </>
                       ) : (
                         <>
                           <Copy className="h-3.5 w-3.5" />
-                          <span>Sao chép cả tài khoản & mật khẩu (dạng user|pass)</span>
+                          <span>Sao chép cả tài khoản & mật khẩu (dạng user|pass{parsed.twoFactor ? "|2fa" : ""})</span>
                         </>
                       )}
                     </button>
