@@ -233,8 +233,8 @@ export async function POST(req: NextRequest) {
         success: true,
         orderCode: order.orderCode,
         totalAmount,
-        creditUsd: selectedPkg.creditUsd,
-        quotaUnits: selectedPkg.quotaUnits,
+        creditUsd: selectedPkg.creditUsd * parsedQty,
+        quotaUnits: selectedPkg.quotaUnits * parsedQty,
         vietQrUrl,
         expiresAt: order.expiresAt,
         binding: binding
