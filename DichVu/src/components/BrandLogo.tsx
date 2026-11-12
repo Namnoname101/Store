@@ -340,10 +340,13 @@ export default function BrandLogo({ brandName, className = "w-4 h-4", size = 16 
           xmlns="http://www.w3.org/2000/svg"
           className={className}
         >
-          <rect x="2" y="2" width="20" height="20" rx="3.5" fill="#FA0F00" />
-          <polygon points="4.5,4.5 9.5,19.5 7,19.5 5.5,15.5 4.5,15.5" fill="#FFFFFF" />
-          <polygon points="19.5,4.5 14.5,19.5 17,19.5 18.5,15.5 19.5,15.5" fill="#FFFFFF" />
-          <polygon points="12,10.5 15,19.5 13.2,19.5 12.2,16.5 9.5,16.5" fill="#FFFFFF" />
+          {/* Authentic Official Adobe Corporate Logo */}
+          <rect width="24" height="24" rx="4.5" fill="#FA0F00" />
+          <path
+            d="M13.966 22.624l-1.69-4.281H8.122l3.892-9.144 5.662 13.425zM8.884 1.376H0v21.248zm15.116 0h-8.884L24 22.624Z"
+            fill="#FFFFFF"
+            transform="translate(3, 3) scale(0.75)"
+          />
         </svg>
       );
 
@@ -466,9 +469,13 @@ export default function BrandLogo({ brandName, className = "w-4 h-4", size = 16 
           xmlns="http://www.w3.org/2000/svg"
           className={className}
         >
-          <circle cx="11" cy="11" r="7.5" stroke="#3CCFCF" strokeWidth="2.5" />
-          <path d="M15.5 15.5 L20.5 20.5" stroke="#4257B2" strokeWidth="3" strokeLinecap="round" />
-          <circle cx="20.5" cy="20.5" r="1.2" fill="#00E5FF" />
+          {/* Authentic Quizlet Official Q Logo */}
+          <rect width="24" height="24" rx="5" fill="#4257B2" />
+          <path
+            d="M12.779.025a11.789 11.789 0 0 0-5.338.896A11.829 11.829 0 0 0 3.058 4.11 11.928 11.928 0 0 0 .427 14.363a11.92 11.92 0 0 0 2.3 4.921 11.842 11.842 0 0 0 4.24 3.378 11.783 11.783 0 0 0 10.533-.226.327.327 0 0 1 .331.018 9.136 9.136 0 0 0 5.197 1.545.332.332 0 0 0 .332-.332v-4.038a.334.334 0 0 0-.276-.331 4.732 4.732 0 0 1-1.106-.319.329.329 0 0 1-.191-.352.33.33 0 0 1 .05-.133 11.943 11.943 0 0 0 .772-11.871 11.87 11.87 0 0 0-4.042-4.628A11.793 11.793 0 0 0 12.765.018l.013.007h.001ZM4.843 11.898a7.24 7.24 0 0 1 1.205-4.005 7.18 7.18 0 0 1 3.215-2.657 7.133 7.133 0 0 1 7.815 1.558 7.239 7.239 0 0 1 1.555 7.854 7.202 7.202 0 0 1-2.643 3.234 7.147 7.147 0 0 1-9.049-.896 7.228 7.228 0 0 1-2.103-5.089l.005.001Z"
+            fill="#3CCFCF"
+            transform="translate(2.4, 2.4) scale(0.8)"
+          />
         </svg>
       );
 
@@ -494,10 +501,17 @@ export default function BrandLogo({ brandName, className = "w-4 h-4", size = 16 
           width={size}
           height={size}
           viewBox="0 0 24 24"
-          fill="currentColor"
-          className={`text-blue-500 ${className}`}
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={className}
         >
-          <path d="M12 2L2 22h20L12 2zm0 5l6.5 13h-13L12 7z" />
+          {/* Authentic NordVPN Official Mountain Vector */}
+          <rect width="24" height="24" rx="5" fill="#001C3D" />
+          <path
+            d="M2.2838 21.5414A11.9866 11.9866 0 010 14.4832C0 7.8418 5.3727 2.4586 12 2.4586c6.6279 0 12 5.3832 12 12.0246a11.9853 11.9853 0 01-2.2838 7.0582l-5.7636-9.3783-.5565.9419.5645 2.6186L12 8.9338l-2.45 4.1447.5707 2.6451-2.0764-3.5555-5.7605 9.3733z"
+            fill="#4687FF"
+            transform="translate(2.4, 2.4) scale(0.8)"
+          />
         </svg>
       );
 
@@ -511,11 +525,15 @@ export default function BrandLogo({ brandName, className = "w-4 h-4", size = 16 
           xmlns="http://www.w3.org/2000/svg"
           className={className}
         >
-          <rect x="2" y="10" width="3" height="4" rx="1.5" fill="#FF007A" />
-          <rect x="7" y="6" width="3" height="12" rx="1.5" fill="#FF5400" />
-          <rect x="12" y="3" width="3" height="18" rx="1.5" fill="#FF007A" />
-          <rect x="17" y="7" width="3" height="10" rx="1.5" fill="#FFBD00" />
-          <rect x="22" y="10" width="3" height="4" rx="1.5" fill="#FF5400" />
+          {/* Authentic Suno AI Soundwave Vector */}
+          <rect width="24" height="24" rx="5" fill="#0D0907" />
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M105.733 61c0-24.705-12.517-44.733-27.958-44.733S49.817 36.295 49.817 61h-33.55c0 24.706 12.517 44.733 27.958 44.733S72.183 85.705 72.183 61z"
+            fill="#FF5400"
+            transform="translate(4, 4) scale(0.131)"
+          />
         </svg>
       );
 

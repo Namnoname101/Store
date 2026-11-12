@@ -29,9 +29,13 @@ export const BRAND_DEFINITIONS: BrandDef[] = [
   { key: "hma", name: "HMA VPN", keywords: ["hma"] },
   { key: "kling", name: "Kling AI Video", keywords: ["kling"] },
   { key: "muse", name: "MUSE AI", keywords: ["muse"] },
+  { key: "adobe", name: "Adobe", keywords: ["adobe", "photoshop", "illustrator"] },
+  { key: "suno", name: "Suno AI", keywords: ["suno"] },
+  { key: "quizlet", name: "Quizlet", keywords: ["quizlet"] },
 ];
 
 export const BRAND_FALLBACK_IMAGES: Record<string, string> = {
+  adobe: "/images/brands/adobe.svg",
   cursor: "/images/brands/cursor.svg",
   claude: "/images/brands/claude.svg",
   codex: "/images/brands/codex.svg",
@@ -55,6 +59,8 @@ export const BRAND_FALLBACK_IMAGES: Record<string, string> = {
   instagram: "/images/brands/default.svg",
   duolingo: "/images/brands/duolingo.svg",
   nordvpn: "/images/brands/nordvpn.svg",
+  suno: "/images/brands/suno.svg",
+  quizlet: "/images/brands/quizlet.svg",
 };
 
 export function normalizeThumbnailUrl(url?: string | null): string {
@@ -92,6 +98,9 @@ export function resolveProductThumbnail(
 
   const combined = `${title} ${slug} ${categorySlug}`.toLowerCase();
 
+  if (combined.includes("adobe") || combined.includes("photoshop")) return "/images/brands/adobe.svg";
+  if (combined.includes("suno")) return "/images/brands/suno.svg";
+  if (combined.includes("quizlet")) return "/images/brands/quizlet.svg";
   if (combined.includes("claude") || combined.includes("anthropic")) return "/images/brands/claude.svg";
   if (combined.includes("cursor")) return "/images/brands/cursor.svg";
   if (combined.includes("codex")) return "/images/brands/codex.svg";

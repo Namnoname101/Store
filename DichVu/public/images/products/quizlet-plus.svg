@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750">
   <defs>
     <radialGradient id="qzBg" cx="50%" cy="38%" r="65%">
-      <stop offset="0%" stop-color="#0e1738"/>
-      <stop offset="60%" stop-color="#070c1e"/>
+      <stop offset="0%" stop-color="#0e1a38"/>
+      <stop offset="55%" stop-color="#060b1c"/>
       <stop offset="100%" stop-color="#02040a"/>
     </radialGradient>
     <filter id="qzGlow" x="-30%" y="-30%" width="160%" height="160%">
@@ -20,29 +20,52 @@
     </linearGradient>
   </defs>
 
+  <!-- Background -->
   <rect width="1200" height="750" fill="url(#qzBg)"/>
-  <circle cx="600" cy="270" r="260" fill="#3CCFCF" opacity="0.22" filter="url(#qzGlow)"/>
+  <circle cx="600" cy="260" r="270" fill="#3CCFCF" opacity="0.22" filter="url(#qzGlow)"/>
   <rect x="220" y="75" width="760" height="600" rx="36" fill="url(#qzCard)" stroke="#3CCFCF" stroke-opacity="0.38" stroke-width="1.5"/>
 
-  <!-- Quizlet 'Q' Logo -->
+  <!-- Top Pill Badges -->
+  <g transform="translate(256, 115)">
+    <rect width="145" height="36" rx="18" fill="#ffffff" fill-opacity="0.07" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1"/>
+    <circle cx="24" cy="18" r="6" fill="#3CCFCF"/>
+    <text x="38" y="23" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700">Tài khoản</text>
+  </g>
+  <g transform="translate(865, 115)">
+    <rect width="80" height="36" rx="18" fill="#FA0F00" fill-opacity="0.15" stroke="#FA0F00" stroke-opacity="0.35" stroke-width="1"/>
+    <text x="40" y="23" fill="#ff6b6b" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="800" text-anchor="middle">-75%</text>
+  </g>
+
+  <!-- ================= AUTHENTIC QUIZLET OFFICIAL LOGO ================= -->
   <g transform="translate(600, 260)">
-    <circle cx="0" cy="0" r="115" fill="#091026" stroke="#3CCFCF" stroke-width="2.5" filter="url(#qzGlow)"/>
-    <!-- Q Ring -->
-    <circle cx="-6" cy="-8" r="48" fill="none" stroke="url(#qzGrad)" stroke-width="14"/>
-    <!-- Q Tail / Flashcard Flip -->
-    <path d="M18 16 L44 42" stroke="url(#qzGrad)" stroke-width="14" stroke-linecap="round"/>
-    <circle cx="44" cy="42" r="5" fill="#00E5FF"/>
+    <!-- App Tile Outer Glow -->
+    <rect x="-105" y="-105" width="210" height="210" rx="48" fill="#081024" stroke="url(#qzGrad)" stroke-width="2.5" filter="url(#qzGlow)"/>
+    <rect x="-105" y="-105" width="210" height="210" rx="48" fill="#081024"/>
+
+    <!-- Exact Official Quizlet 'Q' Logo (Simple Icons Official Asset) -->
+    <g transform="translate(-75, -75) scale(6.25)">
+      <path d="M12.779.025a11.789 11.789 0 0 0-5.338.896A11.829 11.829 0 0 0 3.058 4.11 11.928 11.928 0 0 0 .427 14.363a11.92 11.92 0 0 0 2.3 4.921 11.842 11.842 0 0 0 4.24 3.378 11.783 11.783 0 0 0 10.533-.226.327.327 0 0 1 .331.018 9.136 9.136 0 0 0 5.197 1.545.332.332 0 0 0 .332-.332v-4.038a.334.334 0 0 0-.276-.331 4.732 4.732 0 0 1-1.106-.319.329.329 0 0 1-.191-.352.33.33 0 0 1 .05-.133 11.943 11.943 0 0 0 .772-11.871 11.87 11.87 0 0 0-4.042-4.628A11.793 11.793 0 0 0 12.765.018l.013.007h.001ZM4.843 11.898a7.24 7.24 0 0 1 1.205-4.005 7.18 7.18 0 0 1 3.215-2.657 7.133 7.133 0 0 1 7.815 1.558 7.239 7.239 0 0 1 1.555 7.854 7.202 7.202 0 0 1-2.643 3.234 7.147 7.147 0 0 1-9.049-.896 7.228 7.228 0 0 1-2.103-5.089l.005.001Z" fill="url(#qzGrad)"/>
+    </g>
+  </g>
+  <!-- ================= END QUIZLET LOGO ================= -->
+
+  <!-- Duration Badge (Bottom Left) -->
+  <g transform="translate(256, 420)">
+    <rect width="145" height="40" rx="20" fill="#f59e0b" fill-opacity="0.12" stroke="#f59e0b" stroke-opacity="0.4" stroke-width="1.5"/>
+    <circle cx="24" cy="20" r="8" fill="none" stroke="#f59e0b" stroke-width="1.5"/>
+    <path d="M24 16 v4 l3 2" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round"/>
+    <text x="42" y="25" fill="#fbbf24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="800">1 THÁNG</text>
   </g>
 
   <!-- Titles -->
-  <g transform="translate(600, 480)" text-anchor="middle">
-    <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="900" letter-spacing="2">
+  <g transform="translate(600, 500)" text-anchor="middle">
+    <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="48" font-weight="900" letter-spacing="2">
       QUIZLET PLUS 1 THÁNG
     </text>
     <g transform="translate(0, 52)">
-      <rect x="-270" y="-22" width="540" height="44" rx="22" fill="#3CCFCF" fill-opacity="0.18" stroke="#3CCFCF" stroke-width="1.5"/>
-      <text x="0" y="7" fill="#80e8e8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" letter-spacing="1">
-        BẢN QUYỀN TEACHER • HỌC TẬP KHÔNG GIỚI HẠN
+      <rect x="-300" y="-22" width="600" height="44" rx="22" fill="#4257B2" fill-opacity="0.2" stroke="#3CCFCF" stroke-width="1.5"/>
+      <text x="0" y="7" fill="#80e5ff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="700" letter-spacing="1">
+        GÓI TEACHER BẢN QUYỀN • HỌC TẬP THÔNG MINH BẰNG AI
       </text>
     </g>
   </g>
