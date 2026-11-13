@@ -23,7 +23,7 @@ export default function Footer() {
             </div>
             <div>
               <div className="font-bold text-slate-900 dark:text-white text-sm">Bảo Hành Minh Bạch</div>
-              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Đúng cam kết theo từng nhà cung cấp</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Đúng cam kết theo từng gói sản phẩm</div>
             </div>
           </div>
 

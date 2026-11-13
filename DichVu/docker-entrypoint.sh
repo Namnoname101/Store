@@ -57,6 +57,12 @@ if [ -f scripts/sync-banners-and-failover.js ]; then
   node scripts/sync-banners-and-failover.js || true
 fi
 
+# Sanitize all products in database to guarantee 100% white-label customer storefront
+if [ -f scripts/sanitize-db-white-label.js ]; then
+  echo "[Entrypoint] Sanitizing database records for strict white-label storefront..."
+  node scripts/sanitize-db-white-label.js || true
+fi
+
 # 2. Process Management & Signal Trap
 SWEEP_PID=""
 ASSISTANT_PID=""

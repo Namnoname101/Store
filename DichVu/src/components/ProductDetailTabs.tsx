@@ -75,8 +75,8 @@ export default function ProductDetailTabs({
       }
     : isChatGPT
     ? {
-        title: "Bảo hành đăng nhập 24H (Chuẩn NCC)",
-        desc: "Đổi mới tức thì trong 24 giờ đầu nếu sai mật khẩu hoặc tài khoản chưa kích hoạt Plus từ nhà cung cấp.",
+        title: "Bảo hành đăng nhập 24H (Gói Tiết Kiệm)",
+        desc: "Đổi mới tức thì trong 24 giờ đầu nếu sai mật khẩu hoặc tài khoản chưa kích hoạt Plus từ hệ thống.",
       }
     : isApiKeyProduct || isCodex || isClaude
     ? {
@@ -85,13 +85,13 @@ export default function ProductDetailTabs({
       }
     : (slugLower.includes("gemini") && (slugLower.includes("family") || slugLower.includes("kbh") || titleLower.includes("kbh")))
     ? {
-        title: "Bảo hành đăng nhập 2H (Gói Trải Nghiệm - KBH)",
-        desc: "Bảo hành 1 đổi 1 trong 2 giờ đầu nếu sai mật khẩu hoặc lỗi 2FA lúc nhận. Sau khi đăng nhập thành công: Không bảo hành thời gian sử dụng theo chính sách NCC.",
+        title: "Bảo hành đăng nhập 2H (Gói Trải Nghiệm)",
+        desc: "Bảo hành 1 đổi 1 trong 2 giờ đầu nếu sai mật khẩu hoặc lỗi 2FA lúc nhận. Sau khi đăng nhập thành công: Không bảo hành thời gian sử dụng đối với gói trải nghiệm giá rẻ.",
       }
     : slugLower.includes("suno") || titleLower.includes("suno")
     ? {
         title: "Bảo hành login 24H & 2.500 Credits",
-        desc: "Bảo hành đăng nhập thành công và chuẩn xác số dư 2.500 credits ban đầu trong 24 giờ đầu theo chính sách NCC.",
+        desc: "Bảo hành đăng nhập thành công và chuẩn xác số dư 2.500 credits ban đầu trong 24 giờ đầu.",
       }
     : slugLower.includes("hma") || titleLower.includes("hma")
     ? {
@@ -105,7 +105,7 @@ export default function ProductDetailTabs({
       }
     : {
         title: "Bảo hành 1-Đổi-1 theo cam kết gói",
-        desc: "Mọi trục trặc kỹ thuật được xử lý đổi mới hoặc hoàn lại tương ứng theo đúng chính sách niêm yết của nhà cung cấp.",
+        desc: "Mọi trục trặc kỹ thuật được xử lý đổi mới hoặc hoàn lại tương ứng theo đúng chính sách niêm yết của từng gói dịch vụ.",
       };
 
   const handleCopy = (id: string, text: string) => {
@@ -264,7 +264,7 @@ main();`,
                 </div>
               </div>
 
-              {/* Strict Transparent Warranty Rules (Quy định nhà cung cấp - Tránh mất lòng) */}
+              {/* Strict Transparent Warranty Rules (Quy định bảo hành minh bạch) */}
               <div className="rounded-2xl border border-border bg-card p-6 sm:p-7 shadow-xs">
                 <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
                   <div className="flex items-center gap-2">
@@ -283,8 +283,8 @@ main();`,
                 </div>
                 <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
                   {isChatGPTBHF
-                    ? "Gói cao cấp được nhà cung cấp cam kết bảo hành 1 đổi 1 hoặc cấp lại Plus trong suốt 30 ngày sử dụng nếu phát sinh lỗi kỹ thuật:"
-                    : "Gói giá rẻ tiết kiệm hơn 70% so với giá gốc, áp dụng đúng chính sách nhà cung cấp: bảo hành đăng nhập & kiểm tra Plus chuẩn trong 24 giờ đầu:"}
+                    ? "Gói cao cấp cam kết bảo hành 1 đổi 1 hoặc cấp lại Plus trong suốt 30 ngày sử dụng nếu phát sinh lỗi kỹ thuật:"
+                    : "Gói giá rẻ tiết kiệm hơn 70% so với giá gốc, áp dụng chính sách: bảo hành đăng nhập & kiểm tra Plus chuẩn trong 24 giờ đầu:"}
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -320,7 +320,7 @@ main();`,
                     </div>
                     <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside leading-relaxed">
                       {!isChatGPTBHF && (
-                        <li><strong>Sau 24 giờ:</strong> Hết thời hạn bảo hành từ nhà cung cấp (không bảo hành tụt Plus hoặc đợt quét tài khoản từ OpenAI sau 24h).</li>
+                        <li><strong>Sau 24 giờ:</strong> Hết thời hạn bảo hành đăng nhập (không bảo hành tụt Plus hoặc đợt quét tài khoản từ OpenAI sau 24h).</li>
                       )}
                       <li>Khách hàng tự ý thay đổi Email tài khoản được cấp.</li>
                       <li>Khách hàng tự ý bấm hủy gói (Cancel Subscription) hoặc can thiệp thông tin Billing trong Cài đặt OpenAI.</li>

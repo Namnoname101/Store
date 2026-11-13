@@ -411,7 +411,7 @@ export default function CheckUsageClient() {
                   rel="noopener noreferrer"
                   className="min-h-[44px] inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold transition-all shadow-sm"
                 >
-                  <span>Mở cổng tra cứu trực tiếp của NCC (GenzShop)</span>
+                  <span>Mở cổng tra cứu dự phòng</span>
                   <ArrowUpRight className="h-4 w-4 text-rose-100" />
                 </a>
               </div>
@@ -421,14 +421,14 @@ export default function CheckUsageClient() {
 
         {/* Fallback direct link note */}
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground">
-          <span>💡 Nếu hệ thống tự động gặp tường lửa NCC, bạn có thể tra cứu trực tiếp:</span>
+          <span>💡 Nếu hệ thống tự động bận, bạn có thể tra cứu tại cổng dự phòng:</span>
           <a
             href="https://genzshop.vn/check-usage"
             target="_blank"
             rel="noopener noreferrer"
             className="min-h-[44px] inline-flex items-center gap-1 text-primary hover:underline font-semibold"
           >
-            <span>Cổng NCC GenzShop</span>
+            <span>Cổng tra cứu dự phòng</span>
             <ArrowUpRight className="h-3 w-3" />
           </a>
         </div>

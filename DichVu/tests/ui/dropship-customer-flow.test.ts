@@ -208,15 +208,21 @@ describe("Dropshipping Customer Flow & White-Label Refund Request", () => {
       "trumthe",
       "nhà cung cấp",
       "sàn ngoài",
-      "đối tác",
       "dropship",
-      "mua lại",
+      "dkeyshop",
+      "chuẩn ncc",
+      "xoài non",
     ];
 
     const TARGET_FILES = [
       "src/components/CheckoutClient.tsx",
       "src/components/SecretDisplay.tsx",
       "src/app/api/orders/[orderCode]/refund-request/route.ts",
+      "src/app/products/[slug]/page.tsx",
+      "src/components/ProductDetailTabs.tsx",
+      "src/components/Footer.tsx",
+      "src/components/ProductPurchaseBox.tsx",
+      "src/lib/product-guides.ts",
     ];
 
     it("ensures no supplier names or dropship jargon appear in target files", () => {

@@ -154,11 +154,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     : isApiKeyProduct
     ? "Bảo đảm kết nối ổn định & bảo lưu hạn mức trọn vẹn"
     : isChatGPTBHF
-    ? "1 Đổi 1 Trọn Vẹn 30 Ngày (Gói BHF Cao Cấp)"
+    ? "1 Đổi 1 Trọn Vẹn 30 Ngày (Gói Cao Cấp)"
     : isChatGPT
-    ? "Bảo hành đăng nhập 24H (Gói Tiết Kiệm - Chuẩn NCC)"
+    ? "Bảo hành đăng nhập 24H (Gói Tiết Kiệm)"
     : isGeminiKBH
-    ? "Bảo hành đăng nhập 2H (Gói Trải Nghiệm - KBH)"
+    ? "Bảo hành đăng nhập 2H (Gói Trải Nghiệm)"
     : isSuno
     ? "Bảo hành đăng nhập 24H & 2.500 Credits ban đầu"
     : isHMA

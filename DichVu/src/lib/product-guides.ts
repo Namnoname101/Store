@@ -304,7 +304,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 4: Sử dụng đầy đủ tính năng cao cấp của OpenAI",
       },
     ],
-    note: "QUY ĐỊNH BẢO HÀNH (GÓI TIẾT KIỆM): Bảo hành đăng nhập & kiểm tra Plus chuẩn trong 24H đầu (1 đổi 1 ngay nếu sai pass hoặc không có Plus). Sau 24H hết thời hạn bảo hành từ nhà cung cấp (không bảo hành tụt Plus hoặc đợt quét tài khoản từ OpenAI sau 24h). Nếu cần bảo hành trọn vẹn 30 ngày, quý khách nên chọn gói BHF.",
+    note: "QUY ĐỊNH BẢO HÀNH (GÓI TIẾT KIỆM): Bảo hành đăng nhập & kiểm tra Plus chuẩn trong 24H đầu (1 đổi 1 ngay nếu sai pass hoặc không có Plus). Sau 24H hết thời hạn bảo hành đăng nhập (không bảo hành tụt Plus hoặc đợt quét tài khoản từ OpenAI sau 24h). Quý khách cần bảo hành trọn vẹn 30 ngày vui lòng chọn gói Full 30 Ngày.",
     docsUrl: "https://help.openai.com",
   },
 
@@ -442,7 +442,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 5: Mời tối đa 5 tài khoản Gmail vào Family dùng chung 5TB",
       },
     ],
-    note: "QUY ĐỊNH BẢO HÀNH (GÓI TRẢI NGHIỆM - KBH): Bảo hành đăng nhập thành công và chuẩn xác thông tin tài khoản trong 2 giờ đầu (1 đổi 1 ngay nếu sai mật khẩu hoặc lỗi 2FA lúc nhận). Sau khi đăng nhập thành công: KHÔNG BẢO HÀNH THỜI GIAN SỬ DỤNG theo đúng chính sách của nhà cung cấp. LƯU Ý: Gmail này bị khóa hộp thư đến (không nhận được email/OTP bên ngoài) và chỉ dùng cho các dịch vụ Google (Gemini, Drive 5TB, Antigravity, NotebookLM). Khuyến cáo không lưu trữ tài liệu kinh doanh quan trọng duy nhất.",
+    note: "QUY ĐỊNH BẢO HÀNH (GÓI TRẢI NGHIỆM - KBH): Bảo hành đăng nhập thành công và chuẩn xác thông tin tài khoản trong 2 giờ đầu (1 đổi 1 ngay nếu sai mật khẩu hoặc lỗi 2FA lúc nhận). Sau khi đăng nhập thành công: KHÔNG BẢO HÀNH THỜI GIAN SỬ DỤNG theo đúng cam kết gói trải nghiệm. LƯU Ý: Gmail này bị khóa hộp thư đến (không nhận được email/OTP bên ngoài) và chỉ dùng cho các dịch vụ Google (Gemini, Drive 5TB, Antigravity, NotebookLM). Khuyến cáo không lưu trữ tài liệu kinh doanh quan trọng duy nhất.",
     docsUrl: "https://gemini.google.com",
   },
 };

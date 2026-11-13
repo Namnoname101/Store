@@ -571,7 +571,7 @@ export default function ProductPurchaseBox({
             <div className="flex items-center justify-between rounded-xl bg-destructive/10 border border-destructive/30 px-3.5 py-2 text-xs font-medium text-destructive">
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-destructive" />
-                <span>Tạm hết hàng tại nhà cung cấp</span>
+                <span>Sản phẩm tạm thời hết hàng</span>
               </div>
               <span className="text-xs text-destructive font-semibold uppercase">Hết hàng</span>
             </div>
