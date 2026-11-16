@@ -74,6 +74,19 @@ describe("Prompt Master UI Sub-Components", () => {
     expect(html).toContain("Tải .md");
   });
 
+  it("marks interrupted output as incomplete and offers retry without enabling export", () => {
+    const html = renderToStaticMarkup(React.createElement(ResultStep, {
+      prompt: "tạo website", masterPrompt: "partial", isStreaming: false,
+      hasError: true, onRetry: vi.fn(), onReset: vi.fn(),
+    }));
+    expect(html).toContain("Master Prompt chưa hoàn tất");
+    expect(html).toContain("Thử lại");
+    expect(html).not.toContain("sẵn sàng copy");
+    const buttons = html.match(/<button\b[^>]*>[\s\S]*?<\/button>/g) || [];
+    expect(buttons.find((button) => button.includes("Sao chép 1-Click"))).toContain('disabled=""');
+    expect(buttons.find((button) => button.includes("Tải .md"))).toContain('disabled=""');
+  });
+
   it("renders ClarifyModal popup with sequential progress and options", () => {
     const mockQuestions = [
       {

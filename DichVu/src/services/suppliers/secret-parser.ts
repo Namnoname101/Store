@@ -48,8 +48,9 @@ export function sanitizeInstructions(text: string, extractedCredentials: string[
       /(?:số dư còn lại|số dư ví|số dư|ví của bạn|💰)/i.test(trimmed) ||
       /(?:đơn hàng.*thành công|mua hàng.*thành công|thành công!|✅|🎉)/i.test(trimmed) ||
       /(?:cảm ơn bạn đã mua|cảm ơn quý khách|thanks for purchasing|chúc bạn một ngày tốt lành)/i.test(trimmed) ||
-      /(?:t\.me\/|telegram\.me\/|@\w+_bot)/i.test(trimmed) ||
+      /(?:t\.me\/|telegram\.me\/|@\w+_bot|@\w{4,}|nhắn\s*tin\s*trực\s*tiếp\s*admin)/i.test(trimmed) ||
       /(?:mô tả lúc bán|định dạng: email|loại tài khoản: dùng riêng tư)/i.test(trimmed) ||
+      /(?:vui\s*lòng\s*lưu\s*lại\s*thông\s*tin)/i.test(trimmed) ||
       /(?:bảo hành \d+\s*(?:ngày|tháng))/i.test(trimmed)
     ) {
       continue;
@@ -66,7 +67,7 @@ export function sanitizeInstructions(text: string, extractedCredentials: string[
       const parts = cred.split("|");
       const u = parts[0];
       const p = parts[1];
-      if ((u && trimmed.includes(u)) || (p && trimmed === p)) {
+      if ((u && trimmed.includes(u)) || (p && trimmed.includes(p))) {
         isCredentialLine = true;
         break;
       }
@@ -205,12 +206,30 @@ export function extractAccountsFromText(text: string): string[] {
     return results;
   }
 
+  // Format 0.5: Inline labeled credentials on same line (e.g. `Email: ... password: ... Full Mail: ...`)
+  const inlineLabeledRegex = /(?:Email|Tài\s*khoản|TK|User):\s*`?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|[^\s`|:]+)`?[^\S\r\n]+(?:password|pass|mật\s*khẩu|mk):\s*`?([^\s`|]+)`?(?:[^\S\r\n]+(?:Full\s*Mail|Mail|Email\s*gốc|Hotmail|2FA|Cookie|Token):\s*`?([^\n\r`]+)`?)?/gi;
+  let inlineMatch: RegExpExecArray | null;
+  while ((inlineMatch = inlineLabeledRegex.exec(text)) !== null) {
+    addResult(
+      inlineMatch[1],
+      inlineMatch[2],
+      inlineMatch[3] ? `Full Mail: ${cleanPart(inlineMatch[3])}` : undefined
+    );
+  }
+  if (results.length > 0) {
+    return results;
+  }
+
   // Format 1: Explicit labeled fields across lines:
   // (Tài khoản / Email / TK: ...) followed by (Mật khẩu / Pass / MK: ...)
-  const labeledRegex = /(?:(?<!(?:Loại|Tên|Dạng|Định dạng)\s*)(?:Tài\s*khoản|Email|Username|User|TK)):\s*`?([^\n\r`|]+)`?[\s\S]*?(?:Mật\s*khẩu|Pass|Password|MK):\s*`?([^\n\r`|]+)`?/gi;
+  const labeledRegex = /(?:(?<!(?:Loại|Tên|Dạng|Định dạng)\s*)(?:Tài\s*khoản|Email|Username|User|TK)):\s*`?([^\n\r`|]+)`?[\s\S]*?(?:Mật\s*khẩu|Pass|Password|MK):\s*`?([^\s\n\r`|]+)`?(?:[^\S\r\n]*(?:Full\s*Mail|Mail|2FA|Cookie|Token):\s*`?([^\n\r`]+)`?)?/gi;
   let match: RegExpExecArray | null;
   while ((match = labeledRegex.exec(text)) !== null) {
-    addResult(match[1], match[2]);
+    addResult(
+      match[1],
+      match[2],
+      match[3] ? `Full Mail: ${cleanPart(match[3])}` : undefined
+    );
   }
   if (results.length > 0) {
     return results;

@@ -103,6 +103,53 @@ Bảo hành 30 ngày
     expect(res.deliveredKeys).toEqual(["user1@gmail.com|pass1", "user2@gmail.com|pass2"]);
   });
 
+  it("should extract Canva account with inline Email, Password and Full Mail correctly", () => {
+    const rawCanvaMessage = `✅ ĐƠN HÀNG THÀNH CÔNG
+━━━━━━━━━━━━━━━━
+🧾 Mã đơn: TM8PARJ5IH
+🛒 Sản phẩm: 🎨 Tài khoản Canva Pro 1 tháng
+📊 Số lượng: 1
+💵 Thanh toán: 9.900đ
+💰 Số dư còn lại: 29.099đ
+━━━━━━━━━━━━━━━━
+📝 Mô tả lúc bán:
+✨ THÔNG TIN SẢN PHẨM:
+• Định dạng bàn giao: Email | Mật khẩu (Dùng riêng, full tính năng Pro).
+• Mở khóa trọn bộ: Thư viện mẫu premium, xóa nền 1 chạm, đổi kích cỡ ma thuật...
+
+📖 HƯỚNG DẪN ĐĂNG NHẬP:
+1️⃣ Truy cập canva.com hoặc mở ứng dụng Canva.
+2️⃣ Chọn "Tiếp tục bằng email" (Continue with email) rồi nhập Email được cấp.
+3️⃣ Điền Mật khẩu và bắt đầu thiết kế ngay!
+
+🛡️ CHÍNH SÁCH & BẢO HÀNH:
+• Bảo hành: Full trọn vẹn 30 ngày (1 đổi 1 nếu có lỗi).
+• Hỗ trợ nhanh: Nhắn tin trực tiếp Admin @tiensky123 để được hỗ trợ 24/7! 🚀
+━━━━━━━━━━━━━━━━
+🔐 THÔNG TIN TÀI KHOẢN
+1)
+Email: MintzRexford79@hotmail.com  password: canvapro@  Full Mail: MintzRexford79@hotmail.com|SFIsup9ZOx|M.C515_SN1.0
+━━━━━━━━━━━━━━━━
+⚠️ Vui lòng lưu lại thông tin.
+💚 Cảm ơn bạn đã mua hàng tại shop!`;
+
+    const parsed = extractDeliveredSecret(rawCanvaMessage);
+    expect(parsed.type).toBe("credentials");
+    expect(parsed.content).toContain("MintzRexford79@hotmail.com|canvapro@");
+    expect(parsed.content).toContain("Full Mail: MintzRexford79@hotmail.com|SFIsup9ZOx");
+
+    // Ensure password is clean without "Full Mail" attached to it
+    const parts = parsed.content.split("|");
+    expect(parts[0]).toBe("MintzRexford79@hotmail.com");
+    expect(parts[1]).toBe("canvapro@");
+
+    // Ensure supplier billing and private telegram handle are stripped
+    expect(parsed.instructions).not.toContain("9.900");
+    expect(parsed.instructions).not.toContain("29.099");
+    expect(parsed.instructions).not.toContain("TM8PARJ5IH");
+    expect(parsed.instructions).not.toContain("tiensky123");
+  });
+
   it("should extract license key and API tokens", () => {
     const resKey = extractDeliveredSecret("Key: VK7JG-NPHTM-C97JM-9MPGT-3V66T");
     expect(resKey.type).toBe("key");

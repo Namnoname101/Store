@@ -74,9 +74,33 @@ export function parseSecretItem(
     const parts = trimmed.split("|").map(cleanSecretToken).filter(Boolean);
     if (parts.length >= 2) {
       const u = parts[0];
-      const p = parts[1];
-      const twoFactor = parts[2] || undefined;
-      const recoveryEmail = parts.length > 3 ? parts.slice(3).join(" | ") : undefined;
+      let p = parts[1];
+      let twoFactor: string | undefined = undefined;
+      let recoveryEmail: string | undefined = undefined;
+
+      // Defensive fix: check if password contains trailing label like "  Full Mail: user@example.com"
+      const inlineLabelInPass = p.match(/^([^\s]+)\s+(?:Full\s*Mail|Mail|Email\s*gốc|Hotmail|2FA|Cookie|Token):\s*(.+)$/i);
+      if (inlineLabelInPass) {
+        p = inlineLabelInPass[1];
+        recoveryEmail = `Full Mail: ${inlineLabelInPass[2]}`;
+      }
+
+      if (parts.length > 2) {
+        const p2 = parts[2];
+        const isEmailLike = p2.includes("@") || /^(?:full\s*mail|mail|email|recovery)/i.test(p2);
+        const looksLike2FA = /^[A-Z0-9\s]{12,64}$/i.test(p2) && !isEmailLike;
+
+        if (looksLike2FA) {
+          twoFactor = p2;
+          if (parts.length > 3) {
+            const extraParts = parts.slice(3).join(" | ");
+            recoveryEmail = recoveryEmail ? `${recoveryEmail} | ${extraParts}` : extraParts;
+          }
+        } else {
+          const extraParts = parts.slice(2).join(" | ");
+          recoveryEmail = recoveryEmail ? `${recoveryEmail} | ${extraParts}` : extraParts;
+        }
+      }
 
       if (u && p && !/^(?:email|tài khoản|loại|định dạng)$/i.test(u)) {
         return {
@@ -88,6 +112,25 @@ export function parseSecretItem(
           raw: trimmed,
         };
       }
+    }
+  }
+
+  // 1.5 Inline labeled credentials on same line (e.g. Email: ... password: ... Full Mail: ...)
+  const inlineLabeledMatch = trimmed.match(
+    /(?:Email|Tài\s*khoản|TK|User):\s*`?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|[^\s`|:]+)`?[^\S\r\n]+(?:password|pass|mật\s*khẩu|mk):\s*`?([^\s`|]+)`?(?:[^\S\r\n]+(?:Full\s*Mail|Mail|Email\s*gốc|Hotmail|2FA|Cookie|Token):\s*`?([^\n\r`]+)`?)?/i
+  );
+  if (inlineLabeledMatch && inlineLabeledMatch[1] && inlineLabeledMatch[2]) {
+    const u = cleanSecretToken(inlineLabeledMatch[1]);
+    const p = cleanSecretToken(inlineLabeledMatch[2]);
+    const extra = inlineLabeledMatch[3] ? cleanSecretToken(inlineLabeledMatch[3]) : undefined;
+    if (u && p && !/^(?:pass|password|mật khẩu|mk)$/i.test(p)) {
+      return {
+        isAccount: true,
+        username: u,
+        password: p,
+        recoveryEmail: extra ? `Full Mail: ${extra}` : undefined,
+        raw: trimmed,
+      };
     }
   }
 
@@ -468,7 +511,7 @@ export default function SecretDisplay({
     }
 
     content += "\nCHÍNH SÁCH BẢO HÀNH & HỖ TRỢ:\n";
-    content += "- Bảo hành 1-đổi-1 theo đúng chính sách và thời hạn của từng gói sản phẩm.\n";
+    content += "- Bảo hành 1-đổi-1 trọn thời gian sử dụng theo cam kết từng gói sản phẩm.\n";
     content += "- Hỗ trợ kỹ thuật 24/7 qua Telegram: https://t.me/daitruongstore\n";
     content += "- Website chính thức: https://daitruongstore.fly.dev\n";
 

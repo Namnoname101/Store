@@ -79,4 +79,28 @@ describe("POST /api/tools/prompt-master/clarify", () => {
     expect(data.questions).toHaveLength(1);
     expect(data.questions[0].id).toBe("library");
   });
+
+  it("allows generation to continue when optional clarification is temporarily unavailable", async () => {
+    vi.spyOn(geminiClient, "callGeminiClarify").mockRejectedValue(new geminiClient.GeminiApiError(503));
+    const req = new NextRequest("http://localhost:3000/api/tools/prompt-master/clarify", {
+      method: "POST",
+      body: JSON.stringify({ prompt: "tạo website", category: "coding" }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({
+      success: true, clarificationUnavailable: true, isSufficient: false, questions: [],
+    });
+  });
+
+  it("does not hide a configuration error by skipping clarification", async () => {
+    vi.spyOn(geminiClient, "callGeminiClarify").mockRejectedValue(new geminiClient.GeminiApiError(403));
+    const req = new NextRequest("http://localhost:3000/api/tools/prompt-master/clarify", {
+      method: "POST",
+      body: JSON.stringify({ prompt: "tạo website", category: "coding" }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(500);
+    expect((await res.json()).clarificationUnavailable).toBeUndefined();
+  });
 });

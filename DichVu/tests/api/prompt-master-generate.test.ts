@@ -88,4 +88,52 @@ describe("POST /api/tools/prompt-master/generate", () => {
     expect(text).toContain("data: ");
     expect(text).toContain("# Master Prompt for Next.js");
   });
+
+  it("returns a useful 503 response when the AI remains unavailable", async () => {
+    vi.spyOn(geminiClient, "callGeminiGenerateStream").mockRejectedValue(new geminiClient.GeminiApiError(503));
+    const res = await POST(new NextRequest("http://localhost:3000/api/tools/prompt-master/generate", {
+      method: "POST", body: JSON.stringify({ prompt: "tạo website", category: "coding" }),
+    }));
+    expect(res.status).toBe(503);
+    expect((await res.json()).error).toContain("quá tải");
+  });
+
+  it("sends an SSE error without a success marker after a mid-stream failure", async () => {
+    let sent = false;
+    vi.spyOn(geminiClient, "callGeminiGenerateStream").mockResolvedValue(new ReadableStream({
+      pull(controller) {
+        if (!sent) {
+          sent = true;
+          controller.enqueue(new TextEncoder().encode("partial prompt"));
+        } else {
+          controller.error(new geminiClient.GeminiApiError(503));
+        }
+      },
+    }));
+    const res = await POST(new NextRequest("http://localhost:3000/api/tools/prompt-master/generate", {
+      method: "POST", body: JSON.stringify({ prompt: "tạo website", category: "coding" }),
+    }));
+    const sse = await res.text();
+    expect(sse).toContain("partial prompt");
+    expect(sse).toContain('"error":');
+    expect(sse).not.toContain("[DONE]");
+  });
+
+  it("preserves Vietnamese characters split between output chunks", async () => {
+    const bytes = new TextEncoder().encode("Ý tưởng hoàn chỉnh");
+    vi.spyOn(geminiClient, "callGeminiGenerateStream").mockResolvedValue(new ReadableStream({
+      start(controller) {
+        controller.enqueue(bytes.slice(0, 1));
+        controller.enqueue(bytes.slice(1));
+        controller.close();
+      },
+    }));
+    const res = await POST(new NextRequest("http://localhost:3000/api/tools/prompt-master/generate", {
+      method: "POST", body: JSON.stringify({ prompt: "tạo website", category: "coding" }),
+    }));
+    const sse = await res.text();
+    expect(sse).toContain("Ý tưởng hoàn chỉnh");
+    expect(sse).toContain("[DONE]");
+    expect(sse).not.toContain("�");
+  });
 });

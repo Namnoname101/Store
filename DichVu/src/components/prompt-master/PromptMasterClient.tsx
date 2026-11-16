@@ -58,7 +58,9 @@ export default function PromptMasterClient() {
 
       // If prompt is already detailed or no questions needed: skip clarify step and generate immediately
       if (data.isSufficient === true || !data.questions || data.questions.length === 0) {
-        setSufficiencyNotice("Ý tưởng của bạn đã rất rõ ràng! Đang tiến hành tạo Master Prompt...");
+        setSufficiencyNotice(data.clarificationUnavailable
+          ? "AI đang bận ở bước hỏi thêm. Đang tạo Master Prompt trực tiếp từ yêu cầu của bạn..."
+          : "Ý tưởng của bạn đã rất rõ ràng! Đang tiến hành tạo Master Prompt...");
         setQuestions([]);
         await handleGenerate({}, resolvedCat);
       } else {
@@ -84,7 +86,9 @@ export default function PromptMasterClient() {
     setErrorMessage(null);
 
     const answersToSend = customAnswers !== undefined ? customAnswers : answers;
+    setAnswers(answersToSend);
     const catToSend = overrideCategory || category;
+    let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
 
     try {
       const res = await fetch("/api/tools/prompt-master/generate", {
@@ -108,11 +112,13 @@ export default function PromptMasterClient() {
         throw new Error("Không thể kết nối luồng dữ liệu.");
       }
 
-      const reader = res.body.getReader();
+      reader = res.body.getReader();
       const decoder = new TextDecoder("utf-8");
       let streamBuffer = "";
+      let completed = false;
+      let hasText = false;
 
-      while (true) {
+      while (!completed) {
         const { value, done } = await reader.read();
         if (done) break;
 
@@ -123,24 +129,27 @@ export default function PromptMasterClient() {
         for (const line of lines) {
           const trimmed = line.trim();
           if (trimmed === "data: [DONE]") {
-            setIsStreaming(false);
+            completed = true;
             break;
           }
           if (trimmed.startsWith("data: ")) {
-            try {
-              const parsed = JSON.parse(trimmed.slice(6));
-              if (parsed.text) {
-                setMasterPrompt((prev) => prev + parsed.text);
-              }
-            } catch {
-              // Ignore invalid JSON chunks
+            const parsed = JSON.parse(trimmed.slice(6));
+            if (parsed.error) throw new Error(parsed.error);
+            if (parsed.text) {
+              hasText = true;
+              setMasterPrompt((prev) => prev + parsed.text);
             }
           }
         }
       }
+      if (!completed || !hasText) {
+        throw new Error("Kết nối AI bị gián đoạn, Master Prompt chưa hoàn tất. Vui lòng thử lại.");
+      }
     } catch (err: any) {
       setErrorMessage(err.message || "Đã xảy ra lỗi khi tạo Master Prompt.");
     } finally {
+      await reader?.cancel().catch(() => {});
+      reader?.releaseLock();
       setIsLoading(false);
       setIsStreaming(false);
     }
@@ -186,7 +195,7 @@ export default function PromptMasterClient() {
 
       {/* Error alert if any */}
       {errorMessage && (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-xs font-medium text-red-600 dark:text-red-400 text-center animate-fade-slide-in">
+        <div role="alert" className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-xs font-medium text-red-600 dark:text-red-400 text-center animate-fade-slide-in">
           {errorMessage}
         </div>
       )}
@@ -241,6 +250,8 @@ export default function PromptMasterClient() {
             targetAi={targetAi}
             masterPrompt={masterPrompt}
             isStreaming={isStreaming}
+            hasError={Boolean(errorMessage)}
+            onRetry={() => handleGenerate()}
             onReset={handleReset}
           />
         </div>

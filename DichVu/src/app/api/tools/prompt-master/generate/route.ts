@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limiter";
-import { callGeminiGenerateStream } from "@/lib/gemini-client";
+import { callGeminiGenerateStream, GeminiApiError, getGeminiErrorMessage } from "@/lib/gemini-client";
 import { CategoryType, OutputFormatType, PROMPT_CATEGORIES, TARGET_AI_OPTIONS, TargetAiType } from "@/lib/prompt-master-constants";
 
 export const dynamic = "force-dynamic";
@@ -70,19 +70,29 @@ export async function POST(req: NextRequest) {
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();
 
-    const sseTransform = new TransformStream<Uint8Array, Uint8Array>({
-      transform(chunk, controller) {
-        const text = decoder.decode(chunk);
-        if (text) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
+    const reader = rawStream.getReader();
+    const sseStream = new ReadableStream<Uint8Array>({
+      async pull(controller) {
+        try {
+          const { value, done } = await reader.read();
+          const text = decoder.decode(value, { stream: !done });
+          if (text) {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
+          }
+          if (done) {
+            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+            controller.close();
+          }
+        } catch (error) {
+          console.error("[Prompt Master Stream Error]:", error);
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: getGeminiErrorMessage(error) })}\n\n`));
+          controller.close();
         }
       },
-      flush(controller) {
-        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+      cancel(reason) {
+        return reader.cancel(reason);
       },
     });
-
-    const sseStream = rawStream.pipeThrough(sseTransform);
 
     return new Response(sseStream, {
       status: 200,
@@ -96,10 +106,10 @@ export async function POST(req: NextRequest) {
     console.error("[Prompt Master Generate Error]:", err);
     return NextResponse.json(
       {
-        error: "Không thể tạo Master Prompt lúc này. Vui lòng thử lại sau.",
+        error: getGeminiErrorMessage(err),
         details: process.env.NODE_ENV === "development" ? err.message : undefined,
       },
-      { status: 500 }
+      { status: err instanceof GeminiApiError && err.retryable ? 503 : 500 }
     );
   }
 }

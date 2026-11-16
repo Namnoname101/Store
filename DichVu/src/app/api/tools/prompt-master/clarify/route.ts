@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limiter";
-import { callGeminiClarify } from "@/lib/gemini-client";
+import { callGeminiClarify, GeminiApiError, getGeminiErrorMessage } from "@/lib/gemini-client";
 import { CategoryType, PROMPT_CATEGORIES } from "@/lib/prompt-master-constants";
 
 export const dynamic = "force-dynamic";
@@ -66,9 +66,18 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: any) {
     console.error("[Prompt Master Clarify Error]:", err);
+    // Clarification is optional; a temporary outage must not block generation.
+    if (err instanceof GeminiApiError && err.retryable) {
+      return NextResponse.json({
+        success: true,
+        isSufficient: false,
+        clarificationUnavailable: true,
+        questions: [],
+      });
+    }
     return NextResponse.json(
       {
-        error: "Không thể phân tích prompt vào lúc này. Vui lòng thử lại sau.",
+        error: getGeminiErrorMessage(err),
         details: process.env.NODE_ENV === "development" ? err.message : undefined,
       },
       { status: 500 }

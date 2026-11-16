@@ -1,15 +1,22 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   PROMPT_CATEGORIES,
   buildClarifySystemPrompt,
   buildGenerateSystemPrompt,
 } from "@/lib/prompt-master-constants";
-import { callGeminiClarify, callGeminiGenerateStream } from "@/lib/gemini-client";
+import { callGeminiClarify, callGeminiGenerateStream, GeminiApiError } from "@/lib/gemini-client";
 
 describe("Prompt Master Constants & Gemini Client", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
-    process.env.GEMINI_API_KEY = "test-gemini-key";
+    vi.stubEnv("GEMINI_API_KEY", "test-gemini-key");
+    vi.stubGlobal("fetch", vi.fn());
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
   });
 
   it("should define all 5 supported prompt categories", () => {
@@ -69,7 +76,7 @@ describe("Prompt Master Constants & Gemini Client", () => {
     const mockStream = new ReadableStream({
       start(controller) {
         controller.enqueue(
-          encoder.encode('data: {"candidates":[{"content":{"parts":[{"text":"# Master Prompt"}]}}]}\n\n')
+          encoder.encode('data: {"candidates":[{"content":{"parts":[{"text":"# Master Prompt"}]},"finishReason":"STOP"}]}\n\n')
         );
         controller.close();
       },
@@ -89,5 +96,70 @@ describe("Prompt Master Constants & Gemini Client", () => {
     const { value } = await reader.read();
     const text = new TextDecoder().decode(value);
     expect(text).toContain("# Master Prompt");
+  });
+
+  it("retries temporary overloads before returning clarification questions", async () => {
+    vi.useFakeTimers();
+    const fetchMock = vi.mocked(fetch)
+      .mockResolvedValueOnce(new Response("unavailable", { status: 503 }))
+      .mockResolvedValueOnce(new Response("unavailable", { status: 503 }))
+      .mockResolvedValueOnce(Response.json({
+        candidates: [{ content: { parts: [{ text: '{"is_sufficient":true,"questions":[]}' }] } }],
+      }));
+    const result = expect(callGeminiClarify("tạo website", "coding"))
+      .resolves.toMatchObject({ isSufficient: true });
+    await vi.runAllTimersAsync();
+    await result;
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    const [url, options] = fetchMock.mock.calls[0];
+    expect(String(url)).not.toContain("test-gemini-key");
+    expect(options?.headers).toMatchObject({ "x-goog-api-key": "test-gemini-key" });
+  });
+
+  it("stops after three temporary failures without leaking upstream error bodies", async () => {
+    vi.useFakeTimers();
+    vi.mocked(fetch).mockImplementation(async () => new Response("private upstream data", { status: 503 }));
+    const result = expect(callGeminiClarify("tạo website", "coding"))
+      .rejects.toThrow("Gemini API error (503)");
+    await vi.runAllTimersAsync();
+    await result;
+    expect(fetch).toHaveBeenCalledTimes(3);
+  });
+
+  it("does not retry invalid credentials", async () => {
+    vi.mocked(fetch).mockResolvedValue(new Response("invalid key", { status: 403 }));
+    await expect(callGeminiClarify("tạo website", "coding")).rejects.toMatchObject({ status: 403 });
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not mistake invalid clarification JSON for a sufficiently detailed idea", async () => {
+    vi.mocked(fetch).mockResolvedValue(Response.json({
+      candidates: [{ content: { parts: [{ text: '{"questions":[' }] } }],
+    }));
+    await expect(callGeminiClarify("tạo website", "coding")).rejects.toBeInstanceOf(GeminiApiError);
+  });
+
+  it("keeps all output parts and Vietnamese characters across split SSE bytes", async () => {
+    const bytes = new TextEncoder().encode('data: {"candidates":[{"content":{"parts":[{"text":"hidden","thought":true},{"text":"Ý tưởng"},{"text":" hoàn chỉnh"}]},"finishReason":"STOP"}]}\r\n\r\n');
+    const split = bytes.indexOf(0xc3) + 1;
+    vi.mocked(fetch).mockResolvedValue(new Response(new ReadableStream({
+      start(controller) {
+        controller.enqueue(bytes.slice(0, split));
+        controller.enqueue(bytes.slice(split));
+        controller.close();
+      },
+    })));
+    const stream = await callGeminiGenerateStream("tạo website", "coding");
+    expect(await new Response(stream).text()).toBe("Ý tưởng hoàn chỉnh");
+  });
+
+  it.each([
+    'data: {"error":{"code":503,"message":"overloaded"}}\n\n',
+    'data: {"candidates":[{"content":{"parts":[{"text":"partial"}]}}]}\n\n',
+    'data: {"candidates":[{"content":{"parts":[{"text":"partial"}]},"finishReason":"MAX_TOKENS"}]}\n\n',
+  ])("rejects an errored or incomplete upstream stream: %s", async (sse) => {
+    vi.mocked(fetch).mockResolvedValue(new Response(sse));
+    const stream = await callGeminiGenerateStream("tạo website", "coding");
+    await expect(new Response(stream).text()).rejects.toBeInstanceOf(GeminiApiError);
   });
 });

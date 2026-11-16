@@ -10,6 +10,8 @@ interface ResultStepProps {
   targetAi?: TargetAiType;
   masterPrompt: string;
   isStreaming: boolean;
+  hasError?: boolean;
+  onRetry?: () => void;
   onReset: () => void;
 }
 
@@ -25,6 +27,8 @@ export default function ResultStep({
   targetAi = "all",
   masterPrompt,
   isStreaming,
+  hasError = false,
+  onRetry,
   onReset,
 }: ResultStepProps) {
   const [copied, setCopied] = useState(false);
@@ -60,18 +64,27 @@ export default function ResultStep({
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-zinc-200 dark:border-zinc-800">
         <div>
           <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-            Master Prompt Hoàn Chỉnh
+            {hasError ? "Master Prompt chưa hoàn tất" : isStreaming ? "Đang tạo Master Prompt" : "Master Prompt Hoàn Chỉnh"}
           </h3>
           <p className="text-xs text-zinc-400 font-mono">
-            {isStreaming ? "đang tạo nội dung..." : "sẵn sàng copy & dán vào AI"}
+            {hasError ? "Bấm thử lại để tạo lại từ yêu cầu hiện tại" : isStreaming ? "đang tạo nội dung..." : "sẵn sàng copy & dán vào AI"}
           </p>
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
+          {hasError && onRetry && (
+            <button
+              type="button"
+              onClick={onRetry}
+              className="inline-flex items-center justify-center rounded-xl bg-zinc-900 px-4 py-2 text-xs font-semibold text-white dark:bg-zinc-100 dark:text-zinc-900"
+            >
+              Thử lại
+            </button>
+          )}
           <button
             type="button"
             onClick={handleCopy}
-            disabled={!masterPrompt || isStreaming}
+            disabled={!masterPrompt || isStreaming || hasError}
             className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold transition-all ${
               copied
                 ? "bg-emerald-600 text-white"
@@ -94,7 +107,7 @@ export default function ResultStep({
           <button
             type="button"
             onClick={handleDownload}
-            disabled={!masterPrompt || isStreaming}
+            disabled={!masterPrompt || isStreaming || hasError}
             className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 transition-colors"
           >
             <Download className="h-3.5 w-3.5" />
@@ -104,6 +117,7 @@ export default function ResultStep({
           <button
             type="button"
             onClick={onReset}
+            disabled={isStreaming}
             className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
             title="Làm câu mới"
           >
@@ -113,7 +127,7 @@ export default function ResultStep({
       </div>
 
       {/* Usage Guide Callout */}
-      <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-900/60 p-3 text-xs space-y-2">
+      {!hasError && <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-900/60 p-3 text-xs space-y-2">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <p className="text-zinc-600 dark:text-zinc-300 font-medium">
             {copied ? (
@@ -142,7 +156,7 @@ export default function ResultStep({
             ))}
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* Target Info Tag */}
       <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 px-1">
