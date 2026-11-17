@@ -245,73 +245,96 @@ export function matchProductBrand(product: FlattenedProduct, brandId: string): b
   const catSlug = (product.category?.slug || "").toLowerCase();
   const catName = (product.category?.name || "").toLowerCase();
 
+  // Strip supplementary notes in parentheses or brackets e.g. (Codex / Cursor / API) or [30 Ngày]
+  // to prevent secondary compatibility keywords from hijacking the primary brand
+  const coreTitle = titleLower.replace(/\([^)]*\)/g, " ").replace(/\[[^\]]*\]/g, " ").trim();
+
+  // Common distinct brand indicators
+  const isChatGPT = coreTitle.includes("chatgpt") || coreTitle.includes("openai") || /\bgpt\b/.test(coreTitle);
+  const isClaude = coreTitle.includes("claude") || slugLower.includes("claude");
+  const isCanva = coreTitle.includes("canva") || slugLower.includes("canva");
+  const isCapcut = coreTitle.includes("capcut") || slugLower.includes("capcut");
+
   switch (brandId) {
     case "claude":
-      return titleLower.includes("claude") || slugLower.includes("claude");
+      if (isChatGPT) return false;
+      return coreTitle.includes("claude") || slugLower.includes("claude");
     case "codex":
-      return (titleLower.includes("codex") || slugLower.includes("cdx")) && !titleLower.includes("claude");
+      if (isChatGPT || isClaude) return false;
+      return coreTitle.includes("codex") || slugLower.includes("cdx");
     case "chatgpt":
-      return titleLower.includes("chatgpt") || titleLower.includes("openai") || titleLower.includes("gpt");
+      return isChatGPT || titleLower.includes("chatgpt") || titleLower.includes("openai");
     case "cursor":
-      return titleLower.includes("cursor");
+      if (isChatGPT || isClaude) return false;
+      return coreTitle.includes("cursor") || slugLower.includes("cursor") || slugLower.startsWith("cur-");
     case "gemini":
-      return titleLower.includes("gemini");
+      if (isChatGPT || isClaude) return false;
+      return coreTitle.includes("gemini") || slugLower.includes("gemini") || slugLower.startsWith("gem-");
     case "deepseek":
-      return titleLower.includes("deepseek");
+      return coreTitle.includes("deepseek") || slugLower.includes("deepseek");
     case "grok":
-      return titleLower.includes("grok");
+      return coreTitle.includes("grok") || slugLower.includes("grok");
     case "capcut":
-      return titleLower.includes("capcut");
+      return isCapcut;
     case "canva":
-      return titleLower.includes("canva");
+      return isCanva;
     case "figma":
-      return titleLower.includes("figma") || slugLower.includes("figma");
+      return coreTitle.includes("figma") || slugLower.includes("figma");
     case "xingtu":
-      return titleLower.includes("xingtu") || slugLower.includes("xingtu") || titleLower.includes("醒图");
+      return coreTitle.includes("xingtu") || slugLower.includes("xingtu") || coreTitle.includes("醒图");
     case "photoroom":
-      return titleLower.includes("photoroom") || slugLower.includes("photoroom");
+      return coreTitle.includes("photoroom") || slugLower.includes("photoroom");
     case "quizlet":
-      return titleLower.includes("quizlet") || slugLower.includes("quizlet");
+      return coreTitle.includes("quizlet") || slugLower.includes("quizlet");
     case "duolingo":
-      return titleLower.includes("duolingo");
+      return coreTitle.includes("duolingo") || slugLower.includes("duolingo");
     case "meitu":
-      return titleLower.includes("meitu");
+      return coreTitle.includes("meitu") || slugLower.includes("meitu");
     case "adobe":
-      return titleLower.includes("adobe");
+      return coreTitle.includes("adobe") || slugLower.includes("adobe");
     case "office":
-      return titleLower.includes("office") || titleLower.includes("365") || titleLower.includes("microsoft");
+      // Avoid false positive matching "365 ngày" or "365d" in other products
+      if (/365\s*(ngày|ngay|d\b)/i.test(titleLower)) {
+        return coreTitle.includes("office") || coreTitle.includes("microsoft");
+      }
+      return coreTitle.includes("office") || coreTitle.includes("microsoft") || /\b(365|m365|o365)\b/.test(coreTitle);
     case "windows":
       return (
-        titleLower.includes("windows pro") ||
-        titleLower.includes("key windows") ||
-        titleLower.includes("win 10") ||
-        titleLower.includes("win 11")
+        coreTitle.includes("windows pro") ||
+        coreTitle.includes("key windows") ||
+        coreTitle.includes("win 10") ||
+        coreTitle.includes("win 11") ||
+        slugLower.includes("win-") ||
+        slugLower.includes("windows")
       );
     case "tiktok":
-      return titleLower.includes("tiktok") || slugLower.includes("tiktok");
+      if (isCanva || isCapcut) return false;
+      return coreTitle.includes("tiktok") || slugLower.includes("tiktok");
     case "facebook":
+      if (isCanva || isCapcut) return false;
       return (
-        (titleLower.includes("facebook") || slugLower.includes("facebook") || titleLower.includes("fb")) &&
-        !titleLower.includes("canva")
+        coreTitle.includes("facebook") ||
+        slugLower.includes("facebook") ||
+        /\bfb\b/.test(coreTitle)
       );
     case "nordvpn":
-      return titleLower.includes("nordvpn") || slugLower.includes("nordvpn");
+      return coreTitle.includes("nordvpn") || slugLower.includes("nordvpn");
     case "hma":
-      return titleLower.includes("hma") || slugLower.includes("hma");
+      return coreTitle.includes("hma") || slugLower.includes("hma");
     case "suno":
-      return titleLower.includes("suno") || slugLower.includes("suno");
+      return coreTitle.includes("suno") || slugLower.includes("suno");
     case "kling":
-      return titleLower.includes("kling") || slugLower.includes("kling");
+      return coreTitle.includes("kling") || slugLower.includes("kling");
     case "muse":
-      return titleLower.includes("muse") || slugLower.includes("muse");
+      return coreTitle.includes("muse") || slugLower.includes("muse");
     case "netflix":
-      return titleLower.includes("netflix");
+      return coreTitle.includes("netflix") || slugLower.includes("netflix");
     case "youtube":
-      return titleLower.includes("youtube");
+      return coreTitle.includes("youtube") || slugLower.includes("youtube");
     case "vps":
-      return titleLower.includes("vps") || catSlug.includes("vps") || catName.includes("vps") || titleLower.includes("máy chủ");
+      return coreTitle.includes("vps") || catSlug.includes("vps") || catName.includes("vps") || coreTitle.includes("máy chủ");
     default:
-      return titleLower.includes(brandId) || slugLower.includes(brandId);
+      return coreTitle.includes(brandId) || slugLower.includes(brandId);
   }
 }
 
