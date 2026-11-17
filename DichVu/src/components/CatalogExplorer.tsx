@@ -21,7 +21,9 @@ import GroupedProductCard from "@/components/GroupedProductCard";
 import { processSectionProducts, isApiProduct } from "@/lib/catalog-grouping";
 import QuickViewModal from "@/components/QuickViewModal";
 import BrandLogo from "@/components/BrandLogo";
-import BrandFilterNavigator, { BRAND_NAVIGATOR_ITEMS } from "@/components/BrandFilterNavigator";
+import BrandFilterNavigator from "@/components/BrandFilterNavigator";
+import { BRAND_NAVIGATOR_ITEMS, matchProductBrand } from "@/lib/brand-matching";
+export { matchProductBrand };
 import type { CategoryWithProducts } from "@/services/catalog.service";
 import type { Category } from "@prisma/client";
 
@@ -232,111 +234,6 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
 type FlattenedProduct = CategoryWithProducts["products"][0] & {
   category?: { name: string; slug: string };
 };
-
-/**
- * Strict Brand Matching: strictly checks product title, slug, and category metadata.
- * NEVER matches incidental marketing descriptions (e.g. Canva Pro mentioning "Facebook ratio",
- * CapCut mentioning "Windows/Mac", or Codex AI mentioning "Gemini 4 Argon").
- */
-export function matchProductBrand(product: FlattenedProduct, brandId: string): boolean {
-  if (!brandId || brandId === "all") return true;
-  const titleLower = product.title.toLowerCase();
-  const slugLower = (product.slug || "").toLowerCase();
-  const catSlug = (product.category?.slug || "").toLowerCase();
-  const catName = (product.category?.name || "").toLowerCase();
-
-  // Strip supplementary notes in parentheses or brackets e.g. (Codex / Cursor / API) or [30 Ngày]
-  // to prevent secondary compatibility keywords from hijacking the primary brand
-  const coreTitle = titleLower.replace(/\([^)]*\)/g, " ").replace(/\[[^\]]*\]/g, " ").trim();
-
-  // Common distinct brand indicators
-  const isChatGPT = coreTitle.includes("chatgpt") || coreTitle.includes("openai") || /\bgpt\b/.test(coreTitle);
-  const isClaude = coreTitle.includes("claude") || slugLower.includes("claude");
-  const isCanva = coreTitle.includes("canva") || slugLower.includes("canva");
-  const isCapcut = coreTitle.includes("capcut") || slugLower.includes("capcut");
-
-  switch (brandId) {
-    case "claude":
-      if (isChatGPT) return false;
-      return coreTitle.includes("claude") || slugLower.includes("claude");
-    case "codex":
-      if (isChatGPT || isClaude) return false;
-      return coreTitle.includes("codex") || slugLower.includes("cdx");
-    case "chatgpt":
-      return isChatGPT || titleLower.includes("chatgpt") || titleLower.includes("openai");
-    case "cursor":
-      if (isChatGPT || isClaude) return false;
-      return coreTitle.includes("cursor") || slugLower.includes("cursor") || slugLower.startsWith("cur-");
-    case "gemini":
-      if (isChatGPT || isClaude) return false;
-      return coreTitle.includes("gemini") || slugLower.includes("gemini") || slugLower.startsWith("gem-");
-    case "deepseek":
-      return coreTitle.includes("deepseek") || slugLower.includes("deepseek");
-    case "grok":
-      return coreTitle.includes("grok") || slugLower.includes("grok");
-    case "capcut":
-      return isCapcut;
-    case "canva":
-      return isCanva;
-    case "figma":
-      return coreTitle.includes("figma") || slugLower.includes("figma");
-    case "xingtu":
-      return coreTitle.includes("xingtu") || slugLower.includes("xingtu") || coreTitle.includes("醒图");
-    case "photoroom":
-      return coreTitle.includes("photoroom") || slugLower.includes("photoroom");
-    case "quizlet":
-      return coreTitle.includes("quizlet") || slugLower.includes("quizlet");
-    case "duolingo":
-      return coreTitle.includes("duolingo") || slugLower.includes("duolingo");
-    case "meitu":
-      return coreTitle.includes("meitu") || slugLower.includes("meitu");
-    case "adobe":
-      return coreTitle.includes("adobe") || slugLower.includes("adobe");
-    case "office":
-      // Avoid false positive matching "365 ngày" or "365d" in other products
-      if (/365\s*(ngày|ngay|d\b)/i.test(titleLower)) {
-        return coreTitle.includes("office") || coreTitle.includes("microsoft");
-      }
-      return coreTitle.includes("office") || coreTitle.includes("microsoft") || /\b(365|m365|o365)\b/.test(coreTitle);
-    case "windows":
-      return (
-        coreTitle.includes("windows pro") ||
-        coreTitle.includes("key windows") ||
-        coreTitle.includes("win 10") ||
-        coreTitle.includes("win 11") ||
-        slugLower.includes("win-") ||
-        slugLower.includes("windows")
-      );
-    case "tiktok":
-      if (isCanva || isCapcut) return false;
-      return coreTitle.includes("tiktok") || slugLower.includes("tiktok");
-    case "facebook":
-      if (isCanva || isCapcut) return false;
-      return (
-        coreTitle.includes("facebook") ||
-        slugLower.includes("facebook") ||
-        /\bfb\b/.test(coreTitle)
-      );
-    case "nordvpn":
-      return coreTitle.includes("nordvpn") || slugLower.includes("nordvpn");
-    case "hma":
-      return coreTitle.includes("hma") || slugLower.includes("hma");
-    case "suno":
-      return coreTitle.includes("suno") || slugLower.includes("suno");
-    case "kling":
-      return coreTitle.includes("kling") || slugLower.includes("kling");
-    case "muse":
-      return coreTitle.includes("muse") || slugLower.includes("muse");
-    case "netflix":
-      return coreTitle.includes("netflix") || slugLower.includes("netflix");
-    case "youtube":
-      return coreTitle.includes("youtube") || slugLower.includes("youtube");
-    case "vps":
-      return coreTitle.includes("vps") || catSlug.includes("vps") || catName.includes("vps") || coreTitle.includes("máy chủ");
-    default:
-      return coreTitle.includes(brandId) || slugLower.includes(brandId);
-  }
-}
 
 /**
  * Strict search matching: matches title, slug, or category name.
@@ -622,7 +519,7 @@ export default function CatalogExplorer({
         </div>
       </div>
 
-      {/* Brand & Resource Quick Navigator (Unified Capsule Grid - Kiểu 1) */}
+      {/* Brand & Resource Quick Navigator: Only shown on Mobile/Tablet (< 1024px) since Desktop already has the full Left Sidebar */}
       <BrandFilterNavigator
         activeBrandId={selectedBrandId}
         activeQuery={searchQuery}
@@ -638,8 +535,32 @@ export default function CatalogExplorer({
         brandCounts={brandCounts}
         totalCount={allProducts.length}
         filteredCount={filteredProducts.length}
-        className="mb-8"
+        className="mb-8 lg:hidden"
       />
+
+      {/* Desktop Active Filter Indicator when a brand is selected via Sidebar */}
+      {selectedBrandId && selectedBrandId !== "all" && (
+        <div className="hidden lg:flex items-center justify-between px-4 py-2.5 mb-6 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="text-slate-500 dark:text-zinc-400">Đang xem thương hiệu:</span>
+            <span className="font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
+              {BRAND_NAVIGATOR_ITEMS.find((b) => b.id === selectedBrandId)?.name || selectedBrandId}
+            </span>
+            <span className="text-slate-400 dark:text-zinc-500">({filteredProducts.length} sản phẩm)</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedBrandId("all");
+              router.replace("/#catalog", { scroll: false });
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/15 text-slate-700 dark:text-zinc-200 text-[11px] font-medium transition-colors"
+          >
+            <X className="w-3.5 h-3.5" />
+            <span>Xem tất cả sản phẩm</span>
+          </button>
+        </div>
+      )}
 
       {/* Main Container: Category Sections spanning full width */}
       {populatedSections.length > 0 ? (
@@ -938,52 +859,6 @@ export default function CatalogExplorer({
               );
             })}
           </div>
-
-          {/* Floating Right Edge Drawer Pills (Desktop: lg:flex) */}
-          {populatedSections.length > 1 && (
-            <aside
-              aria-label="Điều hướng nhanh danh mục"
-              className="hidden lg:flex fixed right-0 top-1/2 -translate-y-1/2 z-40 flex-col items-end gap-2 select-none pointer-events-none"
-            >
-              {populatedSections.map((sec) => {
-                const isActive = activeSectionId === sec.id;
-                const SecIcon = sec.icon;
-                return (
-                  <button
-                    key={sec.id}
-                    type="button"
-                    onClick={() => handlePillClick(sec.id)}
-                    className={`pointer-events-auto group relative flex items-center justify-end rounded-l-2xl border-y border-l transition-all duration-300 ease-out shadow-md overflow-hidden ${
-                      isActive
-                        ? "bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 border-zinc-700 dark:border-zinc-300 shadow-sm"
-                        : "bg-white/95 dark:bg-zinc-900/95 text-zinc-700 dark:text-zinc-200 border-zinc-200/90 dark:border-zinc-800 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-xl backdrop-blur-sm"
-                    }`}
-                    style={{ height: "42px" }}
-                    title={sec.title}
-                  >
-                    {/* Label that expands to the left of the icon on hover */}
-                    <div className="max-w-0 opacity-0 group-hover:max-w-[220px] group-hover:opacity-100 transition-all duration-300 ease-out whitespace-nowrap overflow-hidden flex items-center gap-2 text-xs font-semibold pl-0 group-hover:pl-3.5">
-                      <span>{sec.shortLabel}</span>
-                      <span
-                        className={`rounded-full px-1.5 py-0.5 text-xs font-bold ${
-                          isActive
-                            ? "bg-blue-700 text-white"
-                            : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700"
-                        }`}
-                      >
-                        {sec.products.length}
-                      </span>
-                    </div>
-
-                    {/* Authentic Icon container anchored to the right edge */}
-                    <div className="w-10 h-10 flex items-center justify-center shrink-0">
-                      <SecIcon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
-                    </div>
-                  </button>
-                );
-              })}
-            </aside>
-          )}
         </div>
       ) : (
         /* Polished Accessible Empty State */

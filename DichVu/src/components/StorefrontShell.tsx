@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -8,7 +8,6 @@ import CartDrawer from "@/components/CartDrawer";
 import FloatingSupport from "@/components/FloatingSupport";
 import LiveOrderTicker from "@/components/LiveOrderTicker";
 import AffiliateTracker from "@/components/AffiliateTracker";
-import { Suspense } from "react";
 
 export default function StorefrontShell({
   children,
