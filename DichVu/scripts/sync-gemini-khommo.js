@@ -115,7 +115,7 @@ async function main() {
       supplierStock: liveData.slot1Y.teleStock,
       markupType: 'FIXED_AMOUNT',
       markupValue: 59000,
-      isAutoSync: true,
+      isAutoSync: false,
       customConfig: JSON.stringify({
         teleCallback: liveData.slot1Y.teleCallback,
         source: "@KhoMMO_Market_bot",
@@ -132,7 +132,7 @@ async function main() {
       supplierStock: liveData.slot1Y.teleStock,
       markupType: 'FIXED_AMOUNT',
       markupValue: 59000,
-      isAutoSync: true,
+      isAutoSync: false,
       customConfig: JSON.stringify({
         teleCallback: liveData.slot1Y.teleCallback,
         source: "@KhoMMO_Market_bot",
@@ -183,7 +183,7 @@ async function main() {
       supplierStock: liveData.account3M.teleStock,
       markupType: 'FIXED_AMOUNT',
       markupValue: 70000,
-      isAutoSync: true,
+      isAutoSync: false,
       customConfig: JSON.stringify({
         teleCallback: liveData.account3M.teleCallback,
         source: "@KhoMMO_Market_bot"
@@ -197,7 +197,7 @@ async function main() {
       supplierStock: liveData.account3M.teleStock,
       markupType: 'FIXED_AMOUNT',
       markupValue: 70000,
-      isAutoSync: true,
+      isAutoSync: false,
       customConfig: JSON.stringify({
         teleCallback: liveData.account3M.teleCallback,
         source: "@KhoMMO_Market_bot"
