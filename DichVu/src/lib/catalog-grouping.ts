@@ -193,8 +193,9 @@ export function isDisallowedShortTermApiPackage(product: {
   const slug = (product.slug || "").toLowerCase();
   const text = `${title} ${desc} ${slug}`;
 
-  // Non-API products (consumer software, creative accounts, VPN, entertainment) are legitimate tools
+  // Non-API products (consumer software, creative accounts, VPN, entertainment, AI accounts) are legitimate tools
   if (
+    text.includes("gemini") ||
     text.includes("suno") ||
     text.includes("hma") ||
     text.includes("adobe") ||

@@ -185,6 +185,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "1 Đổi 1 suốt thời hạn (Bắt buộc dùng 1 máy, cấm logout, cấm xóa app)"
     : isGeminiKBH
     ? "Bảo hành đăng nhập 2H (Gói Trải Nghiệm)"
+    : titleLower.includes("bh 3 tháng") || titleLower.includes("bảo hành 3 tháng")
+    ? "Bảo hành 3 tháng 1 đổi 1 chu đáo"
+    : titleLower.includes("bh 1 tuần") || titleLower.includes("bảo hành 1 tuần")
+    ? "Bảo hành 1 tuần 1 đổi 1 chu đáo"
     : isSuno
     ? "Bảo hành đăng nhập 24H & 2.500 Credits ban đầu"
     : isHMA

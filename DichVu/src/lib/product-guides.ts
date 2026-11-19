@@ -223,6 +223,31 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
     note: "⚠️ LƯU Ý QUAN TRỌNG: Link chỉ có hiệu lực kích hoạt trong vòng 12 giờ kể từ thời điểm giao đơn. Sau 12 giờ link sẽ tự động hết hạn, shop xin phép từ chối xử lý và không hỗ trợ các trường hợp kích hoạt trễ. Quý khách vui lòng kích hoạt ngay khi nhận link.",
   },
 
+  "gemini-pro-5tb-1-nam-slot-chinh-chu": {
+    title: "Hướng dẫn kích hoạt Slot Gemini Pro & Google One 5TB 1 Năm Chính Chủ",
+    steps: [
+      "Sao chép đường link kích hoạt nhận được sau khi thanh toán thành công.",
+      "Mở trình duyệt, truy cập đường link và nhập địa chỉ Gmail chính chủ mà bạn cần nâng cấp gói.",
+      "Hệ thống tự động kích hoạt mời Gmail của bạn vào nhóm Google One Family bản quyền trong vòng 15-60 phút.",
+      "Mở hộp thư Gmail, kiểm tra thư mời từ Google và bấm 'Chấp nhận lời mời' (Accept Invitation).",
+      "Truy cập https://gemini.google.com và https://one.google.com để tận hưởng 5TB lưu trữ cùng mô hình Gemini 4 Argon & Gemini 3.8 Flash.",
+    ],
+    note: "Bảo hành 3 tháng 1 đổi 1 chu đáo. Quý khách vui lòng nhập chính xác Gmail cần nâng cấp để hệ thống xử lý nhanh chóng.",
+  },
+
+  "tai-khoan-gemini-pro-argon-4-chu-family-3-thang": {
+    title: "Hướng dẫn đăng nhập Tài khoản Gemini Pro 5TB (Chủ Family Mời 5 Gmail)",
+    steps: [
+      "Mở trình duyệt ẩn danh (Incognito) hoặc hồ sơ Chrome mới, truy cập https://accounts.google.com",
+      "Đăng nhập bằng thông tin tài khoản được cấp (Gmail | Mật khẩu).",
+      "Nếu Google yêu cầu xác minh 2 bước (2FA), hãy copy mã 2FA 16 ký tự và dán vào 2fa.live để lấy mã OTP 6 số điền vào.",
+      "Nếu Google hỏi Mail khôi phục, chọn 'Xác nhận email khôi phục' và điền địa chỉ Mail khôi phục được cấp kèm theo.",
+      "Truy cập https://gemini.google.com để sử dụng Gemini Pro & Gemini 4 Argon trong Google Antigravity & AI Studio.",
+      "Chia sẻ cho người thân: Truy cập https://myaccount.google.com/family/details, bạn là Family Manager, bấm 'Mời thành viên' và nhập tối đa 5 Gmail cá nhân để cùng dùng chung quyền lợi 5TB.",
+    ],
+    note: "Bảo hành 1 tuần 1 đổi 1. Tài khoản của shop cấp, bạn là chủ Family có quyền add thêm tối đa 5 người.",
+  },
+
   // ==========================================
   // 10. XINGTU (TỈNH TÚ) VIP
   // ==========================================
@@ -781,7 +806,7 @@ export function resolveProductInstruction(params: {
     return PRODUCT_GUIDES["meitu"];
   }
 
-  // 2.9 Gemini Pro & Google Drive 18 Tháng
+  // 2.9 Gemini Pro & Google Drive
   if (
     cleanSlug.includes("gemini") ||
     cleanTitle.includes("gemini") ||
@@ -791,7 +816,21 @@ export function resolveProductInstruction(params: {
     rawSecret.includes("serviceactivation") ||
     rawSecret.includes("geminiactivation")
   ) {
-    return PRODUCT_GUIDES["gemini-advanced-18-thang"];
+    if (
+      cleanSlug.includes("family") ||
+      cleanTitle.includes("family") ||
+      rawSecret.includes("2fa") ||
+      rawSecret.includes("|")
+    ) {
+      return (
+        PRODUCT_GUIDES["tai-khoan-gemini-pro-argon-4-chu-family-3-thang"] ||
+        PRODUCT_GUIDES["gemini-pro-argon-4-family-5tb"]
+      );
+    }
+    return (
+      PRODUCT_GUIDES["gemini-pro-5tb-1-nam-slot-chinh-chu"] ||
+      PRODUCT_GUIDES["gemini-advanced-18-thang"]
+    );
   }
 
   // 2.10 Adobe
