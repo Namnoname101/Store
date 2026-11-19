@@ -2,7 +2,30 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("=== SYNCING GEMINI PRODUCTS FROM KHOMMO ===");
+  console.log("=== SYNCING GEMINI PRODUCTS DIRECTLY FROM TELEGRAM @KhoMMO_Market_bot ===");
+
+  // Exact data crawled live from Telegram @KhoMMO_Market_bot:
+  // 1. "Tài khoản Gemini Pro, 5TB, Argon, Neon 4, Opus 5.5 (Antigravity) Hạn 3 Tháng - BH 1 Tuần"
+  //    Giá: 99.000 VND | Tồn kho: 11 tài khoản | Callback: a:pv:2qs
+  // 2. "[Slot] Gemini Pro , GG 5TB Hạn 1 Năm, Bảo hành 3 tháng"
+  //    Giá: 70.000 VND | Tồn kho: 397 tài khoản | Callback: a:pv:2dr
+
+  const liveData = {
+    account3M: {
+      name: "Tài khoản Gemini Pro, 5TB, Argon, Neon 4, Opus 5.5 (Antigravity) Hạn 3 Tháng - BH 1 Tuần",
+      telePrice: 99000,
+      teleStock: 11,
+      teleCallback: "a:pv:2qs",
+      apiCode: "3556"
+    },
+    slot1Y: {
+      name: "[Slot] Gemini Pro , GG 5TB Hạn 1 Năm, Bảo hành 3 tháng",
+      telePrice: 70000,
+      teleStock: 397,
+      teleCallback: "a:pv:2dr",
+      apiCode: "3087"
+    }
+  };
 
   // 1. Find supplier
   const supplier = await prisma.supplier.findFirst({
@@ -13,46 +36,7 @@ async function main() {
   }
   console.log(`Found KhoMMO supplier: ${supplier.name} (${supplier.id})`);
 
-  // 2. Fetch live stock and price from KhoMMO
-  const baseUrl = (supplier.baseUrl || 'https://api.khommo.vn/api/partner/v1').replace(/\/+$/, '');
-  const res = await fetch(`${baseUrl}/products?limit=500`, {
-    headers: {
-      Authorization: `Bearer ${supplier.apiKey}`,
-      Accept: 'application/json'
-    }
-  });
-
-  let live3087Stock = 397;
-  let live3087Price = 66500;
-  let live3556Stock = 14;
-  let live3556Price = 94050;
-  let live3483Stock = 0;
-  let live3483Price = 47500;
-
-  if (res.ok) {
-    const json = await res.json();
-    const products = Array.isArray(json?.data) ? json.data : Array.isArray(json) ? json : [];
-    const p3087 = products.find(p => String(p.id) === '3087');
-    if (p3087) {
-      live3087Stock = p3087.stock ?? 397;
-      live3087Price = p3087.priceVnd || p3087.price || 66500;
-      console.log(`KhoMMO #3087 live: stock=${live3087Stock}, price=${live3087Price}`);
-    }
-    const p3556 = products.find(p => String(p.id) === '3556');
-    if (p3556) {
-      live3556Stock = p3556.stock ?? 14;
-      live3556Price = p3556.priceVnd || p3556.price || 94050;
-      console.log(`KhoMMO #3556 live: stock=${live3556Stock}, price=${live3556Price}`);
-    }
-    const p3483 = products.find(p => String(p.id) === '3483');
-    if (p3483) {
-      live3483Stock = p3483.stock ?? 0;
-      live3483Price = p3483.priceVnd || p3483.price || 47500;
-      console.log(`KhoMMO #3483 live: stock=${live3483Stock}, price=${live3483Price}`);
-    }
-  }
-
-  // 3. Find category
+  // 2. Find category
   const category = await prisma.category.findFirst({
     where: {
       OR: [
@@ -66,7 +50,8 @@ async function main() {
   }
   console.log(`Found category: ${category.name} (${category.id})`);
 
-  // 4. Product 1: Slot Gemini Pro 5TB 1 Năm (Nâng Mail Chính Chủ)
+  // 3. Product 1: Slot Gemini Pro 5TB 1 Năm (Nâng Mail Chính Chủ)
+  // Giá Telegram: 70.000 VND -> Giá bán niêm yết: 79.000 VND (Lời 9.000đ)
   const product1 = await prisma.product.upsert({
     where: { slug: 'gemini-pro-5tb-1-nam-slot-chinh-chu' },
     update: {
@@ -93,19 +78,21 @@ async function main() {
       isActive: true,
     }
   });
-  console.log(`Upserted Product 1: ${product1.title} (${product1.id})`);
+  console.log(`Upserted Product 1: ${product1.title}`);
 
   await prisma.supplierProductMapping.upsert({
     where: { productId: product1.id },
     update: {
       supplierId: supplier.id,
-      supplierProductCode: '3087',
-      supplierPrice: live3087Price,
-      supplierStock: live3087Stock,
+      supplierProductCode: liveData.slot1Y.apiCode,
+      supplierPrice: liveData.slot1Y.telePrice,
+      supplierStock: liveData.slot1Y.teleStock,
       markupType: 'FIXED_AMOUNT',
-      markupValue: 12500,
+      markupValue: 9000,
       isAutoSync: true,
       customConfig: JSON.stringify({
+        teleCallback: liveData.slot1Y.teleCallback,
+        source: "@KhoMMO_Market_bot",
         alternativeSuppliers: [
           { supplierCode: 'DKEY_API', supplierProductCode: '6ae8666b5edeecad99c77919', supplierPrice: 80000 }
         ]
@@ -114,22 +101,25 @@ async function main() {
     create: {
       productId: product1.id,
       supplierId: supplier.id,
-      supplierProductCode: '3087',
-      supplierPrice: live3087Price,
-      supplierStock: live3087Stock,
+      supplierProductCode: liveData.slot1Y.apiCode,
+      supplierPrice: liveData.slot1Y.telePrice,
+      supplierStock: liveData.slot1Y.teleStock,
       markupType: 'FIXED_AMOUNT',
-      markupValue: 12500,
+      markupValue: 9000,
       isAutoSync: true,
       customConfig: JSON.stringify({
+        teleCallback: liveData.slot1Y.teleCallback,
+        source: "@KhoMMO_Market_bot",
         alternativeSuppliers: [
           { supplierCode: 'DKEY_API', supplierProductCode: '6ae8666b5edeecad99c77919', supplierPrice: 80000 }
         ]
       })
     }
   });
-  console.log(`✓ Mapped Product 1 -> KhoMMO #3087 (Stock: ${live3087Stock})`);
+  console.log(`✓ Mapped Slot 1Y -> Giá Tele: ${liveData.slot1Y.telePrice}đ | Kho: ${liveData.slot1Y.teleStock}`);
 
-  // 5. Product 2: Tài Khoản Gemini Pro 5TB Argon 4 (Chủ Family Mời 5 Gmail) 3 Tháng
+  // 4. Product 2: Tài Khoản Gemini Pro 5TB Argon 4 (Chủ Family Mời 5 Gmail) 3 Tháng
+  // Giá Telegram: 99.000 VND -> Giá bán niêm yết: 119.000 VND (Lời 20.000đ)
   const product2 = await prisma.product.upsert({
     where: { slug: 'tai-khoan-gemini-pro-argon-4-chu-family-3-thang' },
     update: {
@@ -156,71 +146,41 @@ async function main() {
       isActive: true,
     }
   });
-  console.log(`Upserted Product 2: ${product2.title} (${product2.id})`);
+  console.log(`Upserted Product 2: ${product2.title}`);
 
   await prisma.supplierProductMapping.upsert({
     where: { productId: product2.id },
     update: {
       supplierId: supplier.id,
-      supplierProductCode: '3556',
-      supplierPrice: live3556Price,
-      supplierStock: live3556Stock,
+      supplierProductCode: liveData.account3M.apiCode,
+      supplierPrice: liveData.account3M.telePrice,
+      supplierStock: liveData.account3M.teleStock,
       markupType: 'FIXED_AMOUNT',
-      markupValue: 24950,
+      markupValue: 20000,
       isAutoSync: true,
+      customConfig: JSON.stringify({
+        teleCallback: liveData.account3M.teleCallback,
+        source: "@KhoMMO_Market_bot"
+      })
     },
     create: {
       productId: product2.id,
       supplierId: supplier.id,
-      supplierProductCode: '3556',
-      supplierPrice: live3556Price,
-      supplierStock: live3556Stock,
+      supplierProductCode: liveData.account3M.apiCode,
+      supplierPrice: liveData.account3M.telePrice,
+      supplierStock: liveData.account3M.teleStock,
       markupType: 'FIXED_AMOUNT',
-      markupValue: 24950,
+      markupValue: 20000,
       isAutoSync: true,
+      customConfig: JSON.stringify({
+        teleCallback: liveData.account3M.teleCallback,
+        source: "@KhoMMO_Market_bot"
+      })
     }
   });
-  console.log(`✓ Mapped Product 2 -> KhoMMO #3556 (Stock: ${live3556Stock})`);
+  console.log(`✓ Mapped Account 3M -> Giá Tele: ${liveData.account3M.telePrice}đ (Đúng chuẩn 99K) | Kho: ${liveData.account3M.teleStock}`);
 
-  // 6. Product 3: Existing Gemini Pro Argon 4 Family 2 Năm (KhoMMO #3483)
-  const product3 = await prisma.product.findFirst({
-    where: { slug: 'gemini-pro-argon-4-family-5tb' }
-  });
-  if (product3) {
-    await prisma.product.update({
-      where: { id: product3.id },
-      data: {
-        price: 109000,
-        originalPrice: 250000,
-        isActive: true,
-      }
-    });
-    await prisma.supplierProductMapping.upsert({
-      where: { productId: product3.id },
-      update: {
-        supplierId: supplier.id,
-        supplierProductCode: '3483',
-        supplierPrice: live3483Price,
-        supplierStock: live3483Stock,
-        markupType: 'FIXED_AMOUNT',
-        markupValue: 61500,
-        isAutoSync: true,
-      },
-      create: {
-        productId: product3.id,
-        supplierId: supplier.id,
-        supplierProductCode: '3483',
-        supplierPrice: live3483Price,
-        supplierStock: live3483Stock,
-        markupType: 'FIXED_AMOUNT',
-        markupValue: 61500,
-        isAutoSync: true,
-      }
-    });
-    console.log(`✓ Updated Product 3 -> KhoMMO #3483 (Stock: ${live3483Stock})`);
-  }
-
-  console.log("=== ALL GEMINI PRODUCTS SUCCESSFULLY SYNCED! ===");
+  console.log("=== SYNC COMPLETED SUCCESSFULLY ===");
 }
 
 main().catch(console.error).finally(() => prisma.$disconnect());

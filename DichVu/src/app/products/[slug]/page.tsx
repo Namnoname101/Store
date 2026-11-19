@@ -117,7 +117,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   const isSuno = slugLower.includes("suno") || titleLower.includes("suno");
   const isHMA = slugLower.includes("hma") || titleLower.includes("hma");
-  const isGeminiKBH = slugLower.includes("gemini") && (slugLower.includes("family") || slugLower.includes("kbh") || titleLower.includes("kbh") || titleLower.includes("2 năm"));
+  const isGeminiKBH = slugLower.includes("gemini") && (slugLower.includes("kbh") || titleLower.includes("kbh") || titleLower.includes("2 năm") || slugLower.includes("2-nam"));
 
   const deliveryFormat = isSMM
     ? "Hệ thống tự động khởi tạo theo link mục tiêu"
