@@ -40,7 +40,7 @@ export default function FloatingSupport() {
   return (
     <div
       ref={containerRef}
-      className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-40 select-none print:hidden flex flex-col items-end"
+      className="fixed bottom-16 right-4 sm:bottom-6 sm:right-6 z-40 select-none print:hidden flex flex-col items-end"
     >
       {/* Expanded Support Card */}
       {isOpen && (

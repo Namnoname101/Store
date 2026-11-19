@@ -1,8 +1,9 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { prisma, ItemStatus, OrderStatus, FulfillmentType } from "@/lib/prisma";
 import { POST as validateCartRoute } from "@/app/api/cart/validate/route";
 import { POST as createOrderRoute } from "@/app/api/orders/route";
 import { createOrder, getOrderDetails } from "@/services/order.service";
+import * as UserAuth from "@/lib/user-auth";
 
 describe("Phase 3A: Cart & Guest Checkout Full Test Suite", () => {
   const TEST_CAT_SLUG = "phase3a-test-cat";
@@ -127,9 +128,26 @@ describe("Phase 3A: Cart & Guest Checkout Full Test Suite", () => {
       },
     });
     smmProdId = smmProd.id;
+
+    const testUser = await prisma.user.upsert({
+      where: { username: "phase3a-guest-tester" },
+      update: {},
+      create: {
+        username: "phase3a-guest-tester",
+        email: null,
+        passwordHash: "dummy",
+        role: "CUSTOMER",
+      },
+    });
+
+    vi.spyOn(UserAuth, "getUserSession").mockResolvedValue({
+      userId: testUser.id,
+      role: "CUSTOMER",
+    } as any);
   });
 
   afterAll(async () => {
+    vi.restoreAllMocks();
     const slugs = [
       PROD_IN_STOCK_SLUG,
       PROD_LIMITED_SLUG,

@@ -79,12 +79,12 @@ export default function ProductDetailTabs({
   const warrantyCommitment = isChatGPTFree
     ? {
         title: "Bảo hành đăng nhập & Verify Phone lần đầu",
-        desc: "Đổi mới tức thì nếu sai mật khẩu hoặc tài khoản chưa kích hoạt SĐT quốc tế lúc nhận theo chuẩn NCC D-Shop.",
+        desc: "Đổi mới tức thì nếu sai mật khẩu hoặc tài khoản chưa kích hoạt SĐT quốc tế lúc nhận theo tiêu chuẩn kiểm định tự động.",
       }
     : isChatGPTBusiness
     ? {
         title: "Bảo hành Full 30 Ngày 1 Đổi 1 (BHF)",
-        desc: "Cam kết 1 đổi 1 hoặc khôi phục quyền thành viên Workspace Business trong suốt 30 ngày sử dụng theo chuẩn NCC DKey.",
+        desc: "Cam kết 1 đổi 1 hoặc khôi phục quyền thành viên Workspace Business trong suốt 30 ngày sử dụng theo chuẩn kỹ thuật.",
       }
     : isChatGPTRealBHF
     ? {
@@ -93,13 +93,13 @@ export default function ProductDetailTabs({
       }
     : isChatGPTReal24H
     ? {
-        title: "Bảo hành đăng nhập 24H (Chuẩn NCC)",
-        desc: "Đổi mới tức thì trong 24 giờ đầu nếu sai mật khẩu hoặc tài khoản chưa kích hoạt Plus từ nhà cung cấp Xoài Non.",
+        title: "Bảo hành đăng nhập 24H (Gói Tiết Kiệm)",
+        desc: "Đổi mới tức thì trong 24 giờ đầu nếu sai mật khẩu hoặc tài khoản chưa kích hoạt Plus từ hệ thống.",
       }
     : isCapCut7D
     ? {
         title: "Bảo hành Full 7 Ngày 1 Đổi 1 (1 Máy)",
-        desc: "Cam kết 1 đổi 1 trong 7 ngày theo chuẩn NCC Xoài Non. Yêu cầu bắt buộc: Dùng trên 1 thiết bị duy nhất, không đăng xuất, không xóa app.",
+        desc: "Cam kết 1 đổi 1 trong 7 ngày theo tiêu chuẩn dịch vụ. Yêu cầu bắt buộc: Dùng trên 1 thiết bị duy nhất, không đăng xuất, không xóa app.",
       }
     : isCapCut
     ? {
@@ -113,13 +113,13 @@ export default function ProductDetailTabs({
       }
     : (slugLower.includes("gemini") && (slugLower.includes("family") || slugLower.includes("kbh") || titleLower.includes("kbh"))) || slugLower.includes("muse")
     ? {
-        title: "Bảo hành đăng nhập lần đầu (Gói KBH)",
-        desc: "Bảo hành 1 đổi 1 nếu sai mật khẩu hoặc lỗi lúc nhận. Sau khi đăng nhập: Không bảo hành thời gian sử dụng theo chính sách NCC.",
+        title: "Bảo hành đăng nhập 2H (Gói Trải Nghiệm)",
+        desc: "Bảo hành 1 đổi 1 trong 2 giờ đầu nếu sai mật khẩu hoặc lỗi 2FA lúc nhận. Sau khi đăng nhập thành công: Không bảo hành thời gian sử dụng đối với gói trải nghiệm giá rẻ.",
       }
     : slugLower.includes("suno") || titleLower.includes("suno")
     ? {
         title: "Bảo hành login 24H & 2.500 Credits",
-        desc: "Bảo hành đăng nhập thành công và chuẩn xác số dư 2.500 credits ban đầu trong 24 giờ đầu theo chính sách NCC.",
+        desc: "Bảo hành đăng nhập thành công và chuẩn xác số dư 2.500 credits ban đầu trong 24 giờ đầu.",
       }
     : slugLower.includes("hma") || titleLower.includes("hma")
     ? {
@@ -133,7 +133,7 @@ export default function ProductDetailTabs({
       }
     : {
         title: "Bảo hành 1-Đổi-1 theo cam kết gói",
-        desc: "Mọi trục trặc kỹ thuật được xử lý đổi mới hoặc hoàn lại tương ứng theo đúng chính sách niêm yết của nhà cung cấp.",
+        desc: "Mọi trục trặc kỹ thuật được xử lý đổi mới hoặc hoàn lại tương ứng theo đúng chính sách niêm yết của từng gói dịch vụ.",
       };
 
   const handleCopy = (id: string, text: string) => {
@@ -292,7 +292,7 @@ main();`,
                 </div>
               </div>
 
-              {/* Strict Transparent Warranty Rules (Quy định nhà cung cấp - Tránh mất lòng) */}
+              {/* Strict Transparent Warranty Rules (Quy định bảo hành minh bạch) */}
               <div className="rounded-2xl border border-border bg-card p-6 sm:p-7 shadow-xs">
                 <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
                   <div className="flex items-center gap-2">
@@ -319,12 +319,12 @@ main();`,
                 </div>
                 <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
                   {isChatGPTFree
-                    ? "Áp dụng đúng chính sách nhà cung cấp MMO D-Shop: Bảo hành tài khoản sạch, đăng nhập thành công và đã kích hoạt sẵn số điện thoại quốc tế:"
+                    ? "Áp dụng chính sách bảo hành tài khoản sạch, đăng nhập thành công và đã kích hoạt sẵn số điện thoại quốc tế:"
                     : isChatGPTBusiness
-                    ? "Áp dụng đúng chính sách nhà cung cấp DKeyShop: Bảo hành trọn vẹn 30 ngày quyền thành viên trong Workspace Business dùng chung:"
+                    ? "Áp dụng chính sách: Bảo hành trọn vẹn 30 ngày quyền thành viên trong Workspace Business dùng chung:"
                     : isChatGPTRealBHF
-                    ? "Gói cao cấp được nhà cung cấp cam kết bảo hành 1 đổi 1 hoặc cấp lại Plus trong suốt 30 ngày sử dụng nếu phát sinh lỗi kỹ thuật:"
-                    : "Gói giá rẻ tiết kiệm hơn 70% so với giá gốc, áp dụng đúng chính sách nhà cung cấp Shop Xoài Non: bảo hành đăng nhập & kiểm tra Plus chuẩn trong 24 giờ đầu:"}
+                    ? "Gói cao cấp cam kết bảo hành 1 đổi 1 hoặc cấp lại Plus trong suốt 30 ngày sử dụng nếu phát sinh lỗi kỹ thuật:"
+                    : "Gói giá rẻ tiết kiệm hơn 70% so với giá gốc, áp dụng chính sách: bảo hành đăng nhập & kiểm tra Plus chuẩn trong 24 giờ đầu:"}
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -382,7 +382,7 @@ main();`,
                           ? "TỪ CHỐI BẢO HÀNH (SAU KHI LOGIN)"
                           : isChatGPTBusiness || isChatGPTRealBHF
                           ? "TỪ CHỐI BẢO HÀNH (CÁC TRƯỜNG HỢP VI PHẠM)"
-                          : "TỪ CHỐI &amp; QUY ĐỊNH SAU 24H"}
+                          : "TỪ CHỐI & QUY ĐỊNH SAU 24H"}
                       </span>
                     </div>
                     <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside leading-relaxed">
@@ -409,9 +409,9 @@ main();`,
                         </>
                       ) : (
                         <>
-                          <li><strong>Sau 24 giờ:</strong> Hết thời hạn bảo hành từ nhà cung cấp (không bảo hành tụt Plus hoặc đợt quét tài khoản từ OpenAI sau 24h).</li>
+                          <li><strong>Sau 24 giờ:</strong> Hết thời hạn bảo hành đăng nhập (không bảo hành tụt Plus hoặc đợt quét tài khoản từ OpenAI sau 24h).</li>
                           <li>Khách hàng tự ý thay đổi Email tài khoản được cấp.</li>
-                          <li>Khách hàng <strong>XÓA 2FA</strong> (Chỉ được đổi 2FA qua 2fa.live, xóa 2FA nhà cung cấp từ chối bảo hành).</li>
+                          <li>Khách hàng <strong>XÓA 2FA</strong> (Chỉ được đổi 2FA qua 2fa.live, xóa 2FA sẽ từ chối bảo hành).</li>
                           <li>Khách hàng sử dụng Codex phải tự xác minh SMS.</li>
                         </>
                       )}
@@ -442,17 +442,17 @@ main();`,
             </div>
           )}
 
-          {/* CapCut Strict 1-Device Policy from NCC */}
+          {/* CapCut Strict 1-Device Policy */}
           {isCapCut && (
             <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 dark:bg-amber-950/10 p-5 sm:p-6 shadow-xs space-y-3">
               <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-bold text-sm">
                 <AlertTriangle className="h-4 w-4 shrink-0" />
-                <span>QUY ĐỊNH BẮT BUỘC TỪ NHÀ CUNG CẤP CAPCUT (ĐỌC KỸ TRƯỚC KHI DÙNG)</span>
+                <span>QUY ĐỊNH BẮT BUỘC KHI SỬ DỤNG CAPCUT PRO (ĐỌC KỸ TRƯỚC KHI DÙNG)</span>
               </div>
               <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside leading-relaxed">
                 <li><strong>Chỉ đăng nhập trên 1 thiết bị duy nhất:</strong> Tuyệt đối không đăng nhập máy thứ 2 (kể cả chuyển từ điện thoại sang máy tính).</li>
                 <li><strong>Tuyệt đối KHÔNG ĐĂNG XUẤT (Logout):</strong> Đăng xuất sẽ làm mất quyền Pro của tài khoản.</li>
-                <li><strong>Tuyệt đối KHÔNG XÓA APP:</strong> Xóa ứng dụng và cài lại sẽ được tính là thiết bị mới, nhà cung cấp sẽ từ chối bảo hành.</li>
+                <li><strong>Tuyệt đối KHÔNG XÓA APP:</strong> Xóa ứng dụng và cài lại sẽ được tính là thiết bị mới, hệ thống sẽ từ chối bảo hành.</li>
                 <li><strong>Chính sách bảo hành:</strong> Cam kết bảo hành 1 đổi 1 trong suốt {isCapCut7D ? "7 ngày" : "30 ngày"} nếu tài khoản tuân thủ đúng các quy định trên mà bị mất Pro.</li>
               </ul>
             </div>

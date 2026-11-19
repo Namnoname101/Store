@@ -253,3 +253,21 @@ code, kbd, samp, pre {
 .glow-mesh {
   background: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.18) 0%, rgba(99, 102, 241, 0.06) 40%, transparent 70%);
 }
+
+/* Layout Responsive Sidebar Offset & Mobile Dock Spacing */
+:root {
+  --sidebar-offset: 268px;
+}
+
+@media (min-width: 1024px) {
+  body:not(.admin-layout) {
+    padding-left: var(--sidebar-offset, 268px);
+    transition: padding-left 300ms ease-in-out;
+  }
+}
+
+@media (max-width: 1023px) {
+  body:not(.admin-layout) {
+    padding-bottom: 4rem;
+  }
+}

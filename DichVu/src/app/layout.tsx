@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import StorefrontShell from "@/components/StorefrontShell";
+import AppSidebar from "@/components/AppSidebar";
+import MobileBottomDock from "@/components/MobileBottomDock";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { CartProvider } from "@/contexts/CartContext";
+import { SidebarProvider } from "@/contexts/SidebarContext";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -29,7 +32,11 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <CartProvider>
-            <StorefrontShell>{children}</StorefrontShell>
+            <SidebarProvider>
+              <AppSidebar />
+              <StorefrontShell>{children}</StorefrontShell>
+              <MobileBottomDock />
+            </SidebarProvider>
           </CartProvider>
         </ThemeProvider>
       </body>

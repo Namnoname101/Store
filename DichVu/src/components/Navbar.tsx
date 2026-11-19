@@ -250,8 +250,8 @@ export default function Navbar() {
                   >
                     <Activity className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
                     <div className="flex flex-col">
-                      <span className="font-semibold text-xs">Kiểm Tra Dung Lượng Claude / Cursor</span>
-                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Check quota Claude tức thì</span>
+                      <span className="font-semibold text-xs">Check Quota Claude / Cursor</span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Check quota Claude & Cursor tức thì</span>
                     </div>
                   </Link>
                   <Link
@@ -261,7 +261,7 @@ export default function Navbar() {
                   >
                     <Terminal className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                     <div className="flex flex-col">
-                      <span className="font-semibold text-xs">Tra Cứu Quota Codex</span>
+                      <span className="font-semibold text-xs">Check Quota Codex</span>
                       <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Kiểm tra hạn mức Codex API & nạp thêm</span>
                     </div>
                   </Link>
@@ -420,7 +420,7 @@ export default function Navbar() {
               <span>⚡ API Quota</span>
             </Link>
             <Link href="/check-usage" onClick={() => setIsMobileMenuOpen(false)} className="p-3 rounded-xl bg-slate-50 dark:bg-[#131926] border border-slate-200/80 dark:border-zinc-800/80 flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-[#1c2538] transition-colors col-span-2 text-blue-600 dark:text-blue-400">
-              <span>📊 Kiểm Tra Dung Lượng API Claude / Cursor</span>
+              <span>📊 Check Quota Claude / Cursor</span>
             </Link>
             <Link href="/huong-dan/codex" onClick={() => setIsMobileMenuOpen(false)} className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2 text-emerald-500 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors col-span-2 font-bold">
               <span>🚀 Kích Hoạt Ứng Dụng ChatGPT (1-Click KhoDEE)</span>

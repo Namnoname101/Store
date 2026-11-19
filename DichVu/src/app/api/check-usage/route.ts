@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
         {
           success: false,
           error:
-            "Tường lửa của nhà cung cấp (Imunify360 WAF) đang chặn kết nối tự động từ máy chủ đám mây. Quý khách vui lòng bấm nút bên dưới để mở trang tra cứu trực tiếp của NCC.",
+            "Hệ thống đang bảo trì kết nối tự động. Quý khách vui lòng bấm nút bên dưới để mở trang tra cứu trực tiếp từ máy chủ dịch vụ.",
           directUrl: "https://genzshop.vn/check-usage",
         },
         { status: 403 }

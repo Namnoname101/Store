@@ -304,7 +304,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 4: Sử dụng đầy đủ tính năng cao cấp của OpenAI",
       },
     ],
-    note: "QUY ĐỊNH BẢO HÀNH (GÓI TIẾT KIỆM): Bảo hành đăng nhập & kiểm tra Plus chuẩn trong 24H đầu (1 đổi 1 ngay nếu sai pass hoặc không có Plus). Sau 24H hết thời hạn bảo hành từ nhà cung cấp (không bảo hành tụt Plus hoặc đợt quét tài khoản từ OpenAI sau 24h). Nếu cần bảo hành trọn vẹn 30 ngày, quý khách nên chọn gói BHF.",
+    note: "QUY ĐỊNH BẢO HÀNH (GÓI TIẾT KIỆM): Bảo hành đăng nhập & kiểm tra Plus chuẩn trong 24H đầu (1 đổi 1 ngay nếu sai pass hoặc không có Plus). Sau 24H hết thời hạn bảo hành đăng nhập (không bảo hành tụt Plus hoặc đợt quét tài khoản từ OpenAI sau 24h). Quý khách cần bảo hành trọn vẹn 30 ngày vui lòng chọn gói Full 30 Ngày.",
     docsUrl: "https://help.openai.com",
   },
 
@@ -442,7 +442,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 5: Mời tối đa 5 tài khoản Gmail vào Family dùng chung 5TB",
       },
     ],
-    note: "QUY ĐỊNH BẢO HÀNH (GÓI TRẢI NGHIỆM - KBH): Bảo hành đăng nhập thành công và chuẩn xác thông tin tài khoản trong 2 giờ đầu (1 đổi 1 ngay nếu sai mật khẩu hoặc lỗi 2FA lúc nhận). Sau khi đăng nhập thành công: KHÔNG BẢO HÀNH THỜI GIAN SỬ DỤNG theo đúng chính sách của nhà cung cấp. LƯU Ý: Gmail này bị khóa hộp thư đến (không nhận được email/OTP bên ngoài) và chỉ dùng cho các dịch vụ Google (Gemini, Drive 5TB, Antigravity, NotebookLM). Khuyến cáo không lưu trữ tài liệu kinh doanh quan trọng duy nhất.",
+    note: "QUY ĐỊNH BẢO HÀNH (GÓI TRẢI NGHIỆM - KBH): Bảo hành đăng nhập thành công và chuẩn xác thông tin tài khoản trong 2 giờ đầu (1 đổi 1 ngay nếu sai mật khẩu hoặc lỗi 2FA lúc nhận). Sau khi đăng nhập thành công: KHÔNG BẢO HÀNH THỜI GIAN SỬ DỤNG theo đúng cam kết gói trải nghiệm. LƯU Ý: Gmail này bị khóa hộp thư đến (không nhận được email/OTP bên ngoài) và chỉ dùng cho các dịch vụ Google (Gemini, Drive 5TB, Antigravity, NotebookLM). Khuyến cáo không lưu trữ tài liệu kinh doanh quan trọng duy nhất.",
     docsUrl: "https://gemini.google.com",
   },
 
@@ -469,7 +469,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 4: Trải nghiệm tính năng ChatGPT Business bản quyền",
       },
     ],
-    note: "ĐIỀU KIỆN BẢO HÀNH (BHF 30 NGÀY TỪ NCC): Bảo hành 1 ĐỔI 1 trọn vẹn 30 ngày nếu mất quyền thành viên hoặc Workspace bị gián đoạn kỹ thuật. TỪ CHỐI BẢO HÀNH NẾU: Khách hàng tự ý can thiệp phần Billing / Cài đặt quản trị của Workspace; tự ý bấm rời nhóm (Leave Workspace); vi phạm chính sách của OpenAI dẫn đến bị đình chỉ tài khoản.",
+    note: "ĐIỀU KIỆN BẢO HÀNH (BHF 30 NGÀY): Bảo hành 1 ĐỔI 1 trọn vẹn 30 ngày nếu mất quyền thành viên hoặc Workspace bị gián đoạn kỹ thuật. TỪ CHỐI BẢO HÀNH NẾU: Khách hàng tự ý can thiệp phần Billing / Cài đặt quản trị của Workspace; tự ý bấm rời nhóm (Leave Workspace); vi phạm chính sách của OpenAI dẫn đến bị đình chỉ tài khoản.",
     docsUrl: "https://help.openai.com",
   },
 
@@ -496,15 +496,15 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 4: Sử dụng trong môi trường phát triển mã nguồn",
       },
     ],
-    note: "QUY ĐỊNH BẢO HÀNH TỪ NCC: Bảo hành đăng nhập thành công lần đầu và tài khoản đã kích hoạt phone chuẩn 100% (1 đổi 1 ngay nếu sai mật khẩu hoặc lỗi lúc nhận). ĐÂY LÀ TÀI KHOẢN FREE ĐÃ VERIFY SMS (không phải gói trả phí Plus). TỪ CHỐI BẢO HÀNH sau khi đã đăng nhập thành công nếu khách hàng vi phạm chính sách của OpenAI hoặc tự ý thay đổi email tài khoản.",
+    note: "QUY ĐỊNH BẢO HÀNH: Bảo hành đăng nhập thành công lần đầu và tài khoản đã kích hoạt phone chuẩn 100% (1 đổi 1 ngay nếu sai mật khẩu hoặc lỗi lúc nhận). ĐÂY LÀ TÀI KHOẢN FREE ĐÃ VERIFY SMS (không phải gói trả phí Plus). TỪ CHỐI BẢO HÀNH sau khi đã đăng nhập thành công nếu khách hàng vi phạm chính sách của OpenAI hoặc tự ý thay đổi email tài khoản.",
     docsUrl: "https://platform.openai.com",
   },
 
   // ==========================================
-  // 22. CAPCUT PRO 7 NGÀY (BHF - CHUẨN NCC)
+  // 22. CAPCUT PRO 7 NGÀY (BHF 7 NGÀY)
   // ==========================================
   "capcut-pro-7-ngay": {
-    title: "Hướng dẫn đăng nhập & Quy định CapCut Pro 7 Ngày (BHF - Chuẩn NCC)",
+    title: "Hướng dẫn đăng nhập & Quy định CapCut Pro 7 Ngày (BHF 7 Ngày)",
     steps: [
       {
         text: "Bước 1: Mở ứng dụng CapCut trên máy tính (PC / Mac) hoặc điện thoại (iOS / Android).",
@@ -523,7 +523,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 4: Tận hưởng trọn bộ tính năng CapCut Pro",
       },
     ],
-    note: "QUY ĐỊNH BẮT BUỘC TỪ NCC XOÀI NON: Bảo hành 1 ĐỔI 1 trong 7 ngày nếu tài khoản mất Pro. BẮT BUỘC CHỈ SỬ DỤNG TRÊN 1 THIẾT BỊ DUY NHẤT. TUYỆT ĐỐI KHÔNG ĐĂNG XUẤT (LOGOUT), KHÔNG XÓA APP ĐỂ TRÁNH MẤT PRO. Nếu vi phạm quy định đăng nhập nhiều máy hoặc logout, nhà cung cấp sẽ từ chối bảo hành.",
+    note: "QUY ĐỊNH BẮT BUỘC SỬ DỤNG: Bảo hành 1 ĐỔI 1 trong 7 ngày nếu tài khoản mất Pro. BẮT BUỘC CHỈ SỬ DỤNG TRÊN 1 THIẾT BỊ DUY NHẤT. TUYỆT ĐỐI KHÔNG ĐĂNG XUẤT (LOGOUT), KHÔNG XÓA APP ĐỂ TRÁNH MẤT PRO. Nếu vi phạm quy định đăng nhập nhiều máy hoặc logout, hệ thống sẽ từ chối bảo hành.",
     docsUrl: "https://www.capcut.com",
   },
 
@@ -546,7 +546,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 3: Sử dụng đầy đủ tính năng CapCut Pro Full Date",
       },
     ],
-    note: "QUY ĐỊNH BẢO HÀNH TỪ NCC: Bảo hành 1 ĐỔI 1 trọn vẹn 30 ngày nếu tài khoản bị mất Pro trong thời gian sử dụng. Khách hàng sử dụng trên 1 thiết bị cá nhân, không chia sẻ cho nhiều người và không thay đổi thông tin email tài khoản.",
+    note: "QUY ĐỊNH BẢO HÀNH: Bảo hành 1 ĐỔI 1 trọn vẹn 30 ngày nếu tài khoản bị mất Pro trong thời gian sử dụng. Khách hàng sử dụng trên 1 thiết bị cá nhân, không chia sẻ cho nhiều người và không thay đổi thông tin email tài khoản.",
     docsUrl: "https://www.capcut.com",
   },
 
@@ -569,7 +569,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 3: Trải nghiệm học ngoại ngữ Super 12 tháng",
       },
     ],
-    note: "BẢN QUYỀN 12 THÁNG TỪ NCC: Bảo hành 1 đổi 1 hoặc khôi phục quyền lợi Super trong suốt 12 tháng nếu phát sinh lỗi gián đoạn từ hệ thống.",
+    note: "BẢN QUYỀN 12 THÁNG: Bảo hành 1 đổi 1 hoặc khôi phục quyền lợi Super trong suốt 12 tháng nếu phát sinh lỗi gián đoạn từ hệ thống.",
     docsUrl: "https://www.duolingo.com",
   },
 
@@ -592,7 +592,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 3: Thiết kế UI/UX chuyên nghiệp với Figma Pro",
       },
     ],
-    note: "BẢN QUYỀN 2 NĂM TỪ NCC: Bảo hành 1 đổi 1 trọn vẹn 2 năm theo chính sách giáo dục của Figma. Vui lòng không thay đổi email tài khoản.",
+    note: "BẢN QUYỀN 2 NĂM: Bảo hành 1 đổi 1 trọn vẹn 2 năm theo chính sách giáo dục của Figma. Vui lòng không thay đổi email tài khoản.",
     docsUrl: "https://help.figma.com",
   },
 
@@ -642,7 +642,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 3: Thiết kế không giới hạn với Canva Pro",
       },
     ],
-    note: "BẢO HÀNH FULL 30 NGÀY TỪ NCC: Bảo hành 1 đổi 1 trong suốt 30 ngày nếu tài khoản mất quyền Pro.",
+    note: "BẢO HÀNH FULL 30 NGÀY: Bảo hành 1 đổi 1 trong suốt 30 ngày nếu tài khoản mất quyền Pro.",
     docsUrl: "https://www.canva.com",
   },
 
@@ -665,7 +665,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 3: Chỉnh sửa ảnh và video chuyên nghiệp",
       },
     ],
-    note: "QUY ĐỊNH BẮT BUỘC TỪ NCC XOÀI NON: BẮT BUỘC chỉ sử dụng trên 1 máy duy nhất. Tuyệt đối không đăng xuất, không đăng nhập máy thứ 2, không xóa app để đảm bảo quyền lợi bảo hành 7 ngày.",
+    note: "QUY ĐỊNH BẮT BUỘC SỬ DỤNG: BẮT BUỘC chỉ sử dụng trên 1 máy duy nhất. Tuyệt đối không đăng xuất, không đăng nhập máy thứ 2, không xóa app để đảm bảo quyền lợi bảo hành 7 ngày.",
     docsUrl: "https://www.meitu.com",
   },
 
@@ -688,7 +688,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 3: Nâng cấp chất lượng video với Wink AI",
       },
     ],
-    note: "BẢO HÀNH 7 NGÀY TỪ NCC: Sử dụng trên 1 thiết bị cá nhân duy nhất, không thay đổi thông tin tài khoản để duy trì quyền lợi bảo hành.",
+    note: "BẢO HÀNH 7 NGÀY: Sử dụng trên 1 thiết bị cá nhân duy nhất, không thay đổi thông tin tài khoản để duy trì quyền lợi bảo hành.",
     docsUrl: "https://www.meitu.com/wink",
   },
 
@@ -711,7 +711,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 3: Bắt đầu khai thác kho tài nguyên Muse AI",
       },
     ],
-    note: "CHÍNH SÁCH BẢO HÀNH TỪ NCC (GÓI KBH): Bảo hành đăng nhập thành công và chuẩn xác số dư 31 tỷ token ban đầu lúc nhận. Sau khi đăng nhập thành công: KHÔNG BẢO HÀNH THỜI GIAN SỬ DỤNG theo đúng chính sách KBH của NCC.",
+    note: "CHÍNH SÁCH BẢO HÀNH (GÓI KBH): Bảo hành đăng nhập thành công và chuẩn xác số dư 31 tỷ token ban đầu lúc nhận. Sau khi đăng nhập thành công: KHÔNG BẢO HÀNH THỜI GIAN SỬ DỤNG đối với gói trải nghiệm giá rẻ.",
     docsUrl: "https://muse.ai",
   },
 };

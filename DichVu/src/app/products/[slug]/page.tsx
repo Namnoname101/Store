@@ -176,15 +176,15 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     : isChatGPTFree
     ? "1 Đổi 1 trong 24H nếu sai pass hoặc chưa SMS Verify"
     : isChatGPTBusiness
-    ? "1 Đổi 1 trọn vẹn 30 ngày (BHF 30D chuẩn NCC DKey)"
+    ? "1 Đổi 1 trọn vẹn 30 ngày (Gói Doanh Nghiệp BHF)"
     : isChatGPTPlusBHF
     ? "1 Đổi 1 Trọn Vẹn 30 Ngày (BHF 30D - Giữ nguyên 2FA)"
     : isChatGPTPlus24H
-    ? "Bảo hành đăng nhập 24H (Gói Tiết Kiệm - Chuẩn NCC Xoài Non)"
+    ? "Bảo hành đăng nhập 24H (Gói Tiết Kiệm)"
     : isCapCut
     ? "1 Đổi 1 suốt thời hạn (Bắt buộc dùng 1 máy, cấm logout, cấm xóa app)"
     : isGeminiKBH
-    ? "Bảo hành đăng nhập 2H (Gói Trải Nghiệm - KBH)"
+    ? "Bảo hành đăng nhập 2H (Gói Trải Nghiệm)"
     : isSuno
     ? "Bảo hành đăng nhập 24H & 2.500 Credits ban đầu"
     : isHMA

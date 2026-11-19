@@ -4,48 +4,11 @@ import React, { useState, useMemo } from "react";
 import BrandLogo from "@/components/BrandLogo";
 import { LayoutGrid, X, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import { AI_FRONTIER_MODELS } from "@/lib/constants/ai-models";
+import { BRAND_NAVIGATOR_ITEMS, type BrandFilterItem } from "@/lib/brand-matching";
+export { BRAND_NAVIGATOR_ITEMS, type BrandFilterItem };
 
-export interface BrandFilterItem {
-  id: string;
-  name: string;
-  query: string;
-  iconKey: string;
-  badge?: string;
-  hoverBorder?: string;
-  frontierModel?: typeof AI_FRONTIER_MODELS[keyof typeof AI_FRONTIER_MODELS];
-}
-
-export const BRAND_NAVIGATOR_ITEMS: BrandFilterItem[] = [
-  { id: "all", name: "Tất cả", query: "", iconKey: "all" },
-  { id: "claude", name: "Claude API", query: "claude", iconKey: "claude", badge: "5.5/5.6", hoverBorder: "hover:border-[#D97757]", frontierModel: AI_FRONTIER_MODELS.claude },
-  { id: "chatgpt", name: "ChatGPT", query: "chatgpt", iconKey: "openai", badge: "GPT-6/o3", hoverBorder: "hover:border-accent", frontierModel: AI_FRONTIER_MODELS.openai },
-  { id: "cursor", name: "Cursor AI", query: "cursor", iconKey: "cursor", badge: "PRO", hoverBorder: "hover:border-foreground/40" },
-  { id: "gemini", name: "Gemini", query: "gemini", iconKey: "gemini", badge: "ARGON 4", hoverBorder: "hover:border-blue-400", frontierModel: AI_FRONTIER_MODELS.gemini },
-  { id: "deepseek", name: "DeepSeek", query: "deepseek", iconKey: "deepseek", badge: "V3/R1", hoverBorder: "hover:border-indigo-400" },
-  { id: "codex", name: "Codex AI", query: "codex", iconKey: "codex", badge: "CREDIT", hoverBorder: "hover:border-accent" },
-  { id: "grok", name: "Grok AI", query: "grok", iconKey: "grok", badge: "xAI", hoverBorder: "hover:border-foreground/40" },
-  { id: "capcut", name: "CapCut Pro", query: "capcut", iconKey: "capcut", badge: "VIP", hoverBorder: "hover:border-cyan-500" },
-  { id: "canva", name: "Canva Pro", query: "canva", iconKey: "canva", badge: "PRO", hoverBorder: "hover:border-teal-500" },
-  { id: "figma", name: "Figma Pro", query: "figma", iconKey: "figma", badge: "2 NĂM", hoverBorder: "hover:border-purple-400" },
-  { id: "xingtu", name: "Xingtu VIP", query: "xingtu", iconKey: "xingtu", badge: "30D", hoverBorder: "hover:border-pink-500" },
-  { id: "photoroom", name: "Photoroom", query: "photoroom", iconKey: "photoroom", badge: "MAX", hoverBorder: "hover:border-purple-500" },
-  { id: "quizlet", name: "Quizlet Plus", query: "quizlet", iconKey: "quizlet", badge: "TEACHER", hoverBorder: "hover:border-cyan-400" },
-  { id: "duolingo", name: "Duolingo", query: "duolingo", iconKey: "duolingo", badge: "SUPER", hoverBorder: "hover:border-lime-500" },
-  { id: "meitu", name: "Meitu VIP", query: "meitu", iconKey: "meitu", badge: "VIP", hoverBorder: "hover:border-pink-500" },
-  { id: "adobe", name: "Adobe", query: "adobe", iconKey: "adobe", badge: "ALL/EXP", hoverBorder: "hover:border-red-500" },
-  { id: "office", name: "Office 365", query: "office", iconKey: "microsoft", badge: "1 NĂM", hoverBorder: "hover:border-amber-500" },
-  { id: "windows", name: "Key Windows", query: "windows", iconKey: "windows", badge: "PRO", hoverBorder: "hover:border-sky-500" },
-  { id: "tiktok", name: "TikTok", query: "tiktok", iconKey: "tiktok", badge: "BUFF", hoverBorder: "hover:border-pink-500" },
-  { id: "facebook", name: "Facebook", query: "facebook", iconKey: "facebook", badge: "BM", hoverBorder: "hover:border-blue-500" },
-  { id: "vps", name: "Cloud VPS", query: "vps", iconKey: "vps", badge: "NVME", hoverBorder: "hover:border-sky-400" },
-  { id: "nordvpn", name: "NordVPN", query: "nordvpn", iconKey: "nordvpn", badge: "VPN", hoverBorder: "hover:border-blue-400" },
-  { id: "netflix", name: "Netflix", query: "netflix", iconKey: "netflix", badge: "4K", hoverBorder: "hover:border-rose-500" },
-  { id: "youtube", name: "YouTube", query: "youtube", iconKey: "youtube", badge: "PREMIUM", hoverBorder: "hover:border-red-600" },
-  { id: "suno", name: "Suno AI", query: "suno", iconKey: "suno", badge: "2500 CRE", hoverBorder: "hover:border-pink-500" },
-  { id: "hma", name: "HMA VPN", query: "hma", iconKey: "hma", badge: "5 THIẾT BỊ", hoverBorder: "hover:border-sky-400" },
-  { id: "kling", name: "Kling AI", query: "kling", iconKey: "kling", badge: "VIDEO AI", hoverBorder: "hover:border-amber-400" },
-  { id: "muse", name: "MUSE AI", query: "muse", iconKey: "muse", badge: "31 TỶ", hoverBorder: "hover:border-purple-400" },
-];
+// Frontier AI Model Badges SSOT: "5.5/5.6", "GPT-6/o3", "ARGON 4", "PRO", "CREDIT"
+export const FRONTIER_NAV_BADGES = ["5.5/5.6", "GPT-6/o3", "ARGON 4", "PRO", "CREDIT"] as const;
 
 export interface BrandFilterNavigatorProps {
   activeBrandId?: string;
