@@ -23,7 +23,24 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}}catch(e){}})()`,
+            __html: `(function(){
+              try {
+                var t = localStorage.getItem('theme');
+                if (t === 'dark') { document.documentElement.classList.add('dark'); }
+                else { document.documentElement.classList.remove('dark'); }
+              } catch(e) {}
+              // Auto reload on stale deployment ChunkLoadError
+              window.addEventListener('error', function(e) {
+                if (e && e.message && /Loading chunk .* failed/i.test(e.message)) {
+                  window.location.reload();
+                }
+              });
+              window.addEventListener('unhandledrejection', function(e) {
+                if (e && e.reason && /Loading chunk .* failed|ChunkLoadError/i.test(e.reason.message || String(e.reason))) {
+                  window.location.reload();
+                }
+              });
+            })()`,
           }}
         />
       </head>

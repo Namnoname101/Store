@@ -1057,7 +1057,7 @@ export default function ProductPurchaseBox({
               disabled
               className="w-full rounded-xl bg-muted py-3 px-6 text-sm font-semibold text-muted-foreground cursor-not-allowed"
             >
-              Tạm hết hàng
+              Hết hàng
             </button>
           )}
         </div>

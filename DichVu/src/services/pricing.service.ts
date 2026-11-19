@@ -145,7 +145,8 @@ export async function syncProductFromSupplier(
     }
   }
 
-  const shouldBeActive = totalStock > 0;
+  // Keep product active so it displays on storefront as "Hết hàng" with disabled purchase button instead of disappearing
+  const shouldBeActive = mapping.product.isActive || totalStock > 0;
   // Price Lock Guard: if isAutoSync is false, preserve the admin's manual fixed price
   const targetRetailPrice = mapping.isAutoSync
     ? calculateRetailPrice(effectiveSupplierPrice, mapping.markupType, mapping.markupValue)
@@ -183,7 +184,7 @@ export async function syncProductFromSupplier(
     retailPrice: updatedProduct.price,
     inStock: totalStock,
     isActive: updatedProduct.isActive,
-    isPaused: !updatedProduct.isActive,
+    isPaused: totalStock === 0,
   };
 }
 

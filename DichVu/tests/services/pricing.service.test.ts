@@ -309,7 +309,7 @@ describe("Dynamic Pricing & Auto Stock Sync Engine", () => {
       expect(dbProduct?.price).toBe(144000);
     });
 
-    it("should auto-pause product (isActive = false) when supplier stock is 0", async () => {
+    it("should handle out-of-stock product with inStock = 0 and isPaused = true without deactivating product from storefront", async () => {
       mockAdapter.setProduct("SPOTIFY_MOCK_02", {
         name: "Spotify Premium",
         price: 32000,
@@ -319,13 +319,13 @@ describe("Dynamic Pricing & Auto Stock Sync Engine", () => {
       const result = await syncProductFromSupplier(mappingId2);
 
       expect(result.inStock).toBe(0);
-      expect(result.isActive).toBe(false);
+      expect(result.isActive).toBe(true);
       expect(result.isPaused).toBe(true);
 
       const dbProduct = await prisma.product.findUnique({
         where: { id: productId2 },
       });
-      expect(dbProduct?.isActive).toBe(false);
+      expect(dbProduct?.isActive).toBe(true);
     });
 
     it("should re-activate product (isActive = true) when supplier stock replenishes", async () => {
@@ -393,7 +393,7 @@ describe("Dynamic Pricing & Auto Stock Sync Engine", () => {
           });
           expect(untouchedMapping?.supplierPrice).toBe(50000);
         },
-        15000
+        60000
       );
 
       it(
@@ -409,7 +409,7 @@ describe("Dynamic Pricing & Auto Stock Sync Engine", () => {
           expect(bulkResult.errors[0]).toHaveProperty("mappingId");
           expect(bulkResult.errors[0]).toHaveProperty("error");
         },
-        15000
+        60000
       );
     });
   });

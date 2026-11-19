@@ -117,6 +117,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   const isSuno = slugLower.includes("suno") || titleLower.includes("suno");
   const isHMA = slugLower.includes("hma") || titleLower.includes("hma");
+  const isGeminiSlot = slugLower.includes("gemini") && slugLower.includes("slot");
+  const isGeminiFamily =
+    slugLower.includes("gemini") &&
+    (slugLower.includes("chu-family") || slugLower.includes("family")) &&
+    !isGeminiSlot;
   const isGeminiKBH = slugLower.includes("gemini") && (slugLower.includes("kbh") || titleLower.includes("kbh") || titleLower.includes("2 năm") || slugLower.includes("2-nam"));
 
   const deliveryFormat = isSMM
@@ -131,6 +136,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Tài khoản cấp sẵn (Email | Pass) - Tuyệt đối không xóa 2FA"
     : isCapCut
     ? "Tài khoản cấp sẵn (Chỉ dùng 1 máy duy nhất - Không logout)"
+    : isGeminiSlot
+    ? "Nâng cấp trên chính Gmail cá nhân của bạn (Cấp link 24/7)"
+    : isGeminiFamily
+    ? "Cấp sẵn định dạng: Gmail | Pass | 2FA | MKP (Chủ Family add 5 người)"
     : product.type === "LICENSE_KEY"
     ? "Mã bản quyền / API Key cấp tức thì sau thanh toán"
     : product.type === "ACCOUNT"
@@ -155,6 +164,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "7 ngày sử dụng Pro (BHF 7 ngày - 1 Máy)"
     : isCapCut30D
     ? "30 ngày sử dụng Pro (BHF 30 ngày - 1 Máy)"
+    : isGeminiFamily
+    ? "90 ngày (3 tháng) - Chủ Family quản lý 5TB"
+    : isGeminiSlot
+    ? "12 tháng (1 năm) - Nâng mail chính chủ 5TB"
     : isGeminiKBH || titleLower.includes("2 năm") || slugLower.includes("2-nam")
     ? "24 tháng (Hạn 2 năm) - Gói KBH"
     : isSuno

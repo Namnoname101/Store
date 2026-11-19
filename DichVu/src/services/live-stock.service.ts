@@ -179,14 +179,9 @@ async function executeLiveStockCheck(productIdOrSlug: string): Promise<LiveStock
       });
 
       // Update product status
+      // Out-of-stock products remain active on storefront displaying "Hết hàng" with disabled purchase button
       const totalAvail = localStock + liveSupplierStock;
-      if (totalAvail === 0 && product.isActive) {
-        await prisma.product.update({
-          where: { id: product.id },
-          data: { isActive: false },
-        });
-        product.isActive = false;
-      } else if (totalAvail > 0 && !product.isActive) {
+      if (totalAvail > 0 && !product.isActive) {
         await prisma.product.update({
           where: { id: product.id },
           data: { isActive: true },
