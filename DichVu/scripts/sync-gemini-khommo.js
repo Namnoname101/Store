@@ -52,13 +52,39 @@ async function main() {
 
   // 3. Product 1: Slot Gemini Pro 5TB 1 Năm (Nâng Mail Chính Chủ)
   // Giá Telegram: 70.000 VND -> Giá bán niêm yết: 79.000 VND (Lời 9.000đ)
+  const slotDescription = `Gói nâng cấp bản quyền Google Gemini Pro & Google One 5TB thời hạn 1 năm trực tiếp vào tài khoản Gmail chính chủ của bạn (Dạng tham gia Family Google).
+
+📋 ĐẶC QUYỀN GÓI PRO & GOOGLE ONE 5TB:
+• Mở khóa mô hình AI tiên tiến: Gemini 4 Argon & Gemini 3.8 Flash trong Google Antigravity & AI Studio.
+• Dung lượng lưu trữ: Tặng kèm 5.000GB (5TB) dung lượng Google One dùng chung cho Google Drive, Gmail, Google Photos.
+• Bộ công cụ độc quyền: Mở khóa đầy đủ NotebookLM và 1.000 Credit tạo video Google Veo 3.
+• Nâng mail chính chủ: Kích hoạt trực tiếp trên Gmail của bạn, không đổi tài khoản, bảo mật dữ liệu tuyệt đối.
+
+🚀 QUY TRÌNH KÍCH HOẠT & NHẬN HÀNG:
+• Hình thức: Sau khi thanh toán, hệ thống tự động cấp link kích hoạt tức thì 24/7.
+• Thao tác: Quý khách chỉ cần mở link và nhập địa chỉ Gmail chính chủ cần nâng cấp.
+• Thời gian hoàn thành: Đơn hàng hoàn tất và lời mời gia nhập Family gửi về hộp thư trong khoảng 15 - 60 phút.
+• Chính sách bảo hành: Bảo hành 3 tháng 1 đổi 1 chu đáo trong suốt quá trình sử dụng.`;
+
+  const accountDescription = `Tài khoản Google Gemini Pro bản quyền (Chủ Family) sở hữu 5TB lưu trữ Google One, kích hoạt sẵn mô hình Gemini 4 Argon và Gemini 3.8 Flash trong Google Antigravity & AI Studio.
+
+📋 THÔNG TIN & ĐỊNH DẠNG BÀN GIAO:
+• Định dạng cấp sẵn: Gmail | Pass | 2FA | MKP (Mật khẩu phụ / mail khôi phục)
+• Vai trò tài khoản: Tài khoản của shop cấp. Là chủ Family có thể tùy chọn add thêm tối đa 5 người dùng chung 5TB dung lượng và các quyền lợi AI cao cấp.
+• Khả năng tương thích AI: Sử dụng mượt mà Gemini 4 Argon, Gemini 3.8 Flash, Neon 4, Claude Opus 5.5, Sonnet 5.5, Hydrogen trong Google Antigravity & Google AI Studio.
+• Đầy đủ đặc quyền: Trọn vẹn tính năng gói Gemini Pro & 5.000GB Google One.
+
+⚠️ LƯU Ý KỸ THUẬT QUAN TRỌNG:
+• Gmail bị hạn chế không đọc được thư bên ngoài. Tài khoản chuyên dụng đăng nhập và vận hành các dịch vụ Google (Gemini, Drive, AI Studio, Antigravity, NotebookLM). Khuyến cáo không dùng để nhận mã OTP dịch vụ ngoài.
+• Chính sách bảo hành: Bảo hành 1 Tuần (7 ngày) 1 đổi 1 chu đáo nếu phát sinh lỗi đăng nhập hoặc mất quyền lợi gói Pro.`;
+
   const product1 = await prisma.product.upsert({
     where: { slug: 'gemini-pro-5tb-1-nam-slot-chinh-chu' },
     update: {
       title: 'Slot Gemini Pro & Google One 5TB Hạn 1 Năm (Nâng Mail Chính Chủ) - BH 3 Tháng',
       price: 79000,
       originalPrice: 190000,
-      description: 'Gói nâng cấp bản quyền Google Gemini Pro & Google One 5TB thời hạn 1 năm trực tiếp vào tài khoản Gmail chính chủ của bạn (Dạng tham gia Family Google). Mở khóa mô hình Gemini 4 Argon, Gemini 3.8 Flash, NotebookLM, tặng kèm 5TB Google Drive và 1.000 Credit Veo 3. Bảo hành 3 tháng 1 đổi 1 chu đáo.',
+      description: slotDescription,
       categoryId: category.id,
       type: 'ACCOUNT',
       fulfillmentType: 'API_DROPSHIP',
@@ -70,7 +96,7 @@ async function main() {
       slug: 'gemini-pro-5tb-1-nam-slot-chinh-chu',
       price: 79000,
       originalPrice: 190000,
-      description: 'Gói nâng cấp bản quyền Google Gemini Pro & Google One 5TB thời hạn 1 năm trực tiếp vào tài khoản Gmail chính chủ của bạn (Dạng tham gia Family Google). Mở khóa mô hình Gemini 4 Argon, Gemini 3.8 Flash, NotebookLM, tặng kèm 5TB Google Drive và 1.000 Credit Veo 3. Bảo hành 3 tháng 1 đổi 1 chu đáo.',
+      description: slotDescription,
       categoryId: category.id,
       type: 'ACCOUNT',
       fulfillmentType: 'API_DROPSHIP',
@@ -126,7 +152,7 @@ async function main() {
       title: 'Tài Khoản Gemini Pro 5TB, Argon 4 (Chủ Family Mời 5 Gmail) 3 Tháng - BH 1 Tuần',
       price: 119000,
       originalPrice: 250000,
-      description: 'Tài khoản Google Gemini Pro bản quyền (Chủ Family) sở hữu 5TB lưu trữ Google One, kích hoạt sẵn mô hình Gemini 4 Argon và Gemini 3.8 Flash trong Google Antigravity & AI Studio. Toàn quyền mời tối đa 5 tài khoản Gmail khác vào nhóm Family để cùng dùng chung 5TB dung lượng và các đặc quyền AI. Bảo hành 1 tuần 1 đổi 1.',
+      description: accountDescription,
       categoryId: category.id,
       type: 'ACCOUNT',
       fulfillmentType: 'API_DROPSHIP',
@@ -138,7 +164,7 @@ async function main() {
       slug: 'tai-khoan-gemini-pro-argon-4-chu-family-3-thang',
       price: 119000,
       originalPrice: 250000,
-      description: 'Tài khoản Google Gemini Pro bản quyền (Chủ Family) sở hữu 5TB lưu trữ Google One, kích hoạt sẵn mô hình Gemini 4 Argon và Gemini 3.8 Flash trong Google Antigravity & AI Studio. Toàn quyền mời tối đa 5 tài khoản Gmail khác vào nhóm Family để cùng dùng chung 5TB dung lượng và các đặc quyền AI. Bảo hành 1 tuần 1 đổi 1.',
+      description: accountDescription,
       categoryId: category.id,
       type: 'ACCOUNT',
       fulfillmentType: 'API_DROPSHIP',

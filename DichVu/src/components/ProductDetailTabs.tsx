@@ -111,7 +111,17 @@ export default function ProductDetailTabs({
         title: "Bảo lưu Quota & Kết nối API",
         desc: "Cam kết số dư credit khả dụng chuẩn xác và đường truyền API ổn định theo thông số niêm yết.",
       }
-    : (slugLower.includes("gemini") && (slugLower.includes("family") || slugLower.includes("kbh") || titleLower.includes("kbh"))) || slugLower.includes("muse")
+    : titleLower.includes("bh 3 tháng") || titleLower.includes("bảo hành 3 tháng")
+    ? {
+        title: "Bảo hành 3 Tháng 1 Đổi 1 Chu Đáo",
+        desc: "Cam kết bảo hành 1 đổi 1 hoặc hỗ trợ add lại vào nhóm Family Google One 5TB trong suốt 3 tháng sử dụng nếu phát sinh lỗi kỹ thuật.",
+      }
+    : titleLower.includes("bh 1 tuần") || titleLower.includes("bảo hành 1 tuần")
+    ? {
+        title: "Bảo hành 1 Tuần 1 Đổi 1 Chu Đáo",
+        desc: "Bảo hành 1 đổi 1 trong vòng 7 ngày đầu nếu tài khoản phát sinh lỗi đăng nhập hoặc mất quyền lợi gói Pro.",
+      }
+    : (slugLower.includes("gemini") && (slugLower.includes("kbh") || titleLower.includes("kbh") || titleLower.includes("2 năm"))) || slugLower.includes("muse")
     ? {
         title: "Bảo hành đăng nhập 2H (Gói Trải Nghiệm)",
         desc: "Bảo hành 1 đổi 1 trong 2 giờ đầu nếu sai mật khẩu hoặc lỗi 2FA lúc nhận. Sau khi đăng nhập thành công: Không bảo hành thời gian sử dụng đối với gói trải nghiệm giá rẻ.",
@@ -454,6 +464,39 @@ main();`,
                 <li><strong>Tuyệt đối KHÔNG ĐĂNG XUẤT (Logout):</strong> Đăng xuất sẽ làm mất quyền Pro của tài khoản.</li>
                 <li><strong>Tuyệt đối KHÔNG XÓA APP:</strong> Xóa ứng dụng và cài lại sẽ được tính là thiết bị mới, hệ thống sẽ từ chối bảo hành.</li>
                 <li><strong>Chính sách bảo hành:</strong> Cam kết bảo hành 1 đổi 1 trong suốt {isCapCut7D ? "7 ngày" : "30 ngày"} nếu tài khoản tuân thủ đúng các quy định trên mà bị mất Pro.</li>
+              </ul>
+            </div>
+          )}
+
+          {/* Gemini Family Account Technical Notice */}
+          {slugLower.includes("gemini") && (slugLower.includes("chu-family") || slugLower.includes("family")) && !slugLower.includes("slot") && (
+            <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 dark:bg-amber-950/10 p-5 sm:p-6 shadow-xs space-y-3">
+              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-bold text-sm">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                <span>LƯU Ý KỸ THUẬT &amp; QUYỀN LỢI TÀI KHOẢN CHỦ FAMILY</span>
+              </div>
+              <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside leading-relaxed">
+                <li><strong>Định dạng bàn giao:</strong> Gmail | Mật khẩu | Mã 2FA | Email khôi phục. Cấp sẵn tài khoản riêng biệt để đăng nhập sử dụng ngay.</li>
+                <li><strong>Hạn chế nhận thư bên ngoài:</strong> Hộp thư đến của Gmail này bị hạn chế nhận thư/OTP từ bên ngoài. Tài khoản chuyên dụng đăng nhập và vận hành các dịch vụ Google (Gemini Pro, Drive 5TB, AI Studio, Antigravity, NotebookLM). Khuyến cáo không dùng để đăng ký MXH hoặc nhận OTP ngoài.</li>
+                <li><strong>Quyền hạn Chủ nhóm Family:</strong> Bạn là Chủ gia đình (Family Manager), toàn quyền mời tối đa 5 tài khoản Gmail cá nhân khác của bạn hoặc người thân vào nhóm để cùng chia sẻ 5TB dung lượng và đặc quyền AI.</li>
+                <li><strong>Mô hình AI hỗ trợ:</strong> Sử dụng mượt mà Gemini 4 Argon, Gemini 3.8 Flash, Neon 4, Claude Opus 5.5, Sonnet 5.5, Hydrogen trong Google Antigravity &amp; AI Studio.</li>
+                <li><strong>Chính sách bảo hành:</strong> Bảo hành 1 tuần (7 ngày) 1 đổi 1 chu đáo nếu phát sinh lỗi đăng nhập hoặc mất quyền lợi Pro.</li>
+              </ul>
+            </div>
+          )}
+
+          {/* Gemini Slot Technical Notice */}
+          {slugLower.includes("gemini") && slugLower.includes("slot") && (
+            <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 dark:bg-blue-950/10 p-5 sm:p-6 shadow-xs space-y-3">
+              <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-sm">
+                <Sparkles className="h-4 w-4 shrink-0" />
+                <span>HƯỚNG DẪN KÍCH HOẠT NÂNG MAIL CHÍNH CHỦ (15 - 60 PHÚT)</span>
+              </div>
+              <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside leading-relaxed">
+                <li><strong>Quy trình cấp tự động 24/7:</strong> Sau khi thanh toán thành công, hệ thống tự động cấp link kích hoạt tức thì. Quý khách chỉ cần mở link và nhập địa chỉ Gmail chính chủ cần nâng cấp.</li>
+                <li><strong>Thời gian xử lý:</strong> Đơn hàng được kích hoạt và lời mời gia nhập nhóm Family Google One 5TB gửi về hòm thư Gmail của bạn trong vòng 15 đến 60 phút.</li>
+                <li><strong>Trọn bộ đặc quyền cao cấp:</strong> Mở khóa Gemini Pro, mô hình Gemini 4 Argon &amp; Gemini 3.8 Flash, NotebookLM, tặng kèm 1.000 Credit tạo video Google Veo 3 và 5.000GB (5TB) dung lượng Google One trong 1 năm.</li>
+                <li><strong>Chính sách bảo hành:</strong> Bảo hành 3 tháng 1 đổi 1 chu đáo, cam kết hỗ trợ add lại nhóm trong suốt thời hạn nếu có sự cố kỹ thuật.</li>
               </ul>
             </div>
           )}
