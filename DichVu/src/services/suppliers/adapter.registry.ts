@@ -9,6 +9,7 @@ import { GenzShopAdapter } from "./adapters/genzshop.adapter";
 import { CanbosoAdapter } from "./adapters/canboso.adapter";
 import { DbotAdapter } from "./adapters/dbot.adapter";
 import { KhoMmoAdapter } from "./adapters/khommo.adapter";
+import { XoaiNonAdapter } from "./adapters/xoainon.adapter";
 
 const adapterRegistry = new Map<string, ISupplierAdapter>();
 
@@ -23,6 +24,7 @@ function initDefaultAdapters(): void {
   const canboso = new CanbosoAdapter();
   const dbot = new DbotAdapter();
   const khommo = new KhoMmoAdapter();
+  const xoainon = new XoaiNonAdapter();
 
   adapterRegistry.set(SupplierType.TAPHOAMMO, taphoa);
   adapterRegistry.set(SupplierType.TRUMTHE, trumthe);
@@ -31,6 +33,15 @@ function initDefaultAdapters(): void {
   adapterRegistry.set(SupplierType.GENZSHOP, genzshop);
   adapterRegistry.set(SupplierType.CUSTOM_REST, taphoa);
   adapterRegistry.set(SupplierType.TELEGRAM_BOT, telegramBot);
+  adapterRegistry.set(SupplierType.XOAINON_API, xoainon);
+
+  // Nghiện Trick / Locket Reseller API v1
+  adapterRegistry.set("NGHIENTRICK_API", locket);
+  adapterRegistry.set("NGHIENTRICK", locket);
+
+  // Shop Xoài Non Customer API v1
+  adapterRegistry.set("XOAINON_API", xoainon);
+  adapterRegistry.set("XOAINON", xoainon);
 
   // New REST API Suppliers
   adapterRegistry.set("CANBOSO_BUYER", canboso);

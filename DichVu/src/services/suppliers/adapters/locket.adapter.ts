@@ -18,10 +18,25 @@ export class LocketAdapter implements ISupplierAdapter {
     };
   }
 
-  public async checkBalance(_creds: SupplierCredentials): Promise<number> {
-    // Locket.com.vn reseller API v1 deducts directly from wallet during /shop/order
-    // and returns 402 when balance is insufficient.
-    return 0;
+  public async checkBalance(creds: SupplierCredentials): Promise<number> {
+    try {
+      const baseUrl = this.formatBaseUrl(creds.baseUrl);
+      const res = await fetch(`${baseUrl}/ping`, {
+        method: "GET",
+        headers: this.buildHeaders(creds.apiKey),
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (!res.ok) {
+        return 0;
+      }
+
+      const data = await res.json();
+      return Math.round(Number(data?.balance_vnd ?? data?.balance ?? 0));
+    } catch (err) {
+      console.error("[LocketAdapter] checkBalance error:", err);
+      return 0;
+    }
   }
 
   public async fetchProductInfo(
@@ -34,11 +49,12 @@ export class LocketAdapter implements ISupplierAdapter {
     const res = await fetch(url, {
       method: "GET",
       headers: this.buildHeaders(creds.apiKey),
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!res.ok) {
       const errText = await res.text().catch(() => "");
-      throw new Error(`Locket API error (${res.status}): ${errText}`);
+      throw new Error(`Nghiện Trick API error (${res.status}): ${errText}`);
     }
 
     const data = await res.json();
@@ -51,7 +67,7 @@ export class LocketAdapter implements ISupplierAdapter {
 
     if (!found) {
       throw new Error(
-        `Không tìm thấy sản phẩm có mã ID ${supplierProductCode} trên Locket.com.vn`
+        `Không tìm thấy sản phẩm có mã ID ${supplierProductCode} trên Nghiện Trick API`
       );
     }
 
@@ -79,13 +95,14 @@ export class LocketAdapter implements ISupplierAdapter {
         product_id: Number(supplierProductCode),
         qty: quantity,
       }),
+      signal: AbortSignal.timeout(15000),
     });
 
     if (res.status === 402) {
       return {
         success: false,
         deliveredKeys: [],
-        error: "Số dư ví đại lý trên Locket.com.vn không đủ để thanh toán đơn hàng",
+        error: "Số dư ví đại lý trên Nghiện Trick không đủ để thanh toán đơn hàng",
       };
     }
 
@@ -94,7 +111,7 @@ export class LocketAdapter implements ISupplierAdapter {
       return {
         success: false,
         deliveredKeys: [],
-        error: `Locket API lỗi (${res.status}): ${errText}`,
+        error: `Nghiện Trick API lỗi (${res.status}): ${errText}`,
       };
     }
 
@@ -111,6 +128,7 @@ export class LocketAdapter implements ISupplierAdapter {
           const pollRes = await fetch(`${baseUrl}/shop/order/${orderId}`, {
             method: "GET",
             headers: this.buildHeaders(creds.apiKey),
+            signal: AbortSignal.timeout(5000),
           });
           if (pollRes.ok) {
             const pollData = await pollRes.json();
@@ -141,11 +159,24 @@ export class LocketAdapter implements ISupplierAdapter {
     }
 
     if (state === "pending_stock") {
+      // Auto-refund pending held funds to protect shop balance & allow immediate failover
+      if (orderId) {
+        try {
+          await fetch(`${baseUrl}/shop/order/${orderId}/refund-pending`, {
+            method: "POST",
+            headers: this.buildHeaders(creds.apiKey),
+            signal: AbortSignal.timeout(5000),
+          });
+        } catch (refundErr) {
+          console.warn("[LocketAdapter] Failed to auto-refund pending stock:", refundErr);
+        }
+      }
+
       return {
         success: false,
         deliveredKeys: [],
         upstreamOrderId: orderId,
-        error: "Sản phẩm tạm thời hết hàng trên sàn nguồn (Đang chờ nạp kho - pending_stock)",
+        error: "Sản phẩm tạm thời hết hàng trên sàn nguồn Nghiện Trick (Đã giải phóng tiền cọc pending)",
         rawResponse: data,
       };
     }
@@ -153,7 +184,7 @@ export class LocketAdapter implements ISupplierAdapter {
     return {
       success: false,
       deliveredKeys: [],
-      error: data?.message || "Không nhận được mã bàn giao từ sàn nguồn",
+      error: data?.message || "Không nhận được mã bàn giao từ sàn nguồn Nghiện Trick",
       rawResponse: data,
     };
   }

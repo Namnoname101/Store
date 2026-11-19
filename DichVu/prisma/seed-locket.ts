@@ -4,22 +4,22 @@ import { syncAllActiveSuppliers } from "../src/services/pricing.service";
 async function main() {
   console.log("Seeding Locket.com.vn and dropship products...");
 
-  // 1. Create or update Supplier Locket.com.vn
+  // 1. Create or update Supplier Locket.com.vn (Nghiện Trick Reseller API v1)
   const supplier = await prisma.supplier.upsert({
     where: { code: "LOCKET_VN" },
     update: {
-      name: "Locket.com.vn",
+      name: "Nghiện Trick (Reseller API v1)",
       type: SupplierType.LOCKET_VN,
-      baseUrl: "https://locket.com.vn/api/reseller/v1",
-      apiKey: "ntsh_fjylxnHZxu6rMoNVpuNQ-ErMGgsLzYw4",
+      baseUrl: "https://nghientrick-103-77-214-66.sslip.io/api/reseller/v1",
+      apiKey: "ntsh_V557Yo3W0TAPzEs4zvmRsVElLHbqekUn",
       isActive: true,
     },
     create: {
-      name: "Locket.com.vn",
+      name: "Nghiện Trick (Reseller API v1)",
       code: "LOCKET_VN",
       type: SupplierType.LOCKET_VN,
-      baseUrl: "https://locket.com.vn/api/reseller/v1",
-      apiKey: "ntsh_fjylxnHZxu6rMoNVpuNQ-ErMGgsLzYw4",
+      baseUrl: "https://nghientrick-103-77-214-66.sslip.io/api/reseller/v1",
+      apiKey: "ntsh_V557Yo3W0TAPzEs4zvmRsVElLHbqekUn",
       isActive: true,
     },
   });

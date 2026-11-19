@@ -431,6 +431,13 @@ describe("Supplier Adapter Engine", () => {
       expect(typeof adapter.buyProduct).toBe("function");
     });
 
+    it("should return XoaiNonAdapter for XOAINON_API supplier type", () => {
+      const adapter = getSupplierAdapter(SupplierType.XOAINON_API);
+      expect(adapter).toBeDefined();
+      expect(typeof adapter.fetchProductInfo).toBe("function");
+      expect(typeof adapter.buyProduct).toBe("function");
+    });
+
     it("should support registering and overriding custom adapters", () => {
       const customMock = new MockSupplierAdapter();
       registerSupplierAdapter("MOCK", customMock);
@@ -460,6 +467,22 @@ describe("Supplier Adapter Engine", () => {
 
     afterEach(() => {
       vi.restoreAllMocks();
+    });
+
+    it("checkBalance: parses balance from /ping endpoint", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          ok: true,
+          user_id: 1853328773,
+          scope: "shop",
+          balance_vnd: 17131,
+        }),
+      } as any);
+
+      const balance = await locketAdapter.checkBalance(creds);
+      expect(balance).toBe(17131);
     });
 
     it("fetchProductInfo: parses product list and finds product by id", async () => {
@@ -508,6 +531,115 @@ describe("Supplier Adapter Engine", () => {
       const result = await locketAdapter.buyProduct(creds, "19", 1);
       expect(result.success).toBe(false);
       expect(result.error).toContain("Số dư ví");
+    });
+  });
+
+  describe("XoaiNonAdapter", () => {
+    let xoaiNonAdapter: import("@/services/suppliers/adapters/xoainon.adapter").XoaiNonAdapter;
+    const creds = {
+      baseUrl: "https://shopxoainon.online/api/v1",
+      apiKey: "sxn_live_test_key",
+    };
+
+    beforeEach(async () => {
+      const { XoaiNonAdapter } = await import("@/services/suppliers/adapters/xoainon.adapter");
+      xoaiNonAdapter = new XoaiNonAdapter();
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it("checkBalance: parses balance from /wallet/balance endpoint", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          data: { vnd: 29099 },
+        }),
+      } as any);
+
+      const balance = await xoaiNonAdapter.checkBalance(creds);
+      expect(balance).toBe(29099);
+    });
+
+    it("fetchProductInfo: normalizes code to local_73 and parses quote", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          data: {
+            product_id: "local_73",
+            variant_id: "local_73",
+            unit_price: 16800,
+            available_quantity: 49,
+            can_purchase: true,
+            title: "Microsoft Office 365 Plus 1 năm",
+          },
+        }),
+      } as any);
+
+      const info = await xoaiNonAdapter.fetchProductInfo(creds, "73");
+      expect(info.supplierProductCode).toBe("local_73");
+      expect(info.price).toBe(16800);
+      expect(info.inStock).toBe(49);
+    });
+
+    it("buyProduct: creates order and retrieves delivered keys", async () => {
+      global.fetch = vi
+        .fn()
+        // 1st call: POST /orders
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 201,
+          json: async () => ({
+            data: {
+              order_id: "ord_12345",
+              status: "completed",
+            },
+          }),
+        } as any)
+        // 2nd call: GET /orders/{id}/delivery
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => ({
+            data: {
+              items: ["user@gmail.com|pass123|2FACODE"],
+            },
+          }),
+        } as any);
+
+      const result = await xoaiNonAdapter.buyProduct(creds, "local_73", 1, "ORD-9999");
+      expect(result.success).toBe(true);
+      expect(result.upstreamOrderId).toBe("ord_12345");
+      expect(result.deliveredKeys).toEqual(["user@gmail.com|pass123|2FACODE"]);
+    });
+
+    it("buyProduct: handles 400 insufficient balance or out of stock", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        json: async () => ({
+          error: { code: "bad_request", message: "Số dư ví không đủ" },
+        }),
+      } as any);
+
+      const result = await xoaiNonAdapter.buyProduct(creds, "local_73", 1, "ORD-ERR");
+      expect(result.success).toBe(false);
+      expect(result.error).toContain("Số dư ví không đủ");
+    });
+
+    it("buyProduct: handles 429 rate limit exceeded", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 429,
+        text: async () => "Rate limit exceeded",
+      } as any);
+
+      const result = await xoaiNonAdapter.buyProduct(creds, "local_73", 1, "ORD-429");
+      expect(result.success).toBe(false);
+      expect(result.error).toContain("60 requests/phút");
     });
   });
 
