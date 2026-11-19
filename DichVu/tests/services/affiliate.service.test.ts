@@ -19,6 +19,8 @@ describe("Affiliate & CTV System Unit Tests", () => {
     expect(getProductCommissionRate("Tài khoản AI", 10.0, "chatgpt-plus-1-thang")).toBe(8.0);
     expect(getProductCommissionRate("Tài khoản AI", 10.0, "suno-ai-pro-1-thang")).toBe(8.0);
     expect(getProductCommissionRate("Tài khoản AI", 10.0, "xingtu-vip-30-ngay")).toBe(8.0);
+    expect(getProductCommissionRate("Tài khoản AI", 15.0, "gemini-pro-5tb-1-nam-slot-chinh-chu")).toBe(10.0);
+    expect(getProductCommissionRate("Tài khoản AI", 15.0, "tai-khoan-gemini-pro-argon-4-chu-family-3-thang")).toBe(10.0);
   });
 
   it("should register a user as an affiliate and create a linked 5% coupon", async () => {

@@ -51,7 +51,7 @@ async function main() {
   console.log(`Found category: ${category.name} (${category.id})`);
 
   // 3. Product 1: Slot Gemini Pro 5TB 1 Năm (Nâng Mail Chính Chủ)
-  // Giá Telegram: 70.000 VND -> Giá bán niêm yết: 79.000 VND (Lời 9.000đ)
+  // Giá Telegram: 70.000 VND -> Giá bán niêm yết: 129.000 VND (Lời 59.000đ - Margin 84% bảo toàn lãi Shop > CTV)
   const slotDescription = `Gói nâng cấp bản quyền Google Gemini Pro & Google One 5TB thời hạn 1 năm trực tiếp vào tài khoản Gmail chính chủ của bạn (Dạng tham gia Family Google).
 
 📋 ĐẶC QUYỀN GÓI PRO & GOOGLE ONE 5TB:
@@ -82,8 +82,8 @@ async function main() {
     where: { slug: 'gemini-pro-5tb-1-nam-slot-chinh-chu' },
     update: {
       title: 'Slot Gemini Pro & Google One 5TB Hạn 1 Năm (Nâng Mail Chính Chủ) - BH 3 Tháng',
-      price: 79000,
-      originalPrice: 190000,
+      price: 129000,
+      originalPrice: 320000,
       description: slotDescription,
       categoryId: category.id,
       type: 'ACCOUNT',
@@ -94,8 +94,8 @@ async function main() {
     create: {
       title: 'Slot Gemini Pro & Google One 5TB Hạn 1 Năm (Nâng Mail Chính Chủ) - BH 3 Tháng',
       slug: 'gemini-pro-5tb-1-nam-slot-chinh-chu',
-      price: 79000,
-      originalPrice: 190000,
+      price: 129000,
+      originalPrice: 320000,
       description: slotDescription,
       categoryId: category.id,
       type: 'ACCOUNT',
@@ -114,7 +114,7 @@ async function main() {
       supplierPrice: liveData.slot1Y.telePrice,
       supplierStock: liveData.slot1Y.teleStock,
       markupType: 'FIXED_AMOUNT',
-      markupValue: 9000,
+      markupValue: 59000,
       isAutoSync: true,
       customConfig: JSON.stringify({
         teleCallback: liveData.slot1Y.teleCallback,
@@ -131,7 +131,7 @@ async function main() {
       supplierPrice: liveData.slot1Y.telePrice,
       supplierStock: liveData.slot1Y.teleStock,
       markupType: 'FIXED_AMOUNT',
-      markupValue: 9000,
+      markupValue: 59000,
       isAutoSync: true,
       customConfig: JSON.stringify({
         teleCallback: liveData.slot1Y.teleCallback,
@@ -142,16 +142,16 @@ async function main() {
       })
     }
   });
-  console.log(`✓ Mapped Slot 1Y -> Giá Tele: ${liveData.slot1Y.telePrice}đ | Kho: ${liveData.slot1Y.teleStock}`);
+  console.log(`✓ Mapped Slot 1Y -> Vốn Tele: ${liveData.slot1Y.telePrice}đ | Giá bán: 129.000đ | Lời: 59.000đ | Kho: ${liveData.slot1Y.teleStock}`);
 
   // 4. Product 2: Tài Khoản Gemini Pro 5TB Argon 4 (Chủ Family Mời 5 Gmail) 3 Tháng
-  // Giá Telegram: 99.000 VND -> Giá bán niêm yết: 119.000 VND (Lời 20.000đ)
+  // Giá Telegram: 99.000 VND -> Giá bán niêm yết: 169.000 VND (Lời 70.000đ - Margin 71% bảo toàn lãi Shop > CTV)
   const product2 = await prisma.product.upsert({
     where: { slug: 'tai-khoan-gemini-pro-argon-4-chu-family-3-thang' },
     update: {
       title: 'Tài Khoản Gemini Pro 5TB, Argon 4 (Chủ Family Mời 5 Gmail) 3 Tháng - BH 1 Tuần',
-      price: 119000,
-      originalPrice: 250000,
+      price: 169000,
+      originalPrice: 390000,
       description: accountDescription,
       categoryId: category.id,
       type: 'ACCOUNT',
@@ -162,8 +162,8 @@ async function main() {
     create: {
       title: 'Tài Khoản Gemini Pro 5TB, Argon 4 (Chủ Family Mời 5 Gmail) 3 Tháng - BH 1 Tuần',
       slug: 'tai-khoan-gemini-pro-argon-4-chu-family-3-thang',
-      price: 119000,
-      originalPrice: 250000,
+      price: 169000,
+      originalPrice: 390000,
       description: accountDescription,
       categoryId: category.id,
       type: 'ACCOUNT',
@@ -182,7 +182,7 @@ async function main() {
       supplierPrice: liveData.account3M.telePrice,
       supplierStock: liveData.account3M.teleStock,
       markupType: 'FIXED_AMOUNT',
-      markupValue: 20000,
+      markupValue: 70000,
       isAutoSync: true,
       customConfig: JSON.stringify({
         teleCallback: liveData.account3M.teleCallback,
@@ -196,7 +196,7 @@ async function main() {
       supplierPrice: liveData.account3M.telePrice,
       supplierStock: liveData.account3M.teleStock,
       markupType: 'FIXED_AMOUNT',
-      markupValue: 20000,
+      markupValue: 70000,
       isAutoSync: true,
       customConfig: JSON.stringify({
         teleCallback: liveData.account3M.teleCallback,
@@ -204,7 +204,7 @@ async function main() {
       })
     }
   });
-  console.log(`✓ Mapped Account 3M -> Giá Tele: ${liveData.account3M.telePrice}đ (Đúng chuẩn 99K) | Kho: ${liveData.account3M.teleStock}`);
+  console.log(`✓ Mapped Account 3M -> Vốn Tele: ${liveData.account3M.telePrice}đ | Giá bán: 169.000đ | Lời: 70.000đ | Kho: ${liveData.account3M.teleStock}`);
 
   console.log("=== SYNC COMPLETED SUCCESSFULLY ===");
 }

@@ -156,6 +156,9 @@ export function getProductCommissionRate(
   ) {
     return 8.0; // 8% for high-cost accounts
   }
+  if (slug.includes("gemini")) {
+    return 10.0; // 10% for Gemini Pro & Family (CTV nhận 12k - 17k/đơn, Shop đảm bảo lãi ròng > 40k)
+  }
 
   if (categoryName) {
     const lower = categoryName.toLowerCase();
