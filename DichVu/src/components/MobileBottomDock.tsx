@@ -17,11 +17,6 @@ export default function MobileBottomDock() {
   const { toggleMobile, isMobileOpen } = useSidebar();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Do not render on admin or checkout routes where custom bottom bars exist
-  if (pathname?.startsWith("/admin") || pathname?.startsWith("/checkout")) {
-    return null;
-  }
-
   useEffect(() => {
     const checkAuth = () => {
       fetch("/api/auth/me")
@@ -35,6 +30,11 @@ export default function MobileBottomDock() {
     window.addEventListener("auth-change", checkAuth);
     return () => window.removeEventListener("auth-change", checkAuth);
   }, []);
+
+  // Do not render on admin or checkout routes where custom bottom bars exist
+  if (pathname?.startsWith("/admin") || pathname?.startsWith("/checkout")) {
+    return null;
+  }
 
   const isHome = pathname === "/";
   const isTopup = pathname?.startsWith("/topup");

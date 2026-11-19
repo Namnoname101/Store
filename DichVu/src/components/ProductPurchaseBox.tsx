@@ -475,7 +475,11 @@ export default function ProductPurchaseBox({
       }
 
       // Navigate to checkout VietQR screen
-      router.push(`/checkout/${orderCode}`);
+      if (typeof window !== "undefined") {
+        window.location.assign(`/checkout/${orderCode}`);
+      } else {
+        router.push(`/checkout/${orderCode}`);
+      }
     } catch (err: any) {
       setErrorMessage(err.message || "Đã xảy ra lỗi trong quá trình tạo đơn hàng.");
       setIsLoading(false);

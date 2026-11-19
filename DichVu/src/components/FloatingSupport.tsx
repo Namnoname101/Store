@@ -33,7 +33,7 @@ export default function FloatingSupport() {
   }, []);
 
   // Automatically hide on admin routes (placed after hooks to respect Rules of Hooks)
-  if (pathname.startsWith("/admin")) {
+  if (pathname?.startsWith("/admin")) {
     return null;
   }
 

@@ -44,11 +44,6 @@ export default function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Hide sidebar entirely on admin routes
-  if (pathname?.startsWith("/admin")) {
-    return null;
-  }
-
   // Fetch live authentication session
   useEffect(() => {
     const fetchUser = () => {
@@ -68,6 +63,11 @@ export default function AppSidebar() {
     window.addEventListener("auth-change", fetchUser);
     return () => window.removeEventListener("auth-change", fetchUser);
   }, []);
+
+  // Hide sidebar entirely on admin routes
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   const toggleTree = (key: "chatgpt" | "claude") => {
     setOpenTrees((prev) => ({ ...prev, [key]: !prev[key] }));
