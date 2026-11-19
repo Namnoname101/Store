@@ -146,7 +146,9 @@ export async function syncProductFromSupplier(
   }
 
   // Keep product active so it displays on storefront as "Hết hàng" with disabled purchase button instead of disappearing
-  const shouldBeActive = mapping.product.isActive || totalStock > 0;
+  // Never re-activate products marked as discontinued ([NGỪNG BÁN])
+  const isDiscontinued = mapping.product.title.includes("[NGỪNG BÁN]");
+  const shouldBeActive = isDiscontinued ? false : (mapping.product.isActive || totalStock > 0);
   // Price Lock Guard: if isAutoSync is false, preserve the admin's manual fixed price
   const targetRetailPrice = mapping.isAutoSync
     ? calculateRetailPrice(effectiveSupplierPrice, mapping.markupType, mapping.markupValue)
