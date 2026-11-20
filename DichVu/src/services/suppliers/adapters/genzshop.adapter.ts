@@ -5,6 +5,14 @@ import {
   SupplierOrderResult,
 } from "../supplier-adapter.interface";
 import { sanitizeDeliveredKeys } from "./taphoammo.adapter";
+import dns from "node:dns";
+
+try {
+  dns.setDefaultResultOrder("ipv6first");
+} catch {}
+
+const DEFAULT_USER_AGENT =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
 export class GenzShopAdapter implements ISupplierAdapter {
   private formatBaseUrl(baseUrl: string): string {
@@ -18,6 +26,8 @@ export class GenzShopAdapter implements ISupplierAdapter {
   private buildHeaders(apiKey: string): Record<string, string> {
     return {
       "Content-Type": "application/json",
+      "User-Agent": DEFAULT_USER_AGENT,
+      Accept: "application/json",
       "X-API-Key": apiKey,
       Authorization: `Bearer ${apiKey}`,
     };

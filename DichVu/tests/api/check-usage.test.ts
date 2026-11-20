@@ -66,7 +66,7 @@ describe("API Route: POST /api/check-usage", () => {
     );
   });
 
-  it("should support action 'requests' with pagination parameters", async () => {
+  it("should support action 'requests' with pagination parameters and sanitize legacy model names", async () => {
     const mockRequestsResponse = {
       success: true,
       total: 50,
@@ -94,6 +94,28 @@ describe("API Route: POST /api/check-usage", () => {
     expect(res.status).toBe(200);
     expect(data.success).toBe(true);
     expect(data.requests.length).toBe(1);
+    expect(data.requests[0].model).toBe("claude-sonnet-5.5");
     expect(data.total).toBe(50);
+  });
+
+  it("should return directUrl fallback when upstream returns 403 or WAF block", async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      status: 403,
+      json: vi.fn().mockResolvedValue({ message: "Imunify360" }),
+    } as any);
+
+    const req = new NextRequest("http://localhost:3000/api/check-usage", {
+      method: "POST",
+      body: JSON.stringify({
+        apiKey: "sk-ant-api03-test-mock-key",
+      }),
+    });
+
+    const res = await POST(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(403);
+    expect(data.success).toBe(false);
+    expect(data.directUrl).toBe("https://genzshop.vn/check-usage");
   });
 });

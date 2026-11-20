@@ -212,6 +212,10 @@ export default function CheckUsageClient() {
 
       const body = await res.json().catch(() => ({}));
 
+      if (body.directUrl) {
+        setDirectUrl(body.directUrl);
+      }
+
       if (!res.ok || body.success === false) {
         throw new Error(body.error || `Lỗi phản hồi (${res.status})`);
       }
@@ -250,9 +254,14 @@ export default function CheckUsageClient() {
       });
 
       const body = await res.json().catch(() => ({}));
+      if (body.directUrl) {
+        setDirectUrl(body.directUrl);
+      }
       if (res.ok && body.success !== false) {
         setRequestsPayload(body);
         setRequestsPage(pageNum);
+      } else if (body.error) {
+        setErrorMsg(body.error);
       }
     } catch (err) {
       console.error("fetchRequests error:", err);
@@ -865,7 +874,9 @@ export default function CheckUsageClient() {
                           </td>
                           <td className="py-2.5 px-3">
                             <span className="px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary font-mono font-semibold text-xs">
-                              {r.model || DEFAULT_CLAUDE_MODEL_ID}
+                              {r.model
+                                ? r.model.replace(/claude-3[-.]5-sonnet/gi, "claude-sonnet-5.5")
+                                : DEFAULT_CLAUDE_MODEL_ID}
                             </span>
                           </td>
                           <td className="py-2.5 px-3 text-right text-muted-foreground">{formatCompactNumber(r.input_tokens)}</td>
