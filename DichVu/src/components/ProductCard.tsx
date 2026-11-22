@@ -45,11 +45,17 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
     title.toLowerCase().includes("token") ||
     title.toLowerCase().includes("key");
 
-  const hideExactStock = isSMM || isApiKey || stockCount >= 99999;
-  const inStock = hideExactStock || stockCount > 0;
-
   const titleLower = (title || "").toLowerCase();
   const slugLower = (slug || "").toLowerCase();
+
+  const isAccountUpgrade =
+    slugLower.includes("up-gemini") ||
+    slugLower.includes("chinh-chu") ||
+    titleLower.includes("chính chủ") ||
+    titleLower.includes("up pro");
+
+  const hideExactStock = isSMM || isApiKey || isAccountUpgrade || stockCount >= 99999;
+  const inStock = hideExactStock || stockCount > 0;
   let durationBadge: string | null = null;
   if (titleLower.includes("2 năm") || slugLower.includes("2-nam")) {
     durationBadge = "HẠN 2 NĂM";
@@ -170,7 +176,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
             {hideExactStock ? (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent font-mono">
                 <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-                Sẵn hàng
+                {isAccountUpgrade ? "Nhận nâng 24/7" : "Sẵn hàng"}
               </span>
             ) : stockCount > 5 ? (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent font-mono">
@@ -218,7 +224,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
               href={`/products/${slug}`}
               className="flex min-h-[44px] h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 px-3 text-xs sm:text-sm font-bold shadow-sm shadow-primary/25 transition-all duration-150 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <span>Mua ngay</span>
+              <span>{isAccountUpgrade ? "Nâng cấp ngay" : "Mua ngay"}</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           ) : (

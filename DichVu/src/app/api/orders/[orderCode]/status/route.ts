@@ -121,6 +121,7 @@ export async function GET(
       paidAt: order.paidAt ?? null,
       createdAt: order.createdAt ?? null,
       deliveredItems: isTokenValid ? (order.deliveredItems ?? []) : [],
+      customerNote: isTokenValid ? order.customerNote : null,
       vietQrUrl: order.vietQrUrl,
       expiresAt: order.expiresAt,
       tokenExpired: isTokenExpired && token === order.accessToken,

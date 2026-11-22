@@ -195,6 +195,12 @@ export async function createOrder(data: CreateOrderInput) {
   let discountAmount = 0;
   let couponId: string | null = null;
   if (data.couponCode && data.couponCode.trim()) {
+    const hasNonDiscountable = products.some(
+      (p) => p.slug === "up-gemini-pro-5tb-12-thang-chinh-chu-kbh"
+    );
+    if (hasNonDiscountable) {
+      throw new Error("Gói Up Pro 5TB Chính Chủ (19.000đ) là gói siêu ưu đãi không hỗ trợ áp thêm mã giảm giá.");
+    }
     const validation = await validateCoupon(data.couponCode, subtotalAmount, data.userId);
     if (!validation.valid || !validation.coupon) {
       throw new Error(validation.message || "Mã giảm giá không hợp lệ");

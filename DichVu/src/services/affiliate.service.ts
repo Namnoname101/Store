@@ -156,6 +156,9 @@ export function getProductCommissionRate(
   ) {
     return 8.0; // 8% for high-cost accounts
   }
+  if (slug === "up-gemini-pro-5tb-12-thang-chinh-chu-kbh") {
+    return 0.0; // 0% commission for discounted 19k KBH package (Không áp dụng cho CTV)
+  }
   if (slug.includes("gemini")) {
     return 10.0; // 10% for Gemini Pro & Family (CTV nhận 12k - 17k/đơn, Shop đảm bảo lãi ròng > 40k)
   }

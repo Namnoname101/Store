@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   Zap,
@@ -16,10 +16,25 @@ import {
   Tag,
   X as CloseIcon,
   ShoppingBag,
+  Mail,
+  Lock,
+  KeyRound,
+  Eye,
+  EyeOff,
+  Sparkles,
+  Check,
 } from "lucide-react";
 import { formatVND } from "@/lib/product-types";
 import { useCart } from "@/contexts/CartContext";
 import AuthRequiredModal from "@/components/AuthRequiredModal";
+
+interface ParsedUpgradeAccount {
+  line: string;
+  user: string;
+  pass: string;
+  twoFa: string;
+  isValid: boolean;
+}
 
 interface ProductPurchaseBoxProps {
   productId: string;
@@ -63,7 +78,14 @@ export default function ProductPurchaseBox({
     (slug || "").toLowerCase().startsWith("cla-") ||
     productTitle.toLowerCase().includes("claude");
 
+  const isAccountUpgrade =
+    (slug || "").toLowerCase().includes("up-gemini") ||
+    (slug || "").toLowerCase().includes("chinh-chu") ||
+    productTitle.toLowerCase().includes("chính chủ") ||
+    productTitle.toLowerCase().includes("up pro");
+
   const allowsManualFulfillment =
+    isAccountUpgrade ||
     isClaudeProduct ||
     categorySlug === "ai-api" ||
     (slug || "").toLowerCase().includes("api") ||
@@ -100,6 +122,23 @@ export default function ProductPurchaseBox({
   const [targetLink, setTargetLink] = useState<string>("");
   const [customerApiKey, setCustomerApiKey] = useState<string>("");
   const [customerKeyUsername, setCustomerKeyUsername] = useState<string>("");
+  const [upgradeAccountsRaw, setUpgradeAccountsRaw] = useState<string>("");
+
+  const parsedUpgradeAccounts = useMemo<ParsedUpgradeAccount[]>(() => {
+    if (!upgradeAccountsRaw.trim()) return [];
+    const lines = upgradeAccountsRaw
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
+    return lines.map((line) => {
+      const parts = line.split("|").map((p) => p.trim());
+      const user = parts[0] || "";
+      const pass = parts[1] || "";
+      const twoFa = parts.slice(2).join(" | ");
+      const isValid = Boolean(user && pass);
+      return { line, user, pass, twoFa, isValid };
+    });
+  }, [upgradeAccountsRaw]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -201,7 +240,7 @@ export default function ProductPurchaseBox({
     message: string;
   } | null>(null);
 
-  const inStock = isCustomQuantity || effectiveStock > 0;
+  const inStock = isAccountUpgrade || isCustomQuantity || effectiveStock > 0;
   const canPurchase = inStock || allowsManualFulfillment;
   const totalPrice = price * (quantity || 0);
   const netTotal = appliedCoupon
@@ -332,6 +371,19 @@ export default function ProductPurchaseBox({
 
   const handleAddToCart = async () => {
     setErrorMessage(null);
+    if (isAccountUpgrade) {
+      if (parsedUpgradeAccounts.length === 0) {
+        setErrorMessage("Vui lòng nhập danh sách tài khoản theo định dạng: tk|mk|2fa (mỗi dòng 1 tài khoản).");
+        return;
+      }
+      const invalid = parsedUpgradeAccounts.find((a: ParsedUpgradeAccount) => !a.isValid);
+      if (invalid) {
+        setErrorMessage(`Dòng "${invalid.line}" chưa đúng định dạng tk|mk|2fa (phải có ít nhất tài khoản và mật khẩu cách nhau bằng dấu |).`);
+        return;
+      }
+      // Quantity is automatically synced with parsed accounts
+    }
+
     if (requiresLink) {
       const linkErr = validateTargetLink(targetLink);
       if (linkErr) {
@@ -438,7 +490,9 @@ export default function ProductPurchaseBox({
     setIsLoading(true);
 
     try {
-      const finalCustomerNote = requiresLink
+      const finalCustomerNote = isAccountUpgrade
+        ? `UPGRADE_ACCOUNT\n` + parsedUpgradeAccounts.map((a: ParsedUpgradeAccount) => a.twoFa ? `${a.user}|${a.pass}|${a.twoFa}` : `${a.user}|${a.pass}`).join("\n")
+        : requiresLink
         ? targetLink.trim()
         : isCodexProduct
         ? customerApiKey.trim() ||
@@ -528,7 +582,18 @@ export default function ProductPurchaseBox({
 
         {/* 3-Tier Stock status banner */}
         <div className="mb-5">
-          {isCustomQuantity ? (
+          {isAccountUpgrade ? (
+            <div className="flex items-center justify-between rounded-xl bg-purple-500/10 border border-purple-500/30 px-3.5 py-2 text-xs font-medium text-purple-700 dark:text-purple-300">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+                </span>
+                <span>Nâng cấp trực tiếp Gmail chính chủ • Xử lý 15 - 30 phút</span>
+              </div>
+              <span className="text-xs text-purple-600 dark:text-purple-400 font-semibold uppercase">Nhận đơn 24/7</span>
+            </div>
+          ) : isCustomQuantity ? (
             <div className="flex items-center gap-2 rounded-xl bg-accent/10 border border-accent/30 px-3.5 py-2 text-xs font-medium text-accent">
               <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
               <span>Dịch vụ tự động — Khởi tạo tức thì sau khi thanh toán</span>
@@ -681,7 +746,7 @@ export default function ProductPurchaseBox({
               </span>
             </div>
           </div>
-        ) : (
+        ) : !isAccountUpgrade ? (
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="block text-xs font-semibold uppercase tracking-wider text-foreground">
@@ -757,6 +822,83 @@ export default function ProductPurchaseBox({
               <div className="text-xs text-muted-foreground ml-auto">
                 Tổng: <strong className="text-foreground text-sm font-mono">{formatVND(totalPrice)}</strong>
               </div>
+            </div>
+          </div>
+        ) : null}
+
+        {/* Account Upgrade Inputs - Single Auto-detect Box */}
+        {isAccountUpgrade && (
+          <div className="space-y-3 rounded-2xl border border-purple-500/30 bg-purple-500/5 dark:bg-purple-950/20 p-4">
+            <div className="flex items-center justify-between border-b border-purple-500/20 pb-2.5">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-purple-500" />
+                <span className="text-xs font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300">
+                  Khung tự nhận diện tài khoản (tk|mk|2fa)
+                </span>
+              </div>
+              <span className="text-[11px] font-mono font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-2.5 py-0.5 rounded-full border border-purple-500/20">
+                1 Dòng = 1 Tài Khoản
+              </span>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold text-foreground">
+                  Nhập danh sách tài khoản theo định dạng <code className="bg-secondary px-1.5 py-0.5 rounded text-purple-600 dark:text-purple-400 font-mono">tk|mk|2fa</code> <span className="text-destructive">*</span>
+                </label>
+                {parsedUpgradeAccounts.length > 0 && (
+                  <span className="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
+                    <Check className="h-3 w-3" />
+                    <span>Đã nhận diện: {parsedUpgradeAccounts.filter((a: ParsedUpgradeAccount) => a.isValid).length} tài khoản</span>
+                  </span>
+                )}
+              </div>
+
+              <div className="relative">
+                <textarea
+                  rows={Math.min(7, Math.max(3, (parsedUpgradeAccounts.length || 1) + 1))}
+                  required
+                  value={upgradeAccountsRaw}
+                  disabled={isLoading}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setUpgradeAccountsRaw(val);
+                    if (errorMessage) setErrorMessage(null);
+                    const lines = val
+                      .split("\n")
+                      .map((l) => l.trim())
+                      .filter(Boolean);
+                    setQuantity(Math.max(1, lines.length));
+                  }}
+                  placeholder={`example1@gmail.com|MatKhau123|12345678\nexample2@gmail.com|MatKhau456\n(Mỗi dòng 1 tài khoản theo định dạng tk|mk|2fa hoặc tk|mk)`}
+                  className="w-full rounded-xl border border-border bg-secondary/80 py-2.5 px-3.5 text-xs sm:text-sm font-mono text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-purple-500/30 transition-all leading-relaxed"
+                />
+              </div>
+
+              <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground">
+                <span>Định dạng: <code className="text-foreground font-mono font-bold">Gmail|Mật khẩu|Mã 2FA</code> (hoặc <code className="text-foreground font-mono">Gmail|Pass</code>)</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const sample = "clonemail1@gmail.com|MatKhauGoogle123|12345678";
+                    setUpgradeAccountsRaw(sample);
+                    setQuantity(1);
+                  }}
+                  className="text-purple-600 dark:text-purple-400 hover:underline font-semibold cursor-pointer"
+                >
+                  Dán mẫu thử
+                </button>
+              </div>
+            </div>
+
+            {/* Smart Tip Box */}
+            <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-3 text-xs text-blue-800 dark:text-blue-300 space-y-1">
+              <div className="font-bold flex items-center gap-1.5 text-blue-700 dark:text-blue-300">
+                <span>💡 Mẹo bảo mật an tâm tuyệt đối:</span>
+              </div>
+              <p className="text-[11.5px] leading-relaxed text-blue-900/80 dark:text-blue-200/80">
+                Bạn có thể đưa một <strong>Gmail phụ (clone)</strong> để shop nâng cấp gói 5TB. Sau khi hoàn tất, bạn chỉ cần dùng tài khoản đó tạo nhóm Family và mời Gmail chính của mình vào nhóm để cùng hưởng trọn vẹn 5TB và Gemini Pro mà không lo lộ mật khẩu chính!
+              </p>
             </div>
           </div>
         )}
@@ -940,6 +1082,17 @@ export default function ProductPurchaseBox({
         )}
 
         {/* Coupon Code Input */}
+        {isAccountUpgrade ? (
+          <div className="rounded-xl border border-border bg-secondary/50 p-3 text-xs text-muted-foreground flex items-center justify-between">
+            <span className="flex items-center gap-1.5 font-medium">
+              <Tag className="h-3.5 w-3.5 text-primary" />
+              <span>Gói xả kho siêu rẻ 19.000đ:</span>
+            </span>
+            <span className="font-semibold text-foreground bg-primary/10 px-2 py-0.5 rounded text-[11px]">
+              Không áp dụng thêm mã giảm giá
+            </span>
+          </div>
+        ) : (
         <div>
           <label
             htmlFor="couponCode"
@@ -1007,6 +1160,7 @@ export default function ProductPurchaseBox({
             </div>
           )}
         </div>
+        )}
 
         {/* Error notification banner */}
         {errorMessage && (

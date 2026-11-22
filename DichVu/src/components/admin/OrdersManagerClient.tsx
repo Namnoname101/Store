@@ -19,6 +19,9 @@ import {
   Truck,
   PlusCircle,
   Send,
+  Sparkles,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import type { AdminOrderDetail } from "@/services/admin.service";
 
@@ -118,6 +121,69 @@ export default function OrdersManagerClient({
     success: boolean;
     text: string;
   } | null>(null);
+
+  const [revealedPasswords, setRevealedPasswords] = useState<Record<string, boolean>>({});
+  const toggleRevealPassword = (id: string) => {
+    setRevealedPasswords((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleManualFulfillWithSecret = async (orderId: string, secretText: string, note?: string) => {
+    try {
+      setIsSubmittingFulfill(true);
+      setFulfillMessage(null);
+      const res = await fetch(`/api/admin/orders/${orderId}/manual-fulfill`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ secrets: [secretText], note }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setFulfillMessage({
+          id: orderId,
+          success: true,
+          text: "✨ Hoàn tất nâng cấp và bàn giao thành công cho khách hàng!",
+        });
+        setOrders((prev) =>
+          prev.map((o) =>
+            o.id === orderId
+              ? {
+                  ...o,
+                  status: "PAID",
+                  upstreamStatus: "COMPLETED",
+                  deliveredItems: [
+                    ...(o.deliveredItems || []),
+                    {
+                      id: "new-" + Date.now(),
+                      productId: o.orderItems?.[0]?.productId || "",
+                      secretContent: secretText,
+                      status: "SOLD",
+                      orderId: o.id,
+                      reservedUntil: null,
+                      createdAt: new Date(),
+                      updatedAt: new Date(),
+                    },
+                  ],
+                }
+              : o
+          )
+        );
+      } else {
+        setFulfillMessage({
+          id: orderId,
+          success: false,
+          text: data.error || "Không thể hoàn tất nâng cấp",
+        });
+      }
+    } catch (e: any) {
+      setFulfillMessage({
+        id: orderId,
+        success: false,
+        text: e.message || "Lỗi mạng khi cập nhật",
+      });
+    } finally {
+      setIsSubmittingFulfill(false);
+    }
+  };
 
   const handleManualFulfill = async (orderId: string) => {
     if (!manualSecretsInput.trim()) return;
@@ -667,7 +733,219 @@ export default function OrdersManagerClient({
                                   )}
                                 </div>
                               )}
-                              {/* Delivered Items / Keys Section */}
+                              {/* Dedicated Account Upgrade Task Card */}
+                                {(() => {
+                                  const note = order.customerNote || "";
+                                  const isUpgrade =
+                                    note.includes("UPGRADE_ACCOUNT") ||
+                                    note.includes("GMAIL:") ||
+                                    order.orderItems?.some(
+                                      (i) =>
+                                        i.product?.slug?.includes("up-gemini") ||
+                                        i.product?.title?.toLowerCase().includes("up pro") ||
+                                        i.product?.title?.toLowerCase().includes("chính chủ")
+                                    );
+
+                                  if (!isUpgrade) return null;
+
+                                  // Parse accounts from customer note (supports single tk|mk|2fa or batch lines or legacy GMAIL:... format)
+                                  const cleanNote = note
+                                    .replace(/\[?UPGRADE_ACCOUNTS?\]?/gi, "")
+                                    .trim();
+
+                                  let parsedAccounts: Array<{ email: string; pass: string; twoFa: string; raw: string }> = [];
+
+                                  if (cleanNote.includes("GMAIL:") || cleanNote.includes("PASS:")) {
+                                    const mailMatch = cleanNote.match(/GMAIL:\s*([^|\s\n]+)/i);
+                                    const passMatch = cleanNote.match(/PASS:\s*([^|\s\n]+)/i);
+                                    const twoFaMatch = cleanNote.match(/2FA:\s*([^|\n]+)/i);
+                                    parsedAccounts.push({
+                                      email: mailMatch ? mailMatch[1].trim() : (order.customerEmail || "Không có email"),
+                                      pass: passMatch ? passMatch[1].trim() : "Không có mật khẩu",
+                                      twoFa: twoFaMatch ? twoFaMatch[1].trim() : "N/A",
+                                      raw: cleanNote,
+                                    });
+                                  } else {
+                                    const lines = cleanNote.split("\n").map(l => l.trim()).filter(Boolean);
+                                    for (const line of lines) {
+                                      if (line.includes("|")) {
+                                        const parts = line.split("|").map(p => p.trim());
+                                        parsedAccounts.push({
+                                          email: parts[0] || (order.customerEmail || "N/A"),
+                                          pass: parts[1] || "Không có mật khẩu",
+                                          twoFa: parts.slice(2).join("|") || "N/A",
+                                          raw: line,
+                                        });
+                                      } else {
+                                        parsedAccounts.push({
+                                          email: line,
+                                          pass: "Không có mật khẩu",
+                                          twoFa: "N/A",
+                                          raw: line,
+                                        });
+                                      }
+                                    }
+                                  }
+
+                                  if (parsedAccounts.length === 0) {
+                                    parsedAccounts.push({
+                                      email: order.customerEmail || "Không có email",
+                                      pass: "Không có mật khẩu",
+                                      twoFa: "N/A",
+                                      raw: order.customerEmail || "",
+                                    });
+                                  }
+
+                                  const isDone = order.upstreamStatus === "COMPLETED";
+                                  const allRawText = parsedAccounts.map(a => a.raw).join("\n");
+
+                                  return (
+                                    <div className="rounded-xl border border-purple-500/40 bg-purple-950/20 p-4 space-y-3 shadow-md mb-4">
+                                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-purple-500/20 pb-3">
+                                        <div className="flex items-center gap-2">
+                                          <div className="h-7 w-7 rounded-lg bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300">
+                                            <Sparkles className="h-4 w-4" />
+                                          </div>
+                                          <div>
+                                            <span className="text-xs font-bold uppercase tracking-wider text-purple-200">
+                                              Nhiệm vụ nâng cấp Google One 5TB chính chủ ({parsedAccounts.length} tài khoản)
+                                            </span>
+                                            <div className="text-[11px] text-purple-300/70">
+                                              Đơn hàng #{order.orderCode} • Giá niêm yết: {order.totalAmount.toLocaleString("vi-VN")}đ
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div className="flex flex-wrap items-center gap-2">
+                                          <button
+                                            type="button"
+                                            onClick={() => handleCopy(allRawText)}
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 hover:text-white text-xs font-medium transition-all"
+                                            title="Copy toàn bộ danh sách tài khoản dạng TXT"
+                                          >
+                                            <Copy className="h-3.5 w-3.5 text-indigo-400" />
+                                            <span>Copy all ({parsedAccounts.length})</span>
+                                          </button>
+
+                                          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full font-mono ${
+                                            isDone
+                                              ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                                              : "bg-amber-500/20 text-amber-300 border border-amber-500/30 animate-pulse"
+                                          }`}>
+                                            {isDone ? "✓ ĐÃ NÂNG CẤP XONG (DONE)" : "⏳ CHỜ ADMIN NÂNG CẤP"}
+                                          </span>
+
+                                          {!isDone && (
+                                            <button
+                                              type="button"
+                                              disabled={isSubmittingFulfill}
+                                              onClick={async () => {
+                                                const confirmDone = window.confirm(
+                                                  `Xác nhận bạn đã nâng cấp 5TB thành công cho ${parsedAccounts.length} tài khoản (${parsedAccounts.map(a => a.email).join(", ")})?\nBấm OK để kích hoạt giao diện DONE hoành tráng cho khách!`
+                                                );
+                                                if (!confirmDone) return;
+                                                const defaultSecrets = parsedAccounts.map((a, idx) =>
+                                                  `TÀI KHOẢN #${idx + 1}: ${a.email} | GÓI: Google One 5TB & Gemini Pro 12 Tháng Chính Chủ (KBH) | TRẠNG THÁI: KÍCH HOẠT THÀNH CÔNG 100% | BẢO MẬT: Quý khách hãy kiểm tra dung lượng tại drive.google.com/settings/storage và đổi lại mật khẩu Gmail ngay để bảo mật.`
+                                                );
+                                                await handleManualFulfillWithSecret(
+                                                  order.id,
+                                                  defaultSecrets.join("\n"),
+                                                  `Admin nâng cấp chính chủ 5TB thành công (${parsedAccounts.length} tài khoản)`
+                                                );
+                                              }}
+                                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-600 hover:from-purple-500 hover:to-emerald-500 text-white text-xs font-extrabold transition-all shadow-md shadow-purple-600/30 active:scale-95 cursor-pointer disabled:opacity-50"
+                                            >
+                                              <Sparkles className="h-4 w-4 text-amber-300 animate-spin" />
+                                              <span>✨ HOÀN TẤT NÂNG CẤP (BẤM DONE)</span>
+                                            </button>
+                                          )}
+                                        </div>
+                                      </div>
+
+                                      {/* Account List Display */}
+                                      <div className="space-y-2">
+                                        <div className="hidden sm:grid grid-cols-12 gap-2 text-[11px] font-bold text-slate-400 px-3 uppercase tracking-wider">
+                                          <div className="col-span-1 text-center">STT</div>
+                                          <div className="col-span-5">Tài khoản Gmail (Khách cung cấp)</div>
+                                          <div className="col-span-3">Mật khẩu</div>
+                                          <div className="col-span-3">2FA / Mã sao lưu 8 số</div>
+                                        </div>
+
+                                        {parsedAccounts.map((acc, index) => {
+                                          const passKey = `${order.id}_${index}`;
+                                          return (
+                                            <div
+                                              key={index}
+                                              className="grid grid-cols-1 sm:grid-cols-12 gap-2 text-xs bg-slate-900/90 p-3 rounded-xl border border-slate-800 items-center hover:border-purple-500/30 transition-colors"
+                                            >
+                                              <div className="sm:col-span-1 text-slate-400 font-mono font-bold sm:text-center flex items-center justify-between sm:justify-center">
+                                                <span className="sm:hidden text-slate-500 font-normal">Tài khoản</span>
+                                                <span>#{index + 1}</span>
+                                              </div>
+
+                                              <div className="sm:col-span-5">
+                                                <span className="text-slate-400 block text-[10px] font-medium sm:hidden mb-0.5">Gmail:</span>
+                                                <div className="flex items-center gap-2 font-mono font-bold text-white select-all">
+                                                  <span className="truncate">{acc.email}</span>
+                                                  <button
+                                                    type="button"
+                                                    onClick={() => handleCopy(acc.email)}
+                                                    className="text-slate-400 hover:text-white p-1 rounded bg-slate-800 hover:bg-slate-700 transition-colors shrink-0"
+                                                    title="Copy Gmail"
+                                                  >
+                                                    {copiedKey === acc.email ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                                                  </button>
+                                                </div>
+                                              </div>
+
+                                              <div className="sm:col-span-3">
+                                                <span className="text-slate-400 block text-[10px] font-medium sm:hidden mb-0.5">Mật khẩu:</span>
+                                                <div className="flex items-center gap-1.5 font-mono font-bold text-purple-300 select-all">
+                                                  <span>{revealedPasswords[passKey] ? acc.pass : "••••••••••••"}</span>
+                                                  <button
+                                                    type="button"
+                                                    onClick={() => toggleRevealPassword(passKey)}
+                                                    className="text-slate-400 hover:text-white p-1 rounded bg-slate-800 hover:bg-slate-700 transition-colors shrink-0"
+                                                    title={revealedPasswords[passKey] ? "Ẩn pass" : "Hiện pass"}
+                                                  >
+                                                    {revealedPasswords[passKey] ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                                                  </button>
+                                                  <button
+                                                    type="button"
+                                                    onClick={() => handleCopy(acc.pass)}
+                                                    className="text-slate-400 hover:text-white p-1 rounded bg-slate-800 hover:bg-slate-700 transition-colors shrink-0"
+                                                    title="Copy Mật khẩu"
+                                                  >
+                                                    {copiedKey === acc.pass ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                                                  </button>
+                                                </div>
+                                              </div>
+
+                                              <div className="sm:col-span-3">
+                                                <span className="text-slate-400 block text-[10px] font-medium sm:hidden mb-0.5">2FA / Mã sao lưu:</span>
+                                                <div className="flex items-center gap-1.5 font-mono font-semibold text-amber-300 select-all">
+                                                  <span className="truncate">{acc.twoFa}</span>
+                                                  {acc.twoFa !== "N/A" && (
+                                                    <button
+                                                      type="button"
+                                                      onClick={() => handleCopy(acc.twoFa)}
+                                                      className="text-slate-400 hover:text-white p-1 rounded bg-slate-800 hover:bg-slate-700 transition-colors shrink-0"
+                                                      title="Copy 2FA"
+                                                    >
+                                                      {copiedKey === acc.twoFa ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                                                    </button>
+                                                  )}
+                                                </div>
+                                              </div>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+                                  );
+                                })()}
+
+                                {/* Delivered Items / Keys Section */}
                               <div>
                                 <div className="flex items-center justify-between mb-2">
                                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">

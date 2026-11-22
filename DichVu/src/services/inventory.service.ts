@@ -306,6 +306,8 @@ export async function getAvailableStockCount(
   const product = await prisma.product.findUnique({
     where: { id: productId },
     select: {
+      slug: true,
+      title: true,
       fulfillmentType: true,
       isActive: true,
       supplierMapping: {
@@ -321,6 +323,17 @@ export async function getAvailableStockCount(
 
   if (!product || !product.isActive) {
     return 0;
+  }
+
+  // Account upgrade products handled manually by admin always have available capacity
+  const isUpgrade =
+    product.slug?.toLowerCase().includes("up-gemini") ||
+    product.slug?.toLowerCase().includes("chinh-chu") ||
+    product.title?.toLowerCase().includes("chính chủ") ||
+    product.title?.toLowerCase().includes("up pro");
+
+  if (isUpgrade) {
+    return 999;
   }
 
   const localWarehouseStock = await prisma.productItem.count({

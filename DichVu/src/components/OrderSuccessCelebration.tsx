@@ -10,6 +10,7 @@ interface OrderSuccessCelebrationProps {
   totalAmount: number;
   paidAtFormatted: string;
   itemCount: number;
+  isKBH?: boolean;
 }
 
 export default function OrderSuccessCelebration({
@@ -17,6 +18,7 @@ export default function OrderSuccessCelebration({
   totalAmount,
   paidAtFormatted,
   itemCount,
+  isKBH = false,
 }: OrderSuccessCelebrationProps) {
   useEffect(() => {
     // Fire celebratory confetti on mount
@@ -51,10 +53,17 @@ export default function OrderSuccessCelebration({
       </div>
 
       <div className="flex items-center gap-2 text-xs font-mono self-start sm:self-auto shrink-0">
-        <span className="text-emerald-500 font-bold bg-emerald-500/10 px-3 py-1 rounded-xl border border-emerald-500/20 flex items-center gap-1.5">
-          <ShieldCheck className="h-3.5 w-3.5" />
-          <span>Bảo hành 1 đổi 1</span>
-        </span>
+        {isKBH ? (
+          <span className="text-amber-500 font-bold bg-amber-500/10 px-3 py-1 rounded-xl border border-amber-500/20 flex items-center gap-1.5">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            <span>Gói KBH • Nghiệm thu 100%</span>
+          </span>
+        ) : (
+          <span className="text-emerald-500 font-bold bg-emerald-500/10 px-3 py-1 rounded-xl border border-emerald-500/20 flex items-center gap-1.5">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            <span>Bảo hành 1 đổi 1</span>
+          </span>
+        )}
       </div>
     </div>
   );

@@ -29,6 +29,7 @@ import type { Product } from "@prisma/client";
 import { playSuccessChime } from "@/lib/sound";
 import ClaudeApiGuideHub from "@/components/ClaudeApiGuideHub";
 import CodexApiGuideHub from "@/components/CodexApiGuideHub";
+import GeminiProUpgradeCelebrationHub from "@/components/GeminiProUpgradeCelebrationHub";
 import { saveRecentOrder } from "@/lib/order-storage";
 import BuffProgressCard from "@/components/BuffProgressCard";
 import BrandLogo from "@/components/BrandLogo";
@@ -232,6 +233,8 @@ export interface SecretDisplayProps {
   }>;
   paidAt?: string | Date | null;
   createdAt?: string | Date | null;
+  customerEmail?: string | null;
+  customerNote?: string | null;
 }
 
 export default function SecretDisplay({
@@ -243,6 +246,8 @@ export default function SecretDisplay({
   orderItems,
   paidAt,
   createdAt,
+  customerEmail,
+  customerNote,
 }: SecretDisplayProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [copiedAll, setCopiedAll] = useState<boolean>(false);
@@ -307,6 +312,21 @@ export default function SecretDisplay({
         (item.product as any)?.category?.slug?.includes("dich-vu") ||
         item.product?.type === "COURSE_LINK"
     )
+  );
+
+  const isGeminiUpgradeOrder = Boolean(
+    orderItems?.some((item) => {
+      const slug = (item.product?.slug || "").toLowerCase();
+      const title = (item.product?.title || "").toLowerCase();
+      return (
+        slug.includes("up-gemini") ||
+        slug.includes("gemini-pro-5tb") ||
+        slug.includes("chinh-chu") ||
+        title.includes("up pro 5tb") ||
+        title.includes("nâng cấp gemini") ||
+        title.includes("gemini pro & google one 5tb")
+      );
+    })
   );
 
   // Refund Form State
@@ -789,12 +809,15 @@ export default function SecretDisplay({
               </div>
 
               <h3 className="text-xl sm:text-2xl font-extrabold text-foreground mb-2 tracking-tight">
-                Đang chuẩn bị mã riêng cho bạn... 🚀
+                {isGeminiUpgradeOrder
+                  ? "Kỹ thuật viên đang nâng cấp 5TB cho bạn... 🚀"
+                  : "Đang chuẩn bị mã riêng cho bạn... 🚀"}
               </h3>
 
               <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
-                Bạn vui lòng đợi trong giây lát nha! Shop đang điều phối nguồn cấp hoặc cập nhật key riêng cho đơn hàng này, cập nhật xong hệ thống sẽ{" "}
-                <strong className="text-amber-700 dark:text-amber-300 font-semibold">tự động hiển thị mã ngay tại màn hình này</strong> mà không cần bấm tải lại trang!
+                {isGeminiUpgradeOrder
+                  ? "Đơn hàng đã được chuyển tới Quản trị viên. Shop đang tiến hành nạp gói Google One 5TB và Gemini Pro 12 Tháng vào tài khoản của bạn. Ngay khi hoàn tất, màn hình này sẽ tự động chuyển sang giao diện chúc mừng hoành tráng!"
+                  : "Bạn vui lòng đợi trong giây lát nha! Shop đang điều phối nguồn cấp hoặc cập nhật key riêng cho đơn hàng này, cập nhật xong hệ thống sẽ tự động hiển thị mã ngay tại màn hình này mà không cần bấm tải lại trang!"}
               </p>
 
               {/* 30-Minute Countdown Box */}
@@ -892,6 +915,20 @@ export default function SecretDisplay({
     primarySlug.includes("codex") ||
     primaryTitle.toLowerCase().includes("api") ||
     firstSecret.startsWith("sk-");
+
+  if (isGeminiUpgradeOrder && validDeliveredItems.length > 0) {
+    return (
+      <div className="space-y-6">
+        <BuffProgressCard orderCode={orderCode} />
+        <GeminiProUpgradeCelebrationHub
+          orderCode={orderCode}
+          customerEmail={customerEmail}
+          customerNote={customerNote}
+          deliveredItems={validDeliveredItems}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -1262,7 +1299,11 @@ export default function SecretDisplay({
 
                     {secretContent.startsWith("sk-") && (
                       <Link
-                        href={`/developer/usage?key=${encodeURIComponent(secretContent)}`}
+                        href={
+                          secretContent.startsWith("sk-ant")
+                            ? `/check-usage?key=${encodeURIComponent(secretContent)}`
+                            : `/developer/usage?key=${encodeURIComponent(secretContent)}`
+                        }
                         className="min-h-[44px] flex items-center gap-1.5 rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary/20 px-3.5 py-2 text-xs font-semibold text-primary transition-all shadow-xs focus-visible:ring-2 focus-visible:ring-ring"
                         title="Kiểm tra hạn mức quota và log request thời gian thực của Key này"
                       >

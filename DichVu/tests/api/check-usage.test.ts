@@ -61,6 +61,9 @@ describe("API Route: POST /api/check-usage", () => {
         headers: expect.objectContaining({
           "Content-Type": "application/json",
           "User-Agent": expect.stringContaining("Mozilla/5.0"),
+          Referer: "https://genzshop.vn/check-usage",
+          Origin: "https://genzshop.vn",
+          "X-Requested-With": "XMLHttpRequest",
         }),
       })
     );

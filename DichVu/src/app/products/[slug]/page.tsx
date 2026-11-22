@@ -122,10 +122,13 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     slugLower.includes("gemini") &&
     (slugLower.includes("chu-family") || slugLower.includes("family")) &&
     !isGeminiSlot;
-  const isGeminiKBH = slugLower.includes("gemini") && (slugLower.includes("kbh") || titleLower.includes("kbh") || titleLower.includes("2 năm") || slugLower.includes("2-nam"));
+  const isGeminiUpPro5TB = slugLower.includes("up-gemini-pro-5tb") || titleLower.includes("up pro 5tb");
+  const isGeminiKBH = !isGeminiUpPro5TB && slugLower.includes("gemini") && (slugLower.includes("kbh") || titleLower.includes("kbh") || titleLower.includes("2 năm") || slugLower.includes("2-nam"));
 
   const deliveryFormat = isSMM
     ? "Hệ thống tự động khởi tạo theo link mục tiêu"
+    : isGeminiUpPro5TB
+    ? "Nâng trực tiếp trên Gmail của bạn (Bấm Done là xong)"
     : isCodex
     ? "Nạp vào Key có sẵn hoặc cấp Key mới tức thì 24/7"
     : isChatGPTFree
@@ -148,6 +151,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   const durationLabel = isSMM
     ? "Hoàn thành theo số lượng đặt mua"
+    : isGeminiUpPro5TB
+    ? "12 tháng (1 năm) - Nâng chính chủ 5TB"
     : isCodex
     ? "Bảo lưu vĩnh viễn (Dùng đến khi hết Quota)"
     : isClaude
@@ -184,6 +189,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   const warrantyLabel = isSMM
     ? "Bảo hành duy trì số lượng theo server"
+    : isGeminiUpPro5TB
+    ? "Bảo hành đăng nhập & kích hoạt đủ 5TB (Gói KBH)"
     : isApiKeyProduct
     ? "Bảo đảm kết nối ổn định & bảo lưu hạn mức trọn vẹn"
     : isChatGPTFree

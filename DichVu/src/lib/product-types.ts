@@ -41,6 +41,20 @@ export function getProductTypeInfo(
     };
   }
 
+  if (
+    title.includes("nâng cấp") ||
+    title.includes("up pro") ||
+    title.includes("chính chủ")
+  ) {
+    return {
+      label: "Nâng Cấp Chính Chủ",
+      shortLabel: "Chính chủ",
+      icon: UserCheck,
+      badgeClass:
+        "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20",
+    };
+  }
+
   switch (type) {
     case "LICENSE_KEY":
       return {

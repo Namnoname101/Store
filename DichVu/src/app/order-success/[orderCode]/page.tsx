@@ -132,12 +132,21 @@ export default async function OrderSuccessPage({
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 pb-24">
-      <OrderSuccessCelebration
-        orderCode={order.orderCode}
-        totalAmount={order.totalAmount}
-        paidAtFormatted={paidFormattedDate}
-        itemCount={order.deliveredItems?.length || 1}
-      />
+      {(() => {
+        const isKBH = order.orderItems?.some(item =>
+          item.product?.title?.toLowerCase().includes("kbh") ||
+          item.product?.slug?.toLowerCase().includes("kbh")
+        );
+        return (
+          <OrderSuccessCelebration
+            orderCode={order.orderCode}
+            totalAmount={order.totalAmount}
+            paidAtFormatted={paidFormattedDate}
+            itemCount={order.deliveredItems?.length || 1}
+            isKBH={isKBH}
+          />
+        );
+      })()}
 
       {/* Secret Display & Activation Guides */}
       <div className="mb-10">
@@ -150,6 +159,8 @@ export default async function OrderSuccessPage({
           accessToken={order.accessToken}
           paidAt={order.paidAt}
           createdAt={order.createdAt}
+          customerEmail={order.customerEmail}
+          customerNote={order.customerNote}
         />
       </div>
 

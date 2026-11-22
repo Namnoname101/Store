@@ -223,6 +223,18 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
     note: "⚠️ LƯU Ý QUAN TRỌNG: Link chỉ có hiệu lực kích hoạt trong vòng 12 giờ kể từ thời điểm giao đơn. Sau 12 giờ link sẽ tự động hết hạn, shop xin phép từ chối xử lý và không hỗ trợ các trường hợp kích hoạt trễ. Quý khách vui lòng kích hoạt ngay khi nhận link.",
   },
 
+  "up-gemini-pro-5tb-12-thang-chinh-chu-kbh": {
+    title: "Hướng dẫn nghiệm thu Gói Gemini Pro & Google One 5TB 12 Tháng Chính Chủ",
+    steps: [
+      "Quản trị viên đã đăng nhập và nâng cấp trực tiếp gói 5TB vào tài khoản của bạn.",
+      "Truy cập https://drive.google.com/settings/storage để kiểm tra dung lượng 5.000GB (5TB) đã kích hoạt thành công.",
+      "Truy cập https://gemini.google.com để sử dụng Gemini Pro cùng mô hình Gemini 4 Argon & Gemini 3.8 Flash trong Google Antigravity & AI Studio.",
+      "Tùy chọn tạo nhóm gia đình: Truy cập https://myaccount.google.com/family/details để mời tối đa 5 Gmail khác cùng hưởng quyền lợi 5TB.",
+      "Bảo mật tài khoản: Nếu bạn cung cấp Gmail chính, hãy truy cập https://myaccount.google.com/signinoptions/password để đổi lại mật khẩu ngay lập tức.",
+    ],
+    note: "Gói KBH (Không bảo hành sau khi quý khách đã nghiệm thu thành công dung lượng 5TB).",
+  },
+
   "gemini-pro-5tb-1-nam-slot-chinh-chu": {
     title: "Hướng dẫn kích hoạt Slot Gemini Pro & Google One 5TB 1 Năm Chính Chủ",
     steps: [
