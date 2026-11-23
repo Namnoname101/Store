@@ -588,7 +588,7 @@ export class TelegramBotAdapter implements ISupplierAdapter {
 
     const sessionString =
       creds.apiKey?.trim() || process.env.TELEGRAM_USER_SESSION?.trim() || "";
-    const botUsername = (creds.baseUrl || "shopxoainon_bot")
+    const botUsername = (creds.baseUrl || "")
       .replace(/^@/, "")
       .replace(/\/+$/, "");
 
@@ -616,7 +616,8 @@ export class TelegramBotAdapter implements ISupplierAdapter {
     const client = await this.getClient(creds);
 
     if (botUsername.includes("xoainon")) {
-      return this.checkXoaiNonBalance(client, botUsername);
+      console.warn("[TelegramBotAdapter] shopxoainon_bot is deprecated. Use XOAINON_API REST adapter instead.");
+      return 0;
     }
     if (botUsername.includes("KhoMMO") || botUsername.includes("khommo")) {
       return this.checkKhoMmoBalance(client, botUsername);
@@ -1062,61 +1063,8 @@ export class TelegramBotAdapter implements ISupplierAdapter {
     }
 
     if (botUsername.includes("xoainon")) {
-      try {
-        const client = await this.getClient(creds);
-        await client.sendMessage(botUsername, { message: "/buy" });
-        await new Promise((r) => setTimeout(r, 2000));
-
-        const msgs = await client.getMessages(botUsername, { limit: 1 });
-        const msg = msgs[0];
-        const parsedProducts: Record<string, CachedBotProduct> = {};
-
-        if (msg?.replyMarkup && (msg.replyMarkup as any).rows) {
-          for (const row of (msg.replyMarkup as any).rows) {
-            for (const b of row.buttons) {
-              const dataStr = b.data ? Buffer.from(b.data).toString("utf-8") : "";
-              const btnText = b.text || "";
-
-              let code: string | null = null;
-              const codeMatch = dataStr.match(/product:view:(\d+)/);
-              if (codeMatch) {
-                code = codeMatch[1];
-              } else {
-                for (const [kCode] of Object.entries(XOAINON_KNOWN_PRODUCTS)) {
-                  if (matchesProductStrictly(kCode, btnText)) {
-                    code = kCode;
-                    break;
-                  }
-                }
-              }
-
-              if (code) {
-                const price = this.parsePrice(btnText);
-                const stock = this.parseStock(btnText);
-                const fallbackName = XOAINON_KNOWN_PRODUCTS[code]?.name || btnText.split("•")[0].trim();
-                if (price !== null) {
-                  parsedProducts[code] = {
-                    code,
-                    name: fallbackName,
-                    price,
-                    inStock: stock,
-                  };
-                }
-              }
-            }
-          }
-        }
-
-        if (Object.keys(parsedProducts).length > 0) {
-          telegramCatalogCache.set(botUsername, {
-            timestamp: now,
-            products: parsedProducts,
-          });
-          return parsedProducts;
-        }
-      } catch (err) {
-        console.warn(`[TelegramBotAdapter] Live catalog fetch failed for @${botUsername}, using fallback dictionary:`, err);
-      }
+      console.warn(`[TelegramBotAdapter] Skipping Telegram message to @${botUsername}. Use XOAINON_API REST adapter instead.`);
+      return {};
     }
 
     return {};
@@ -1253,6 +1201,13 @@ export class TelegramBotAdapter implements ISupplierAdapter {
     const client = extra?.mockClient || (await this.getClient(creds));
 
     if (botUsername.includes("xoainon")) {
+      if (!extra?.mockClient && !creds?.isMock) {
+        return {
+          success: false,
+          deliveredKeys: [],
+          error: "Shop Xoài Non đã chuyển hoàn toàn sang REST API (XOAINON_API). Đã chặn gửi tin nhắn Telegram tự động.",
+        };
+      }
       return this.buyXoaiNon(client, botUsername, supplierProductCode, quantity, orderCode, expectedPrice);
     }
     if (botUsername.includes("dkey")) {
