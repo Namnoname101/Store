@@ -477,15 +477,78 @@ export default function AppSidebar() {
               </div>
               <ChevronRight className="w-3.5 h-3.5 text-zinc-500" />
             </Link>
+
+            {/* Grok & Cursor AI Link */}
+            <Link
+              href="/brand/grok"
+              onClick={() => handleNavClick("/brand/grok")}
+              className={`flex items-center justify-between px-2.5 py-1.5 rounded-md transition-colors ${
+                pathname === "/brand/grok"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span className="w-[18px] h-[18px] rounded bg-white/10 text-white font-black text-[11px] flex items-center justify-center shrink-0">
+                  𝕏
+                </span>
+                <span className="text-xs font-medium">Grok &amp; Cursor AI</span>
+              </div>
+              <ChevronRight className="w-3.5 h-3.5 text-zinc-500" />
+            </Link>
+
+            {/* MUSE AI Link */}
+            <Link
+              href="/brand/muse"
+              onClick={() => handleNavClick("/brand/muse")}
+              className={`flex items-center justify-between px-2.5 py-1.5 rounded-md transition-colors ${
+                pathname === "/brand/muse"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-[18px] h-[18px] text-sky-400 shrink-0" />
+                <span className="text-xs font-medium">MUSE AI (2B / 31B)</span>
+              </div>
+              <ChevronRight className="w-3.5 h-3.5 text-zinc-500" />
+            </Link>
           </div>
         </div>
 
         {/* Section: Apps & Tools */}
         <div>
           <div className="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-            Ứng dụng & Công cụ
+            Ứng dụng &amp; Công cụ
           </div>
           <div className="space-y-0.5">
+            <Link
+              href="/brand/youtube"
+              onClick={() => handleNavClick("/brand/youtube")}
+              className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-colors ${
+                pathname === "/brand/youtube"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
+              }`}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="shrink-0">
+                <rect x="1" y="4" width="22" height="16" rx="5" fill="#FF0000" />
+                <polygon points="10,8.5 16,12 10,15.5" fill="#FFFFFF" />
+              </svg>
+              <span className="font-medium text-xs">YouTube Premium</span>
+            </Link>
+            <Link
+              href="/brand/netflix"
+              onClick={() => handleNavClick("/brand/netflix")}
+              className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-colors ${
+                pathname === "/brand/netflix"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
+              }`}
+            >
+              {svgNetflix}
+              <span className="font-medium text-xs">Netflix Premium 4K</span>
+            </Link>
             <Link
               href="/brand/canva"
               onClick={() => handleNavClick("/brand/canva")}
@@ -496,7 +559,7 @@ export default function AppSidebar() {
               }`}
             >
               {svgCanva}
-              <span className="font-medium text-xs">Canva Pro</span>
+              <span className="font-medium text-xs">Canva Pro (100 Slots)</span>
             </Link>
             <Link
               href="/brand/capcut"
@@ -509,6 +572,67 @@ export default function AppSidebar() {
             >
               {svgCapCut}
               <span className="font-medium text-xs">CapCut Pro</span>
+            </Link>
+            <Link
+              href="/brand/wink"
+              onClick={() => handleNavClick("/brand/wink")}
+              className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-colors ${
+                pathname === "/brand/wink"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
+              }`}
+            >
+              <span className="w-5 h-5 rounded-[5px] bg-gradient-to-tr from-pink-500 to-violet-500 text-white font-black text-[10px] flex items-center justify-center shrink-0">
+                W
+              </span>
+              <span className="font-medium text-xs">Wink VIP+ (7D / 90D)</span>
+            </Link>
+            <Link
+              href="/brand/meitu"
+              onClick={() => handleNavClick("/brand/meitu")}
+              className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-colors ${
+                pathname === "/brand/meitu"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
+              }`}
+            >
+              <div className="w-5 h-5 relative rounded-[5px] overflow-hidden shrink-0 shadow-xs">
+                <Image
+                  src="/images/raw_logos/meitu.png"
+                  alt="Meitu VIP"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <span className="font-medium text-xs">Meitu VIP</span>
+            </Link>
+            <Link
+              href="/brand/adobe"
+              onClick={() => handleNavClick("/brand/adobe")}
+              className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-colors ${
+                pathname === "/brand/adobe"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
+              }`}
+            >
+              <span className="w-5 h-5 rounded-[5px] bg-[#FA0F00] text-white font-black text-[11px] flex items-center justify-center shrink-0">
+                A
+              </span>
+              <span className="font-medium text-xs">Adobe Creative Cloud</span>
+            </Link>
+            <Link
+              href="/brand/figma"
+              onClick={() => handleNavClick("/brand/figma")}
+              className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-colors ${
+                pathname === "/brand/figma"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
+              }`}
+            >
+              <span className="w-5 h-5 rounded-[5px] bg-violet-600 text-white font-black text-[11px] flex items-center justify-center shrink-0">
+                F
+              </span>
+              <span className="font-medium text-xs">Figma Pro Edu 2 Năm</span>
             </Link>
             <Link
               href="/brand/duolingo"
@@ -533,25 +657,6 @@ export default function AppSidebar() {
             >
               {svgMS}
               <span className="font-medium text-xs">Microsoft 365</span>
-            </Link>
-            <Link
-              href="/brand/meitu"
-              onClick={() => handleNavClick("/brand/meitu")}
-              className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-colors ${
-                pathname === "/brand/meitu"
-                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
-                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
-              }`}
-            >
-              <div className="w-5 h-5 relative rounded-[5px] overflow-hidden shrink-0 shadow-xs">
-                <Image
-                  src="/images/raw_logos/meitu.png"
-                  alt="Meitu VIP"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <span className="font-medium text-xs">Meitu VIP</span>
             </Link>
           </div>
         </div>

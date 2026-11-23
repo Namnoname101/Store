@@ -27,6 +27,7 @@ export const BRAND_NAVIGATOR_ITEMS: BrandFilterItem[] = [
   { id: "quizlet", name: "Quizlet Plus", query: "quizlet", iconKey: "quizlet", badge: "TEACHER", hoverBorder: "hover:border-cyan-400" },
   { id: "duolingo", name: "Duolingo", query: "duolingo", iconKey: "duolingo", badge: "SUPER", hoverBorder: "hover:border-lime-500" },
   { id: "meitu", name: "Meitu VIP", query: "meitu", iconKey: "meitu", badge: "VIP", hoverBorder: "hover:border-pink-500" },
+  { id: "wink", name: "Wink VIP+", query: "wink", iconKey: "wink", badge: "7D / 90D", hoverBorder: "hover:border-pink-500" },
   { id: "adobe", name: "Adobe", query: "adobe", iconKey: "adobe", badge: "ALL/EXP", hoverBorder: "hover:border-red-500" },
   { id: "office", name: "Office 365", query: "office", iconKey: "microsoft", badge: "1 NĂM", hoverBorder: "hover:border-amber-500" },
   { id: "windows", name: "Key Windows", query: "windows", iconKey: "windows", badge: "PRO", hoverBorder: "hover:border-sky-500" },
@@ -92,6 +93,8 @@ export function matchProductBrand(
       return coreTitle.includes("duolingo") || slugLower.includes("duolingo");
     case "meitu":
       return coreTitle.includes("meitu") || slugLower.includes("meitu");
+    case "wink":
+      return coreTitle.includes("wink") || slugLower.includes("wink");
     case "adobe":
       return coreTitle.includes("adobe") || slugLower.includes("adobe");
     case "office":
