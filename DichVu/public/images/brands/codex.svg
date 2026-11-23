@@ -37,7 +37,7 @@
     
     <!-- Subtitle Pill -->
     <g transform="translate(0, 32)">
-      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#10b981" letter-spacing="1.5">API USAGE & REAL-TIME LOGS</text>
+      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#10b981" letter-spacing="1.5">API USAGE &amp; REAL-TIME LOGS</text>
     </g>
   </g>
 </svg>

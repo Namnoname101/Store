@@ -67,12 +67,12 @@
     </text>
   </g>
 
-  <!-- CENTRAL ICON & HERO GRAPHIC -->
+  <!-- CENTRAL ICON &amp; HERO GRAPHIC -->
   <g transform="translate(600, 245)">
     <!-- Outer Glow Rings -->
     <circle cx="0" cy="0" r="105" fill="#0c0524" stroke="url(#geminiGrad)" stroke-width="3" filter="url(#starGlow)"/>
     
-    <!-- Gemini 4-Point AI Spark (Extra Large & Punchy) -->
+    <!-- Gemini 4-Point AI Spark (Extra Large &amp; Punchy) -->
     <path d="M0 -85 C3 -25 25 -3 85 0 C25 3 3 25 0 85 C-3 25 -25 3 -85 0 C-25 -3 -3 -25 0 -85 Z" fill="url(#geminiGrad)" filter="url(#starGlow)"/>
     <!-- Intense White Core Sparkle -->
     <path d="M0 -50 C1.5 -15 15 -1.5 50 0 C15 1.5 1.5 15 0 50 C-1.5 15 -15 1.5 -50 0 C-15 -1.5 -1.5 -15 0 -50 Z" fill="#ffffff"/>
@@ -91,7 +91,7 @@
     GEMINI PRO 5TB
   </text>
   
-  <!-- Highlight Duration & Family Subtitle -->
+  <!-- Highlight Duration &amp; Family Subtitle -->
   <g transform="translate(600, 480)">
     <rect x="-380" y="-32" width="760" height="58" rx="29" fill="#1c113b" stroke="url(#goldGrad)" stroke-width="2"/>
     <text x="0" y="8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="30" font-weight="900" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="2">

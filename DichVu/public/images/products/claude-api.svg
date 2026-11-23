@@ -61,14 +61,14 @@
     </g>
   </g>
 
-  <!-- Product Title & Key Badge -->
+  <!-- Product Title &amp; Key Badge -->
   <g transform="translate(600, 480)" text-anchor="middle">
     <!-- Main Title -->
     <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="900" letter-spacing="2">
       CLAUDE AI &amp; API
     </text>
 
-    <!-- Key Spec Pill - Highlighting 5.5 & 5.6 Generation -->
+    <!-- Key Spec Pill - Highlighting 5.5 &amp; 5.6 Generation -->
     <g transform="translate(0, 52)">
       <rect x="-240" y="-22" width="480" height="44" rx="22" fill="#D97757" fill-opacity="0.2" stroke="url(#claudeAccent)" stroke-width="1.5"/>
       <text x="0" y="7" fill="#fbd5cb" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="800" letter-spacing="2">

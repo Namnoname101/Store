@@ -124,7 +124,7 @@ export default function AppSidebar() {
 
   const svgDuolingo = (
     <img
-      src="/images/raw_logos/duolingo.png"
+      src="/images/raw_logos/duolingo.png?v=2"
       alt="Duolingo Super"
       width={20}
       height={20}
@@ -510,7 +510,7 @@ export default function AppSidebar() {
                   height={18}
                   className="w-[18px] h-[18px] rounded-[4px] object-cover shrink-0"
                 />
-                <span className="text-xs font-medium">MUSE AI (2B / 31B)</span>
+                <span className="text-xs font-medium">MUSE AI</span>
               </div>
               <ChevronRight className="w-3.5 h-3.5 text-zinc-500" />
             </Link>
@@ -560,7 +560,7 @@ export default function AppSidebar() {
               }`}
             >
               {svgCanva}
-              <span className="font-medium text-xs">Canva Pro (100 Slots)</span>
+              <span className="font-medium text-xs">Canva Pro</span>
             </Link>
             <Link
               href="/brand/capcut"
@@ -590,7 +590,7 @@ export default function AppSidebar() {
                 height={20}
                 className="w-5 h-5 rounded-[5px] object-cover shrink-0 shadow-xs"
               />
-              <span className="font-medium text-xs">Wink VIP+ (7D / 90D)</span>
+              <span className="font-medium text-xs">Wink VIP+</span>
             </Link>
             <Link
               href="/brand/meitu"

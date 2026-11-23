@@ -37,7 +37,7 @@
     
     <!-- Subtitle Pill -->
     <g transform="translate(0, 32)">
-      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#00f2fe" letter-spacing="1.5">PRO & BUSINESS • AUTO-COMPLETE</text>
+      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#00f2fe" letter-spacing="1.5">PRO &amp; BUSINESS • AUTO-COMPLETE</text>
     </g>
   </g>
 </svg>

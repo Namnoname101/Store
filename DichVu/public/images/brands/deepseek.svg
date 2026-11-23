@@ -37,7 +37,7 @@
     
     <!-- Subtitle Pill -->
     <g transform="translate(0, 32)">
-      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#4D6BFE" letter-spacing="1.5">V3 & R1 REASONING • HIGH SPEED</text>
+      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#4D6BFE" letter-spacing="1.5">V3 &amp; R1 REASONING • HIGH SPEED</text>
     </g>
   </g>
 </svg>

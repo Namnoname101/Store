@@ -56,7 +56,7 @@
     <line x1="600" y1="0" x2="600" y2="500" />
   </g>
 
-  <!-- Central Left: Gemini AI & Google One Symbol -->
+  <!-- Central Left: Gemini AI &amp; Google One Symbol -->
   <g transform="translate(140, 170)">
     <!-- Gemini 4-Point Star Core -->
     <path d="M 0 -85 C 0 -25 25 0 85 0 C 25 0 0 25 0 85 C 0 25 -25 0 -85 0 C -25 0 0 -25 0 -85 Z" fill="url(#geminiGrad)" filter="url(#dropGlow)" />
@@ -89,7 +89,7 @@
       <text x="14" y="26" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#38bdf8">☁️ 5TB (5.000GB) CLOUD</text>
     </g>
 
-    <!-- Pill 2: Gemini 4 Argon & 3.8 Flash -->
+    <!-- Pill 2: Gemini 4 Argon &amp; 3.8 Flash -->
     <g transform="translate(215, 0)">
       <rect width="210" height="42" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.2" />
       <text x="14" y="26" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#c084fc">✨ GEMINI 4 ARGON &amp; 3.8</text>

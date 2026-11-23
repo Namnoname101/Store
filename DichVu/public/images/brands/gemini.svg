@@ -51,7 +51,7 @@
     <text x="80" y="24" fill="#34d399" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" text-anchor="middle">☁️ GOOGLE DRIVE 5TB</text>
   </g>
 
-  <!-- ================= AUTHENTIC GOOGLE GEMINI & DRIVE ================= -->
+  <!-- ================= AUTHENTIC GOOGLE GEMINI &amp; DRIVE ================= -->
   <g transform="translate(600, 285)">
     <!-- Outer ambient ring -->
     <circle cx="0" cy="0" r="110" fill="#070314" stroke="url(#gemGrad)" stroke-width="3" filter="url(#gemGlow)"/>

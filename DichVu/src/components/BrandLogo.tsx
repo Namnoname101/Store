@@ -317,7 +317,7 @@ export default function BrandLogo({ brandName, className = "w-4 h-4", size = 16 
     case "duolingo":
       return (
         <img
-          src="/images/raw_logos/duolingo.png"
+          src="/images/raw_logos/duolingo.png?v=2"
           alt="Duolingo"
           width={size}
           height={size}

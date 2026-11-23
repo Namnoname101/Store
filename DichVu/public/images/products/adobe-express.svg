@@ -39,7 +39,7 @@
 
   <!-- ================= AUTHENTIC OFFICIAL ADOBE EXPRESS LOGO ================= -->
   <g transform="translate(490, 150)">
-    <!-- App Outer Glow & Frame -->
+    <!-- App Outer Glow &amp; Frame -->
     <rect x="-10" y="-10" width="240" height="234" rx="46" fill="none" stroke="url(#aeGradBorder)" stroke-width="3" filter="url(#aeGlow)"/>
     
     <!-- Official Adobe Express Asset from Wikimedia / Adobe Systems -->
