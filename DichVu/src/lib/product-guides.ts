@@ -645,7 +645,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 3: Trải nghiệm học ngoại ngữ Super 12 tháng",
       },
     ],
-    note: "BẢN QUYỀN 12 THÁNG: Bảo hành 1 đổi 1 hoặc khôi phục quyền lợi Super trong suốt 12 tháng nếu phát sinh lỗi gián đoạn từ hệ thống.",
+    note: "CHÍNH SÁCH BẢO HÀNH: Bảo hành link kích hoạt 1 đổi 1 trong 24 giờ kể từ khi nhận đơn nếu link lỗi. Vui lòng kích hoạt ngay sau khi nhận (kích hoạt lên Super thành công là hoàn tất đơn).",
     docsUrl: "https://www.duolingo.com",
   },
 
@@ -668,7 +668,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 3: Thiết kế UI/UX chuyên nghiệp với Figma Pro",
       },
     ],
-    note: "BẢN QUYỀN 2 NĂM: Bảo hành 1 đổi 1 trọn vẹn 2 năm theo chính sách giáo dục của Figma. Vui lòng không thay đổi email tài khoản.",
+    note: "CHÍNH SÁCH BẢO HÀNH: Bảo hành đăng nhập thành công và tài khoản có sẵn chuẩn gói Figma Pro Education 2 năm trong 24 giờ đầu kể từ khi nhận đơn. Vui lòng không thay đổi email tài khoản.",
     docsUrl: "https://help.figma.com",
   },
 
@@ -695,7 +695,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 4: Cài đặt trọn bộ Office bản quyền",
       },
     ],
-    note: "BẢN QUYỀN CHÍNH HÃNG 1 NĂM: Bảo hành 1 đổi 1 trong suốt 12 tháng nếu tài khoản gặp sự cố kỹ thuật. Khách hàng sở hữu tài khoản riêng tư và quản lý mật khẩu của chính mình.",
+    note: "CHÍNH SÁCH BẢO HÀNH: Bảo hành đăng nhập và kích hoạt bản quyền Office 365 thành công trong 24 giờ đầu kể từ khi nhận đơn. Khách hàng sở hữu tài khoản riêng tư và tự đặt mật khẩu riêng ở lần đăng nhập đầu tiên.",
     docsUrl: "https://support.microsoft.com/office",
   },
 
@@ -718,7 +718,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 3: Thiết kế không giới hạn với Canva Pro",
       },
     ],
-    note: "BẢO HÀNH FULL 30 NGÀY: Bảo hành 1 đổi 1 trong suốt 30 ngày nếu tài khoản mất quyền Pro.",
+    note: "CHÍNH SÁCH BẢO HÀNH: Bảo hành đăng nhập và kích hoạt đầy đủ tính năng Canva Pro trong 24 giờ đầu kể từ khi nhận đơn.",
     docsUrl: "https://www.canva.com",
   },
 
@@ -809,7 +809,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 3: Kết nối VPN tốc độ cao tại hơn 111 quốc gia",
       },
     ],
-    note: "Bảo hành 1 đổi 1 suốt 90 ngày (3 tháng). Vui lòng không tự ý đổi mật khẩu hoặc email của tài khoản.",
+    note: "CHÍNH SÁCH BẢO HÀNH: Bảo hành kích hoạt và đăng nhập thành công trong 24 giờ đầu kể từ khi nhận đơn (vui lòng kích hoạt ngay sau khi nhận, không hỗ trợ lưu trữ/giữ code).",
     docsUrl: "https://nordvpn.com",
   },
 

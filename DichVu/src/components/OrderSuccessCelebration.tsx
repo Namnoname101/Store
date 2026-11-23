@@ -61,7 +61,7 @@ export default function OrderSuccessCelebration({
         ) : (
           <span className="text-emerald-500 font-bold bg-emerald-500/10 px-3 py-1 rounded-xl border border-emerald-500/20 flex items-center gap-1.5">
             <ShieldCheck className="h-3.5 w-3.5" />
-            <span>Bảo hành 1 đổi 1</span>
+            <span>Bảo hành theo gói</span>
           </span>
         )}
       </div>

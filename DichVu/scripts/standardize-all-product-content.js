@@ -138,10 +138,10 @@ const PRODUCT_CONTENT_STANDARDS = [
   {
     slug: 'nordvpn-premium-3-thang',
     originalPrice: 139000,
-    description: `• Hình thức nhận: Cấp sẵn tài khoản NordVPN Premium (Email | Mật khẩu) tự động ngay sau khi thanh toán.
+    description: `• Hình thức nhận: Cấp sẵn tài khoản hoặc mã kích hoạt NordVPN Premium 3 tháng tự động ngay sau khi thanh toán.
 • Quyền lợi: Mở khóa hơn 6.000+ máy chủ VPN siêu tốc tại 111 quốc gia, đổi IP an toàn, vượt tường lửa và chặn quảng cáo độc hại.
-• Quy định sử dụng: Đăng nhập sử dụng trực tiếp, không tự ý đổi mật khẩu hoặc thông tin email của tài khoản.
-• Bảo hành: Bảo hành 1 đổi 1 trọn vẹn 90 ngày (3 tháng) sử dụng.`,
+• Quy định sử dụng: Kích hoạt và đăng nhập sử dụng ngay sau khi nhận đơn, không tự ý đổi mật khẩu hoặc thông tin tài khoản.
+• Bảo hành: Bảo hành kích hoạt và đăng nhập thành công trong 24 giờ đầu kể từ khi nhận đơn (không bảo hành lưu trữ code).`,
   },
   {
     slug: 'gemini-pro-5tb-1-nam-slot-chinh-chu',
@@ -213,9 +213,9 @@ const PRODUCT_CONTENT_STANDARDS = [
   {
     slug: 'duolingo-super-12-thang',
     originalPrice: 99000,
-    description: `• Hình thức nhận: Hệ thống cấp tài khoản hoặc link nâng cấp Duolingo Super bản quyền thời hạn 12 tháng (1 năm).
+    description: `• Hình thức nhận: Hệ thống cấp link redeem kích hoạt Duolingo Super 12 tháng trực tiếp trên tài khoản chính chủ của bạn (không cần mật khẩu, không cần thêm thẻ thanh toán).
 • Quyền lợi gói Super: Trái tim vô hạn (học không lo bị gián đoạn khi làm sai), 100% không quảng cáo, mở khóa luyện phát âm, ôn tập lỗi sai và kiểm tra tiến độ không giới hạn.
-• Bảo hành: Bảo hành 1 đổi 1 và hỗ trợ kỹ thuật xuyên suốt thời hạn gói.`,
+• Bảo hành: Bảo hành link kích hoạt 1 đổi 1 trong 24 giờ kể từ khi nhận đơn nếu link lỗi (vui lòng kích hoạt ngay sau khi nhận; kích hoạt lên Super thành công là hoàn tất đơn).`,
   },
   {
     slug: 'photoroom-max-7-ngay',
@@ -242,9 +242,9 @@ const PRODUCT_CONTENT_STANDARDS = [
   {
     slug: 'figma-pro-education-2-nam',
     originalPrice: 390000,
-    description: `• Hình thức nhận: Cấp sẵn tài khoản Figma Pro Education riêng tư 100% (Email | Mật khẩu) ngay sau khi thanh toán.
-• Quyền lợi 2 năm: Tạo dự án và file thiết kế không giới hạn, mở khóa đầy đủ Dev Mode cho lập trình viên, bảng vẽ FigJam và bộ công cụ thiết kế AI (Figma Make & Claude Sonnet 5.5 / Opus 5.5).
-• Bảo hành: Bảo hành 1 đổi 1 xuyên suốt 24 tháng (2 năm) theo chuẩn bản quyền giáo dục của Figma.`,
+    description: `• Hình thức nhận: Cấp sẵn tài khoản Figma Pro Education riêng tư 100% (Email | Mật khẩu, 1 người dùng độc quyền) ngay sau khi thanh toán.
+• Quyền lợi gói 2 năm: Tạo dự án và file thiết kế không giới hạn, mở khóa đầy đủ Dev Mode cho lập trình viên, bảng vẽ FigJam, tặng 3.000 credits/tháng và bộ công cụ thiết kế AI (Figma Make & Claude Sonnet 5.5 / Opus 5.5).
+• Bảo hành: Bảo hành đăng nhập thành công và tài khoản có sẵn chuẩn gói Figma Pro Education 2 năm trong 24 giờ đầu kể từ khi nhận đơn.`,
   },
   {
     slug: 'adobe-full-apps-1-thang',
@@ -271,7 +271,7 @@ const PRODUCT_CONTENT_STANDARDS = [
     originalPrice: 45000,
     description: `• Hình thức nhận: Cấp sẵn tài khoản Canva Pro dùng riêng tư (Email | Mật khẩu, kèm quyền truy cập hộp thư) ngay sau khi thanh toán.
 • Tính năng mở khóa: Hơn 100+ triệu mẫu thiết kế và hình ảnh Premium, trọn bộ công cụ AI Magic Studio (tách nền 1 chạm, xóa vật thể, mở rộng ảnh) và xuất file PNG trong suốt / PDF in ấn / video 4K.
-• Bảo hành: Bảo hành 1 đổi 1 trọn vẹn suốt 30 ngày sử dụng.`,
+• Bảo hành: Bảo hành đăng nhập và kích hoạt đầy đủ tính năng Canva Pro trong 24 giờ đầu kể từ khi nhận đơn.`,
   },
   {
     slug: 'meitu-vip-7-ngay',
@@ -292,10 +292,10 @@ const PRODUCT_CONTENT_STANDARDS = [
   {
     slug: 'office-365-1-nam',
     originalPrice: 89000,
-    description: `• Hình thức nhận: Cấp sẵn tài khoản Microsoft 365 riêng tư (Email | Mật khẩu khởi tạo) ngay sau khi thanh toán. Bạn được tự đổi mật khẩu riêng ở lần đăng nhập đầu tiên.
-• Quyền lợi: Cài đặt và kích hoạt bản quyền trọn bộ Word, Excel, PowerPoint, Outlook bản mới nhất kèm lưu trữ đám mây OneDrive.
-• Thiết bị hỗ trợ: Đăng nhập sử dụng đồng thời trên tối đa 5 thiết bị (Windows, Mac, iPad, iPhone, Android).
-• Bảo hành: Bảo hành 1 đổi 1 xuyên suốt 12 tháng (1 năm) sử dụng.`,
+    description: `• Hình thức nhận: Cấp sẵn tài khoản Microsoft Office 365 Plus riêng tư (Email | Mật khẩu khởi tạo) ngay sau khi thanh toán. Bạn được tự đổi mật khẩu riêng ở lần đăng nhập đầu tiên.
+• Quyền lợi: Cài đặt và kích hoạt bản quyền trọn bộ Word, Excel, PowerPoint, Outlook bản mới nhất cho tối đa 5 thiết bị (Windows, Mac, iPad, iPhone, Android).
+• Lưu ý sử dụng: Khuyến nghị lưu file quan trọng trên ổ cứng máy tính cá nhân để chủ động bảo toàn dữ liệu.
+• Bảo hành: Bảo hành đăng nhập và kích hoạt bản quyền Office 365 thành công trong 24 giờ đầu kể từ khi nhận đơn.`,
   },
   {
     slug: 'capcut-pro-30-ngay',
@@ -311,7 +311,7 @@ const PRODUCT_CONTENT_STANDARDS = [
     description: `• Hình thức nhận: Cấp đường link / mã kích hoạt bản quyền 12 tháng nâng cấp trực tiếp lên tài khoản Adobe chính chủ của bạn.
 • Tính năng mở khóa: Thiết kế đồ họa nhanh trên Web & Điện thoại, tạo ảnh AI bằng Adobe Firefly, xóa phông ảnh/video 1 chạm, kho 200 triệu ảnh Adobe Stock và 20.000+ phông chữ bản quyền.
 • Lưu ý kích hoạt: Khi bấm nhận ưu đãi nếu báo giới hạn quốc gia, bạn chỉ cần bật VPN sang Ấn Độ (India) để kích hoạt, sau đó tắt VPN dùng bình thường tại Việt Nam.
-• Bảo hành: Bảo hành kích hoạt thành công 1 đổi 1 gói 12 tháng Premium.`,
+• Bảo hành: Bảo hành kích hoạt thành công lên gói 12 tháng Premium trong 24 giờ kể từ khi nhận đơn.`,
   },
 
   // ==========================================

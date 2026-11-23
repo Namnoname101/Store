@@ -68,7 +68,7 @@ export default function Hero({ initialSearch = "" }: HeroProps) {
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="text-blue-500 font-bold">🛡️</span>
-              <span>Bảo hành 1-đổi-1</span>
+              <span>Bảo hành theo gói</span>
             </span>
             <Link
               href="/check-usage"

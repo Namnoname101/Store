@@ -540,7 +540,7 @@ export default function SecretDisplay({
     }
 
     content += "\nCHÍNH SÁCH BẢO HÀNH & HỖ TRỢ:\n";
-    content += "- Bảo hành 1-đổi-1 trọn thời gian sử dụng theo cam kết từng gói sản phẩm.\n";
+    content += "- Áp dụng chính sách bảo hành theo đúng mô tả của gói sản phẩm đã mua.\n";
     content += "- Hỗ trợ kỹ thuật 24/7 qua Telegram: https://t.me/daitruongstore\n";
     content += "- Website chính thức: https://daitruongstore.fly.dev\n";
 
@@ -860,7 +860,7 @@ export default function SecretDisplay({
 
                 <div className="flex items-center gap-2 rounded-xl bg-secondary/80 border border-border px-3.5 py-2 text-foreground">
                   <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span>Cam kết bảo hành 100%</span>
+                  <span>Hỗ trợ kỹ thuật 24/7</span>
                 </div>
               </div>
 
@@ -1505,7 +1505,7 @@ export default function SecretDisplay({
           <div>
             <h4 className="text-xs sm:text-sm font-bold text-foreground flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-emerald-500" />
-              <span>Bảo hành 1-đổi-1 & Hỗ trợ kỹ thuật 24/7</span>
+              <span>Hỗ trợ kỹ thuật & Bảo hành theo gói</span>
             </h4>
             <p className="text-xs text-muted-foreground mt-1">
               Đội ngũ kỹ thuật viên KhoDEE sẵn sàng hỗ trợ bạn qua Telegram 24/7.

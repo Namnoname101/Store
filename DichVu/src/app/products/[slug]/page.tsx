@@ -188,31 +188,55 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Hạn 3 tháng"
     : "Theo thời hạn gói";
 
+  const isActivation24H =
+    slugLower.includes("duolingo") ||
+    slugLower.includes("nordvpn") ||
+    slugLower.includes("adobe-express") ||
+    slugLower.includes("office-365") ||
+    slugLower.includes("figma") ||
+    slugLower.includes("canva");
+
+  const isExplicitBHF30D =
+    isChatGPTBusiness ||
+    isChatGPTPlusBHF ||
+    isCapCut30D ||
+    isYoutube ||
+    isHMA ||
+    slugLower.includes("quizlet") ||
+    slugLower.includes("xingtu") ||
+    slugLower.includes("adobe-full-apps");
+
+  const isExplicitBHF7D =
+    isCapCut7D ||
+    slugLower.includes("meitu") ||
+    slugLower.includes("wink") ||
+    slugLower.includes("photoroom");
+
   const warrantyLabel = isSMM
-    ? "Bảo hành tụt theo server"
+    ? "Bảo hành theo server"
     : isGeminiUpPro5TB
     ? "Bảo hành kích hoạt đủ 5TB (Gói KBH)"
     : isApiKeyProduct
-    ? "Bảo hành 100% số dư Credit"
-    : isChatGPTFree
+    ? "Bảo hành chuẩn số dư Credit"
+    : isChatGPTFree || isChatGPTPlus24H
     ? "Bảo hành đăng nhập 24H"
-    : isChatGPTBusiness || isChatGPTPlusBHF
-    ? "Bảo hành 1 đổi 1 suốt 30 ngày"
-    : isChatGPTPlus24H
-    ? "Bảo hành đăng nhập 24H"
-    : isCapCut
-    ? "Bảo hành 1 đổi 1 suốt thời hạn"
+    : slugLower.includes("muse-ai")
+    ? "Bảo hành đăng nhập & đủ Token 24H (KBH)"
     : isGeminiKBH
     ? "Bảo hành đăng nhập 2H (Gói KBH)"
     : titleLower.includes("bh 3 tháng") || titleLower.includes("bảo hành 3 tháng")
-    ? "Bảo hành 3 tháng 1 đổi 1"
+    ? "Bảo hành 3 tháng"
     : titleLower.includes("bh 1 tuần") || titleLower.includes("bảo hành 1 tuần")
-    ? "Bảo hành 7 ngày 1 đổi 1"
+    ? "Bảo hành 7 ngày (1 tuần)"
     : isSuno
-    ? "Bảo hành đăng nhập 24H & đủ 2.500 Credits"
-    : isHMA
-    ? "Bảo hành 1 đổi 1 suốt 30 ngày (5 máy)"
-    : "Bảo hành 1 đổi 1 đúng cam kết";
+    ? "Bảo hành đăng nhập & Credit 24H"
+    : isActivation24H
+    ? "Bảo hành kích hoạt / đăng nhập 24H"
+    : isExplicitBHF30D
+    ? "Bảo hành Full 30 ngày (BHF)"
+    : isExplicitBHF7D
+    ? "Bảo hành Full 7 ngày (BHF)"
+    : "Bảo hành theo quy định gói";
 
   const unitLabel = product.title.toLowerCase().includes("follow")
     ? "follow"
@@ -327,6 +351,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               minQuantity={product.minQuantity || (isSMM ? 50 : 1)}
               maxQuantity={product.maxQuantity || null}
               unitLabel={unitLabel}
+              warrantyLabel={warrantyLabel}
             />
           </div>
         </div>

@@ -47,6 +47,7 @@ interface ProductPurchaseBoxProps {
   minQuantity?: number;
   maxQuantity?: number | null;
   unitLabel?: string;
+  warrantyLabel?: string;
 }
 
 export default function ProductPurchaseBox({
@@ -64,6 +65,7 @@ export default function ProductPurchaseBox({
   minQuantity = 1,
   maxQuantity = null,
   unitLabel = "lượt",
+  warrantyLabel = "Bảo hành theo quy định gói",
 }: ProductPurchaseBoxProps) {
   const router = useRouter();
   const { addToCart } = useCart();
@@ -1163,7 +1165,7 @@ export default function ProductPurchaseBox({
           </span>
           <span className="inline-flex items-center gap-1.5">
             <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-            Bảo hành 1 đổi 1
+            {warrantyLabel}
           </span>
         </div>
       </div>

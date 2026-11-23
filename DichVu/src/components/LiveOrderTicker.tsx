@@ -14,7 +14,7 @@ const PLATFORM_STATUS_NOTICES = [
   },
   {
     icon: ShieldCheck,
-    text: "Bảo hành 1 đổi 1 chuẩn chính sách từng gói",
+    text: "Chính sách bảo hành minh bạch theo từng gói",
   },
   {
     icon: Gift,

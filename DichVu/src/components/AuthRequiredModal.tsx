@@ -25,7 +25,7 @@ export default function AuthRequiredModal({
   onClose,
   callbackUrl,
   title = "Đăng nhập để tiếp tục mua hàng",
-  description = "Để đơn hàng và key bản quyền được lưu trữ vĩnh viễn vào tài khoản của bạn kèm chính sách bảo hành 1 đổi 1, vui lòng đăng nhập hoặc tạo tài khoản mới.",
+  description = "Để đơn hàng và key bản quyền được lưu trữ vĩnh viễn vào tài khoản của bạn kèm hỗ trợ kỹ thuật & bảo hành theo gói, vui lòng đăng nhập hoặc tạo tài khoản mới.",
 }: AuthRequiredModalProps) {
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -126,9 +126,9 @@ export default function AuthRequiredModal({
           <div className="flex items-start gap-2.5">
             <Zap className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
             <div>
-              <strong className="font-semibold text-foreground">Bảo hành 1 đổi 1 tự động:</strong>{" "}
+              <strong className="font-semibold text-foreground">Hỗ trợ & bảo hành theo gói:</strong>{" "}
               <span className="text-muted-foreground">
-                Hỗ trợ kỹ thuật, kích hoạt lại và bảo hành nhanh chóng theo ID tài khoản.
+                Hỗ trợ kỹ thuật, kích hoạt lại và đối soát bảo hành nhanh chóng theo ID tài khoản.
               </span>
             </div>
           </div>

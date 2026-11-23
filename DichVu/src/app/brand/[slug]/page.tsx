@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: BrandPageProps): Promise<Meta
 
   return {
     title: `${brandName} Bản Quyền Tự Động 24/7 | Kho DEE Store`,
-    description: `Mua tài khoản và key bản quyền ${brandName} chính chủ, kích hoạt tự động < 30s, bảo hành 1-đổi-1 uy tín tại Kho DEE Store.`,
+    description: `Mua tài khoản và key bản quyền ${brandName} chính chủ, kích hoạt tự động < 30s, chính sách bảo hành minh bạch theo từng gói tại Kho DEE Store.`,
   };
 }
 
@@ -108,7 +108,7 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
                 )}
               </div>
               <p className="text-xs sm:text-sm text-zinc-400 max-w-xl">
-                Tài khoản & gói dịch vụ {displayName} chính chủ, kích hoạt tự động 24/7 với chế độ bảo hành 1-đổi-1 uy tín.
+                Tài khoản & gói dịch vụ {displayName} chính chủ, kích hoạt tự động 24/7 với chính sách bảo hành minh bạch theo từng gói.
               </p>
             </div>
           </div>
@@ -121,7 +121,7 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
             </div>
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/5">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Bảo hành 1-đổi-1</span>
+              <span>Bảo hành theo gói</span>
             </div>
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/5">
               <PackageCheck className="w-3.5 h-3.5 text-sky-400" />

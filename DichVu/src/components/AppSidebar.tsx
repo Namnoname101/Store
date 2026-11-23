@@ -625,7 +625,7 @@ export default function AppSidebar() {
               className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-white/5 transition-colors"
             >
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Bảo hành 1-đổi-1</span>
+              <span>Hỗ trợ & Bảo hành</span>
             </a>
           </div>
         </div>
