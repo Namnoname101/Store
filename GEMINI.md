@@ -10,6 +10,9 @@ When referencing, developing, displaying, or designing for AI models and product
    - Maintain `src/lib/constants/ai-models.ts` as the Single Source of Truth (SSOT).
    - Synchronize all product SVG cards (`public/images/products/*.svg`), brand logos (`public/images/brands/*.svg`), user guides (`src/lib/product-guides.ts`), prompt tools (`src/lib/prompt-master-constants.ts`), and database sync scripts whenever models evolve.
    - Never show outdated model versions in customer-facing badges, banner pills, catalog descriptions, or marketing copy.
+3. **Authentic Official Logos Only (Zero Fabricated / Fake Logos)**:
+   - **Strictly Prohibited**: NEVER invent, fabricate, or improvise fake brand/product logos (such as single letters inside colored squares like `W`, `A`, `F`, fake geometric circles, or generic icons pretending to be a brand logo).
+   - **Official Assets Only**: Whenever displaying a brand or product logo in `AppSidebar.tsx`, `BrandLogo.tsx`, `public/images/brands/*.svg`, or `public/images/products/*.svg`, you MUST use the 100% authentic official vector path or official app icon of that exact product. If an official logo vector is not yet in the repo, retrieve the real official SVG path/asset first — never guess or draw a placeholder logo.
 
 ## Mandatory Pricing, Profit Margin & CTV Safeguard Rules
 When adding, syncing, or updating ANY product in this repository:

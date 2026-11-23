@@ -20,6 +20,7 @@ export function normalizeBrandName(name?: string | null): string {
   if (lower.includes("windows") || lower.includes("win")) return "windows";
   if (lower.includes("canva")) return "canva";
   if (lower.includes("adobe") || lower.includes("photoshop") || lower.includes("ps")) return "adobe";
+  if (lower.includes("wink")) return "wink";
   if (lower.includes("meitu")) return "meitu";
   if (lower.includes("figma")) return "figma";
   if (lower.includes("grok") || lower.includes("xai")) return "grok";
@@ -375,38 +376,35 @@ export default function BrandLogo({ brandName, className = "w-4 h-4", size = 16 
 
     case "meitu":
       return (
-        <svg
+        <img
+          src="/images/raw_logos/meitu.png"
+          alt="Meitu"
           width={size}
           height={size}
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className={className}
-        >
-          {/* Authentic Meitu VIP Pink Gradient Logo */}
-          <rect width="24" height="24" rx="6" fill="#FF2A6D" />
-          <path
-            d="M6.5 16.5V9C6.5 8.2 7.5 7.8 8.2 8.5L12 12L15.8 8.5C16.5 7.8 17.5 8.2 17.5 9V16.5"
-            stroke="#FFFFFF"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+          className={`rounded-[5px] object-cover shrink-0 ${className}`}
+        />
+      );
+
+    case "wink":
+      return (
+        <img
+          src="/images/raw_logos/wink.png"
+          alt="Wink"
+          width={size}
+          height={size}
+          className={`rounded-[5px] object-cover shrink-0 ${className}`}
+        />
       );
 
     case "grok":
       return (
-        <svg
+        <img
+          src="/images/raw_logos/grok.png"
+          alt="Grok"
           width={size}
           height={size}
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          xmlns="http://www.w3.org/2000/svg"
-          className={className}
-        >
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-        </svg>
+          className={`rounded-[5px] object-cover shrink-0 ${className}`}
+        />
       );
 
     case "figma":
@@ -460,21 +458,13 @@ export default function BrandLogo({ brandName, className = "w-4 h-4", size = 16 
 
     case "xingtu":
       return (
-        <svg
+        <img
+          src="/images/raw_logos/xingtu.png"
+          alt="Xingtu"
           width={size}
           height={size}
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className={className}
-        >
-          {/* Authentic Xingtu (醒图) Sparkling Cyan Star Icon */}
-          <rect width="24" height="24" rx="6" fill="#0C0D10" />
-          <path
-            d="M12 3.5C12 7.8 16.2 12 20.5 12C16.2 12 12 16.2 12 20.5C12 16.2 7.8 12 3.5 12C7.8 12 12 7.8 12 3.5Z"
-            fill="#00F2FE"
-          />
-        </svg>
+          className={`rounded-[5px] object-cover shrink-0 ${className}`}
+        />
       );
 
     case "quizlet":
@@ -499,20 +489,13 @@ export default function BrandLogo({ brandName, className = "w-4 h-4", size = 16 
 
     case "photoroom":
       return (
-        <svg
+        <img
+          src="/images/raw_logos/photoroom.png"
+          alt="Photoroom"
           width={size}
           height={size}
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className={className}
-        >
-          {/* Authentic Photoroom Purple & Wand Icon */}
-          <rect width="24" height="24" rx="6" fill="#7C3AED" />
-          <path d="M7 17L15 9" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" />
-          <circle cx="15" cy="9" r="1.5" fill="#F43F5E" />
-          <path d="M16 4.5L17 6.5L19 7.5L17 8.5L16 10.5L15 8.5L13 7.5L15 6.5Z" fill="#FDE047" />
-        </svg>
+          className={`rounded-[5px] object-cover shrink-0 ${className}`}
+        />
       );
 
     case "nordvpn":
@@ -559,18 +542,13 @@ export default function BrandLogo({ brandName, className = "w-4 h-4", size = 16 
 
     case "hma":
       return (
-        <svg
+        <img
+          src="/images/raw_logos/hma.png"
+          alt="HMA VPN"
           width={size}
           height={size}
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className={className}
-        >
-          <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z" fill="#00D2FF" fillOpacity="0.2" stroke="#00D2FF" strokeWidth="2" strokeLinejoin="round" />
-          <circle cx="12" cy="10" r="2.5" fill="#00D2FF" />
-          <path d="M12 12.5v4" stroke="#00D2FF" strokeWidth="2" strokeLinecap="round" />
-        </svg>
+          className={`rounded-[5px] object-cover shrink-0 ${className}`}
+        />
       );
 
     case "kling":
@@ -590,17 +568,13 @@ export default function BrandLogo({ brandName, className = "w-4 h-4", size = 16 
 
     case "muse":
       return (
-        <svg
+        <img
+          src="/images/raw_logos/muse.png"
+          alt="Muse AI"
           width={size}
           height={size}
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className={className}
-        >
-          <circle cx="12" cy="12" r="9" stroke="#A855F7" strokeWidth="2" />
-          <circle cx="12" cy="12" r="4" fill="#A855F7" />
-        </svg>
+          className={`rounded-[5px] object-cover shrink-0 ${className}`}
+        />
       );
 
     default:

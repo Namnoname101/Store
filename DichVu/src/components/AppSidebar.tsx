@@ -489,9 +489,13 @@ export default function AppSidebar() {
               }`}
             >
               <div className="flex items-center gap-2">
-                <span className="w-[18px] h-[18px] rounded bg-white/10 text-white font-black text-[11px] flex items-center justify-center shrink-0">
-                  𝕏
-                </span>
+                <img
+                  src="/images/raw_logos/grok.png"
+                  alt="Grok AI"
+                  width={18}
+                  height={18}
+                  className="w-[18px] h-[18px] rounded-[4px] object-cover shrink-0"
+                />
                 <span className="text-xs font-medium">Grok &amp; Cursor AI</span>
               </div>
               <ChevronRight className="w-3.5 h-3.5 text-zinc-500" />
@@ -508,7 +512,13 @@ export default function AppSidebar() {
               }`}
             >
               <div className="flex items-center gap-2">
-                <Sparkles className="w-[18px] h-[18px] text-sky-400 shrink-0" />
+                <img
+                  src="/images/raw_logos/muse.png"
+                  alt="MUSE AI"
+                  width={18}
+                  height={18}
+                  className="w-[18px] h-[18px] rounded-[4px] object-cover shrink-0"
+                />
                 <span className="text-xs font-medium">MUSE AI (2B / 31B)</span>
               </div>
               <ChevronRight className="w-3.5 h-3.5 text-zinc-500" />
@@ -582,9 +592,13 @@ export default function AppSidebar() {
                   : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
               }`}
             >
-              <span className="w-5 h-5 rounded-[5px] bg-gradient-to-tr from-pink-500 to-violet-500 text-white font-black text-[10px] flex items-center justify-center shrink-0">
-                W
-              </span>
+              <img
+                src="/images/raw_logos/wink.png"
+                alt="Wink VIP+"
+                width={20}
+                height={20}
+                className="w-5 h-5 rounded-[5px] object-cover shrink-0 shadow-xs"
+              />
               <span className="font-medium text-xs">Wink VIP+ (7D / 90D)</span>
             </Link>
             <Link
@@ -615,9 +629,12 @@ export default function AppSidebar() {
                   : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
               }`}
             >
-              <span className="w-5 h-5 rounded-[5px] bg-[#FA0F00] text-white font-black text-[11px] flex items-center justify-center shrink-0">
-                A
-              </span>
+              <svg width="20" height="20" viewBox="0 0 136 116" fill="none" className="shrink-0">
+                <path
+                  fill="#FA0F00"
+                  d="M48.787 88.855h19.82c-.09.105 8.617 20.771 8.617 20.967h18.385c.025.055-28.025-63.931-28.151-64.057C67.736 45.55 48.967 88.908 48.787 88.855zM7.71 6.471C7.755 6.398 7.854 109.536 7.854 109.68 7.997 109.814 50.923 6.444 50.798 6.471H7.71zM83.599 6.471c0 0 44.55 103.595 44.522 103.263 0 .144.03-103.003.03-103.263H83.599z"
+                />
+              </svg>
               <span className="font-medium text-xs">Adobe Creative Cloud</span>
             </Link>
             <Link
@@ -629,9 +646,13 @@ export default function AppSidebar() {
                   : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
               }`}
             >
-              <span className="w-5 h-5 rounded-[5px] bg-violet-600 text-white font-black text-[11px] flex items-center justify-center shrink-0">
-                F
-              </span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="shrink-0">
+                <path d="M8 24C10.2091 24 12 22.2091 12 20V16H8C5.79086 16 4 17.7909 4 20C4 22.2091 5.79086 24 8 24Z" fill="#0ACF83" />
+                <path d="M4 12C4 9.79086 5.79086 8 8 8H12V16H8C5.79086 16 4 14.2091 4 12Z" fill="#A259FF" />
+                <path d="M4 4C4 1.79086 5.79086 0 8 0H12V8H8C5.79086 8 4 6.20914 4 4Z" fill="#F24E1E" />
+                <path d="M12 0H16C18.2091 0 20 1.79086 20 4C20 6.20914 18.2091 8 16 8H12V0Z" fill="#FF7262" />
+                <path d="M20 12C20 14.2091 18.2091 16 16 16C13.7909 16 12 14.2091 12 12C12 9.79086 13.7909 8 16 8C18.2091 8 20 9.79086 20 12Z" fill="#1ABCFE" />
+              </svg>
               <span className="font-medium text-xs">Figma Pro Edu 2 Năm</span>
             </Link>
             <Link
