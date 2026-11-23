@@ -1013,6 +1013,8 @@ export default function SecretDisplay({
           const isUsernameCopied = copiedId === `${item.id}-user`;
           const isPasswordCopied = copiedId === `${item.id}-pass`;
           const is2faCopied = copiedId === `${item.id}-2fa`;
+          const extractedUrlMatch = !parsed.isAccount ? secretContent.match(/https?:\/\/[^\s"'<>|`]+/i) : null;
+          const extractedUrl = extractedUrlMatch ? extractedUrlMatch[0] : null;
 
           return (
             <div
@@ -1242,25 +1244,25 @@ export default function SecretDisplay({
                     </button>
                   </div>
                 </div>
-              ) : product?.type === "COURSE_LINK" || secretContent.startsWith("http") ? (
+              ) : product?.type === "COURSE_LINK" || Boolean(extractedUrl) ? (
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-2xl border border-border bg-secondary/50 p-3.5">
                   <div className="min-w-0 flex-1">
                     <span className="block text-[10px] uppercase font-mono font-semibold text-muted-foreground mb-0.5">
-                      Đường dẫn truy cập
+                      Link Kích Hoạt / Add Slot Chính Chủ (Không Cần Mật Khẩu)
                     </span>
                     <a
-                      href={secretContent}
+                      href={extractedUrl || secretContent}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="font-mono text-xs text-primary hover:underline truncate block select-all"
                     >
-                      {secretContent}
+                      {extractedUrl || secretContent}
                     </a>
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
                     <a
-                      href={secretContent}
+                      href={extractedUrl || secretContent}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="min-h-[44px] flex items-center gap-1.5 rounded-xl border border-border bg-secondary px-3.5 py-2 text-xs font-semibold text-foreground hover:bg-secondary/80 transition-colors focus-visible:ring-2 focus-visible:ring-ring"
@@ -1270,7 +1272,7 @@ export default function SecretDisplay({
                     </a>
                     <button
                       type="button"
-                      onClick={() => handleCopy(item.id, secretContent, "đường dẫn")}
+                      onClick={() => handleCopy(item.id, extractedUrl || secretContent, "đường dẫn kích hoạt")}
                       className={`min-h-[44px] min-w-[44px] flex items-center justify-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-ring ${
                         isCopied
                           ? "bg-emerald-600 text-white"

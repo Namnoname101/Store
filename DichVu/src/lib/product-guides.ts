@@ -826,6 +826,83 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
     note: "Trong quá trình đơn đang chạy, vui lòng không ẩn video/bài viết, không chuyển tài khoản sang Riêng tư và không đổi Username.",
   },
 
+  "muse-ai-2-ty-token": {
+    title: "Hướng dẫn đăng nhập & Sử dụng Tài khoản MUSE AI (2 Tỷ Token)",
+    steps: [
+      "Bước 1: Truy cập trang chủ chính thức https://muse.ai và chọn 'Log in / Sign in'.",
+      "Bước 2: Nhập địa chỉ Email được cấp ở trên và bấm 'Next'. Tại màn hình yêu cầu mã OTP, bấm chọn dòng chữ 'Use password instead' ở phía dưới.",
+      "Bước 3: Nhập Mật khẩu được bàn giao để hoàn tất đăng nhập và sử dụng ngay 2 tỷ token không giới hạn ngày hết hạn.",
+    ],
+    note: "CHÍNH SÁCH BẢO HÀNH (GÓI KBH): Bảo hành đăng nhập thành công và đủ 2 tỷ token trong 1 giờ kể từ khi nhận đơn. Vui lòng sử dụng IP mạng sạch (không bật VPN khi đăng nhập để tránh bị khóa checkpoint).",
+    docsUrl: "https://muse.ai",
+  },
+
+  "gemini-ai-plus-400gb-6-thang-chinh-chu": {
+    title: "Hướng dẫn kích hoạt Gói Gemini AI Plus & Google Drive 400GB 6 Tháng Chính Chủ",
+    steps: [
+      "Bước 1: Mở trình duyệt trên điện thoại hoặc máy tính đang đăng nhập sẵn tài khoản Google (Gmail) chính chủ bạn muốn nâng cấp.",
+      "Bước 2: Bấm nút 'Mở Link Kích Hoạt' (hoặc sao chép đường link nhận được tại đơn hàng dán vào thanh địa chỉ trình duyệt).",
+      "Bước 3: Tại giao diện Google One hiện ra, nhấn nút 'Chấp nhận ưu đãi' (Claim Offer) để nhận ngay 400GB lưu trữ và gói Gemini AI Plus thời hạn 6 tháng (hỗ trợ Google Antigravity, Gemini 4 Argon & 3.8 Flash, chia sẻ Family tối đa 5 thành viên).",
+    ],
+    note: "CHÍNH SÁCH BẢO HÀNH: Bảo hành link kích hoạt sống 100% trong 24 giờ kể từ khi nhận đơn. Mỗi link chỉ sử dụng 1 lần duy nhất cho 1 tài khoản (kích hoạt thành công lên gói là hoàn tất đơn).",
+    docsUrl: "https://one.google.com",
+  },
+
+  "grok-premium-cursor-ai": {
+    title: "Hướng dẫn đăng nhập & sử dụng Combo Grok Premium + Cursor AI",
+    steps: [
+      "Bước 1: Truy cập https://grok.com hoặc https://cursor.com trên trình duyệt máy tính.",
+      "Bước 2: Chọn 'Sign In' và đăng nhập bằng thông tin Email | Mật khẩu được bàn giao trong đơn hàng.",
+      "Bước 3: Sử dụng các tính năng truy vấn AI thời gian thực, tạo ảnh/video và hỗ trợ lập trình trong thời hạn gói.",
+    ],
+    note: "CHÍNH SÁCH BẢO HÀNH: Bảo hành đăng nhập 1 đổi 1 trong 24 giờ đầu kể từ khi nhận đơn. Tuyệt đối không bấm hủy gói đăng ký (Cancel Subscription) trong phần cài đặt tài khoản.",
+    docsUrl: "https://grok.com",
+  },
+
+  "canva-pro-admin-100-slots-1-thang": {
+    title: "Hướng dẫn đăng nhập & mời thành viên Canva Pro Admin Business (100 Slots - BHF)",
+    steps: [
+      "Bước 1: Truy cập https://www.canva.com và đăng nhập bằng Email | Mật khẩu tài khoản Admin Chủ Team được bàn giao.",
+      "Bước 2: Để mời thành viên khác vào dùng Canva Pro: Bấm vào biểu tượng Cài đặt (Settings) ở góc trên bên phải > Chọn mục 'Mọi người' (People / Team Members).",
+      "Bước 3: Nhập danh sách địa chỉ Email của bạn bè / khách hàng hoặc lấy link mời (tối đa 100 thành viên) để cấp quyền Canva Pro cho cả nhóm.",
+    ],
+    note: "CHÍNH SÁCH BẢO HÀNH (BHF 30 NGÀY): Bảo hành 1 đổi 1 trọn vẹn suốt 30 ngày nếu đội nhóm gặp sự cố mất quyền Pro.",
+    docsUrl: "https://www.canva.com",
+  },
+
+  "netflix-premium-4k-1-thang": {
+    title: "Hướng dẫn đăng nhập Slot Netflix Premium 4K HDR (Hồ Sơ Riêng - BHF 30 Ngày)",
+    steps: [
+      "Bước 1: Mở ứng dụng Netflix trên Smart TV, Máy tính, Điện thoại hoặc truy cập https://www.netflix.com.",
+      "Bước 2: Đăng nhập bằng Email và Mật khẩu được bàn giao trong đơn hàng.",
+      "Bước 3: Chọn đúng tên Hồ sơ (Profile) và nhập mã PIN (nếu có) được ghi kèm trong thông tin bàn giao để xem phim chuẩn 4K Ultra HD.",
+    ],
+    note: "CHÍNH SÁCH BẢO HÀNH (BHF 30 NGÀY): Bảo hành 1 đổi 1 suốt 30 ngày. Vui lòng chỉ sử dụng đúng Profile được cấp, không đổi mật khẩu tài khoản và không chỉnh sửa hồ sơ của thành viên khác.",
+    docsUrl: "https://www.netflix.com",
+  },
+
+  "youtube-premium-3-thang": {
+    title: "Hướng dẫn kích hoạt YouTube Premium 3 Tháng (Email Chính Chủ - BHF)",
+    steps: [
+      "Bước 1: Mở hộp thư Gmail của bạn (kiểm tra cả hộp thư chính, mục Quảng cáo và Thư rác).",
+      "Bước 2: Tìm email từ Google Families với tiêu đề 'Lời mời tham gia nhóm gia đình' (Invitation to join family) và bấm nút 'Chấp nhận lời mời'.",
+      "Bước 3: Mở ứng dụng YouTube & YouTube Music, xác nhận biểu tượng Premium đã kích hoạt để xem video không quảng cáo và phát nhạc tắt màn hình.",
+    ],
+    note: "CHÍNH SÁCH BẢO HÀNH (BHF 90 NGÀY): Bảo hành 1 đổi 1 trọn vẹn suốt 90 ngày (3 tháng) sử dụng. Lưu ý Gmail của bạn chưa đổi nhóm gia đình Google quá 1 lần trong 12 tháng qua.",
+    docsUrl: "https://www.youtube.com/premium",
+  },
+
+  "wink-vip-90-ngay-bhf": {
+    title: "Hướng dẫn đăng nhập Wink VIP+ 90 Ngày (3 Tháng Riêng Tư - BHF)",
+    steps: [
+      "Bước 1: Mở ứng dụng Wink trên điện thoại (iOS / Android).",
+      "Bước 2: Vào mục Hồ sơ > Chọn Đăng nhập bằng Email và Mật khẩu được cấp trong đơn hàng.",
+      "Bước 3: Sử dụng toàn bộ tính năng làm nét video AI 4K Ultra HD, khử mờ, chống rung và làm đẹp chân dung video liên tục trong 90 ngày.",
+    ],
+    note: "CHÍNH SÁCH BẢO HÀNH (BHF 90 NGÀY): Bảo hành 1 đổi 1 trọn vẹn suốt 90 ngày sử dụng. Quy định bắt buộc: Chỉ đăng nhập trên 1 thiết bị duy nhất, không đăng xuất (Logout) và không xóa app.",
+    docsUrl: "https://www.meitu.com/wink",
+  },
+
 };
 
 /**

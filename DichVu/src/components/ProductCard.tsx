@@ -53,8 +53,6 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
   const isAccountUpgrade =
     !isYoutube &&
     (slugLower.includes("up-gemini") ||
-    slugLower.includes("chinh-chu") ||
-    titleLower.includes("chính chủ") ||
     titleLower.includes("up pro"));
 
   const hideExactStock = isSMM || isApiKey || isYoutube || isAccountUpgrade || stockCount >= 99999;

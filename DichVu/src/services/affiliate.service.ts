@@ -155,9 +155,20 @@ export function getProductCommissionRate(
     slug.includes("chatgpt") ||
     slug.includes("suno") ||
     slug.includes("xingtu") ||
-    slug.includes("figma")
+    slug.includes("figma") ||
+    slug.includes("grok") ||
+    slug.includes("netflix") ||
+    slug.includes("youtube-premium-3-thang") ||
+    slug.includes("youtube-premium-6-thang") ||
+    slug.includes("wink-vip-90-ngay")
   ) {
     return 8.0; // 8% for high-cost accounts
+  }
+  if (
+    slug.includes("muse-ai") ||
+    slug.includes("canva-pro")
+  ) {
+    return 10.0; // 10% for high-margin Muse AI & Canva Pro items
   }
   if (slug === "up-gemini-pro-5tb-12-thang-chinh-chu-kbh") {
     return 0.0; // 0% commission for discounted 19k KBH package (Không áp dụng cho CTV)

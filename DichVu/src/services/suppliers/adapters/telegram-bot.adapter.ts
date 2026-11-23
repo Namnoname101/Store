@@ -68,18 +68,33 @@ export const XOAINON_KNOWN_PRODUCTS: Record<
   },
   "37": {
     name: "Chatgpt Plus pay Apple Gmail 1 thg - BH 24H",
-    price: 109000,
-    inStock: 49,
+    price: 104000,
+    inStock: 63,
+  },
+  "67": {
+    name: "ChatGPT Plus 1 tháng riêng tư mail Gmail UPI- BH24H",
+    price: 89000,
+    inStock: 35,
   },
   "1": {
     name: "ChatGPT Plus 1 tháng riêng tư - BHF",
-    price: 188000,
-    inStock: 18,
+    price: 168000,
+    inStock: 48,
   },
   "75": {
-    name: "MUSE AI 1 TỶ TOKEN KBH",
-    price: 2000,
-    inStock: 195,
+    name: "Tài khoản MUSE AI 2 TỶ TOKEN KBH",
+    price: 2900,
+    inStock: 229,
+  },
+  "78": {
+    name: "Grok Premium+ Cursor 14 - 24 ngày (BH 1D)",
+    price: 105000,
+    inStock: 3,
+  },
+  "85": {
+    name: "Gói Gemini AI Plus & Drive 400GB chính chủ",
+    price: 18800,
+    inStock: 18,
   },
   "76": {
     name: "MUSE AI 31 TỶ TOKEN KBH",
@@ -135,6 +150,30 @@ export const DKEY_KNOWN_PRODUCTS: Record<
     price: 215000,
     inStock: 92,
     categoryCode: "products_category::d7b2a409b7ed08d2",
+  },
+  "6acf7db4452526529250f06e": {
+    name: "[Slot] Netflix 4K Premium 1 tháng BHF",
+    price: 60000,
+    inStock: 32,
+    categoryCode: "Netflix",
+  },
+  "6ad0f16102296012a312bc0e": {
+    name: "Slot Youtube Pre 3 Tháng BHF",
+    price: 100000,
+    inStock: 99,
+    categoryCode: "YouTube",
+  },
+  "6ac8e568fac0129822284756": {
+    name: "Youtube Premium slot chính chủ 6 tháng-BHF",
+    price: 220000,
+    inStock: 99,
+    categoryCode: "YouTube",
+  },
+  "6a8e9a355bc0bcbeecc9aadb": {
+    name: "Wink Vip 90D BHF",
+    price: 220000,
+    inStock: 2,
+    categoryCode: "Wink",
   },
 };
 

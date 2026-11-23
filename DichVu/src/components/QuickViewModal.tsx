@@ -85,18 +85,38 @@ export default function QuickViewModal({
       product?.title.toLowerCase().includes("token") ||
       product?.title.toLowerCase().includes("key"));
 
+  const slugLower = (product?.slug || "").toLowerCase();
+  const titleLower = (product?.title || "").toLowerCase();
+
   const isYoutubeProduct =
     Boolean(product) &&
-    ((product?.slug || "").toLowerCase().includes("youtube") ||
-      (product?.title || "").toLowerCase().includes("youtube"));
+    (slugLower.includes("youtube") || titleLower.includes("youtube"));
 
   const isAccountUpgrade =
     Boolean(product) &&
     !isYoutubeProduct &&
-    ((product?.slug || "").toLowerCase().includes("up-gemini") ||
-      (product?.slug || "").toLowerCase().includes("chinh-chu") ||
-      (product?.title || "").toLowerCase().includes("chính chủ") ||
-      (product?.title || "").toLowerCase().includes("up pro"));
+    (slugLower.includes("up-gemini") || titleLower.includes("up pro"));
+
+  const isLinkRedeemSlot =
+    Boolean(product) &&
+    !isYoutubeProduct &&
+    !isAccountUpgrade &&
+    (slugLower.includes("gemini-pro-5tb-1-nam-slot") ||
+      slugLower.includes("gemini-ai-plus-400gb") ||
+      slugLower.includes("duolingo") ||
+      slugLower.includes("adobe-express") ||
+      slugLower.includes("chinh-chu") ||
+      titleLower.includes("chính chủ"));
+
+  const isPremadeSlotAccount =
+    Boolean(product) &&
+    !isYoutubeProduct &&
+    !isAccountUpgrade &&
+    !isLinkRedeemSlot &&
+    (slugLower.includes("slot-chatgpt-business") ||
+      slugLower.includes("netflix") ||
+      slugLower.includes("100-slots") ||
+      slugLower.includes("slot"));
 
   const allowsManualFulfillment =
     isYoutubeProduct ||
@@ -893,6 +913,54 @@ export default function QuickViewModal({
                     </button>
                   )}
                 </div>
+              </div>
+            )}
+
+            {/* Link Redeem / Auto Slot Activation Notice */}
+            {isLinkRedeemSlot && (
+              <div className="space-y-1.5 rounded-xl border border-border bg-secondary/30 p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <Globe className="h-3.5 w-3.5 text-primary" />
+                    <span>
+                      {slugLower.includes("slot")
+                        ? "Tự động cấp Link Add Slot chính chủ"
+                        : "Tự động cấp Link kích hoạt chính chủ"}
+                    </span>
+                  </span>
+                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                    Không cần mật khẩu
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {slugLower.includes("gemini-pro-5tb-1-nam-slot")
+                    ? "Thanh toán xong nhận ngay Link kích hoạt tự động để tự điền Gmail của bạn vào nhóm Google Family 5TB."
+                    : "Thanh toán xong nhận ngay Link Redeem chính thức để nâng cấp trực tiếp trên tài khoản cá nhân của bạn."}
+                </p>
+              </div>
+            )}
+
+            {/* Premade Slot / Team Admin Account Notice */}
+            {isPremadeSlotAccount && (
+              <div className="space-y-1.5 rounded-xl border border-border bg-secondary/30 p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <KeyRound className="h-3.5 w-3.5 text-primary" />
+                    <span>
+                      {slugLower.includes("100-slots")
+                        ? "Cấp tài khoản Chủ Team (100 Slots)"
+                        : "Cấp sẵn Tài khoản & Hồ sơ Slot"}
+                    </span>
+                  </span>
+                  <span className="text-[11px] text-muted-foreground font-medium">
+                    Giao tự động &lt; 30s
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {slugLower.includes("100-slots")
+                    ? "Bàn giao tài khoản Admin Chủ Team (Email | Mật khẩu) có sẵn 100 slot để bạn tự mời thành viên vào Canva Pro."
+                    : "Bàn giao sẵn Tài khoản & Hồ sơ Slot bản quyền ngay trên màn hình sau khi thanh toán."}
+                </p>
               </div>
             )}
 

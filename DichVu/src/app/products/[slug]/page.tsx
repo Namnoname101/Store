@@ -136,12 +136,18 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Cấp sẵn Email | Pass (Đã xác minh SĐT)"
     : isChatGPTBusiness
     ? "Cấp sẵn tài khoản Workspace Business"
+    : slugLower.includes("100-slots")
+    ? "Cấp tài khoản Chủ Team (100 Slots)"
+    : slugLower.includes("netflix")
+    ? "Cấp sẵn Tài khoản & Hồ sơ Slot riêng"
     : isChatGPT
     ? "Cấp sẵn tài khoản riêng (Email | Pass)"
-    : isCapCut
+    : isCapCut || slugLower.includes("wink") || slugLower.includes("meitu")
     ? "Cấp sẵn tài khoản (Dùng 1 thiết bị)"
-    : isGeminiSlot
+    : isGeminiSlot || slugLower.includes("gemini-ai-plus-400gb")
     ? "Cấp link nâng Gmail chính chủ 24/7"
+    : slugLower.includes("duolingo") || slugLower.includes("adobe-express")
+    ? "Cấp link nâng tài khoản chính chủ 24/7"
     : isGeminiFamily
     ? "Cấp sẵn tài khoản Chủ Family 5TB"
     : product.type === "LICENSE_KEY"
@@ -152,6 +158,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   const durationLabel = isSMM
     ? "Theo số lượng đặt mua"
+    : slugLower.includes("6-thang") || titleLower.includes("6 tháng")
+    ? "Hạn 180 ngày (6 tháng)"
+    : slugLower.includes("3-thang") || slugLower.includes("90-ngay") || titleLower.includes("3 tháng") || titleLower.includes("90 ngày")
+    ? "Hạn 90 ngày (3 tháng)"
     : isYoutube
     ? "Hạn 30 ngày (1 tháng)"
     : isGeminiUpPro5TB
@@ -160,8 +170,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Không giới hạn thời hạn (Trừ theo Credit)"
     : isClaude
     ? "Tính theo hạn mức Credit đã chọn"
-    : isChatGPTFree
+    : isChatGPTFree || slugLower.includes("muse-ai")
     ? "Sử dụng vĩnh viễn"
+    : slugLower.includes("grok")
+    ? "Hạn 14 – 24 ngày"
     : isChatGPTBusiness || isChatGPTPlusBHF || isChatGPTPlus24H
     ? "Hạn 30 ngày (1 tháng)"
     : isCapCut7D
@@ -184,33 +196,44 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Hạn 30 ngày"
     : titleLower.includes("7 ngày")
     ? "Hạn 7 ngày"
-    : titleLower.includes("3 tháng")
-    ? "Hạn 3 tháng"
     : "Theo thời hạn gói";
 
-  const isActivation24H =
-    slugLower.includes("duolingo") ||
-    slugLower.includes("nordvpn") ||
-    slugLower.includes("adobe-express") ||
-    slugLower.includes("office-365") ||
-    slugLower.includes("figma") ||
-    slugLower.includes("canva");
+  const isExplicitBHF180D =
+    slugLower.includes("youtube-premium-6-thang");
+
+  const isExplicitBHF90D =
+    slugLower.includes("youtube-premium-3-thang") ||
+    slugLower.includes("wink-vip-90-ngay");
 
   const isExplicitBHF30D =
     isChatGPTBusiness ||
     isChatGPTPlusBHF ||
     isCapCut30D ||
-    isYoutube ||
+    slugLower.includes("youtube-premium-1-thang") ||
+    slugLower.includes("canva-pro-admin-100-slots") ||
+    slugLower.includes("netflix") ||
     isHMA ||
     slugLower.includes("quizlet") ||
     slugLower.includes("xingtu") ||
     slugLower.includes("adobe-full-apps");
 
   const isExplicitBHF7D =
-    isCapCut7D ||
-    slugLower.includes("meitu") ||
-    slugLower.includes("wink") ||
-    slugLower.includes("photoroom");
+    !isExplicitBHF90D &&
+    (isCapCut7D ||
+      slugLower.includes("meitu") ||
+      slugLower.includes("wink") ||
+      slugLower.includes("photoroom"));
+
+  const isActivation24H =
+    !isExplicitBHF30D &&
+    (slugLower.includes("duolingo") ||
+      slugLower.includes("nordvpn") ||
+      slugLower.includes("adobe-express") ||
+      slugLower.includes("office-365") ||
+      slugLower.includes("figma") ||
+      slugLower.includes("canva") ||
+      slugLower.includes("gemini-ai-plus-400gb") ||
+      slugLower.includes("grok"));
 
   const warrantyLabel = isSMM
     ? "Bảo hành theo server"
@@ -221,7 +244,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     : isChatGPTFree || isChatGPTPlus24H
     ? "Bảo hành đăng nhập 24H"
     : slugLower.includes("muse-ai")
-    ? "Bảo hành đăng nhập & đủ Token 24H (KBH)"
+    ? "Bảo hành đăng nhập & đủ Token (KBH)"
     : isGeminiKBH
     ? "Bảo hành đăng nhập 2H (Gói KBH)"
     : titleLower.includes("bh 3 tháng") || titleLower.includes("bảo hành 3 tháng")
@@ -230,12 +253,16 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Bảo hành 7 ngày (1 tuần)"
     : isSuno
     ? "Bảo hành đăng nhập & Credit 24H"
-    : isActivation24H
-    ? "Bảo hành kích hoạt / đăng nhập 24H"
+    : isExplicitBHF180D
+    ? "Bảo hành Full 6 tháng (BHF)"
+    : isExplicitBHF90D
+    ? "Bảo hành Full 90 ngày (BHF)"
     : isExplicitBHF30D
     ? "Bảo hành Full 30 ngày (BHF)"
     : isExplicitBHF7D
     ? "Bảo hành Full 7 ngày (BHF)"
+    : isActivation24H
+    ? "Bảo hành kích hoạt / đăng nhập 24H"
     : "Bảo hành theo quy định gói";
 
   const unitLabel = product.title.toLowerCase().includes("follow")

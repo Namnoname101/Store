@@ -359,11 +359,159 @@ const PRODUCT_CONTENT_STANDARDS = [
   },
 ];
 
+const NEW_OR_REACTIVATED_PRODUCTS = [
+  {
+    slug: 'muse-ai-2-ty-token',
+    title: 'Tài khoản MUSE AI (2 Tỷ Token Vĩnh Viễn - Gói Trải Nghiệm)',
+    categoryMatch: ['tai-khoan-ai', 'ai-tool'],
+    price: 19000,
+    originalPrice: 39000,
+    stockCount: 229,
+    type: 'ACCOUNT',
+    fulfillmentType: 'API_DROPSHIP',
+    thumbnailUrl: '/images/products/muse-ai-2b.svg',
+    supplierMatch: ['XOAINON'],
+    supplierProductCode: '75',
+    supplierPrice: 2900,
+    description: `• Hình thức nhận: Cấp sẵn tài khoản riêng (Email | Mật khẩu) ngay trên màn hình sau khi thanh toán.
+• Quyền lợi: Tài khoản có sẵn 2 Tỷ Token không giới hạn ngày hết hạn để trải nghiệm tạo nội dung, dịch thuật, phân tích tài liệu và video AI.
+• Gợi ý nâng cấp: Nếu dùng thường xuyên, bạn có thể chọn gói MUSE AI 31 Tỷ Token (39.000đ) để nhận dung lượng gấp 15 lần.
+• Chính sách gói KBH: Bảo hành đăng nhập thành công và đủ số dư 2 tỷ token trong 1 giờ đầu kể từ khi nhận đơn (dùng IP sạch, không bật VPN khi đăng nhập).`,
+  },
+  {
+    slug: 'gemini-ai-plus-400gb-6-thang-chinh-chu',
+    title: 'Gói Gemini AI Plus & Google Drive 400GB 6 Tháng (Link Nâng Chính Chủ)',
+    categoryMatch: ['tai-khoan-ai', 'ai-tool'],
+    price: 39000,
+    originalPrice: 79000,
+    stockCount: 18,
+    type: 'COURSE_LINK',
+    fulfillmentType: 'API_DROPSHIP',
+    thumbnailUrl: '/images/products/gemini-pro.svg',
+    supplierMatch: ['XOAINON'],
+    supplierProductCode: '85',
+    supplierPrice: 18800,
+    description: `• Hình thức nâng cấp: Không cần mật khẩu, không cần thêm thẻ quốc tế. Thanh toán xong hệ thống cấp ngay Link Redeem Google chính thức để bạn bấm nâng cấp trực tiếp trên Gmail cá nhân.
+• Quyền lợi 6 tháng: Nhận 400GB bộ nhớ Google One (Drive, Photos, Gmail), tặng 250 Google Flow Points và mở khóa Gemini 4 Argon & Gemini 3.8 Flash (hỗ trợ Google Antigravity).
+• Chia sẻ gia đình: Cho phép mời tối đa 5 thành viên khác vào nhóm Google Family để dùng chung 400GB lưu trữ.
+• Bảo hành: Bảo hành link kích hoạt sống 100% trong 24 giờ kể từ khi nhận đơn (mỗi link dùng 1 lần duy nhất; kích hoạt lên gói thành công là hoàn tất đơn).`,
+  },
+  {
+    slug: 'grok-premium-cursor-ai',
+    title: 'Tài Khoản Grok Premium & Cursor AI (14 – 24 Ngày)',
+    categoryMatch: ['tai-khoan-ai', 'ai-tool'],
+    price: 179000,
+    originalPrice: 290000,
+    stockCount: 3,
+    type: 'ACCOUNT',
+    fulfillmentType: 'API_DROPSHIP',
+    thumbnailUrl: '/images/products/grok-cursor.svg',
+    supplierMatch: ['XOAINON'],
+    supplierProductCode: '78',
+    supplierPrice: 105000,
+    description: `• Hình thức nhận: Cấp sẵn tài khoản (Email | Mật khẩu) tự động ngay trên màn hình sau khi thanh toán.
+• Quyền lợi: Tích hợp sẵn quyền lợi Grok Premium (truy vấn AI thời gian thực, tạo ảnh/video AI) kèm Cursor AI hỗ trợ lập trình với thời hạn từ 14 – 24 ngày.
+• Quy định sử dụng: Tuyệt đối không bấm hủy gói đăng ký (Cancel Subscription) trong phần cài đặt tài khoản.
+• Bảo hành: Bảo hành đăng nhập 1 đổi 1 trong 24 giờ đầu kể từ khi nhận đơn.`,
+  },
+  {
+    slug: 'canva-pro-admin-100-slots-1-thang',
+    title: 'Tài Khoản Canva Pro Admin Business (100 Slots Mời Team - BHF 30 Ngày)',
+    categoryMatch: ['ban-quyen', 'software', 'hoc-tap'],
+    price: 49000,
+    originalPrice: 99000,
+    stockCount: 15,
+    type: 'ACCOUNT',
+    fulfillmentType: 'API_DROPSHIP',
+    thumbnailUrl: '/images/products/canva-pro.svg',
+    supplierMatch: ['TOKI', 'XOAINON'],
+    supplierProductCode: 'view_canva_pro_admin_business_100_slots_',
+    supplierPrice: 17500,
+    description: `• Hình thức nhận: Cấp sẵn tài khoản Admin Chủ Team Canva Business (Email | Mật khẩu) ngay sau khi thanh toán.
+• Đặc quyền 100 Slots: Tài khoản có sẵn quyền Quản trị viên (Admin) cho phép bạn tự mời tối đa 100 email thành viên khác vào nhóm để cùng sử dụng full tính năng Canva Pro.
+• Tính năng mở khóa: Trọn bộ kho 100+ triệu mẫu thiết kế Premium, công cụ AI Magic Studio, tách nền 1 chạm, Brand Kit và xuất file chất lượng cao.
+• Bảo hành (Gói BHF): Bảo hành 1 đổi 1 trọn vẹn suốt 30 ngày sử dụng.`,
+  },
+  {
+    slug: 'netflix-premium-4k-1-thang',
+    title: 'Slot Netflix Premium 4K HDR 1 Tháng (Hồ Sơ Riêng - BHF 30 Ngày)',
+    categoryMatch: ['giai-tri', 'ban-quyen', 'software'],
+    price: 99000,
+    originalPrice: 180000,
+    stockCount: 32,
+    type: 'ACCOUNT',
+    fulfillmentType: 'API_DROPSHIP',
+    thumbnailUrl: '/images/products/netflix-4k.svg',
+    supplierMatch: ['DKEY'],
+    supplierProductCode: '6acf7db4452526529250f06e',
+    supplierPrice: 60000,
+    description: `• Hình thức nhận: Cấp sẵn Tài khoản kèm Hồ sơ (Profile) riêng (Email | Mật khẩu | Tên Profile & PIN) ngay sau khi thanh toán.
+• Chất lượng cao nhất: Gói Netflix Premium chuẩn 4K Ultra HD + HDR và âm thanh vòm Spatial Audio, hỗ trợ xem mượt mà trên Smart TV, Máy tính, Điện thoại, iPad.
+• Quy định sử dụng: Chỉ đăng nhập trên 1 thiết bị tại một thời điểm, vào đúng Profile được chỉ định và không tự ý đổi mật khẩu tài khoản.
+• Bảo hành (Gói BHF): Bảo hành 1 đổi 1 trọn vẹn suốt 30 ngày sử dụng.`,
+  },
+  {
+    slug: 'youtube-premium-3-thang',
+    title: 'Gói Gia Hạn YouTube Premium 3 Tháng (Email Chính Chủ - BHF)',
+    categoryMatch: ['giai-tri'],
+    price: 169000,
+    originalPrice: 267000,
+    stockCount: 99,
+    type: 'ACCOUNT',
+    fulfillmentType: 'API_DROPSHIP',
+    thumbnailUrl: '/images/brands/youtube.svg',
+    supplierMatch: ['DKEY'],
+    supplierProductCode: '6ad0f16102296012a312bc0e',
+    supplierPrice: 100000,
+    description: `• Hình thức nâng cấp: Không cần mật khẩu. Bạn chỉ cần nhập địa chỉ Gmail ở khung đặt hàng, hệ thống sẽ gửi thư mời tham gia nhóm Google Family.
+• Cách kích hoạt: Mở hộp thư Gmail của bạn và bấm nút "Chấp nhận lời mời" (Accept Invitation) là tài khoản lên ngay YouTube Premium.
+• Quyền lợi 3 tháng: Xem YouTube 100% không quảng cáo trên TV, điện thoại, máy tính; phát nhạc/video chạy nền khi tắt màn hình; tải video xem offline và tặng kèm YouTube Music Premium.
+• Điều kiện & Bảo hành (BHF): Gmail của bạn chưa đổi nhóm gia đình Google quá 1 lần trong 12 tháng qua. Bảo hành 1 đổi 1 trọn vẹn suốt 90 ngày (3 tháng).`,
+  },
+  {
+    slug: 'youtube-premium-6-thang',
+    title: 'Gói Gia Hạn YouTube Premium 6 Tháng (Email Chính Chủ - BHF)',
+    categoryMatch: ['giai-tri'],
+    price: 349000,
+    originalPrice: 534000,
+    stockCount: 99,
+    type: 'ACCOUNT',
+    fulfillmentType: 'API_DROPSHIP',
+    thumbnailUrl: '/images/brands/youtube.svg',
+    supplierMatch: ['DKEY'],
+    supplierProductCode: '6ac8e568fac0129822284756',
+    supplierPrice: 220000,
+    description: `• Hình thức nâng cấp: Không cần mật khẩu. Bạn chỉ cần nhập địa chỉ Gmail ở khung đặt hàng, hệ thống sẽ gửi thư mời tham gia nhóm Google Family.
+• Cách kích hoạt: Mở hộp thư Gmail của bạn và bấm nút "Chấp nhận lời mời" (Accept Invitation) là tài khoản lên ngay YouTube Premium.
+• Quyền lợi 6 tháng: Xem YouTube 100% không quảng cáo trên mọi thiết bị; phát video trong nền khi tắt màn hình; tải video offline và sử dụng trọn gói YouTube Music Premium ổn định nửa năm.
+• Điều kiện & Bảo hành (BHF): Gmail của bạn chưa đổi nhóm gia đình Google quá 1 lần trong 12 tháng qua. Bảo hành 1 đổi 1 trọn vẹn suốt 180 ngày (6 tháng).`,
+  },
+  {
+    slug: 'wink-vip-90-ngay-bhf',
+    title: 'Tài Khoản Wink VIP+ 90 Ngày (3 Tháng Riêng Tư - BHF)',
+    categoryMatch: ['hoc-tap', 'ban-quyen'],
+    price: 349000,
+    originalPrice: 550000,
+    stockCount: 2,
+    type: 'ACCOUNT',
+    fulfillmentType: 'API_DROPSHIP',
+    thumbnailUrl: '/images/products/wink-vip.svg',
+    supplierMatch: ['DKEY'],
+    supplierProductCode: '6a8e9a355bc0bcbeecc9aadb',
+    supplierPrice: 220000,
+    description: `• Hình thức nhận: Cấp sẵn tài khoản Wink VIP+ riêng tư (Email | Mật khẩu) thời hạn 90 ngày ngay sau khi thanh toán.
+• Tính năng mở khóa: Sử dụng liên tục 3 tháng không cần đổi nick — phục hồi & làm nét video AI chuẩn 4K Ultra HD, khử mờ, chống rung, retouch chân dung video và mở khóa toàn bộ hiệu ứng VIP+.
+• Quy định bắt buộc: Chỉ đăng nhập trên 1 thiết bị duy nhất, không bấm đăng xuất (Logout) và không xóa app trong quá trình dùng.
+• Bảo hành (Gói BHF): Bảo hành 1 đổi 1 trọn vẹn suốt 90 ngày (3 tháng) sử dụng.`,
+  },
+];
+
 function buildRunner() {
   return `
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const STANDARDS = ${JSON.stringify(PRODUCT_CONTENT_STANDARDS)};
+const NEW_ITEMS = ${JSON.stringify(NEW_OR_REACTIVATED_PRODUCTS)};
 
 async function run(label) {
   console.log('=== [' + label + '] UPDATING PRODUCT DESCRIPTIONS & ORIGINAL PRICES ===');
@@ -381,7 +529,85 @@ async function run(label) {
       console.log('[' + label + ' OK] ' + item.slug + ' (originalPrice=' + item.originalPrice + ')');
     }
   }
-  console.log('=== [' + label + '] UPDATED ' + count + ' PRODUCTS ===');
+
+  // Upsert 8 new/reactivated high-margin products & their supplier mappings
+  const categories = await prisma.category.findMany();
+  const suppliers = await prisma.supplier.findMany();
+
+  for (const np of NEW_ITEMS) {
+    const cat = categories.find(c => np.categoryMatch.some(m => c.slug.toLowerCase().includes(m))) || categories[0];
+    if (!cat) continue;
+
+    const prod = await prisma.product.upsert({
+      where: { slug: np.slug },
+      update: {
+        title: np.title,
+        price: np.price,
+        originalPrice: np.originalPrice,
+        description: np.description,
+        thumbnailUrl: np.thumbnailUrl,
+        type: np.type,
+        fulfillmentType: np.fulfillmentType,
+        categoryId: cat.id,
+        isActive: true,
+      },
+      create: {
+        slug: np.slug,
+        title: np.title,
+        price: np.price,
+        originalPrice: np.originalPrice,
+        description: np.description,
+        thumbnailUrl: np.thumbnailUrl,
+        type: np.type,
+        fulfillmentType: np.fulfillmentType,
+        categoryId: cat.id,
+        isActive: true,
+      },
+    });
+
+    const sup = suppliers.find(s => np.supplierMatch.some(m => s.code.toUpperCase().includes(m) || s.name.toUpperCase().includes(m)));
+    if (sup) {
+      const existingMap = await prisma.supplierProductMapping.findFirst({ where: { productId: prod.id } });
+      const mapData = {
+        productId: prod.id,
+        supplierId: sup.id,
+        supplierProductCode: np.supplierProductCode,
+        supplierPrice: np.supplierPrice,
+        supplierStock: np.stockCount,
+        markupType: 'FIXED_AMOUNT',
+        markupValue: np.price - np.supplierPrice,
+        isAutoSync: true,
+      };
+      if (existingMap) {
+        await prisma.supplierProductMapping.update({ where: { id: existingMap.id }, data: mapData });
+      } else {
+        await prisma.supplierProductMapping.create({ data: mapData });
+      }
+    }
+    console.log('[' + label + ' NEW/ACTIVE] ' + np.slug + ' -> ' + np.price + 'd (cost ' + np.supplierPrice + 'd)');
+  }
+
+  // Also optimize ChatGPT Plus 24H cost to Xoai Non #67 (89k cost, 199k retail -> +110k profit)
+  const gpt24h = await prisma.product.findUnique({ where: { slug: 'chatgpt-plus-1-thang' } });
+  const xoaiSup = suppliers.find(s => s.code.includes('XOAINON'));
+  if (gpt24h && xoaiSup) {
+    const gptMap = await prisma.supplierProductMapping.findFirst({ where: { productId: gpt24h.id } });
+    if (gptMap) {
+      await prisma.supplierProductMapping.update({
+        where: { id: gptMap.id },
+        data: {
+          supplierId: xoaiSup.id,
+          supplierProductCode: '67',
+          supplierPrice: 89000,
+          markupType: 'FIXED_AMOUNT',
+          markupValue: gpt24h.price - 89000,
+        }
+      });
+      console.log('[' + label + ' COST-OPT] chatgpt-plus-1-thang -> XoaiNon #67 (89,000d)');
+    }
+  }
+
+  console.log('=== [' + label + '] UPDATED ' + count + ' EXISTING + ' + NEW_ITEMS.length + ' NEW PRODUCTS ===');
   await prisma.$disconnect();
 }
 
