@@ -10,6 +10,7 @@ import { CanbosoAdapter } from "./adapters/canboso.adapter";
 import { DbotAdapter } from "./adapters/dbot.adapter";
 import { KhoMmoAdapter } from "./adapters/khommo.adapter";
 import { XoaiNonAdapter } from "./adapters/xoainon.adapter";
+import { HHPremiumAdapter } from "./adapters/hhpremium.adapter";
 
 const adapterRegistry = new Map<string, ISupplierAdapter>();
 
@@ -25,6 +26,7 @@ function initDefaultAdapters(): void {
   const dbot = new DbotAdapter();
   const khommo = new KhoMmoAdapter();
   const xoainon = new XoaiNonAdapter();
+  const hhpremium = new HHPremiumAdapter();
 
   adapterRegistry.set(SupplierType.TAPHOAMMO, taphoa);
   adapterRegistry.set(SupplierType.TRUMTHE, trumthe);
@@ -34,6 +36,9 @@ function initDefaultAdapters(): void {
   adapterRegistry.set(SupplierType.CUSTOM_REST, taphoa);
   adapterRegistry.set(SupplierType.TELEGRAM_BOT, telegramBot);
   adapterRegistry.set(SupplierType.XOAINON_API, xoainon);
+  adapterRegistry.set(SupplierType.HHPREMIUM_API, hhpremium);
+  adapterRegistry.set("HHPREMIUM", hhpremium);
+  adapterRegistry.set("HHPREMIUM_SHOP", hhpremium);
 
   // Nghiện Trick / Locket Reseller API v1
   adapterRegistry.set("NGHIENTRICK_API", locket);

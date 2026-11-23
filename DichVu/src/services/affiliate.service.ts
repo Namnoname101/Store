@@ -145,6 +145,19 @@ export function getProductCommissionRate(
 ): number {
   const slug = (productSlug || "").toLowerCase();
 
+  if (
+    slug.startsWith("tang-") ||
+    slug.includes("tang-tim") ||
+    slug.includes("tang-like") ||
+    slug.includes("tang-follow") ||
+    slug.includes("tang-view") ||
+    slug.includes("tang-yeu-thich") ||
+    slug.includes("tang-chia-se") ||
+    slug.includes("tang-member")
+  ) {
+    return 20.0; // 20% for all SMM buff services (TikTok, Facebook, Instagram, Telegram, YouTube Buff, Shopee)
+  }
+
   if (slug.includes("youtube")) {
     return 8.0; // 8% for YouTube Premium (CTV nhận ~22.400đ/đơn 1 năm, Shop bảo đảm lãi ròng an toàn)
   }
@@ -166,9 +179,10 @@ export function getProductCommissionRate(
   }
   if (
     slug.includes("muse-ai") ||
-    slug.includes("canva-pro")
+    slug.includes("canva-pro") ||
+    slug.includes("locket")
   ) {
-    return 10.0; // 10% for high-margin Muse AI & Canva Pro items
+    return 10.0; // 10% for high-margin Muse AI, Canva Pro & Locket Gold items
   }
   if (slug === "up-gemini-pro-5tb-12-thang-chinh-chu-kbh") {
     return 0.0; // 0% commission for discounted 19k KBH package (Không áp dụng cho CTV)

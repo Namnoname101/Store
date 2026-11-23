@@ -723,4 +723,120 @@ describe("Supplier Adapter Engine", () => {
       expect(infoCapcut30.inStock).toBe(11);
     });
   });
+
+  describe("HHPremiumAdapter", () => {
+    afterEach(() => {
+      vi.unstubAllEnvs();
+      vi.restoreAllMocks();
+    });
+
+    it("resolves HHPremiumAdapter from registry aliases", async () => {
+      const { HHPremiumAdapter } = await import(
+        "../../../src/services/suppliers/adapters/hhpremium.adapter"
+      );
+      expect(getSupplierAdapter(SupplierType.HHPREMIUM_API)).toBeInstanceOf(HHPremiumAdapter);
+      expect(getSupplierAdapter("HHPREMIUM")).toBeInstanceOf(HHPremiumAdapter);
+      expect(getSupplierAdapter("HHPREMIUM_SHOP")).toBeInstanceOf(HHPremiumAdapter);
+    });
+
+    it("checkBalance sends X-API-Key header and returns parsed VND balance", async () => {
+      const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+        new Response(JSON.stringify({ success: true, user_id: 1853328773, balance: 150000 }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+      );
+
+      const adapter = getSupplierAdapter(SupplierType.HHPREMIUM_API);
+      const balance = await adapter.checkBalance({
+        baseUrl: "https://bot.hhpremiumsv.fun/api/shop",
+        apiKey: "shop_test_key",
+      });
+
+      expect(balance).toBe(150000);
+      expect(fetchSpy).toHaveBeenCalledWith(
+        "https://bot.hhpremiumsv.fun/api/shop/balance",
+        expect.objectContaining({
+          method: "GET",
+          headers: expect.objectContaining({ "X-API-Key": "shop_test_key" }),
+        })
+      );
+    });
+
+    it("fetchProductInfo clamps unlimited stock to 999999 and maps finite stock", async () => {
+      vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: true,
+            products: [
+              { id: 4, name: "Locket Gold Trial", price: 9000, stock: 1000000000, unlimited: true },
+              { id: 5, name: "Locket Gold 1 tháng", price: 15000, stock: 3, unlimited: false },
+            ],
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        )
+      );
+
+      const adapter = getSupplierAdapter(SupplierType.HHPREMIUM_API);
+      const creds = { baseUrl: "https://bot.hhpremiumsv.fun/api/shop", apiKey: "shop_test_cache" };
+
+      const trial = await adapter.fetchProductInfo(creds, "4");
+      expect(trial).toEqual({
+        supplierProductCode: "4",
+        name: "Locket Gold Trial",
+        price: 9000,
+        inStock: 999999,
+      });
+
+      const oneMonth = await adapter.fetchProductInfo(creds, "5");
+      expect(oneMonth).toEqual({
+        supplierProductCode: "5",
+        name: "Locket Gold 1 tháng",
+        price: 15000,
+        inStock: 3,
+      });
+    });
+
+    it("buyProduct handles 402 insufficient balance, 409 out of stock, and 200 delivery", async () => {
+      vi.stubEnv("NODE_ENV", "production");
+      vi.stubEnv("VITEST", "");
+      vi.stubEnv("CI", "");
+
+      const adapter = getSupplierAdapter(SupplierType.HHPREMIUM_API);
+      const creds = { baseUrl: "https://bot.hhpremiumsv.fun/api/shop", apiKey: "shop_test_buy" };
+
+      vi.spyOn(globalThis, "fetch")
+        .mockResolvedValueOnce(
+          new Response(JSON.stringify({ success: false, error: "insufficient_balance" }), {
+            status: 402,
+          })
+        )
+        .mockResolvedValueOnce(
+          new Response(JSON.stringify({ success: false, error: "out_of_stock" }), { status: 409 })
+        )
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              success: true,
+              order_code: "HHP-ORD-777",
+              items: ["locket_vip@example.com|pass123"],
+            }),
+            { status: 200 }
+          )
+        );
+
+      const err402 = await adapter.buyProduct(creds, "4", 1, "ORD001");
+      expect(err402.success).toBe(false);
+      expect(err402.error).toMatch(/402/);
+
+      const err409 = await adapter.buyProduct(creds, "5", 1, "ORD002");
+      expect(err409.success).toBe(false);
+      expect(err409.error).toContain("hết hàng");
+
+      const ok = await adapter.buyProduct(creds, "4", 1, "ORD003");
+      expect(ok.success).toBe(true);
+      expect(ok.upstreamOrderId).toBe("HHP-ORD-777");
+      expect(ok.deliveredKeys).toEqual(["locket_vip@example.com|pass123"]);
+    });
+  });
 });

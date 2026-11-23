@@ -33,6 +33,9 @@ export const BRAND_NAVIGATOR_ITEMS: BrandFilterItem[] = [
   { id: "windows", name: "Key Windows", query: "windows", iconKey: "windows", badge: "PRO", hoverBorder: "hover:border-sky-500" },
   { id: "tiktok", name: "TikTok", query: "tiktok", iconKey: "tiktok", badge: "BUFF", hoverBorder: "hover:border-pink-500" },
   { id: "facebook", name: "Facebook", query: "facebook", iconKey: "facebook", badge: "BUFF", hoverBorder: "hover:border-blue-500" },
+  { id: "instagram", name: "Instagram", query: "instagram", iconKey: "instagram", badge: "BUFF", hoverBorder: "hover:border-[#FF0069]" },
+  { id: "telegram", name: "Telegram", query: "telegram", iconKey: "telegram", badge: "BUFF", hoverBorder: "hover:border-sky-500" },
+  { id: "shopee", name: "Shopee", query: "shopee", iconKey: "shopee", badge: "BUFF", hoverBorder: "hover:border-[#EE4D2D]" },
   { id: "vps", name: "Cloud VPS", query: "vps", iconKey: "vps", badge: "NVME", hoverBorder: "hover:border-sky-400" },
   { id: "nordvpn", name: "NordVPN", query: "nordvpn", iconKey: "nordvpn", badge: "VPN", hoverBorder: "hover:border-blue-400" },
   { id: "netflix", name: "Netflix", query: "netflix", iconKey: "netflix", badge: "4K", hoverBorder: "hover:border-rose-500" },
@@ -41,6 +44,7 @@ export const BRAND_NAVIGATOR_ITEMS: BrandFilterItem[] = [
   { id: "hma", name: "HMA VPN", query: "hma", iconKey: "hma", badge: "5 THIẾT BỊ", hoverBorder: "hover:border-sky-400" },
   { id: "kling", name: "Kling AI", query: "kling", iconKey: "kling", badge: "VIDEO AI", hoverBorder: "hover:border-amber-400" },
   { id: "muse", name: "MUSE AI", query: "muse", iconKey: "muse", badge: "31 TỶ", hoverBorder: "hover:border-purple-400" },
+  { id: "locket", name: "Locket Gold", query: "locket", iconKey: "locket", badge: "VIP DNS", hoverBorder: "hover:border-amber-400" },
 ];
 
 export function matchProductBrand(
@@ -117,6 +121,12 @@ export function matchProductBrand(
     case "facebook":
       if (isCanva || isCapcut) return false;
       return coreTitle.includes("facebook") || slugLower.includes("facebook") || /\bfb\b/.test(coreTitle);
+    case "instagram":
+      return coreTitle.includes("instagram") || slugLower.includes("instagram");
+    case "telegram":
+      return coreTitle.includes("telegram") || slugLower.includes("telegram") || slugLower.includes("tele");
+    case "shopee":
+      return coreTitle.includes("shopee") || slugLower.includes("shopee");
     case "vps":
       return coreTitle.includes("vps") || slugLower.includes("vps") || coreTitle.includes("máy chủ");
     case "nordvpn":
@@ -135,6 +145,8 @@ export function matchProductBrand(
       return coreTitle.includes("kling");
     case "muse":
       return coreTitle.includes("muse");
+    case "locket":
+      return coreTitle.includes("locket") || slugLower.includes("locket");
     default:
       return coreTitle.includes(brandId) || slugLower.includes(brandId);
   }

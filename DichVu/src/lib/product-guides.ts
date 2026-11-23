@@ -903,6 +903,17 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
     docsUrl: "https://www.meitu.com/wink",
   },
 
+  "locket-gold": {
+    title: "Hướng dẫn kích hoạt Locket Gold VIP (Mở khóa Huy hiệu, Video 30s & Chống thu hồi DNS)",
+    steps: [
+      "Bước 1: Mở ứng dụng Locket Widget trên điện thoại (iOS / Android) và cập nhật lên phiên bản mới nhất.",
+      "Bước 2: Xem chi tiết đơn hàng vừa thanh toán thành công trên website để nhận thông tin kích hoạt & hướng dẫn cấu hình DNS chống thu hồi được giao tự động 24/7.",
+      "Bước 3: Thực hiện theo từng bước hướng dẫn bàn giao trong đơn để mở khóa huy hiệu Locket Gold, quay video 30s, PhotoBooth, Filter AI theo gói và các tiện ích tặng kèm (Spotify Premium...).",
+    ],
+    note: "CHÍNH SÁCH BẢO HÀNH: Hỗ trợ cấu hình chống thu hồi DNS & bảo hành chuẩn theo từng gói (Trial 3 ngày, 1 Tháng, 3 Tháng, 6 Tháng, 1 Năm hoặc Trọn Đời). Giữ nguyên cấu hình DNS theo hướng dẫn để duy trì trạng thái VIP ổn định.",
+    docsUrl: "https://locketcamera.com",
+  },
+
 };
 
 /**
@@ -925,8 +936,13 @@ export function resolveProductInstruction(params: {
   }
 
   // 2. Kiểm tra từ khóa trong slug hoặc title
-  // 2.1 Telegram
-  if (cleanSlug.includes("tele") || cleanTitle.includes("tele") || cleanTitle.includes("telegram")) {
+  // 2.1 Telegram (Chặn các gói Buff/Tăng tương tác Telegram đi nhầm sang hướng dẫn tài khoản Telegram Premium)
+  if (
+    (cleanSlug.includes("tele") || cleanTitle.includes("tele") || cleanTitle.includes("telegram")) &&
+    !cleanSlug.startsWith("tang-") &&
+    !cleanTitle.includes("member") &&
+    !cleanTitle.includes("view")
+  ) {
     return PRODUCT_GUIDES["telegram"];
   }
 
@@ -1010,8 +1026,15 @@ export function resolveProductInstruction(params: {
   // 2.12 Quizlet
   if (cleanSlug.includes("quizlet") || cleanTitle.includes("quizlet")) {
     return PRODUCT_GUIDES["quizlet-plus-1-thang"];
-  }  // 2.14 YouTube
-  if (cleanSlug.includes("youtube") || cleanTitle.includes("youtube")) {
+  }
+
+  // 2.14 YouTube Premium (Không áp dụng cho các gói Buff View/Like YouTube)
+  if (
+    (cleanSlug.includes("youtube") || cleanTitle.includes("youtube")) &&
+    !cleanSlug.startsWith("tang-") &&
+    !cleanTitle.includes("tăng ") &&
+    !cleanTitle.includes("buff")
+  ) {
     return PRODUCT_GUIDES["youtube-premium-1-thang"] || PRODUCT_GUIDES["youtube-premium-1-nam"];
   }
 
@@ -1060,8 +1083,14 @@ export function resolveProductInstruction(params: {
     return PRODUCT_GUIDES["nordvpn-premium-3-thang"];
   }
 
-  // 2.20 SMM Services (TikTok / Facebook)
+  // 2.19b Locket Gold
+  if (cleanSlug.includes("locket") || cleanTitle.includes("locket")) {
+    return PRODUCT_GUIDES["locket-gold"];
+  }
+
+  // 2.20 SMM Services (TikTok / Facebook / Instagram / Telegram / YouTube / Shopee)
   if (
+    cleanSlug.startsWith("tang-") ||
     cleanSlug.includes("tang-tim") ||
     cleanSlug.includes("tang-like") ||
     cleanSlug.includes("tang-follow") ||
@@ -1070,7 +1099,11 @@ export function resolveProductInstruction(params: {
     cleanSlug.includes("tang-chia-se") ||
     cleanSlug.includes("tang-member") ||
     cleanTitle.includes("tiktok") ||
-    cleanTitle.includes("facebook")
+    cleanTitle.includes("facebook") ||
+    cleanTitle.includes("instagram") ||
+    cleanTitle.includes("shopee") ||
+    cleanTitle.includes("telegram") ||
+    cleanTitle.includes("youtube")
   ) {
     return PRODUCT_GUIDES["smm-service"];
   }

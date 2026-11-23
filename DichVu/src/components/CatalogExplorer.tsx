@@ -159,6 +159,7 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
       "netflix",
       "spotify",
       "youtube",
+      "locket",
       "elsa",
       "khóa học",
     ],

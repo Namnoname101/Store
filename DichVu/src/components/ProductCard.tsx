@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, Eye, Clock } from "lucide-react";
 import type { Product } from "@prisma/client";
-import { formatVND, getProductTypeInfo, getProductBadgeLabel } from "@/lib/product-types";
+import { formatVND, getProductTypeInfo, getProductBadgeLabel, isSmmServiceTitleOrSlug } from "@/lib/product-types";
 import { resolveProductThumbnail } from "@/lib/catalog-grouping";
 
 export interface ProductCardProps {
@@ -28,13 +28,11 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
   });
   const TypeIcon = typeInfo.icon;
 
-  const isSMM =
-    product.category?.slug === "dich-vu-mxh" ||
-    title.toLowerCase().includes("tiktok") ||
-    title.toLowerCase().includes("facebook") ||
-    title.toLowerCase().includes("tim") ||
-    title.toLowerCase().includes("like") ||
-    title.toLowerCase().includes("follow");
+  const isSMM = isSmmServiceTitleOrSlug({
+    categorySlug: product.category?.slug,
+    title,
+    slug,
+  });
 
   const isApiKey =
     product.category?.slug === "ai-api" ||
@@ -48,7 +46,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
   const titleLower = (title || "").toLowerCase();
   const slugLower = (slug || "").toLowerCase();
 
-  const isYoutube = slugLower.includes("youtube") || titleLower.includes("youtube");
+  const isYoutube = !isSMM && (slugLower.includes("youtube") || titleLower.includes("youtube"));
 
   const isAccountUpgrade =
     !isYoutube &&
@@ -73,6 +71,8 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
       durationBadge = "30 NGÀY";
     } else if (titleLower.includes("7 ngày") || slugLower.includes("7-ngay")) {
       durationBadge = "7 NGÀY";
+    } else if (titleLower.includes("3 ngày") || slugLower.includes("3-ngay")) {
+      durationBadge = "3 NGÀY";
     } else if (titleLower.includes("vĩnh viễn") || slugLower.includes("vinh-vien")) {
       durationBadge = "VĨNH VIỄN";
     }

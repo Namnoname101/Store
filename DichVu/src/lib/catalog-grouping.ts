@@ -56,7 +56,9 @@ export const BRAND_FALLBACK_IMAGES: Record<string, string> = {
   youtube: "/images/brands/youtube.svg",
   tiktok: "/images/brands/tiktok.svg",
   facebook: "/images/brands/facebook.svg",
-  instagram: "/images/brands/default.svg",
+  instagram: "/images/brands/instagram.svg",
+  telegram: "/images/brands/telegram.svg",
+  shopee: "/images/brands/shopee.svg",
   duolingo: "/images/brands/duolingo.svg",
   nordvpn: "/images/brands/nordvpn.svg",
   suno: "/images/brands/suno.svg",
@@ -187,14 +189,18 @@ export function isDisallowedShortTermApiPackage(product: {
   title?: string | null;
   description?: string | null;
   slug?: string | null;
+  category?: { slug?: string | null } | null;
 }): boolean {
   const title = (product.title || "").toLowerCase();
   const desc = (product.description || "").toLowerCase();
   const slug = (product.slug || "").toLowerCase();
+  const catSlug = (product.category?.slug || "").toLowerCase();
   const text = `${title} ${desc} ${slug}`;
 
-  // Non-API products (consumer software, creative accounts, VPN, entertainment, AI accounts) are legitimate tools
+  // Non-API products (consumer software, creative accounts, VPN, entertainment, AI accounts, SMM) are legitimate tools
   if (
+    catSlug === "dich-vu-mxh" ||
+    slug.startsWith("tang-") ||
     text.includes("gemini") ||
     text.includes("suno") ||
     text.includes("hma") ||
@@ -209,10 +215,15 @@ export function isDisallowedShortTermApiPackage(product: {
     text.includes("muse") ||
     text.includes("netflix") ||
     text.includes("spotify") ||
+    text.includes("youtube") ||
     text.includes("vpn") ||
     text.includes("zoom") ||
     text.includes("tiktok") ||
-    text.includes("facebook")
+    text.includes("facebook") ||
+    text.includes("instagram") ||
+    text.includes("telegram") ||
+    text.includes("shopee") ||
+    text.includes("locket")
   ) {
     return false;
   }

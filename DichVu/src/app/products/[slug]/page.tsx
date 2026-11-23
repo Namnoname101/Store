@@ -10,7 +10,7 @@ import {
 import { getProductBySlug } from "@/services/catalog.service";
 import ProductPurchaseBox from "@/components/ProductPurchaseBox";
 import ProductDetailTabs from "@/components/ProductDetailTabs";
-import { getProductTypeInfo } from "@/lib/product-types";
+import { getProductTypeInfo, getSmmUnitLabel, isSmmServiceTitleOrSlug } from "@/lib/product-types";
 import { resolveProductInstruction } from "@/lib/product-guides";
 import { resolveProductThumbnail } from "@/lib/catalog-grouping";
 
@@ -71,13 +71,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         )
       : 0;
 
-  const isSMM =
-    product.category?.slug === "dich-vu-mxh" ||
-    product.title.toLowerCase().includes("tiktok") ||
-    product.title.toLowerCase().includes("facebook") ||
-    product.title.toLowerCase().includes("tim") ||
-    product.title.toLowerCase().includes("like") ||
-    product.title.toLowerCase().includes("follow");
+  const isSMM = isSmmServiceTitleOrSlug({
+    categorySlug: product.category?.slug,
+    title: product.title,
+    slug: product.slug,
+  });
 
   const titleLower = product.title.toLowerCase();
   const slugLower = product.slug.toLowerCase();
@@ -115,7 +113,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   const isSuno = slugLower.includes("suno") || titleLower.includes("suno");
   const isHMA = slugLower.includes("hma") || titleLower.includes("hma");
-  const isYoutube = slugLower.includes("youtube") || titleLower.includes("youtube");
+  const isYoutube = !isSMM && (slugLower.includes("youtube") || titleLower.includes("youtube"));
   const isGeminiSlot = slugLower.includes("gemini") && slugLower.includes("slot");
   const isGeminiFamily =
     slugLower.includes("gemini") &&
@@ -150,6 +148,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Cấp link nâng tài khoản chính chủ 24/7"
     : isGeminiFamily
     ? "Cấp sẵn tài khoản Chủ Family 5TB"
+    : titleLower.includes("locket")
+    ? "Cấp thông tin kích hoạt VIP / Chống thu hồi DNS"
     : product.type === "LICENSE_KEY"
     ? "Nhận mã Key ngay sau thanh toán"
     : product.type === "ACCOUNT"
@@ -196,6 +196,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Hạn 30 ngày"
     : titleLower.includes("7 ngày")
     ? "Hạn 7 ngày"
+    : titleLower.includes("3 ngày") || (titleLower.includes("locket") && titleLower.includes("trial"))
+    ? "Hạn 3 ngày"
+    : titleLower.includes("vĩnh viễn")
+    ? "Sử dụng vĩnh viễn"
     : "Theo thời hạn gói";
 
   const isExplicitBHF180D =
@@ -236,7 +240,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       slugLower.includes("grok"));
 
   const warrantyLabel = isSMM
-    ? "Bảo hành theo server"
+    ? titleLower.includes("bảo hành 30 ngày") || titleLower.includes("bh 30 ngày")
+      ? "Bảo hành bù tụt 30 ngày"
+      : titleLower.includes("bảo hành")
+      ? "Bảo hành tự động theo server"
+      : "Bảo hành theo server"
     : isGeminiUpPro5TB
     ? "Bảo hành kích hoạt đủ 5TB (Gói KBH)"
     : isApiKeyProduct
@@ -249,6 +257,16 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Bảo hành đăng nhập 2H (Gói KBH)"
     : titleLower.includes("bh 3 tháng") || titleLower.includes("bảo hành 3 tháng")
     ? "Bảo hành 3 tháng"
+    : titleLower.includes("locket")
+    ? titleLower.includes("vĩnh viễn") || titleLower.includes("1 năm")
+      ? "Chống thu hồi DNS • Bảo hành trọn đời"
+      : titleLower.includes("6 tháng")
+      ? "Chống thu hồi DNS • Bảo hành 6 tháng"
+      : titleLower.includes("3 tháng")
+      ? "Chống thu hồi DNS • Bảo hành 3 tháng"
+      : titleLower.includes("1 tháng")
+      ? "Chống thu hồi DNS • Bảo hành 1 tháng"
+      : "Chống thu hồi DNS • Bảo hành 3 ngày"
     : titleLower.includes("bh 1 tuần") || titleLower.includes("bảo hành 1 tuần")
     ? "Bảo hành 7 ngày (1 tuần)"
     : isSuno
@@ -265,13 +283,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ? "Bảo hành kích hoạt / đăng nhập 24H"
     : "Bảo hành theo quy định gói";
 
-  const unitLabel = product.title.toLowerCase().includes("follow")
-    ? "follow"
-    : product.title.toLowerCase().includes("tim")
-    ? "tim"
-    : product.title.toLowerCase().includes("like")
-    ? "like"
-    : "lượt";
+  const unitLabel = getSmmUnitLabel(product.title);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:py-8 sm:px-6 lg:px-8 pb-28 lg:pb-16">

@@ -1076,6 +1076,8 @@ export default function SupplierManagerClient({
                           newBaseUrl = "https://nghientrick-103-77-214-66.sslip.io/api/reseller/v1";
                         } else if (newType === SupplierType.XOAINON_API) {
                           newBaseUrl = "https://shopxoainon.online/api/v1";
+                        } else if (newType === SupplierType.HHPREMIUM_API) {
+                          newBaseUrl = "https://bot.hhpremiumsv.fun/api/shop";
                         }
                       }
                       setSupplierFormData({
@@ -1091,6 +1093,7 @@ export default function SupplierManagerClient({
                     <option value={SupplierType.TRUMTHE}>TRUMTHE (Trùm Thẻ)</option>
                     <option value={SupplierType.LOCKET_VN}>LOCKET_VN (Nghiện Trick / Locket Reseller v1)</option>
                     <option value={SupplierType.XOAINON_API}>XOAINON_API (Shop Xoài Non Customer API v1)</option>
+                    <option value={SupplierType.HHPREMIUM_API}>HHPREMIUM_API (HHPremium Shop API)</option>
                     <option value={SupplierType.TELEGRAM_BOT}>TELEGRAM_BOT (Telegram Userbot Auto Buy)</option>
                     <option value={SupplierType.CUSTOM_REST}>CUSTOM_REST (API Tùy biến)</option>
                   </select>

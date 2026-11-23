@@ -44,6 +44,7 @@ export const SupplierType = {
   CUSTOM_REST: "CUSTOM_REST",
   TELEGRAM_BOT: "TELEGRAM_BOT",
   XOAINON_API: "XOAINON_API",
+  HHPREMIUM_API: "HHPREMIUM_API",
 } as const;
 export type SupplierType = (typeof SupplierType)[keyof typeof SupplierType];
 

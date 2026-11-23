@@ -25,6 +25,38 @@ import {
   Activity,
   Database,
 } from "lucide-react";
+import BrandLogo from "@/components/BrandLogo";
+
+const BUFF_SIDEBAR_GROUPS = [
+  {
+    key: "tiktok" as const,
+    label: "TikTok Buff",
+    brandKey: "tiktok",
+    iconClass: "w-[18px] h-[18px] text-[#00f2fe] shrink-0",
+    items: [
+      { label: "Tất cả gói TikTok", href: "/brand/tiktok" },
+      { label: "Tăng Tim / Like Video", href: "/products/tang-tim-tiktok-1000" },
+      { label: "Tăng Follower Kênh VN", href: "/products/tang-follow-tiktok-1000" },
+      { label: "Tăng View Video (Không tụt)", href: "/products/tang-view-tiktok-1000" },
+      { label: "Tăng Lưu / Yêu Thích Video", href: "/products/tang-yeu-thich-tiktok-1000" },
+      { label: "Tăng Chia Sẻ (Share) Video", href: "/products/tang-chia-se-tiktok-1000" },
+    ],
+  },
+  {
+    key: "facebook" as const,
+    label: "Facebook Buff",
+    brandKey: "facebook",
+    iconClass: "w-[18px] h-[18px] shrink-0",
+    items: [
+      { label: "Tất cả gói Facebook", href: "/brand/facebook" },
+      { label: "Tăng Like Bài Viết VN", href: "/products/tang-like-facebook-1000" },
+      { label: "Tăng Follower Profile/Page", href: "/products/tang-follow-facebook-1000" },
+      { label: "Tăng Like + Follow Fanpage", href: "/products/tang-like-page-facebook-1000" },
+      { label: "Tăng View Video / Reels", href: "/products/tang-view-facebook-1000" },
+      { label: "Tăng Thành Viên Group", href: "/products/tang-member-group-facebook-1000" },
+    ],
+  },
+];
 
 interface UserProfile {
   id: string;
@@ -37,9 +69,16 @@ interface UserProfile {
 export default function AppSidebar() {
   const { isCollapsed, isMobileOpen, toggleSidebar, setMobileOpen } = useSidebar();
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [openTrees, setOpenTrees] = useState<{ chatgpt: boolean; claude: boolean }>({
+  const [openTrees, setOpenTrees] = useState<{
+    chatgpt: boolean;
+    claude: boolean;
+    tiktok: boolean;
+    facebook: boolean;
+  }>({
     chatgpt: true,
     claude: true,
+    tiktok: true,
+    facebook: true,
   });
   const pathname = usePathname();
   const router = useRouter();
@@ -69,7 +108,7 @@ export default function AppSidebar() {
     return null;
   }
 
-  const toggleTree = (key: "chatgpt" | "claude") => {
+  const toggleTree = (key: "chatgpt" | "claude" | "tiktok" | "facebook") => {
     setOpenTrees((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
@@ -670,6 +709,74 @@ export default function AppSidebar() {
               {svgMS}
               <span className="font-medium text-xs">Microsoft 365</span>
             </Link>
+            <Link
+              href="/brand/locket"
+              onClick={() => handleNavClick("/brand/locket")}
+              className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-colors ${
+                pathname === "/brand/locket"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
+              }`}
+            >
+              <img
+                src="/images/raw_logos/locket.png?v=2"
+                alt="Locket Gold"
+                className="w-4 h-4 rounded-[4px] object-cover shrink-0"
+              />
+              <span className="font-medium text-xs">Locket Gold</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Section: Social Media Buff Services */}
+        <div>
+          <div className="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+            Buff Tương Tác MXH
+          </div>
+          <div className="space-y-1">
+            {BUFF_SIDEBAR_GROUPS.map((group) => {
+              const isOpen = openTrees[group.key];
+              return (
+                <div key={group.key}>
+                  <button
+                    type="button"
+                    onClick={() => toggleTree(group.key)}
+                    className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-zinc-300 font-medium hover:text-white hover:bg-white/[0.06] cursor-pointer transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <BrandLogo brandName={group.brandKey} size={18} className={group.iconClass} />
+                      <span className="text-xs font-medium">{group.label}</span>
+                    </div>
+                    {isOpen ? (
+                      <ChevronDown className="w-3.5 h-3.5 text-zinc-500" />
+                    ) : (
+                      <ChevronRight className="w-3.5 h-3.5 text-zinc-500" />
+                    )}
+                  </button>
+                  {isOpen && (
+                    <div className="ml-4 pl-3 border-l border-white/10 space-y-0.5 mt-1">
+                      {group.items.map((item) => {
+                        const isActive = pathname === item.href;
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            onClick={() => handleNavClick(item.href)}
+                            className={`block py-1 px-2 rounded-md text-[11.5px] transition-colors ${
+                              isActive
+                                ? "text-blue-400 bg-blue-600/15 border border-blue-500/20 font-medium"
+                                : "text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]"
+                            }`}
+                          >
+                            {item.label}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
 
