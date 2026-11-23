@@ -5,14 +5,12 @@ import {
   ChevronRight,
   ShieldCheck,
   Clock,
-  Headphones,
   Send,
-  Sparkles,
 } from "lucide-react";
 import { getProductBySlug } from "@/services/catalog.service";
 import ProductPurchaseBox from "@/components/ProductPurchaseBox";
 import ProductDetailTabs from "@/components/ProductDetailTabs";
-import { getProductTypeInfo, formatVND } from "@/lib/product-types";
+import { getProductTypeInfo } from "@/lib/product-types";
 import { resolveProductInstruction } from "@/lib/product-guides";
 import { resolveProductThumbnail } from "@/lib/catalog-grouping";
 
@@ -127,102 +125,94 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   const isGeminiKBH = !isGeminiUpPro5TB && slugLower.includes("gemini") && (slugLower.includes("kbh") || titleLower.includes("kbh") || titleLower.includes("2 năm") || slugLower.includes("2-nam"));
 
   const deliveryFormat = isSMM
-    ? "Hệ thống tự động khởi tạo theo link mục tiêu"
+    ? "Tự động chạy theo link"
     : isYoutube
-    ? "Mời nhóm Family vào Gmail chính chủ (Admin bấm Done là xong)"
+    ? "Gửi thư mời vào Gmail chính chủ"
     : isGeminiUpPro5TB
-    ? "Nâng trực tiếp trên Gmail của bạn (Bấm Done là xong)"
+    ? "Nâng trực tiếp trên Gmail của bạn"
     : isCodex
-    ? "Nạp vào Key có sẵn hoặc cấp Key mới tức thì 24/7"
+    ? "Cấp Key mới hoặc nạp Key cũ 24/7"
     : isChatGPTFree
-    ? "Tài khoản Free sạch (Email | Pass) đã SMS Verify sẵn 24/7"
+    ? "Cấp sẵn Email | Pass (Đã xác minh SĐT)"
     : isChatGPTBusiness
-    ? "Tài khoản (Email | Pass) đã vào Workspace Business"
+    ? "Cấp sẵn tài khoản Workspace Business"
     : isChatGPT
-    ? "Tài khoản cấp sẵn (Email | Pass) - Tuyệt đối không xóa 2FA"
+    ? "Cấp sẵn tài khoản riêng (Email | Pass)"
     : isCapCut
-    ? "Tài khoản cấp sẵn (Chỉ dùng 1 máy duy nhất - Không logout)"
+    ? "Cấp sẵn tài khoản (Dùng 1 thiết bị)"
     : isGeminiSlot
-    ? "Nâng cấp trên chính Gmail cá nhân của bạn (Cấp link 24/7)"
+    ? "Cấp link nâng Gmail chính chủ 24/7"
     : isGeminiFamily
-    ? "Cấp sẵn định dạng: Gmail | Pass | 2FA | MKP (Chủ Family add 5 người)"
+    ? "Cấp sẵn tài khoản Chủ Family 5TB"
     : product.type === "LICENSE_KEY"
-    ? "Mã bản quyền / API Key cấp tức thì sau thanh toán"
+    ? "Nhận mã Key ngay sau thanh toán"
     : product.type === "ACCOUNT"
-    ? "Tài khoản riêng tư / Link kích hoạt chính chủ"
-    : "Bàn giao tự động qua hệ thống 24/7";
+    ? "Nhận tài khoản ngay sau thanh toán"
+    : "Giao tự động 24/7";
 
   const durationLabel = isSMM
-    ? "Hoàn thành theo số lượng đặt mua"
-    : isYoutube && (slugLower.includes("1-thang") || titleLower.includes("1 tháng") || titleLower.includes("30 ngày"))
-    ? "30 ngày (1 tháng) - Bảo hành trọn thời hạn"
+    ? "Theo số lượng đặt mua"
     : isYoutube
-    ? "30 ngày (1 tháng) - Bảo hành trọn thời hạn"
+    ? "Hạn 30 ngày (1 tháng)"
     : isGeminiUpPro5TB
-    ? "12 tháng (1 năm) - Nâng chính chủ 5TB"
+    ? "Hạn 12 tháng (5TB)"
     : isCodex
-    ? "Bảo lưu vĩnh viễn (Dùng đến khi hết Quota)"
+    ? "Không giới hạn thời hạn (Trừ theo Credit)"
     : isClaude
-    ? "Bảo lưu theo hạn mức Credit / Request đã chọn"
+    ? "Tính theo hạn mức Credit đã chọn"
     : isChatGPTFree
-    ? "Vĩnh viễn (Tài khoản Free cá nhân đã SMS Verify)"
-    : isChatGPTBusiness
-    ? "30 ngày trong Workspace Business (BHF 30D)"
-    : isChatGPTPlusBHF
-    ? "30 ngày bảo hành Full Date (BHF 30D)"
-    : isChatGPTPlus24H
-    ? "30 ngày sử dụng (BH đăng nhập 24H - Gói Tiết Kiệm)"
+    ? "Sử dụng vĩnh viễn"
+    : isChatGPTBusiness || isChatGPTPlusBHF || isChatGPTPlus24H
+    ? "Hạn 30 ngày (1 tháng)"
     : isCapCut7D
-    ? "7 ngày sử dụng Pro (BHF 7 ngày - 1 Máy)"
+    ? "Hạn 7 ngày"
     : isCapCut30D
-    ? "30 ngày sử dụng Pro (BHF 30 ngày - 1 Máy)"
+    ? "Hạn 30 ngày"
     : isGeminiFamily
-    ? "90 ngày (3 tháng) - Chủ Family quản lý 5TB"
+    ? "Hạn 90 ngày (3 tháng)"
     : isGeminiSlot
-    ? "12 tháng (1 năm) - Nâng mail chính chủ 5TB"
+    ? "Hạn 12 tháng (1 năm)"
     : isGeminiKBH || titleLower.includes("2 năm") || slugLower.includes("2-nam")
-    ? "24 tháng (Hạn 2 năm) - Gói KBH"
+    ? "Hạn 24 tháng (2 năm)"
     : isSuno
-    ? "30 ngày sử dụng (2.500 Credits)"
+    ? "Hạn 30 ngày (2.500 Credits)"
     : titleLower.includes("18 tháng")
-    ? "18 tháng đầy đủ (Full date)"
+    ? "Hạn 18 tháng"
     : titleLower.includes("12 tháng") || titleLower.includes("1 năm")
-    ? "12 tháng (1 năm) bản quyền"
+    ? "Hạn 12 tháng (1 năm)"
     : titleLower.includes("30 ngày") || titleLower.includes("1 tháng")
-    ? "30 ngày đầy đủ"
+    ? "Hạn 30 ngày"
+    : titleLower.includes("7 ngày")
+    ? "Hạn 7 ngày"
     : titleLower.includes("3 tháng")
-    ? "90 ngày (3 tháng)"
-    : "Theo gói dịch vụ đã chọn";
+    ? "Hạn 3 tháng"
+    : "Theo thời hạn gói";
 
   const warrantyLabel = isSMM
-    ? "Bảo hành duy trì số lượng theo server"
+    ? "Bảo hành tụt theo server"
     : isGeminiUpPro5TB
-    ? "Bảo hành đăng nhập & kích hoạt đủ 5TB (Gói KBH)"
+    ? "Bảo hành kích hoạt đủ 5TB (Gói KBH)"
     : isApiKeyProduct
-    ? "Bảo đảm kết nối ổn định & bảo lưu hạn mức trọn vẹn"
+    ? "Bảo hành 100% số dư Credit"
     : isChatGPTFree
-    ? "1 Đổi 1 trong 24H nếu sai pass hoặc chưa SMS Verify"
-    : isChatGPTBusiness
-    ? "1 Đổi 1 trọn vẹn 30 ngày (Gói Doanh Nghiệp BHF)"
-    : isChatGPTPlusBHF
-    ? "1 Đổi 1 Trọn Vẹn 30 Ngày (BHF 30D - Giữ nguyên 2FA)"
+    ? "Bảo hành đăng nhập 24H"
+    : isChatGPTBusiness || isChatGPTPlusBHF
+    ? "Bảo hành 1 đổi 1 suốt 30 ngày"
     : isChatGPTPlus24H
-    ? "Bảo hành đăng nhập 24H (Gói Tiết Kiệm)"
+    ? "Bảo hành đăng nhập 24H"
     : isCapCut
-    ? "1 Đổi 1 suốt thời hạn (Bắt buộc dùng 1 máy, cấm logout, cấm xóa app)"
+    ? "Bảo hành 1 đổi 1 suốt thời hạn"
     : isGeminiKBH
-    ? "Bảo hành đăng nhập 2H (Gói Trải Nghiệm)"
+    ? "Bảo hành đăng nhập 2H (Gói KBH)"
     : titleLower.includes("bh 3 tháng") || titleLower.includes("bảo hành 3 tháng")
-    ? "Bảo hành 3 tháng 1 đổi 1 chu đáo"
+    ? "Bảo hành 3 tháng 1 đổi 1"
     : titleLower.includes("bh 1 tuần") || titleLower.includes("bảo hành 1 tuần")
-    ? "Bảo hành 1 tuần 1 đổi 1 chu đáo"
+    ? "Bảo hành 7 ngày 1 đổi 1"
     : isSuno
-    ? "Bảo hành đăng nhập 24H & 2.500 Credits ban đầu"
+    ? "Bảo hành đăng nhập 24H & đủ 2.500 Credits"
     : isHMA
-    ? "Bảo hành kích hoạt 5 thiết bị trong suốt thời hạn key"
-    : titleLower.includes("gemini") || titleLower.includes("duolingo")
-    ? "1 đổi 1 trong 24h kích hoạt & hỗ trợ suốt thời hạn"
-    : "Bảo hành 1 đổi 1 theo đúng cam kết từng gói";
+    ? "Bảo hành 1 đổi 1 suốt 30 ngày (5 máy)"
+    : "Bảo hành 1 đổi 1 đúng cam kết";
 
   const unitLabel = product.title.toLowerCase().includes("follow")
     ? "follow"
@@ -281,38 +271,21 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               {product.title}
             </h1>
 
-            {/* Price Row */}
-            <div className="mt-3 flex items-baseline gap-3">
-              <span className="text-3xl font-extrabold text-primary font-mono">
-                {formatVND(product.price)}
+            {/* Compact 3-pill Summary Bar (Replaces redundant price row & bulky 4-box grid) */}
+            <div className="mt-3.5 flex flex-wrap items-center gap-2 text-xs">
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 font-medium text-foreground">
+                <Send className="h-3.5 w-3.5 text-primary shrink-0" />
+                <span>{deliveryFormat}</span>
               </span>
-              {isSMM && (
-                <span className="text-sm font-medium text-muted-foreground">
-                  / 1 {unitLabel}
-                </span>
-              )}
-              {product.originalPrice && product.originalPrice > product.price && (
-                <span className="text-base text-muted-foreground line-through font-mono">
-                  {formatVND(product.originalPrice)}
-                </span>
-              )}
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 font-medium text-foreground">
+                <Clock className="h-3.5 w-3.5 text-primary shrink-0" />
+                <span>{durationLabel}</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 font-medium text-foreground">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                <span>{warrantyLabel}</span>
+              </span>
             </div>
-
-            {isCodex && (
-              <div className="mt-4 rounded-xl border border-primary/20 bg-primary/10 p-3.5 flex items-start gap-2.5">
-                <Sparkles className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                <div className="text-xs text-foreground">
-                  <span className="font-semibold">Bạn đã có API Key từ trước?</span>
-                  <p className="mt-0.5 text-muted-foreground">
-                    Không cần mua key mới! Bạn có thể{" "}
-                    <Link href="/codex" className="font-bold text-primary underline hover:text-primary/80">
-                      vào đây để nạp thêm hạn mức thẳng vào key cũ của bạn
-                    </Link>
-                    .
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Product Media Card */}
@@ -324,50 +297,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             />
           </div>
 
-          {/* Standardized Product Specification Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-xs">
-            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-secondary/50 border border-border">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
-                <Send className="h-4 w-4" />
-              </div>
-              <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Hình thức nhận hàng</span>
-                <p className="text-xs font-semibold text-foreground mt-0.5 leading-snug">{deliveryFormat}</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-secondary/50 border border-border">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
-                <Clock className="h-4 w-4" />
-              </div>
-              <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Thời hạn sử dụng</span>
-                <p className="text-xs font-semibold text-foreground mt-0.5 leading-snug">{durationLabel}</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-secondary/50 border border-border">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/15 text-accent shrink-0">
-                <ShieldCheck className="h-4 w-4" />
-              </div>
-              <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Chính sách bảo hành</span>
-                <p className="text-xs font-semibold text-foreground mt-0.5 leading-snug">{warrantyLabel}</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-secondary/50 border border-border">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
-                <Headphones className="h-4 w-4" />
-              </div>
-              <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Hỗ trợ kỹ thuật</span>
-                <p className="text-xs font-semibold text-foreground mt-0.5 leading-snug">Đồng hành 24/7 qua Zalo &amp; Telegram</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Dual-Level Tabs: Beginner Onboarding vs Developer Gateway Specs */}
+          {/* Contextual Product Tabs */}
           <ProductDetailTabs
             product={product}
             guide={guide}

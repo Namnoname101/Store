@@ -6,24 +6,16 @@ import {
   BookOpen,
   Code2,
   ShieldCheck,
-  Zap,
   CheckCircle2,
-  Headphones,
   Copy,
   Check,
   ExternalLink,
   HelpCircle,
-  Sparkles,
   Terminal,
-  Cpu,
   AlertTriangle,
   XCircle,
-  ShieldAlert,
-  Bot,
-  Play,
 } from "lucide-react";
 import CodexApiGuideHub from "@/components/CodexApiGuideHub";
-import { AI_FRONTIER_MODELS, DEFAULT_CLAUDE_MODEL_ID } from "@/lib/constants/ai-models";
 
 export interface ProductDetailTabsProps {
   product: {
@@ -60,13 +52,12 @@ export default function ProductDetailTabs({
   isChatGPT = false,
   isChatGPTBHF = false,
 }: ProductDetailTabsProps) {
-  const [activeTab, setActiveTab] = useState<"overview" | "technical">("overview");
+  const hasGuideSteps = Boolean(guide && guide.steps && guide.steps.length > 0);
+  const [activeTab, setActiveTab] = useState<"info" | "guide" | "api">("info");
   const [copiedSnippet, setCopiedSnippet] = useState<string | null>(null);
   const [activeSnippetLang, setActiveSnippetLang] = useState<"curl" | "python" | "typescript">("curl");
 
-  // Dynamic warranty commitment based on supplier policy
   const slugLower = (product.slug || "").toLowerCase();
-  const catSlugLower = (product.category?.slug || "").toLowerCase();
   const titleLower = (product.title || "").toLowerCase();
 
   const isChatGPTFree = slugLower.includes("free") || titleLower.includes("free") || slugLower.includes("verify-phone");
@@ -77,81 +68,6 @@ export default function ProductDetailTabs({
   const isCapCut = slugLower.includes("capcut") || titleLower.includes("capcut");
   const isCapCut7D = isCapCut && (slugLower.includes("7-ngay") || titleLower.includes("7 day") || titleLower.includes("7 ngày"));
 
-  const warrantyCommitment = isChatGPTFree
-    ? {
-        title: "Bảo hành đăng nhập & Verify Phone lần đầu",
-        desc: "Đổi mới tức thì nếu sai mật khẩu hoặc tài khoản chưa kích hoạt SĐT quốc tế lúc nhận theo tiêu chuẩn kiểm định tự động.",
-      }
-    : isChatGPTBusiness
-    ? {
-        title: "Bảo hành Full 30 Ngày 1 Đổi 1 (BHF)",
-        desc: "Cam kết 1 đổi 1 hoặc khôi phục quyền thành viên Workspace Business trong suốt 30 ngày sử dụng theo chuẩn kỹ thuật.",
-      }
-    : isChatGPTRealBHF
-    ? {
-        title: "1-Đổi-1 trọn 30 ngày (Gói BHF)",
-        desc: "Bảo hành 1 đổi 1 hoặc cấp lại Plus trong suốt 30 ngày sử dụng nếu phát sinh lỗi kỹ thuật từ hệ thống.",
-      }
-    : isChatGPTReal24H
-    ? {
-        title: "Bảo hành đăng nhập 24H (Gói Tiết Kiệm)",
-        desc: "Đổi mới tức thì trong 24 giờ đầu nếu sai mật khẩu hoặc tài khoản chưa kích hoạt Plus từ hệ thống.",
-      }
-    : isCapCut7D
-    ? {
-        title: "Bảo hành Full 7 Ngày 1 Đổi 1 (1 Máy)",
-        desc: "Cam kết 1 đổi 1 trong 7 ngày theo tiêu chuẩn dịch vụ. Yêu cầu bắt buộc: Dùng trên 1 thiết bị duy nhất, không đăng xuất, không xóa app.",
-      }
-    : isCapCut
-    ? {
-        title: "Bảo hành Full 30 Ngày 1 Đổi 1",
-        desc: "Bảo hành 1 đổi 1 trong 30 ngày nếu mất Pro. Sử dụng trên 1 thiết bị cá nhân.",
-      }
-    : isApiKeyProduct || isCodex || isClaude
-    ? {
-        title: "Bảo lưu Quota & Kết nối API",
-        desc: "Cam kết số dư credit khả dụng chuẩn xác và đường truyền API ổn định theo thông số niêm yết.",
-      }
-    : titleLower.includes("bh 3 tháng") || titleLower.includes("bảo hành 3 tháng")
-    ? {
-        title: "Bảo hành 3 Tháng 1 Đổi 1 Chu Đáo",
-        desc: "Cam kết bảo hành 1 đổi 1 hoặc hỗ trợ add lại vào nhóm Family Google One 5TB trong suốt 3 tháng sử dụng nếu phát sinh lỗi kỹ thuật.",
-      }
-    : titleLower.includes("bh 1 tuần") || titleLower.includes("bảo hành 1 tuần")
-    ? {
-        title: "Bảo hành 1 Tuần 1 Đổi 1 Chu Đáo",
-        desc: "Bảo hành 1 đổi 1 trong vòng 7 ngày đầu nếu tài khoản phát sinh lỗi đăng nhập hoặc mất quyền lợi gói Pro.",
-      }
-    : (slugLower.includes("gemini") && (slugLower.includes("kbh") || titleLower.includes("kbh") || titleLower.includes("2 năm"))) || slugLower.includes("muse")
-    ? {
-        title: "Bảo hành đăng nhập 2H (Gói Trải Nghiệm)",
-        desc: "Bảo hành 1 đổi 1 trong 2 giờ đầu nếu sai mật khẩu hoặc lỗi 2FA lúc nhận. Sau khi đăng nhập thành công: Không bảo hành thời gian sử dụng đối với gói trải nghiệm giá rẻ.",
-      }
-    : slugLower.includes("suno") || titleLower.includes("suno")
-    ? {
-        title: "Bảo hành login 24H & 2.500 Credits",
-        desc: "Bảo hành đăng nhập thành công và chuẩn xác số dư 2.500 credits ban đầu trong 24 giờ đầu.",
-      }
-    : slugLower.includes("hma") || titleLower.includes("hma")
-    ? {
-        title: "Bảo hành kích hoạt bản quyền 5 thiết bị",
-        desc: "Bảo hành 1 đổi 1 trong suốt thời hạn sử dụng nếu key phát sinh lỗi kích hoạt trên ứng dụng HMA.",
-      }
-    : slugLower.includes("youtube") || titleLower.includes("youtube")
-    ? {
-        title: "Bảo hành 1-Đổi-1 trọn thời hạn 30 ngày (1 tháng)",
-        desc: "Bảo hành suốt thời gian sử dụng 30 ngày (1 tháng). Nếu nhóm Family gặp sự cố, shop hỗ trợ add lại nhóm mới hoặc hoàn tiền theo tỷ lệ thời gian còn lại nhanh chóng trong 15-30 phút.",
-      }
-    : catSlugLower.includes("smm") || product.type === "CUSTOM"
-    ? {
-        title: "Bảo hành duy trì số lượng",
-        desc: "Cam kết xử lý và bù tụt số lượng tương tác theo đúng chính sách và thời hạn của từng server.",
-      }
-    : {
-        title: "Bảo hành 1-Đổi-1 theo cam kết gói",
-        desc: "Mọi trục trặc kỹ thuật được xử lý đổi mới hoặc hoàn lại tương ứng theo đúng chính sách niêm yết của từng gói dịch vụ.",
-      };
-
   const handleCopy = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedSnippet(id);
@@ -160,703 +76,329 @@ export default function ProductDetailTabs({
     }, 2000);
   };
 
+  const defaultModel = isCodex ? "gpt-5" : "claude-sonnet-5-5";
+
   const codeSnippets = {
     curl: `curl https://daitruongstore.fly.dev/v1/chat/completions \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer sk-your-api-key" \\
   -d '{
-    "model": "claude-sonnet-5-5",
-    "messages": [{"role": "user", "content": "Xin chào KhoDEE V2!"}],
-    "stream": false
+    "model": "${defaultModel}",
+    "messages": [{"role": "user", "content": "Hello!"}]
   }'`,
     python: `from openai import OpenAI
 
-# Tương thích 100% OpenAI Python SDK
 client = OpenAI(
     base_url="https://daitruongstore.fly.dev/v1",
     api_key="sk-your-api-key"
 )
 
-response = client.chat.completions.create(
-    model="claude-sonnet-5-5",
-    messages=[{"role": "user", "content": "Xin chào!"}]
+res = client.chat.completions.create(
+    model="${defaultModel}",
+    messages=[{"role": "user", "content": "Hello!"}]
 )
-
-print(response.choices[0].message.content)`,
+print(res.choices[0].message.content)`,
     typescript: `import OpenAI from "openai";
 
-// Tương thích 100% OpenAI Node/TS SDK
 const client = new OpenAI({
   baseURL: "https://daitruongstore.fly.dev/v1",
   apiKey: "sk-your-api-key",
 });
 
-async function main() {
-  const completion = await client.chat.completions.create({
-    model: "claude-sonnet-5-5",
-    messages: [{ role: "user", content: "Xin chào!" }],
-  });
-  console.log(completion.choices[0].message.content);
-}
-
-main();`,
+const res = await client.chat.completions.create({
+  model: "${defaultModel}",
+  messages: [{ role: "user", content: "Hello!" }],
+});
+console.log(res.choices[0].message.content);`,
   };
 
   return (
-    <div className="w-full space-y-6">
-      {/* Dual-Level Tabs Selector */}
+    <div className="w-full space-y-5">
+      {/* Clean Contextual Tab Bar */}
       <div
         role="tablist"
-        aria-label="Cấp độ thông tin sản phẩm"
-        className="flex items-center gap-2 p-1.5 rounded-2xl border border-border bg-card shadow-xs"
+        aria-label="Thông tin sản phẩm"
+        className="flex items-center gap-1.5 p-1 rounded-xl border border-border bg-secondary/40"
       >
         <button
           type="button"
           role="tab"
-          id="tab-overview"
-          aria-selected={activeTab === "overview"}
-          aria-controls="panel-overview"
-          onClick={() => setActiveTab("overview")}
-          className={`flex-1 min-h-[44px] px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-            activeTab === "overview"
-              ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
-              : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+          aria-selected={activeTab === "info"}
+          onClick={() => setActiveTab("info")}
+          className={`flex-1 min-h-[40px] px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all ${
+            activeTab === "info"
+              ? "bg-card text-foreground shadow-xs border border-border/60"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <BookOpen className="h-4 w-4" />
-          <span>Tổng quan &amp; Người mới</span>
+          <BookOpen className="h-4 w-4 text-primary" />
+          <span>Chi tiết &amp; Lưu ý</span>
         </button>
 
-        <button
-          type="button"
-          role="tab"
-          id="tab-technical"
-          aria-selected={activeTab === "technical"}
-          aria-controls="panel-technical"
-          onClick={() => setActiveTab("technical")}
-          className={`flex-1 min-h-[44px] px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-            activeTab === "technical"
-              ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
-              : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-          }`}
-        >
-          <Code2 className="h-4 w-4" />
-          <span>Thông số kỹ thuật &amp; Developer</span>
-          {isApiKeyProduct && (
-            <span className="hidden sm:inline text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/20 text-accent font-bold">
-              API
-            </span>
-          )}
-        </button>
+        {hasGuideSteps && (
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "guide"}
+            onClick={() => setActiveTab("guide")}
+            className={`flex-1 min-h-[40px] px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all ${
+              activeTab === "guide"
+                ? "bg-card text-foreground shadow-xs border border-border/60"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <HelpCircle className="h-4 w-4 text-primary" />
+            <span>Hướng dẫn sử dụng</span>
+          </button>
+        )}
+
+        {isApiKeyProduct && (
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "api"}
+            onClick={() => setActiveTab("api")}
+            className={`flex-1 min-h-[40px] px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all ${
+              activeTab === "api"
+                ? "bg-card text-foreground shadow-xs border border-border/60"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Code2 className="h-4 w-4 text-primary" />
+            <span>Kết nối API</span>
+          </button>
+        )}
       </div>
 
-      {/* Tab 1: Tổng quan & Người mới */}
-      {activeTab === "overview" && (
-        <div
-          id="panel-overview"
-          role="tabpanel"
-          aria-labelledby="tab-overview"
-          className="space-y-6 sm:space-y-8 animate-in fade-in duration-200"
-        >
-          {/* Dedicated ChatGPT Plus Feature & Warranty Specification Card */}
-          {isChatGPT && (
-            <div className="space-y-6">
-              {/* Feature Highlights Grid */}
-              <div className="rounded-2xl border border-primary/20 bg-primary/5 p-6 sm:p-7 shadow-xs">
-                <div className="flex items-center gap-2 mb-3">
-                  <Bot className="h-5 w-5 text-primary" />
-                  <h3 className="text-base font-bold text-foreground">
-                    Sức mạnh AI thế hệ mới nhất của OpenAI được mở khóa
-                  </h3>
-                </div>
-                <p className="text-xs sm:text-sm text-muted-foreground mb-4">
-                  Tài khoản bản quyền kích hoạt đầy đủ 100% tính năng cao cấp của gói ChatGPT Plus (Không chia sẻ cookie, không giới hạn tính năng):
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                  <div className="p-3 rounded-xl bg-card border border-border shadow-2xs">
-                    <span className="text-[11px] font-bold text-primary block">GPT-6 &amp; GPT-5</span>
-                    <span className="text-[10px] text-muted-foreground">Mô hình Frontier hàng đầu</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-card border border-border shadow-2xs">
-                    <span className="text-[11px] font-bold text-primary block">OpenAI o3 &amp; o1</span>
-                    <span className="text-[10px] text-muted-foreground">Tư duy suy luận logic sâu</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-card border border-border shadow-2xs">
-                    <span className="text-[11px] font-bold text-primary block">GPT-4.5 High-EQ</span>
-                    <span className="text-[10px] text-muted-foreground">Cảm xúc &amp; văn phong tự nhiên</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-card border border-border shadow-2xs">
-                    <span className="text-[11px] font-bold text-primary block">DALL·E 3 HD</span>
-                    <span className="text-[10px] text-muted-foreground">Vẽ ảnh AI sắc nét không giới hạn</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-card border border-border shadow-2xs">
-                    <span className="text-[11px] font-bold text-primary block">Canvas Pro</span>
-                    <span className="text-[10px] text-muted-foreground">Soạn thảo code &amp; bài viết</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-card border border-border shadow-2xs">
-                    <span className="text-[11px] font-bold text-primary block">Advanced Voice</span>
-                    <span className="text-[10px] text-muted-foreground">Nói chuyện thời gian thực</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-card border border-border shadow-2xs">
-                    <span className="text-[11px] font-bold text-primary block">Phân tích File</span>
-                    <span className="text-[10px] text-muted-foreground">Đọc PDF, Excel, ảnh chụp</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-card border border-border shadow-2xs">
-                    <span className="text-[11px] font-bold text-primary block">GPT Store</span>
-                    <span className="text-[10px] text-muted-foreground">Hàng ngàn AI Custom Agents</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Strict Transparent Warranty Rules (Quy định bảo hành minh bạch) */}
-              <div className="rounded-2xl border border-border bg-card p-6 sm:p-7 shadow-xs">
-                <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
-                  <div className="flex items-center gap-2">
-                    <ShieldAlert className="h-5 w-5 text-amber-500" />
-                    <h3 className="text-base font-bold text-foreground">
-                      Chính sách bảo hành &amp; Quy định sử dụng (Minh bạch - Tránh mất lòng)
-                    </h3>
-                  </div>
-                  <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
-                    isChatGPTFree
-                      ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20"
-                      : isChatGPTBusiness || isChatGPTRealBHF
-                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-                      : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
-                  }`}>
-                    {isChatGPTFree
-                      ? "Bảo hành đăng nhập lần đầu (Login OK)"
-                      : isChatGPTBusiness
-                      ? "Bảo hành Full 30 Ngày 1 Đổi 1 (Workspace BHF)"
-                      : isChatGPTRealBHF
-                      ? "Bảo hành Full 30 Ngày 1 Đổi 1 (BHF)"
-                      : "Bảo hành đăng nhập 24H (Gói Tiết Kiệm)"}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
-                  {isChatGPTFree
-                    ? "Áp dụng chính sách bảo hành tài khoản sạch, đăng nhập thành công và đã kích hoạt sẵn số điện thoại quốc tế:"
-                    : isChatGPTBusiness
-                    ? "Áp dụng chính sách: Bảo hành trọn vẹn 30 ngày quyền thành viên trong Workspace Business dùng chung:"
-                    : isChatGPTRealBHF
-                    ? "Gói cao cấp cam kết bảo hành 1 đổi 1 hoặc cấp lại Plus trong suốt 30 ngày sử dụng nếu phát sinh lỗi kỹ thuật:"
-                    : "Gói giá rẻ tiết kiệm hơn 70% so với giá gốc, áp dụng chính sách: bảo hành đăng nhập & kiểm tra Plus chuẩn trong 24 giờ đầu:"}
-                </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Cột được bảo hành */}
-                  <div className="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 dark:bg-emerald-950/20 space-y-3">
-                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-xs sm:text-sm">
-                      <CheckCircle2 className="h-4 w-4 shrink-0" />
-                      <span>
-                        {isChatGPTFree
-                          ? "ĐƯỢC BẢO HÀNH (KHI NHẬN HÀNG)"
-                          : isChatGPTBusiness || isChatGPTRealBHF
-                          ? "ĐƯỢC BẢO HÀNH (1 ĐỔI 1 SUỐT 30 NGÀY)"
-                          : "ĐƯỢC BẢO HÀNH (TRONG 24H ĐẦU)"}
-                      </span>
-                    </div>
-                    <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside leading-relaxed">
-                      {isChatGPTFree ? (
-                        <>
-                          <li>Tài khoản đăng nhập thành công lần đầu tại chatgpt.com.</li>
-                          <li>Tài khoản đã được xác minh số điện thoại quốc tế (SMS Verified) sẵn sàng sử dụng.</li>
-                          <li>Tạo được API Key và trích xuất Session Token cho Cursor, VS Code, Codex mà không bị hỏi SĐT.</li>
-                          <li>Trong vòng 24 giờ đầu nếu sai mật khẩu hoặc lỗi xác thực &rarr; 1 ĐỔI 1 MỚI NGAY LẬP TỨC.</li>
-                        </>
-                      ) : isChatGPTBusiness ? (
-                        <>
-                          <li>Quyền thành viên Workspace Business liên tục trong suốt 30 ngày.</li>
-                          <li>Tài khoản sử dụng trọn vẹn GPT-4o, o3-mini, Canvas, tạo ảnh DALL-E với hạn mức cao.</li>
-                          <li>Lịch sử chat và dữ liệu cá nhân hoàn toàn riêng tư trong tài khoản của bạn.</li>
-                          <li>Hỗ trợ đổi mới hoặc cấp lại slot nhanh chóng trong 15 - 30 phút nếu Workspace gặp trục trặc kỹ thuật.</li>
-                        </>
-                      ) : isChatGPTRealBHF ? (
-                        <>
-                          <li>Tài khoản bị mất gói Plus, lỗi subscription do lỗi từ OpenAI hoặc hệ thống trong suốt 30 ngày.</li>
-                          <li>Tài khoản không đăng nhập được ngay từ đầu do sai lệch thông tin mật khẩu.</li>
-                          <li>Được phép thay đổi mật khẩu cá nhân để bảo mật tối đa.</li>
-                          <li>Hỗ trợ đổi mới hoặc cấp lại Plus nhanh chóng trong 15 - 30 phút (tối đa 24h).</li>
-                          <li>Trường hợp tạm thời hết tài khoản đổi, hệ thống hoàn tiền theo tỷ lệ số ngày còn lại chưa sử dụng.</li>
-                        </>
-                      ) : (
-                        <>
-                          <li>Cam kết tài khoản có tích xanh Plus chuẩn 100%, đăng nhập thành công tại chatgpt.com.</li>
-                          <li>Trong vòng 24 giờ đầu nếu sai pass hoặc không có gói Plus &rarr; 1 ĐỔI 1 MỚI NGAY LẬP TỨC.</li>
-                          <li>Hỗ trợ kiểm tra tài khoản và hướng dẫn đăng nhập trực tuyến 24/7.</li>
-                        </>
-                      )}
-                    </ul>
-                  </div>
-
-                  {/* Cột từ chối bảo hành / Hết hạn */}
-                  <div className="p-4 rounded-xl border border-destructive/20 bg-destructive/5 dark:bg-destructive/10 space-y-3">
-                    <div className="flex items-center gap-2 text-destructive font-bold text-xs sm:text-sm">
-                      <XCircle className="h-4 w-4 shrink-0" />
-                      <span>
-                        {isChatGPTFree
-                          ? "TỪ CHỐI BẢO HÀNH (SAU KHI LOGIN)"
-                          : isChatGPTBusiness || isChatGPTRealBHF
-                          ? "TỪ CHỐI BẢO HÀNH (CÁC TRƯỜNG HỢP VI PHẠM)"
-                          : "TỪ CHỐI & QUY ĐỊNH SAU 24H"}
-                      </span>
-                    </div>
-                    <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside leading-relaxed">
-                      {isChatGPTFree ? (
-                        <>
-                          <li><strong>Lưu ý quan trọng:</strong> Đây là tài khoản Free đã kích hoạt SĐT, KHÔNG PHẢI gói trả phí Plus.</li>
-                          <li>Khách hàng tự ý thay đổi Email tài khoản được cấp.</li>
-                          <li>Sau khi đã bàn giao đăng nhập thành công: Không bảo hành trường hợp khách hàng vi phạm chính sách của OpenAI dẫn đến checkpoint hoặc khóa nick.</li>
-                        </>
-                      ) : isChatGPTBusiness ? (
-                        <>
-                          <li>Khách hàng tự ý can thiệp cài đặt quản trị (Workspace Settings) hoặc phần Thanh toán (Billing).</li>
-                          <li>Khách hàng tự ý bấm "Leave Workspace" (Rời khỏi không gian làm việc).</li>
-                          <li>Khách hàng tự ý thay đổi email tài khoản được cấp.</li>
-                          <li>Vi phạm chính sách nội dung của OpenAI khiến tài khoản bị khóa vĩnh viễn.</li>
-                        </>
-                      ) : isChatGPTRealBHF ? (
-                        <>
-                          <li>Khách hàng tự ý thay đổi Email tài khoản được cấp.</li>
-                          <li>Khách hàng <strong>XÓA 2FA</strong> của tài khoản (Quy định bắt buộc: Không được xóa 2FA, chỉ được đổi mã 2FA).</li>
-                          <li>Khách hàng tự ý bấm hủy gói (Cancel Subscription) hoặc can thiệp thông tin Billing trong Cài đặt OpenAI.</li>
-                          <li>Vi phạm chính sách nội dung của OpenAI: Sử dụng prompt độc hại, tạo nội dung NSFW/18+, bạo lực, spam bot quá tải khiến OpenAI khóa vĩnh viễn.</li>
-                          <li>Chia sẻ tài khoản tràn lan cho nhiều người, đổi quá nhiều địa chỉ IP lạ cùng lúc.</li>
-                        </>
-                      ) : (
-                        <>
-                          <li><strong>Sau 24 giờ:</strong> Hết thời hạn bảo hành đăng nhập (không bảo hành tụt Plus hoặc đợt quét tài khoản từ OpenAI sau 24h).</li>
-                          <li>Khách hàng tự ý thay đổi Email tài khoản được cấp.</li>
-                          <li>Khách hàng <strong>XÓA 2FA</strong> (Chỉ được đổi 2FA qua 2fa.live, xóa 2FA sẽ từ chối bảo hành).</li>
-                          <li>Khách hàng sử dụng Codex phải tự xác minh SMS.</li>
-                        </>
-                      )}
-                    </ul>
-                  </div>
-                </div>
-
-                {isChatGPTReal24H && (
-                  <div className="mt-4 p-3 rounded-xl bg-primary/10 border border-primary/20 flex items-start gap-2.5 text-xs text-foreground">
-                    <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                    <span>
-                      <strong>Bạn cần sự an tâm và bảo hành suốt 30 ngày?</strong> Quý khách có thể chọn{" "}
-                      <Link href="/products/chatgpt-plus-1-thang-bhf" className="font-bold text-primary underline hover:text-primary/80">
-                        Gói ChatGPT Plus 1 Tháng Riêng Tư - BHF (Bảo Hành Full 30 Ngày)
-                      </Link>{" "}
-                      để được cam kết 1 đổi 1 trong suốt 30 ngày làm việc.
-                    </span>
-                  </div>
-                )}
-
-                <div className="mt-3 p-3 rounded-xl bg-secondary/50 border border-border flex items-start gap-2.5 text-xs text-muted-foreground">
-                  <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-                  <span>
-                    <strong className="text-foreground">Khuyến nghị sử dụng:</strong> {isChatGPTFree ? "Đăng nhập trên trình duyệt web hoặc công cụ lập trình, không chia sẻ công khai." : "Quý khách nên đăng nhập trên 1-2 thiết bị cá nhân (trình duyệt web hoặc ứng dụng ChatGPT chính thức) và không chia sẻ công khai để tài khoản luôn hoạt động mượt mà và ổn định nhất."}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* CapCut Strict 1-Device Policy */}
-          {isCapCut && (
-            <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 dark:bg-amber-950/10 p-5 sm:p-6 shadow-xs space-y-3">
-              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-bold text-sm">
-                <AlertTriangle className="h-4 w-4 shrink-0" />
-                <span>QUY ĐỊNH BẮT BUỘC KHI SỬ DỤNG CAPCUT PRO (ĐỌC KỸ TRƯỚC KHI DÙNG)</span>
-              </div>
-              <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside leading-relaxed">
-                <li><strong>Chỉ đăng nhập trên 1 thiết bị duy nhất:</strong> Tuyệt đối không đăng nhập máy thứ 2 (kể cả chuyển từ điện thoại sang máy tính).</li>
-                <li><strong>Tuyệt đối KHÔNG ĐĂNG XUẤT (Logout):</strong> Đăng xuất sẽ làm mất quyền Pro của tài khoản.</li>
-                <li><strong>Tuyệt đối KHÔNG XÓA APP:</strong> Xóa ứng dụng và cài lại sẽ được tính là thiết bị mới, hệ thống sẽ từ chối bảo hành.</li>
-                <li><strong>Chính sách bảo hành:</strong> Cam kết bảo hành 1 đổi 1 trong suốt {isCapCut7D ? "7 ngày" : "30 ngày"} nếu tài khoản tuân thủ đúng các quy định trên mà bị mất Pro.</li>
-              </ul>
-            </div>
-          )}
-
-          {/* YouTube Family Technical Notice */}
-          {(slugLower.includes("youtube") || titleLower.includes("youtube")) && (
-            <div className="rounded-2xl border border-red-500/20 bg-red-500/5 dark:bg-red-950/10 p-5 sm:p-6 shadow-xs space-y-3">
-              <div className="flex items-center gap-2 text-red-600 dark:text-red-400 font-bold text-sm">
-                <Play className="h-4 w-4 shrink-0 fill-current" />
-                <span>QUY TRÌNH GIA HẠN YOUTUBE PREMIUM CHÍNH CHỦ (AN TÂM 100%)</span>
-              </div>
-              <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside leading-relaxed">
-                <li><strong>Không cần mật khẩu:</strong> Tuyệt đối bảo mật, shop KHÔNG yêu cầu mật khẩu Gmail hay bất kỳ thông tin nhạy cảm nào. Bạn chỉ cần cung cấp địa chỉ Gmail nhận thư mời.</li>
-                <li><strong>Cách thức kích hoạt:</strong> Sau khi thanh toán, Admin sẽ gửi lời mời tham gia nhóm Google Family vào Gmail của bạn. Bạn mở hòm thư Gmail và bấm nút <em>&quot;Chấp nhận lời mời&quot; (Accept Invitation)</em> là YouTube lập tức chuyển thành Premium.</li>
-                <li><strong>Đặc quyền YouTube Premium:</strong> Xem video 100% không quảng cáo trên mọi thiết bị (Smart TV, máy tính, iPhone, Android), tải video xem ngoại tuyến (offline) và chạy nền khi tắt màn hình.</li>
-                <li><strong>Bao gồm trọn gói YouTube Music:</strong> Mở khóa kho nhạc bản quyền hàng triệu bài hát, nghe nhạc tắt màn hình mượt mà, chất lượng âm thanh 256kbps cao nhất.</li>
-                <li><strong>Quy định Google:</strong> Gmail của quý khách trong vòng 12 tháng qua chưa đổi nhóm gia đình Google quá 1 lần (đây là chính sách chung của Google).</li>
-                <li><strong>Chính sách bảo hành:</strong> Bảo hành 1-đổi-1 trọn thời hạn gói. Nếu nhóm gia đình gặp bất kỳ sự cố nào, shop hỗ trợ add lại nhóm mới hoặc hoàn tiền theo tỷ lệ thời gian còn lại.</li>
-              </ul>
-            </div>
-          )}
-
-          {/* Gemini Family Account Technical Notice */}
-          {slugLower.includes("gemini") && (slugLower.includes("chu-family") || slugLower.includes("family")) && !slugLower.includes("slot") && (
-            <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 dark:bg-amber-950/10 p-5 sm:p-6 shadow-xs space-y-3">
-              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-bold text-sm">
-                <AlertTriangle className="h-4 w-4 shrink-0" />
-                <span>LƯU Ý KỸ THUẬT &amp; QUYỀN LỢI TÀI KHOẢN CHỦ FAMILY</span>
-              </div>
-              <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside leading-relaxed">
-                <li><strong>Định dạng bàn giao:</strong> Gmail | Mật khẩu | Mã 2FA | Email khôi phục. Cấp sẵn tài khoản riêng biệt để đăng nhập sử dụng ngay.</li>
-                <li><strong>Hạn chế nhận thư bên ngoài:</strong> Hộp thư đến của Gmail này bị hạn chế nhận thư/OTP từ bên ngoài. Tài khoản chuyên dụng đăng nhập và vận hành các dịch vụ Google (Gemini Pro, Drive 5TB, AI Studio, Antigravity, NotebookLM). Khuyến cáo không dùng để đăng ký MXH hoặc nhận OTP ngoài.</li>
-                <li><strong>Quyền hạn Chủ nhóm Family:</strong> Bạn là Chủ gia đình (Family Manager), toàn quyền mời tối đa 5 tài khoản Gmail cá nhân khác của bạn hoặc người thân vào nhóm để cùng chia sẻ 5TB dung lượng và đặc quyền AI.</li>
-                <li><strong>Mô hình AI hỗ trợ:</strong> Sử dụng mượt mà Gemini 4 Argon, Gemini 3.8 Flash, Neon 4, Claude Opus 5.5, Sonnet 5.5, Hydrogen trong Google Antigravity &amp; AI Studio.</li>
-                <li><strong>Chính sách bảo hành:</strong> Bảo hành 1 tuần (7 ngày) 1 đổi 1 chu đáo nếu phát sinh lỗi đăng nhập hoặc mất quyền lợi Pro.</li>
-              </ul>
-            </div>
-          )}
-
-          {/* Gemini Slot Technical Notice */}
-          {slugLower.includes("gemini") && slugLower.includes("slot") && (
-            <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 dark:bg-blue-950/10 p-5 sm:p-6 shadow-xs space-y-3">
-              <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-sm">
-                <Sparkles className="h-4 w-4 shrink-0" />
-                <span>HƯỚNG DẪN KÍCH HOẠT NÂNG MAIL CHÍNH CHỦ (15 - 60 PHÚT)</span>
-              </div>
-              <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside leading-relaxed">
-                <li><strong>Quy trình cấp tự động 24/7:</strong> Sau khi thanh toán thành công, hệ thống tự động cấp link kích hoạt tức thì. Quý khách chỉ cần mở link và nhập địa chỉ Gmail chính chủ cần nâng cấp.</li>
-                <li><strong>Thời gian xử lý:</strong> Đơn hàng được kích hoạt và lời mời gia nhập nhóm Family Google One 5TB gửi về hòm thư Gmail của bạn trong vòng 15 đến 60 phút.</li>
-                <li><strong>Trọn bộ đặc quyền cao cấp:</strong> Mở khóa Gemini Pro, mô hình Gemini 4 Argon &amp; Gemini 3.8 Flash, NotebookLM, tặng kèm 1.000 Credit tạo video Google Veo 3 và 5.000GB (5TB) dung lượng Google One trong 1 năm.</li>
-                <li><strong>Chính sách bảo hành:</strong> Bảo hành 3 tháng 1 đổi 1 chu đáo, cam kết hỗ trợ add lại nhóm trong suốt thời hạn nếu có sự cố kỹ thuật.</li>
-              </ul>
-            </div>
-          )}
-
-          {/* Product Description */}
-          <div className="rounded-2xl border border-border bg-card p-6 sm:p-7 shadow-xs">
-            <h2 className="text-base font-bold text-foreground mb-3 flex items-center gap-2">
-              <BookOpen className="h-4 w-4 text-primary" />
-              <span>Mô tả chi tiết sản phẩm</span>
+      {/* TAB 1: Chi tiết & Lưu ý */}
+      {activeTab === "info" && (
+        <div className="space-y-4 animate-in fade-in duration-150">
+          {/* 1. Main Product Description (Single Clean Card) */}
+          <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+            <h2 className="text-sm font-bold text-foreground mb-3">
+              Thông tin gói dịch vụ
             </h2>
-            <div className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line font-normal">
+            <div className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
               {product.description}
             </div>
           </div>
 
-          {/* 3-Step Visual Onboarding Walkthrough */}
-          <div className="rounded-2xl border border-border bg-card p-6 sm:p-7 shadow-xs">
-            <h2 className="text-base font-bold text-foreground mb-4 flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-accent" />
-              <span>Quy trình kích hoạt 3 bước đơn giản</span>
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 rounded-xl border border-border bg-secondary/40 relative">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground font-mono font-bold text-sm mb-3">
-                  1
-                </span>
-                <h3 className="text-sm font-bold text-foreground mb-1">
-                  Quét VietQR tự động 24/7
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Quét mã QR qua ứng dụng ngân hàng bất kỳ. Lệnh thanh toán khớp tức thì dưới 5 giây.
-                </p>
+          {/* 2. Product-Specific Crucial Rule (Only shown if the product has strict rules) */}
+          {isCapCut && (
+            <div className="rounded-2xl border border-amber-500/25 bg-amber-500/5 p-4 sm:p-5 space-y-2">
+              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-bold text-xs sm:text-sm">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                <span>Lưu ý quan trọng khi dùng CapCut Pro ({isCapCut7D ? "7 ngày" : "30 ngày"})</span>
               </div>
-
-              <div className="p-4 rounded-xl border border-border bg-secondary/40 relative">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground font-mono font-bold text-sm mb-3">
-                  2
-                </span>
-                <h3 className="text-sm font-bold text-foreground mb-1">
-                  Nhận mã &amp; Kích hoạt
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Hệ thống bàn giao Key / Tài khoản kèm hướng dẫn tiếng Việt 1-Click trên màn hình đơn hàng.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-xl border border-border bg-secondary/40 relative">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent text-accent-foreground font-mono font-bold text-sm mb-3">
-                  3
-                </span>
-                <h3 className="text-sm font-bold text-foreground mb-1">
-                  Đồng hành &amp; Bảo hành 1:1
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Bảo hành 1 đổi 1 theo đúng chính sách niêm yết của gói. Kỹ thuật viên hỗ trợ Zalo &amp; Telegram 24/7.
-                </p>
-              </div>
+              <ul className="text-xs sm:text-sm text-muted-foreground space-y-1.5 list-disc list-inside">
+                <li>Chỉ đăng nhập trên <strong>1 thiết bị duy nhất</strong>.</li>
+                <li>Không bấm đăng xuất (Logout) và không xóa ứng dụng trong thời gian sử dụng.</li>
+                <li>Bảo hành 1 đổi 1 suốt thời hạn nếu mất Pro khi dùng đúng quy định trên.</li>
+              </ul>
             </div>
-          </div>
+          )}
 
-          {/* 4-Pillar Transparent Warranty Card */}
-          <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6 sm:p-7 shadow-xs">
-            <h2 className="text-base font-bold text-foreground mb-4 flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-accent" />
-              <span>4 Cam kết dịch vụ &amp; Trách nhiệm chuẩn mực KhoDEE</span>
-            </h2>
+          {isChatGPT && (
+            <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-primary" />
+                  <span>Quy định bảo hành gói này</span>
+                </h3>
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary">
+                  {isChatGPTFree
+                    ? "Bảo hành đăng nhập 24H"
+                    : isChatGPTBusiness || isChatGPTRealBHF
+                    ? "Bảo hành 1 đổi 1 suốt 30 ngày"
+                    : "Bảo hành đăng nhập 24H (Gói tiết kiệm)"}
+                </span>
+              </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="flex items-start gap-3">
-                <div className="h-8 w-8 rounded-lg bg-accent/15 border border-accent/30 flex items-center justify-center text-accent shrink-0">
-                  <ShieldCheck className="h-4 w-4" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="p-3.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 space-y-1.5">
+                  <div className="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    <span>Được đổi mới 1-1</span>
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {isChatGPTFree
+                      ? "Tài khoản sai mật khẩu hoặc chưa xác minh SĐT quốc tế trong 24h đầu."
+                      : isChatGPTBusiness || isChatGPTRealBHF
+                      ? "Tài khoản mất Plus / lỗi Workspace hoặc không đăng nhập được trong suốt 30 ngày."
+                      : "Tài khoản sai mật khẩu hoặc chưa có Plus trong 24 giờ đầu kể từ lúc nhận."}
+                  </p>
                 </div>
-                <div>
-                  <h4 className="text-xs sm:text-sm font-bold text-foreground">{warrantyCommitment.title}</h4>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {warrantyCommitment.desc}
+
+                <div className="p-3.5 rounded-xl border border-destructive/20 bg-destructive/5 space-y-1.5">
+                  <div className="font-bold text-destructive flex items-center gap-1.5">
+                    <XCircle className="h-3.5 w-3.5" />
+                    <span>Không áp dụng bảo hành</span>
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {isChatGPTBusiness
+                      ? "Tự ý rời Workspace (Leave Workspace), đổi email hoặc can thiệp cài đặt thanh toán."
+                      : "Tự ý xóa mã bảo mật 2FA, đổi email gốc, hủy gói hoặc vi phạm chính sách OpenAI."}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
-                <div className="h-8 w-8 rounded-lg bg-accent/15 border border-accent/30 flex items-center justify-center text-accent shrink-0">
-                  <Zap className="h-4 w-4" />
-                </div>
-                <div>
-                  <h4 className="text-xs sm:text-sm font-bold text-foreground">Bàn giao tự động 24/7</h4>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Hệ thống cấp phát tức thì qua giao diện web và email xác nhận, không cần đợi duyệt thủ công.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="h-8 w-8 rounded-lg bg-accent/15 border border-accent/30 flex items-center justify-center text-accent shrink-0">
-                  <CheckCircle2 className="h-4 w-4" />
-                </div>
-                <div>
-                  <h4 className="text-xs sm:text-sm font-bold text-foreground">Chính hãng &amp; Không phí ẩn</h4>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Giá niêm yết là giá thanh toán cuối cùng. Không phát sinh phí duy trì hay phụ thu tài nguyên.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="h-8 w-8 rounded-lg bg-accent/15 border border-accent/30 flex items-center justify-center text-accent shrink-0">
-                  <Headphones className="h-4 w-4" />
-                </div>
-                <div>
-                  <h4 className="text-xs sm:text-sm font-bold text-foreground">Kỹ thuật viên đồng hành</h4>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Đội ngũ hỗ trợ trực tuyến qua Zalo và Telegram giải đáp nhanh mọi thắc mắc trong 15 phút.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Guide Steps (if present) */}
-          {guide && guide.steps && guide.steps.length > 0 && (
-            <div className="rounded-2xl border border-border bg-card p-6 sm:p-7 shadow-xs">
-              <h2 className="text-base font-bold text-foreground mb-4 flex items-center gap-2">
-                <HelpCircle className="h-4 w-4 text-accent" />
-                <span>{guide.title}</span>
-              </h2>
-
-              <div className="space-y-4">
-                {guide.steps.map((stepItem, idx) => {
-                  const isObj = typeof stepItem === "object" && stepItem !== null;
-                  const text = isObj ? stepItem.text : String(stepItem);
-                  const image = isObj ? stepItem.image : undefined;
-                  const caption = isObj ? stepItem.caption : undefined;
-
-                  return (
-                    <div key={idx} className="space-y-2">
-                      <div className="flex items-start gap-3">
-                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-primary/10 border border-primary/20 text-primary font-mono font-bold text-xs mt-0.5">
-                          {idx + 1}
-                        </span>
-                        <div className="text-sm text-foreground leading-relaxed pt-0.5">
-                          {text}
-                        </div>
-                      </div>
-
-                      {image && (
-                        <div className="ml-8 mt-2">
-                          <img
-                            src={image}
-                            alt={caption || `Bước ${idx + 1}`}
-                            className="rounded-xl border border-border max-w-md w-full object-cover"
-                          />
-                          {caption && (
-                            <p className="mt-1 text-xs text-muted-foreground italic">{caption}</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {guide.note && (
-                <div className="mt-5 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs text-amber-700 dark:text-amber-300 flex items-start gap-2.5">
-                  <span className="font-bold shrink-0">Lưu ý:</span>
-                  <span className="leading-relaxed">{guide.note}</span>
-                </div>
+              {isChatGPTReal24H && (
+                <p className="text-xs text-muted-foreground pt-1">
+                  Cần bảo hành trọn 30 ngày? Xem{" "}
+                  <Link href="/products/chatgpt-plus-1-thang-bhf" className="text-primary font-semibold hover:underline">
+                    Gói ChatGPT Plus Bảo Hành Full 30 Ngày
+                  </Link>
+                  .
+                </p>
               )}
             </div>
           )}
 
-          {/* Beginner FAQs */}
-          <div className="rounded-2xl border border-border bg-card p-6 sm:p-7 shadow-xs space-y-4">
-            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-              <HelpCircle className="h-4 w-4 text-primary" />
-              <span>Câu hỏi thường gặp</span>
-            </h2>
-
-            <div className="space-y-3">
-              <div className="p-3.5 rounded-xl bg-secondary/40 border border-border">
-                <h4 className="text-xs sm:text-sm font-bold text-foreground">
-                  Sau khi thanh toán xong tôi nhận hàng ở đâu?
-                </h4>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  Ngay khi giao dịch VietQR hoàn tất, màn hình đơn hàng sẽ tự động hiển thị thông tin tài khoản / Key bản quyền cùng nút sao chép 1-Click và file tải về `.txt`. Bạn cũng có thể tra cứu lại bất cứ lúc nào qua mục Tra cứu đơn hàng.
-                </p>
+          {/* Shortcut button to Guide tab if guide steps exist */}
+          {hasGuideSteps && (
+            <div className="rounded-xl border border-border bg-secondary/30 p-4 flex items-center justify-between gap-3">
+              <div className="text-xs sm:text-sm text-foreground">
+                <span className="font-semibold">Lần đầu sử dụng?</span>{" "}
+                <span className="text-muted-foreground">Xem hướng dẫn từng bước kèm ảnh minh họa.</span>
               </div>
-
-              <div className="p-3.5 rounded-xl bg-secondary/40 border border-border">
-                <h4 className="text-xs sm:text-sm font-bold text-foreground">
-                  Tôi có cần tài khoản đăng ký trước để mua không?
-                </h4>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  Không cần thiết. Bạn có thể mua hàng dưới dạng khách (Guest). Hệ thống chỉ cần mã đơn hàng để bạn bảo hành và tra cứu trực tiếp 24/7.
-                </p>
-              </div>
+              <button
+                type="button"
+                onClick={() => setActiveTab("guide")}
+                className="shrink-0 rounded-lg bg-card hover:bg-secondary border border-border px-3 py-2 text-xs font-semibold text-primary transition-colors"
+              >
+                Mở hướng dẫn →
+              </button>
             </div>
-          </div>
+          )}
         </div>
       )}
 
-      {/* Tab 2: Thông số kỹ thuật & Developer */}
-      {activeTab === "technical" && (
-        <div
-          id="panel-technical"
-          role="tabpanel"
-          aria-labelledby="tab-technical"
-          className="space-y-6 sm:space-y-8 animate-in fade-in duration-200"
-        >
-          {/* ModelAPI Gateway Architecture Overview */}
-          <div className="rounded-2xl border border-border bg-card p-6 sm:p-7 shadow-xs space-y-4">
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-                <Cpu className="h-4 w-4 text-primary" />
-                <span>ModelAPI Gateway Architecture</span>
-              </h2>
-              <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-accent/15 border border-accent/30 text-accent font-semibold">
-                REST &amp; SSE Streaming 24/7
-              </span>
+      {/* TAB 2: Hướng dẫn sử dụng từng bước */}
+      {activeTab === "guide" && hasGuideSteps && guide && (
+        <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 space-y-5 animate-in fade-in duration-150">
+          <h2 className="text-sm sm:text-base font-bold text-foreground">
+            {guide.title}
+          </h2>
+
+          <div className="space-y-4">
+            {guide.steps?.map((stepItem, idx) => {
+              const isObj = typeof stepItem === "object" && stepItem !== null;
+              const text = isObj ? stepItem.text : String(stepItem);
+              const image = isObj ? stepItem.image : undefined;
+              const caption = isObj ? stepItem.caption : undefined;
+
+              return (
+                <div key={idx} className="space-y-2.5">
+                  <div className="flex items-start gap-3">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-mono font-bold text-xs mt-0.5">
+                      {idx + 1}
+                    </span>
+                    <div className="text-sm text-foreground leading-relaxed pt-0.5">
+                      {text}
+                    </div>
+                  </div>
+
+                  {image && (
+                    <div className="ml-9">
+                      <img
+                        src={image}
+                        alt={caption || `Bước ${idx + 1}`}
+                        className="rounded-xl border border-border max-w-md w-full object-cover"
+                      />
+                      {caption && (
+                        <p className="mt-1 text-xs text-muted-foreground">{caption}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {guide.note && (
+            <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-3.5 text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
+              <strong className="font-semibold">Lưu ý: </strong>
+              {guide.note}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 3: Kết nối API (Chỉ hiển thị cho sản phẩm API Key) */}
+      {activeTab === "api" && isApiKeyProduct && (
+        <div className="space-y-4 animate-in fade-in duration-150">
+          {/* Quick Endpoint Info */}
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-sm font-bold text-foreground">
+                Thông số kết nối nhanh (OpenAI Compatible)
+              </h3>
+              {isCodex && (
+                <Link
+                  href="/huong-dan/codex"
+                  target="_blank"
+                  className="text-xs text-primary hover:underline inline-flex items-center gap-1 font-semibold"
+                >
+                  <span>Tài liệu đầy đủ</span>
+                  <ExternalLink className="h-3 w-3" />
+                </Link>
+              )}
+              {isClaude && (
+                <Link
+                  href="/huong-dan/api-claude"
+                  target="_blank"
+                  className="text-xs text-primary hover:underline inline-flex items-center gap-1 font-semibold"
+                >
+                  <span>Hướng dẫn 5 nền tảng</span>
+                  <ExternalLink className="h-3 w-3" />
+                </Link>
+              )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="p-3.5 rounded-xl bg-secondary/50 border border-border space-y-1">
-                <span className="text-muted-foreground font-medium uppercase text-[10px] tracking-wider block">
-                  Base API Endpoint
-                </span>
-                <div className="flex items-center justify-between gap-2">
-                  <code className="font-mono text-foreground font-bold truncate">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+              <div className="p-3 rounded-xl bg-secondary/50 border border-border flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <span className="text-muted-foreground block text-xs">Base URL</span>
+                  <code className="font-mono text-foreground font-bold truncate block">
                     https://daitruongstore.fly.dev/v1
                   </code>
-                  <button
-                    type="button"
-                    onClick={() => handleCopy("base-url", "https://daitruongstore.fly.dev/v1")}
-                    className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground shrink-0 min-h-[36px] min-w-[36px] flex items-center justify-center"
-                    title="Sao chép Base URL"
-                  >
-                    {copiedSnippet === "base-url" ? (
-                      <Check className="h-3.5 w-3.5 text-accent" />
-                    ) : (
-                      <Copy className="h-3.5 w-3.5" />
-                    )}
-                  </button>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => handleCopy("base-url", "https://daitruongstore.fly.dev/v1")}
+                  className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground shrink-0"
+                  title="Sao chép Base URL"
+                >
+                  {copiedSnippet === "base-url" ? (
+                    <Check className="h-4 w-4 text-emerald-500" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </button>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-secondary/50 border border-border space-y-1">
-                <span className="text-muted-foreground font-medium uppercase text-[10px] tracking-wider block">
-                  Header Xác Thực
-                </span>
-                <code className="font-mono text-foreground font-bold block truncate">
-                  Authorization: Bearer sk-...
+              <div className="p-3 rounded-xl bg-secondary/50 border border-border">
+                <span className="text-muted-foreground block text-xs">Authorization Header</span>
+                <code className="font-mono text-foreground font-bold truncate block">
+                  Bearer sk-your-api-key
                 </code>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-secondary/50 border border-border space-y-1">
-                <span className="text-muted-foreground font-medium uppercase text-[10px] tracking-wider block">
-                  Định dạng Key
-                </span>
-                <code className="font-mono text-foreground font-bold block truncate">
-                  sk-... (10+ ký tự bảo mật)
-                </code>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-secondary/50 border border-border space-y-1">
-                <span className="text-muted-foreground font-medium uppercase text-[10px] tracking-wider block">
-                  Tương thích SDK
-                </span>
-                <p className="text-foreground font-bold">
-                  OpenAI SDK, Anthropic SDK, Cursor IDE, Claude Code CLI
-                </p>
               </div>
             </div>
           </div>
 
-          {/* Frontier AI Models Registry Reference */}
-          <div className="rounded-2xl border border-border bg-card p-6 sm:p-7 shadow-xs space-y-4">
-            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-              <Terminal className="h-4 w-4 text-accent" />
-              <span>Frontier AI Models Supported (Single Source of Truth)</span>
-            </h2>
-
-            <div className="overflow-x-auto no-scrollbar">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-border text-muted-foreground">
-                    <th className="pb-2.5 font-semibold">Nhà phát triển</th>
-                    <th className="pb-2.5 font-semibold">Thế hệ Model Flagship</th>
-                    <th className="pb-2.5 font-semibold">Tính năng nổi bật</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {[
-                    {
-                      provider: AI_FRONTIER_MODELS.gemini.provider,
-                      generation: "Gemini 4 Argon",
-                      features: `${AI_FRONTIER_MODELS.gemini.flagshipModels[0]} & Gemini 3.8/3.5 Flash`,
-                    },
-                    {
-                      provider: AI_FRONTIER_MODELS.claude.provider,
-                      generation: "Claude 5.5 & 5.6",
-                      features: `${AI_FRONTIER_MODELS.claude.flagshipModels[0]}, ${AI_FRONTIER_MODELS.claude.flagshipModels[1]} & Claude Code CLI`,
-                    },
-                    {
-                      provider: AI_FRONTIER_MODELS.openai.provider,
-                      generation: "GPT-6 series & o3",
-                      features: `${AI_FRONTIER_MODELS.openai.flagshipModels[0]}, ${AI_FRONTIER_MODELS.openai.flagshipModels[1]}`,
-                    },
-                  ].map((row) => (
-                    <tr key={row.provider}>
-                      <td className="py-2.5 font-bold text-foreground">{row.provider}</td>
-                      <td className="py-2.5 font-mono text-primary font-bold">{row.generation}</td>
-                      <td className="py-2.5 text-muted-foreground">{row.features}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Multi-Language Code Snippets with 1-Click Copy */}
-          <div className="rounded-2xl border border-border bg-card p-6 sm:p-7 shadow-xs space-y-4">
+          {/* Code Example */}
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-                <Code2 className="h-4 w-4 text-primary" />
-                <span>Code mẫu tích hợp API Gateway</span>
-              </h2>
-
-              <div className="flex items-center gap-1.5 p-1 rounded-xl bg-secondary border border-border text-xs">
+              <span className="text-sm font-bold text-foreground">Code mẫu gọi API</span>
+              <div className="flex items-center gap-1 p-1 rounded-lg bg-secondary border border-border text-xs">
                 {(["curl", "python", "typescript"] as const).map((lang) => (
                   <button
                     key={lang}
                     type="button"
                     onClick={() => setActiveSnippetLang(lang)}
-                    className={`px-3 py-1 rounded-lg font-mono font-semibold transition-all ${
+                    className={`px-2.5 py-1 rounded-md font-mono font-semibold transition-all ${
                       activeSnippetLang === lang
-                        ? "bg-primary text-primary-foreground shadow-xs"
+                        ? "bg-card text-foreground shadow-2xs"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
@@ -867,76 +409,32 @@ main();`,
             </div>
 
             <div className="relative rounded-xl border border-border bg-slate-950 p-4 font-mono text-xs text-slate-100 overflow-x-auto">
-              <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[11px] text-slate-400">
-                <span>{activeSnippetLang === "curl" ? "Terminal (cURL)" : activeSnippetLang === "python" ? "main.py" : "client.ts"}</span>
-                <button
-                  type="button"
-                  onClick={() => handleCopy(`snippet-${activeSnippetLang}`, codeSnippets[activeSnippetLang])}
-                  className="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors"
-                >
-                  {copiedSnippet === `snippet-${activeSnippetLang}` ? (
-                    <>
-                      <Check className="h-3 w-3 text-emerald-400" />
-                      <span className="text-emerald-400">Đã sao chép</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3 w-3" />
-                      <span>Sao chép code</span>
-                    </>
-                  )}
-                </button>
-              </div>
-              <pre className="whitespace-pre overflow-x-auto leading-relaxed">
+              <button
+                type="button"
+                onClick={() => handleCopy(`snippet-${activeSnippetLang}`, codeSnippets[activeSnippetLang])}
+                className="absolute right-3 top-3 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors text-xs"
+              >
+                {copiedSnippet === `snippet-${activeSnippetLang}` ? (
+                  <>
+                    <Check className="h-3.5 w-3.5 text-emerald-400" />
+                    <span className="text-emerald-400">Đã chép</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3.5 w-3.5" />
+                    <span>Sao chép</span>
+                  </>
+                )}
+              </button>
+              <pre className="whitespace-pre overflow-x-auto leading-relaxed pt-1">
                 <code>{codeSnippets[activeSnippetLang]}</code>
               </pre>
             </div>
           </div>
 
-          {/* Embedded Specialized Guides */}
           {isCodex && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                  <Terminal className="h-4 w-4 text-accent" />
-                  <span>Codex API Guide Hub</span>
-                </h3>
-                <Link
-                  href="/huong-dan/codex"
-                  target="_blank"
-                  className="text-xs text-accent hover:underline inline-flex items-center gap-1 font-semibold"
-                >
-                  <span>Cẩm nang toàn diện</span>
-                  <ExternalLink className="h-3 w-3" />
-                </Link>
-              </div>
+            <div className="pt-1">
               <CodexApiGuideHub showKeyInput={false} />
-            </div>
-          )}
-
-          {isClaude && (
-            <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 text-primary shrink-0">
-                  <BookOpen className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="text-sm sm:text-base font-bold text-foreground">
-                    Hướng Dẫn Cấu Hình API Claude (5 Nền Tảng)
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                    Tích hợp chuẩn xác vào Cursor AI, Claude Code CLI, VS Code Cline, Open Design và OpenClaw.
-                  </p>
-                </div>
-              </div>
-              <Link
-                href="/huong-dan/api-claude"
-                target="_blank"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2.5 text-xs font-semibold transition shrink-0 shadow-xs min-h-[44px]"
-              >
-                <span>Xem hướng dẫn chi tiết</span>
-                <ExternalLink className="h-3.5 w-3.5" />
-              </Link>
             </div>
           )}
         </div>

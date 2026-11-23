@@ -3,9 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Zap,
   ShieldCheck,
-  Clock,
   AlertCircle,
   Loader2,
   CheckCircle2,
@@ -16,18 +14,15 @@ import {
   Tag,
   X as CloseIcon,
   ShoppingBag,
-  Mail,
-  Lock,
-  KeyRound,
-  Eye,
-  EyeOff,
-  Sparkles,
   Check,
   Play,
+  ChevronDown,
+  Zap,
+  KeyRound,
+  HelpCircle,
 } from "lucide-react";
 import { formatVND } from "@/lib/product-types";
 import { useCart } from "@/contexts/CartContext";
-import AuthRequiredModal from "@/components/AuthRequiredModal";
 
 interface ParsedUpgradeAccount {
   line: string;
@@ -86,9 +81,9 @@ export default function ProductPurchaseBox({
   const isAccountUpgrade =
     !isYoutubeProduct &&
     ((slug || "").toLowerCase().includes("up-gemini") ||
-    (slug || "").toLowerCase().includes("chinh-chu") ||
-    productTitle.toLowerCase().includes("chính chủ") ||
-    productTitle.toLowerCase().includes("up pro"));
+      (slug || "").toLowerCase().includes("chinh-chu") ||
+      productTitle.toLowerCase().includes("chính chủ") ||
+      productTitle.toLowerCase().includes("up pro"));
 
   const allowsManualFulfillment =
     isYoutubeProduct ||
@@ -129,8 +124,12 @@ export default function ProductPurchaseBox({
   const [targetLink, setTargetLink] = useState<string>("");
   const [customerApiKey, setCustomerApiKey] = useState<string>("");
   const [customerKeyUsername, setCustomerKeyUsername] = useState<string>("");
+  const [codexMode, setCodexMode] = useState<"new" | "topup">("new");
+  const [showKeyNameInput, setShowKeyNameInput] = useState<boolean>(false);
   const [upgradeAccountsRaw, setUpgradeAccountsRaw] = useState<string>("");
   const [youtubeEmailInput, setYoutubeEmailInput] = useState<string>("");
+  const [showCouponInput, setShowCouponInput] = useState<boolean>(false);
+  const [showSafetyTip, setShowSafetyTip] = useState<boolean>(false);
 
   const parsedYoutubeEmails = useMemo<Array<{ email: string; isValid: boolean }>>(() => {
     if (!youtubeEmailInput.trim()) return [];
@@ -159,13 +158,11 @@ export default function ProductPurchaseBox({
       return { line, user, pass, twoFa, isValid };
     });
   }, [upgradeAccountsRaw]);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Authentication state for mandatory account-bound orders
   const [currentUser, setCurrentUser] = useState<{ id: string; username: string; email?: string } | null>(null);
-  const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
-  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -176,10 +173,7 @@ export default function ProductPurchaseBox({
           setCurrentUser(data.user);
         }
       })
-      .catch(() => {})
-      .finally(() => {
-        if (isMounted) setIsLoadingAuth(false);
-      });
+      .catch(() => {});
     return () => {
       isMounted = false;
     };
@@ -209,7 +203,7 @@ export default function ProductPurchaseBox({
       return null;
     }
     if (!raw.startsWith("sk-") || raw.length < 10) {
-      setKeyVerifyError("API Key không đúng định dạng (phải bắt đầu bằng 'sk-' và có ít nhất 10 ký tự)");
+      setKeyVerifyError("API Key không đúng định dạng (bắt đầu bằng 'sk-')");
       return null;
     }
 
@@ -224,7 +218,7 @@ export default function ProductPurchaseBox({
       });
       const data = await res.json();
       if (!res.ok || !data.valid) {
-        const errMsg = data.error || "API Key không hợp lệ hoặc đã bị vô hiệu hóa trên upstream";
+        const errMsg = data.error || "API Key không hợp lệ hoặc không tồn tại";
         setKeyVerifyError(errMsg);
         setVerifiedKeyData(null);
         return { valid: false, error: errMsg };
@@ -238,7 +232,7 @@ export default function ProductPurchaseBox({
       setVerifiedKeyData(result);
       return { valid: true, keyName: result.keyName };
     } catch (err: any) {
-      const errMsg = err.message || "Lỗi mạng khi kiểm tra API Key. Vui lòng thử lại.";
+      const errMsg = err.message || "Lỗi mạng khi kiểm tra API Key.";
       setKeyVerifyError(errMsg);
       setVerifiedKeyData(null);
       return { valid: false, error: errMsg };
@@ -289,7 +283,7 @@ export default function ProductPurchaseBox({
         });
         setCouponFeedback({
           type: "success",
-          message: data.message || `Đã áp dụng mã ${data.code}`,
+          message: data.message || `Đã giảm ${formatVND(data.discountAmount)}`,
         });
       } else {
         setAppliedCoupon(null);
@@ -328,13 +322,13 @@ export default function ProductPurchaseBox({
 
   const targetLinkLabel = isTikTok
     ? isFollower
-      ? "Link kênh TikTok cần tăng Follower"
-      : "Link video TikTok cần tăng Tim / View"
+      ? "Link kênh TikTok nhận Follow"
+      : "Link video TikTok nhận Tim / View"
     : isFacebook
     ? isFollower
-      ? "Link trang cá nhân / Fanpage Facebook cần tăng Follow"
-      : "Link bài viết Facebook cần tăng Like"
-    : "Link mục tiêu cần thực hiện dịch vụ";
+      ? "Link Facebook nhận Follow"
+      : "Link bài viết Facebook nhận Like"
+    : "Đường link cần tăng tương tác";
 
   const targetLinkPlaceholder = isTikTok
     ? isFollower
@@ -346,23 +340,15 @@ export default function ProductPurchaseBox({
       : "https://www.facebook.com/username/posts/..."
     : "https://...";
 
-  const targetLinkHelper = isTikTok
-    ? isFollower
-      ? "Mở ứng dụng TikTok -> Hồ sơ -> Chia sẻ hồ sơ -> Sao chép liên kết."
-      : "Mở video TikTok -> Chia sẻ -> Sao chép liên kết."
-    : isFacebook
-    ? "Đảm bảo bài viết hoặc trang Facebook được đặt ở chế độ Công khai."
-    : "Nhập chính xác liên kết công khai cần thực hiện dịch vụ.";
-
   const validateTargetLink = (link: string): string | null => {
     const trimmed = link.trim();
-    if (!trimmed) return "Vui lòng nhập đường link mục tiêu.";
+    if (!trimmed) return "Vui lòng dán đường link cần thực hiện.";
     const lower = trimmed.toLowerCase();
     if (!lower.startsWith("http://") && !lower.startsWith("https://")) {
-      return "Đường link phải bắt đầu bằng https:// hoặc http://";
+      return "Link phải bắt đầu bằng https:// hoặc http://";
     }
     if (isTikTok && !lower.includes("tiktok.com")) {
-      return "Vui lòng nhập đúng đường link TikTok (chứa tiktok.com).";
+      return "Vui lòng dán đúng link TikTok.";
     }
     if (
       isFacebook &&
@@ -370,7 +356,7 @@ export default function ProductPurchaseBox({
       !lower.includes("fb.watch") &&
       !lower.includes("fb.com")
     ) {
-      return "Vui lòng nhập đúng đường link Facebook (chứa facebook.com).";
+      return "Vui lòng dán đúng link Facebook.";
     }
     return null;
   };
@@ -385,37 +371,32 @@ export default function ProductPurchaseBox({
     });
   };
 
-  const validateEmail = (val: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
-  };
-
   const handleAddToCart = async () => {
     setErrorMessage(null);
     if (isYoutubeProduct) {
       if (parsedYoutubeEmails.length === 0) {
-        setErrorMessage("Vui lòng nhập địa chỉ Gmail nhận lời mời YouTube Family.");
+        setErrorMessage("Vui lòng nhập Gmail nhận lời mời YouTube Family.");
         return;
       }
       const invalid = parsedYoutubeEmails.find((a) => !a.isValid);
       if (invalid) {
-        setErrorMessage(`Địa chỉ "${invalid.email}" chưa đúng định dạng Gmail (VD: example@gmail.com).`);
+        setErrorMessage(`"${invalid.email}" chưa đúng định dạng Gmail.`);
         return;
       }
       if (parsedYoutubeEmails.length !== quantity) {
-        setErrorMessage(`Số lượng đặt mua là ${quantity}, nhưng bạn đã nhập ${parsedYoutubeEmails.length} địa chỉ Gmail. Vui lòng nhập đủ mỗi dòng 1 Gmail.`);
+        setErrorMessage(`Bạn chọn số lượng ${quantity} nhưng nhập ${parsedYoutubeEmails.length} Gmail.`);
         return;
       }
     } else if (isAccountUpgrade) {
       if (parsedUpgradeAccounts.length === 0) {
-        setErrorMessage("Vui lòng nhập danh sách tài khoản theo định dạng: tk|mk|2fa (mỗi dòng 1 tài khoản).");
+        setErrorMessage("Vui lòng nhập tài khoản theo định dạng: Gmail|MậtKhẩu|2FA");
         return;
       }
       const invalid = parsedUpgradeAccounts.find((a: ParsedUpgradeAccount) => !a.isValid);
       if (invalid) {
-        setErrorMessage(`Dòng "${invalid.line}" chưa đúng định dạng tk|mk|2fa (phải có ít nhất tài khoản và mật khẩu cách nhau bằng dấu |).`);
+        setErrorMessage(`Dòng "${invalid.line}" thiếu mật khẩu (ngăn cách bằng dấu |).`);
         return;
       }
-      // Quantity is automatically synced with parsed accounts
     }
 
     if (requiresLink) {
@@ -426,34 +407,38 @@ export default function ProductPurchaseBox({
       }
     }
 
-    if (isCodexProduct && customerApiKey.trim()) {
+    if (isCodexProduct && codexMode === "topup") {
       const raw = customerApiKey.trim();
+      if (!raw) {
+        setErrorMessage("Vui lòng dán API Key cần nạp hoặc chuyển sang 'Tạo Key mới'.");
+        return;
+      }
       if (!raw.startsWith("sk-") || raw.length < 10) {
-        setErrorMessage("API Key không đúng định dạng (phải bắt đầu bằng 'sk-' và có ít nhất 10 ký tự).");
+        setErrorMessage("API Key không đúng định dạng (bắt đầu bằng 'sk-').");
         return;
       }
       const alreadyVerified = verifiedKeyData && verifiedKeyData.rawKey === raw;
       if (!alreadyVerified) {
         const checkRes = await handleVerifyCodexKey(raw);
         if (!checkRes?.valid) {
-          setErrorMessage(checkRes?.error || "API Key không hợp lệ hoặc không tồn tại. Vui lòng kiểm tra lại trước khi thêm vào giỏ hàng.");
+          setErrorMessage(checkRes?.error || "API Key không hợp lệ.");
           return;
         }
       }
     }
 
     if (!quantity || quantity < effectiveMin) {
-      setErrorMessage(`Số lượng đặt tối thiểu là ${effectiveMin.toLocaleString("vi-VN")} ${unitLabel}.`);
+      setErrorMessage(`Số lượng tối thiểu là ${effectiveMin.toLocaleString("vi-VN")} ${unitLabel}.`);
       return;
     }
 
     if (maxQuantity && quantity > maxQuantity) {
-      setErrorMessage(`Số lượng đặt tối đa là ${maxQuantity.toLocaleString("vi-VN")} ${unitLabel}.`);
+      setErrorMessage(`Số lượng tối đa là ${maxQuantity.toLocaleString("vi-VN")} ${unitLabel}.`);
       return;
     }
 
     if (!isCustomQuantity && !allowsManualFulfillment && (!inStock || stockCount < quantity)) {
-      setErrorMessage("Số lượng sản phẩm trong kho không đủ để đáp ứng yêu cầu.");
+      setErrorMessage("Số lượng kho hiện không đủ.");
       return;
     }
 
@@ -474,7 +459,7 @@ export default function ProductPurchaseBox({
         ? parsedYoutubeEmails.map((e) => e.email).join("\n")
         : requiresLink
         ? targetLink.trim()
-        : isCodexProduct && customerApiKey.trim()
+        : isCodexProduct && codexMode === "topup" && customerApiKey.trim()
         ? customerApiKey.trim()
         : undefined,
     });
@@ -486,16 +471,26 @@ export default function ProductPurchaseBox({
 
     if (isYoutubeProduct) {
       if (parsedYoutubeEmails.length === 0) {
-        setErrorMessage("Vui lòng nhập địa chỉ Gmail nhận lời mời YouTube Family.");
+        setErrorMessage("Vui lòng nhập Gmail nhận lời mời YouTube Family.");
         return;
       }
       const invalid = parsedYoutubeEmails.find((a) => !a.isValid);
       if (invalid) {
-        setErrorMessage(`Địa chỉ "${invalid.email}" chưa đúng định dạng Gmail (VD: example@gmail.com).`);
+        setErrorMessage(`"${invalid.email}" chưa đúng định dạng Gmail.`);
         return;
       }
       if (parsedYoutubeEmails.length !== quantity) {
-        setErrorMessage(`Số lượng đặt mua là ${quantity}, nhưng bạn đã nhập ${parsedYoutubeEmails.length} địa chỉ Gmail. Vui lòng nhập đủ mỗi dòng 1 Gmail.`);
+        setErrorMessage(`Bạn chọn số lượng ${quantity} nhưng nhập ${parsedYoutubeEmails.length} Gmail.`);
+        return;
+      }
+    } else if (isAccountUpgrade) {
+      if (parsedUpgradeAccounts.length === 0) {
+        setErrorMessage("Vui lòng nhập tài khoản cần nâng cấp (Gmail|MậtKhẩu|2FA).");
+        return;
+      }
+      const invalid = parsedUpgradeAccounts.find((a: ParsedUpgradeAccount) => !a.isValid);
+      if (invalid) {
+        setErrorMessage(`Dòng "${invalid.line}" thiếu mật khẩu (ngăn cách bằng dấu |).`);
         return;
       }
     }
@@ -508,34 +503,38 @@ export default function ProductPurchaseBox({
       }
     }
 
-    if (isCodexProduct && customerApiKey.trim()) {
+    if (isCodexProduct && codexMode === "topup") {
       const raw = customerApiKey.trim();
+      if (!raw) {
+        setErrorMessage("Vui lòng dán API Key cần nạp hoặc chọn 'Tạo Key mới'.");
+        return;
+      }
       if (!raw.startsWith("sk-") || raw.length < 10) {
-        setErrorMessage("API Key không đúng định dạng (phải bắt đầu bằng 'sk-' và có ít nhất 10 ký tự).");
+        setErrorMessage("API Key không đúng định dạng (bắt đầu bằng 'sk-').");
         return;
       }
       const alreadyVerified = verifiedKeyData && verifiedKeyData.rawKey === raw;
       if (!alreadyVerified) {
         const checkRes = await handleVerifyCodexKey(raw);
         if (!checkRes?.valid) {
-          setErrorMessage(checkRes?.error || "API Key không hợp lệ hoặc không tồn tại. Vui lòng kiểm tra lại trước khi thanh toán.");
+          setErrorMessage(checkRes?.error || "API Key không hợp lệ.");
           return;
         }
       }
     }
 
     if (!quantity || quantity < effectiveMin) {
-      setErrorMessage(`Số lượng đặt tối thiểu là ${effectiveMin.toLocaleString("vi-VN")} ${unitLabel}.`);
+      setErrorMessage(`Số lượng tối thiểu là ${effectiveMin.toLocaleString("vi-VN")} ${unitLabel}.`);
       return;
     }
 
     if (maxQuantity && quantity > maxQuantity) {
-      setErrorMessage(`Số lượng đặt tối đa là ${maxQuantity.toLocaleString("vi-VN")} ${unitLabel}.`);
+      setErrorMessage(`Số lượng tối đa là ${maxQuantity.toLocaleString("vi-VN")} ${unitLabel}.`);
       return;
     }
 
     if (!isCustomQuantity && !allowsManualFulfillment && (!inStock || stockCount < quantity)) {
-      setErrorMessage("Số lượng sản phẩm trong kho không đủ để đáp ứng yêu cầu.");
+      setErrorMessage("Số lượng sản phẩm trong kho không đủ.");
       return;
     }
 
@@ -545,12 +544,18 @@ export default function ProductPurchaseBox({
       const finalCustomerNote = isYoutubeProduct
         ? `YOUTUBE_FAMILY_INVITE\n` + parsedYoutubeEmails.map((e) => e.email).join("\n")
         : isAccountUpgrade
-        ? `UPGRADE_ACCOUNT\n` + parsedUpgradeAccounts.map((a: ParsedUpgradeAccount) => a.twoFa ? `${a.user}|${a.pass}|${a.twoFa}` : `${a.user}|${a.pass}`).join("\n")
+        ? `UPGRADE_ACCOUNT\n` +
+          parsedUpgradeAccounts
+            .map((a: ParsedUpgradeAccount) => (a.twoFa ? `${a.user}|${a.pass}|${a.twoFa}` : `${a.user}|${a.pass}`))
+            .join("\n")
         : requiresLink
         ? targetLink.trim()
         : isCodexProduct
-        ? customerApiKey.trim() ||
-          (customerKeyUsername.trim() ? `CREATE_NEW_KEY:${customerKeyUsername.trim()}` : "CREATE_NEW_KEY")
+        ? codexMode === "topup" && customerApiKey.trim()
+          ? customerApiKey.trim()
+          : customerKeyUsername.trim()
+          ? `CREATE_NEW_KEY:${customerKeyUsername.trim()}`
+          : "CREATE_NEW_KEY"
         : undefined;
 
       const res = await fetch("/api/orders", {
@@ -574,7 +579,7 @@ export default function ProductPurchaseBox({
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        throw new Error(data.error || "Không thể khởi tạo đơn hàng. Vui lòng thử lại sau.");
+        throw new Error(data.error || "Không thể tạo đơn hàng. Vui lòng thử lại.");
       }
 
       const orderCode = data.order?.orderCode;
@@ -582,156 +587,86 @@ export default function ProductPurchaseBox({
         throw new Error("Không nhận được mã đơn hàng từ hệ thống.");
       }
 
-      // Navigate to checkout VietQR screen
       if (typeof window !== "undefined") {
         window.location.assign(`/checkout/${orderCode}`);
       } else {
         router.push(`/checkout/${orderCode}`);
       }
     } catch (err: any) {
-      setErrorMessage(err.message || "Đã xảy ra lỗi trong quá trình tạo đơn hàng.");
+      setErrorMessage(err.message || "Đã xảy ra lỗi khi tạo đơn hàng.");
       setIsLoading(false);
     }
   };
 
-  const discountPercent =
-    originalPrice && originalPrice > price
-      ? Math.round(((originalPrice - price) / originalPrice) * 100)
-      : 0;
-
   const quickChips =
     effectiveMin >= 500
-      ? [500, 1000, 2000, 5000, 10000]
-      : [100, 500, 1000, 2000, 5000];
+      ? [500, 1000, 2000, 5000]
+      : [100, 500, 1000, 2000];
 
   return (
     <>
-      <div id="purchase-box" className="rounded-2xl border border-border bg-card text-card-foreground p-6 shadow-xl">
-        {/* Price summary */}
-        <div className="mb-6 pb-6 border-b border-border">
-          <div className="text-xs uppercase tracking-wider font-semibold text-muted-foreground mb-1">
-            {isCustomQuantity ? "Đơn giá theo lượt" : "Đơn giá sản phẩm"}
-          </div>
-          <div className="flex items-baseline gap-2.5 flex-wrap">
-            <span className="text-3xl font-extrabold text-primary tracking-tight font-mono">
-              {formatVND(price)}
+      <div
+        id="purchase-box"
+        className="rounded-2xl border border-border bg-card text-card-foreground p-5 sm:p-6 shadow-lg"
+      >
+        {/* Header: Price & Live Stock Pill on one clean row */}
+        <div className="flex items-start justify-between gap-3 pb-4 mb-5 border-b border-border">
+          <div>
+            <span className="text-xs font-medium text-muted-foreground block mb-0.5">
+              {isCustomQuantity ? `Đơn giá / 1 ${unitLabel}` : "Giá thanh toán"}
             </span>
-            {isCustomQuantity ? (
-              <span className="text-xs text-muted-foreground">/ 1 {unitLabel}</span>
-            ) : (
-              <span className="text-xs text-muted-foreground">/ 1 sản phẩm</span>
-            )}
-            {originalPrice && originalPrice > price && (
-              <span className="text-base text-muted-foreground line-through font-mono">
-                {formatVND(originalPrice)}
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <span className="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight font-mono">
+                {formatVND(price)}
               </span>
-            )}
-            {discountPercent > 0 && (
-              <span className="rounded-lg bg-destructive/15 border border-destructive/30 px-2 py-0.5 text-xs font-bold font-mono text-destructive">
-                -{discountPercent}%
+              {originalPrice && originalPrice > price && (
+                <span className="text-sm text-muted-foreground line-through font-mono">
+                  {formatVND(originalPrice)}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Clean Compact Status Pill */}
+          <div className="shrink-0 pt-1">
+            {inStock ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                {isYoutubeProduct || isAccountUpgrade
+                  ? "Nhận đơn 24/7"
+                  : allowsManualFulfillment || effectiveStock >= 99999
+                  ? "Giao tự động 24/7"
+                  : `Sẵn ${effectiveStock} suất`}
+              </span>
+            ) : allowsManualFulfillment ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/25 px-3 py-1 text-xs font-semibold text-amber-600 dark:text-amber-400">
+                <span className="h-2 w-2 rounded-full bg-amber-500" />
+                Giao trong 5–15p
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-destructive/10 border border-destructive/25 px-3 py-1 text-xs font-semibold text-destructive">
+                <span className="h-2 w-2 rounded-full bg-destructive" />
+                Tạm hết hàng
               </span>
             )}
           </div>
-        </div>
-
-        {/* 3-Tier Stock status banner */}
-        <div className="mb-5">
-          {isYoutubeProduct ? (
-            <div className="flex items-center justify-between rounded-xl bg-red-500/10 border border-red-500/30 px-3.5 py-2 text-xs font-medium text-red-600 dark:text-red-400">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                </span>
-                <span>Gia hạn YouTube Premium chính chủ • Mời nhóm Family</span>
-              </div>
-              <span className="text-xs text-red-600 dark:text-red-400 font-semibold uppercase">Nhận đơn 24/7</span>
-            </div>
-          ) : isAccountUpgrade ? (
-            <div className="flex items-center justify-between rounded-xl bg-purple-500/10 border border-purple-500/30 px-3.5 py-2 text-xs font-medium text-purple-700 dark:text-purple-300">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
-                </span>
-                <span>Nâng cấp trực tiếp Gmail chính chủ • Xử lý 15 - 30 phút</span>
-              </div>
-              <span className="text-xs text-purple-600 dark:text-purple-400 font-semibold uppercase">Nhận đơn 24/7</span>
-            </div>
-          ) : isCustomQuantity ? (
-            <div className="flex items-center gap-2 rounded-xl bg-accent/10 border border-accent/30 px-3.5 py-2 text-xs font-medium text-accent">
-              <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
-              <span>Dịch vụ tự động — Khởi tạo tức thì sau khi thanh toán</span>
-            </div>
-          ) : inStock ? (
-            effectiveStock > 5 ? (
-              <div className="flex items-center justify-between rounded-xl bg-accent/10 border border-accent/30 px-3.5 py-2 text-xs font-medium text-accent">
-                <div className="flex items-center gap-2">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
-                  </span>
-                  <span>
-                    {allowsManualFulfillment || categorySlug === "ai-api" || categorySlug === "ai" || productTitle.toLowerCase().includes("api") || productTitle.toLowerCase().includes("codex") || effectiveStock >= 99999 ? (
-                      <>Dịch vụ tự động — Cấp phát 24/7 tức thì</>
-                    ) : (
-                      <>
-                        Kho sẵn: <strong>{effectiveStock}</strong> slot {isLiveChecked ? "(Live)" : ""}
-                      </>
-                    )}
-                  </span>
-                </div>
-                <span className="text-xs text-accent font-semibold uppercase">Sẵn hàng</span>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between rounded-xl bg-amber-500/10 border border-amber-500/30 px-3.5 py-2 text-xs font-medium text-amber-600 dark:text-amber-400">
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-                  <span>
-                    Sắp hết hàng: Chỉ còn <strong>{effectiveStock}</strong> slot
-                  </span>
-                </div>
-                <span className="text-xs text-amber-600 dark:text-amber-400 font-semibold uppercase">Còn ít</span>
-              </div>
-            )
-          ) : allowsManualFulfillment ? (
-            <div className="flex items-center gap-2 rounded-xl bg-amber-500/10 border border-amber-500/30 px-3 py-2 text-xs font-medium text-amber-600 dark:text-amber-400">
-              <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-              <span>
-                Kho sẵn tạm hết — <strong>Cấp mã thủ công trong 5 - 15 phút</strong> sau thanh toán
-              </span>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between rounded-xl bg-destructive/10 border border-destructive/30 px-3.5 py-2 text-xs font-medium text-destructive">
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-destructive" />
-                <span>Sản phẩm tạm thời hết hàng</span>
-              </div>
-              <span className="text-xs text-destructive font-semibold uppercase">Hết hàng</span>
-            </div>
-          )}
         </div>
 
         {/* Form */}
-      <form onSubmit={handleCheckout} className="space-y-4 sm:space-y-5">
-        {/* Quantity Selector */}
-        {isCustomQuantity ? (
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label
-                htmlFor="customQuantity"
-                className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
-              >
-                Số lượng đặt ({unitLabel}) <span className="text-rose-500">*</span>
-              </label>
-              <span className="text-xs text-slate-500">
-                Min: {effectiveMin.toLocaleString("vi-VN")}
-                {maxQuantity ? ` - Max: ${maxQuantity.toLocaleString("vi-VN")}` : ""}
-              </span>
-            </div>
+        <form onSubmit={handleCheckout} className="space-y-4">
+          {/* 1. Quantity Selector */}
+          {isCustomQuantity ? (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label htmlFor="customQuantity" className="text-xs font-semibold text-foreground">
+                  Số lượng {unitLabel} cần tăng
+                </label>
+                <span className="text-xs text-muted-foreground">
+                  Tối thiểu: {effectiveMin.toLocaleString("vi-VN")}
+                </span>
+              </div>
 
-            <div className="flex items-center gap-2">
-              <div className="relative flex-1">
+              <div className="flex items-center gap-2">
                 <input
                   id="customQuantity"
                   type="number"
@@ -745,95 +680,66 @@ export default function ProductPurchaseBox({
                     const val = parseInt(e.target.value, 10);
                     setQuantity(isNaN(val) ? 0 : val);
                   }}
-                  className="w-full rounded-xl border border-slate-200 dark:border-zinc-800/80 bg-slate-50 dark:bg-[#131926] py-2.5 px-4 text-base font-bold text-slate-900 dark:text-white focus:border-blue-600 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="flex-1 rounded-xl border border-border bg-secondary/60 py-2.5 px-3.5 text-base font-bold text-foreground font-mono focus:border-primary focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                   placeholder={`Tối thiểu ${effectiveMin}`}
                 />
+
+                <button
+                  type="button"
+                  disabled={isLoading || quantity <= effectiveMin}
+                  onClick={() => handleQuantityChange(-100)}
+                  className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-secondary/60 text-foreground hover:bg-secondary disabled:opacity-40 transition-colors"
+                  title="Giảm 100"
+                >
+                  <Minus className="h-4 w-4" />
+                </button>
+
+                <button
+                  type="button"
+                  disabled={isLoading || (maxQuantity !== null && quantity >= maxQuantity)}
+                  onClick={() => handleQuantityChange(100)}
+                  className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-secondary/60 text-foreground hover:bg-secondary disabled:opacity-40 transition-colors"
+                  title="Tăng 100"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
               </div>
 
-              <button
-                type="button"
-                disabled={isLoading || quantity <= effectiveMin}
-                onClick={() => handleQuantityChange(-100)}
-                className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 dark:border-zinc-800/80 bg-slate-50 dark:bg-[#131926] text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-750 disabled:opacity-40 transition-colors"
-                title="Giảm 100"
-              >
-                <Minus className="h-4 w-4" />
-              </button>
-
-              <button
-                type="button"
-                disabled={isLoading || (maxQuantity !== null && quantity >= maxQuantity)}
-                onClick={() => handleQuantityChange(100)}
-                className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 dark:border-zinc-800/80 bg-slate-50 dark:bg-[#131926] text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-750 disabled:opacity-40 transition-colors"
-                title="Tăng 100"
-              >
-                <Plus className="h-4 w-4" />
-              </button>
+              <div className="flex flex-wrap items-center gap-1.5">
+                {quickChips.map((chip) => (
+                  <button
+                    key={chip}
+                    type="button"
+                    disabled={isLoading}
+                    onClick={() =>
+                      setQuantity((prev) => {
+                        const next = (prev || 0) + chip;
+                        if (maxQuantity && next > maxQuantity) return maxQuantity;
+                        return next;
+                      })
+                    }
+                    className="rounded-lg border border-border bg-secondary/40 px-2.5 py-1 text-xs font-medium text-foreground hover:border-primary hover:text-primary transition-all"
+                  >
+                    +{chip.toLocaleString("vi-VN")}
+                  </button>
+                ))}
+              </div>
             </div>
-
-            {/* Quick chips */}
-            <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
-              <span className="text-xs text-slate-500 mr-1">Chọn nhanh:</span>
-              {quickChips.map((chip) => (
-                <button
-                  key={chip}
-                  type="button"
-                  disabled={isLoading}
-                  onClick={() =>
-                    setQuantity((prev) => {
-                      const next = (prev || 0) + chip;
-                      if (maxQuantity && next > maxQuantity) return maxQuantity;
-                      return next;
-                    })
-                  }
-                  className="rounded-lg border border-slate-200 dark:border-zinc-800/80 bg-white dark:bg-[#131926] px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 transition-all"
-                >
-                  +{chip.toLocaleString("vi-VN")}
-                </button>
-              ))}
-              <button
-                type="button"
-                disabled={isLoading}
-                onClick={() => setQuantity(effectiveMin)}
-                className="rounded-lg border border-slate-200 dark:border-zinc-800/80 bg-slate-100 dark:bg-[#131926] px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-colors"
-              >
-                Min
-              </button>
-            </div>
-
-            {/* Live calculation banner */}
-            <div className="mt-3 flex items-center justify-between rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-500/20 p-3 text-xs">
-              <span className="text-slate-700 dark:text-slate-300">
-                Thành tiền ({quantity.toLocaleString("vi-VN")} × {formatVND(price)}):
-              </span>
-              <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
-                {formatVND(totalPrice)}
-              </span>
-            </div>
-          </div>
-        ) : !isAccountUpgrade ? (
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-foreground">
-                Số lượng mua
+          ) : !isAccountUpgrade ? (
+            <div className="flex items-center justify-between gap-3">
+              <label className="text-xs font-semibold text-foreground">
+                Số lượng
               </label>
-              {quantity >= 5 && (
-                <span className="text-xs font-bold text-amber-500 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
-                  ⚡ Mua sỉ ≥ 5
-                </span>
-              )}
-            </div>
 
-            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-              <div className="flex items-center rounded-xl border border-border bg-secondary p-1">
+              <div className="flex items-center rounded-xl border border-border bg-secondary/50 p-1">
                 <button
                   type="button"
                   disabled={!canPurchase || quantity <= effectiveMin || isLoading}
                   onClick={() => handleQuantityChange(-1)}
-                  className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-foreground hover:bg-background/80 disabled:opacity-40 transition-colors"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-foreground hover:bg-background disabled:opacity-40 transition-colors"
                   aria-label="Giảm số lượng"
                 >
-                  <Minus className="h-4 w-4" />
+                  <Minus className="h-3.5 w-3.5" />
                 </button>
 
                 <input
@@ -847,105 +753,60 @@ export default function ProductPurchaseBox({
                     if (isNaN(val)) setQuantity(effectiveMin);
                     else setQuantity(Math.max(effectiveMin, Math.min(effectiveMax, val)));
                   }}
-                  onBlur={() => {
-                    setQuantity((prev) => Math.max(effectiveMin, Math.min(effectiveMax, prev || effectiveMin)));
-                  }}
-                  className="w-12 text-center text-sm font-bold bg-transparent text-foreground border-0 focus:outline-none font-mono"
+                  className="w-11 text-center text-sm font-bold bg-transparent text-foreground border-0 focus:outline-none font-mono"
                 />
 
                 <button
                   type="button"
                   disabled={!canPurchase || quantity >= effectiveMax || isLoading}
                   onClick={() => handleQuantityChange(1)}
-                  className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-foreground hover:bg-background/80 disabled:opacity-40 transition-colors"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-foreground hover:bg-background disabled:opacity-40 transition-colors"
                   aria-label="Tăng số lượng"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-3.5 w-3.5" />
                 </button>
               </div>
-
-              {(allowsManualFulfillment || categorySlug === "ai-api" || categorySlug === "ai" || productTitle.toLowerCase().includes("api") || productTitle.toLowerCase().includes("codex") || stockCount > 1) && (
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  {[1, 3, 5, 10].filter(n => (allowsManualFulfillment || categorySlug === "ai-api" || categorySlug === "ai" || productTitle.toLowerCase().includes("api") || productTitle.toLowerCase().includes("codex")) ? true : n <= stockCount).map(n => (
-                    <button
-                      key={n}
-                      type="button"
-                      disabled={isLoading}
-                      onClick={() => setQuantity(n)}
-                      className={`min-h-[38px] px-2.5 rounded-xl text-xs font-semibold border transition-all ${
-                        quantity === n
-                          ? "border-primary bg-primary/10 text-primary font-bold"
-                          : "border-border bg-card text-foreground hover:bg-secondary"
-                      }`}
-                    >
-                      {n}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              <div className="text-xs text-muted-foreground ml-auto">
-                Tổng: <strong className="text-foreground text-sm font-mono">{formatVND(totalPrice)}</strong>
-              </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
 
-        {/* YouTube Family Invite Email Box */}
-        {isYoutubeProduct && (
-          <div className="space-y-3 rounded-2xl border border-red-500/30 bg-red-500/5 dark:bg-red-950/20 p-4">
-            <div className="flex items-center justify-between border-b border-red-500/20 pb-2.5">
-              <div className="flex items-center gap-2">
-                <div className="h-5 w-5 rounded bg-red-600 flex items-center justify-center text-white">
-                  <Play className="h-2.5 w-2.5 fill-current" />
-                </div>
-                <span className="text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400">
-                  Địa chỉ Gmail nhận lời mời YouTube Family
+          {/* 2. Product-Specific Input (Only 1 clean block when applicable) */}
+
+          {/* 2A. YouTube Family Invite Email */}
+          {isYoutubeProduct && (
+            <div className="space-y-2 rounded-xl border border-border bg-secondary/30 p-3.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <Play className="h-3.5 w-3.5 text-red-500 fill-current" />
+                  <span>Gmail nhận lời mời YouTube</span>
+                </label>
+                <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                  Không cần mật khẩu
                 </span>
               </div>
-              <span className="text-[11px] font-mono font-bold text-red-600 dark:text-red-400 bg-red-500/10 px-2.5 py-0.5 rounded-full border border-red-500/20">
-                Không Cần Mật Khẩu
-              </span>
-            </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-semibold text-foreground">
-                  Nhập địa chỉ Gmail của bạn <span className="text-destructive">*</span>
-                </label>
-                {parsedYoutubeEmails.length > 0 && (
-                  <span className="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
-                    <Check className="h-3 w-3" />
-                    <span>Đã nhận diện: {parsedYoutubeEmails.filter((e) => e.isValid).length} Gmail</span>
-                  </span>
-                )}
-              </div>
+              <textarea
+                rows={Math.min(4, Math.max(2, parsedYoutubeEmails.length || 1))}
+                required
+                value={youtubeEmailInput}
+                disabled={isLoading}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setYoutubeEmailInput(val);
+                  if (errorMessage) setErrorMessage(null);
+                  const lines = val
+                    .split("\n")
+                    .map((l) => l.trim())
+                    .filter(Boolean);
+                  if (lines.length > 0) {
+                    setQuantity(lines.length);
+                  }
+                }}
+                placeholder="Nhập địa chỉ @gmail.com của bạn..."
+                className="w-full rounded-xl border border-border bg-background py-2.5 px-3 text-sm font-mono text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+              />
 
-              <div className="relative">
-                <textarea
-                  rows={Math.min(5, Math.max(2, (parsedYoutubeEmails.length || 1) + 1))}
-                  required
-                  value={youtubeEmailInput}
-                  disabled={isLoading}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setYoutubeEmailInput(val);
-                    if (errorMessage) setErrorMessage(null);
-                    const lines = val
-                      .split("\n")
-                      .map((l) => l.trim())
-                      .filter(Boolean);
-                    if (lines.length > 0) {
-                      setQuantity(lines.length);
-                    }
-                  }}
-                  placeholder={`example@gmail.com\n(Nếu mua cho nhiều người, hãy nhập mỗi dòng 1 Gmail)`}
-                  className="w-full rounded-xl border border-border bg-secondary/80 py-2.5 px-3.5 text-xs sm:text-sm font-mono text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-500/30 transition-all leading-relaxed"
-                />
-              </div>
-
-              <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground">
-                <span>Nhập chính xác <code className="text-foreground font-mono font-bold">@gmail.com</code> cần nâng cấp</span>
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>Shop gửi thư mời Family qua Gmail này</span>
                 {currentUser?.email && (
                   <button
                     type="button"
@@ -953,405 +814,333 @@ export default function ProductPurchaseBox({
                       setYoutubeEmailInput(currentUser.email || "");
                       setQuantity(1);
                     }}
-                    className="text-red-600 dark:text-red-400 hover:underline font-semibold cursor-pointer"
+                    className="text-primary hover:underline font-medium"
                   >
-                    Dùng email của tôi ({currentUser.email})
+                    Dùng {currentUser.email}
                   </button>
                 )}
               </div>
             </div>
+          )}
 
-            {/* Smart Tip Box */}
-            <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-xs text-red-900 dark:text-red-200 space-y-1.5">
-              <div className="font-bold flex items-center gap-1.5 text-red-700 dark:text-red-300">
-                <ShieldCheck className="h-4 w-4" />
-                <span>Quy trình kích hoạt YouTube Premium an tâm 100%:</span>
-              </div>
-              <ul className="text-[11.5px] leading-relaxed text-red-950/80 dark:text-red-200/80 list-disc list-inside space-y-1">
-                <li><strong>Tuyệt đối bảo mật:</strong> Không yêu cầu mật khẩu hay mã xác minh. Shop chỉ gửi lời mời vào Gmail của bạn.</li>
-                <li><strong>Cách kích hoạt:</strong> Sau khi thanh toán, Admin gửi thư mời Family vào Gmail. Bạn chỉ cần mở hộp thư Gmail bấm <strong>&quot;Chấp nhận lời mời&quot;</strong> là xong!</li>
-                <li><strong>Lưu ý:</strong> Trong vòng 12 tháng qua, Gmail của bạn chưa tham gia hoặc đổi nhóm gia đình Google quá 1 lần.</li>
-              </ul>
-            </div>
-          </div>
-        )}
-
-        {/* Account Upgrade Inputs - Single Auto-detect Box */}
-        {isAccountUpgrade && (
-          <div className="space-y-3 rounded-2xl border border-purple-500/30 bg-purple-500/5 dark:bg-purple-950/20 p-4">
-            <div className="flex items-center justify-between border-b border-purple-500/20 pb-2.5">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-purple-500" />
-                <span className="text-xs font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300">
-                  Khung tự nhận diện tài khoản (tk|mk|2fa)
-                </span>
-              </div>
-              <span className="text-[11px] font-mono font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-2.5 py-0.5 rounded-full border border-purple-500/20">
-                1 Dòng = 1 Tài Khoản
-              </span>
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-semibold text-foreground">
-                  Nhập danh sách tài khoản theo định dạng <code className="bg-secondary px-1.5 py-0.5 rounded text-purple-600 dark:text-purple-400 font-mono">tk|mk|2fa</code> <span className="text-destructive">*</span>
+          {/* 2B. Account Upgrade Input (Gemini 5TB Chính chủ) */}
+          {isAccountUpgrade && (
+            <div className="space-y-2.5 rounded-xl border border-border bg-secondary/30 p-3.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-foreground">
+                  Tài khoản Google cần nâng cấp 5TB
                 </label>
                 {parsedUpgradeAccounts.length > 0 && (
-                  <span className="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
+                  <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                     <Check className="h-3 w-3" />
-                    <span>Đã nhận diện: {parsedUpgradeAccounts.filter((a: ParsedUpgradeAccount) => a.isValid).length} tài khoản</span>
+                    {parsedUpgradeAccounts.filter((a) => a.isValid).length} tài khoản
                   </span>
                 )}
               </div>
 
-              <div className="relative">
-                <textarea
-                  rows={Math.min(7, Math.max(3, (parsedUpgradeAccounts.length || 1) + 1))}
-                  required
-                  value={upgradeAccountsRaw}
-                  disabled={isLoading}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setUpgradeAccountsRaw(val);
-                    if (errorMessage) setErrorMessage(null);
-                    const lines = val
-                      .split("\n")
-                      .map((l) => l.trim())
-                      .filter(Boolean);
-                    setQuantity(Math.max(1, lines.length));
-                  }}
-                  placeholder={`example1@gmail.com|MatKhau123|12345678\nexample2@gmail.com|MatKhau456\n(Mỗi dòng 1 tài khoản theo định dạng tk|mk|2fa hoặc tk|mk)`}
-                  className="w-full rounded-xl border border-border bg-secondary/80 py-2.5 px-3.5 text-xs sm:text-sm font-mono text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-purple-500/30 transition-all leading-relaxed"
-                />
+              <textarea
+                rows={Math.min(5, Math.max(2, parsedUpgradeAccounts.length || 2))}
+                required
+                value={upgradeAccountsRaw}
+                disabled={isLoading}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setUpgradeAccountsRaw(val);
+                  if (errorMessage) setErrorMessage(null);
+                  const lines = val
+                    .split("\n")
+                    .map((l) => l.trim())
+                    .filter(Boolean);
+                  setQuantity(Math.max(1, lines.length));
+                }}
+                placeholder="email@gmail.com|MatKhau|Ma2FA"
+                className="w-full rounded-xl border border-border bg-background py-2.5 px-3 text-xs sm:text-sm font-mono text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+              />
+
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>Mỗi dòng 1 nick: <code className="text-foreground font-mono">Gmail|MậtKhẩu|2FA</code></span>
+                <button
+                  type="button"
+                  onClick={() => setShowSafetyTip(!showSafetyTip)}
+                  className="text-primary hover:underline font-medium inline-flex items-center gap-1"
+                >
+                  <HelpCircle className="h-3 w-3" />
+                  <span>Mẹo dùng Gmail phụ</span>
+                </button>
               </div>
 
-              <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground">
-                <span>Định dạng: <code className="text-foreground font-mono font-bold">Gmail|Mật khẩu|Mã 2FA</code> (hoặc <code className="text-foreground font-mono">Gmail|Pass</code>)</span>
+              {showSafetyTip && (
+                <div className="rounded-lg bg-primary/5 border border-primary/20 p-2.5 text-xs text-muted-foreground leading-relaxed">
+                  Bạn có thể đưa <strong>Gmail phụ</strong> để shop nâng 5TB. Xong xuôi bạn dùng nick đó mời Gmail chính vào nhóm Family để hưởng trọn 5TB &amp; Gemini Pro mà không cần đưa mật khẩu nick chính.
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 2C. SMM Target Link */}
+          {requiresLink && (
+            <div className="space-y-1.5">
+              <label htmlFor="targetLink" className="block text-xs font-semibold text-foreground">
+                {targetLinkLabel} <span className="text-destructive">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  id="targetLink"
+                  type="url"
+                  required
+                  placeholder={targetLinkPlaceholder}
+                  value={targetLink}
+                  disabled={isLoading || !inStock}
+                  onChange={(e) => {
+                    setTargetLink(e.target.value);
+                    if (errorMessage) setErrorMessage(null);
+                  }}
+                  className="w-full rounded-xl border border-border bg-secondary/50 py-2.5 pl-9 pr-3.5 text-sm text-foreground placeholder-muted-foreground focus:border-primary focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                />
+                <Globe className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Hãy để bài viết hoặc tài khoản ở chế độ Công khai.
+              </p>
+            </div>
+          )}
+
+          {/* 2D. Codex API Key Mode Switcher (Beginner friendly 2-choice toggle) */}
+          {isCodexProduct && (
+            <div className="space-y-2.5 rounded-xl border border-border bg-secondary/30 p-3">
+              <div className="grid grid-cols-2 gap-1.5 p-1 rounded-lg bg-secondary border border-border">
                 <button
                   type="button"
                   onClick={() => {
-                    const sample = "clonemail1@gmail.com|MatKhauGoogle123|12345678";
-                    setUpgradeAccountsRaw(sample);
-                    setQuantity(1);
+                    setCodexMode("new");
+                    setCustomerApiKey("");
+                    setVerifiedKeyData(null);
+                    setKeyVerifyError(null);
                   }}
-                  className="text-purple-600 dark:text-purple-400 hover:underline font-semibold cursor-pointer"
+                  className={`py-1.5 px-2.5 rounded-md text-xs font-semibold transition-all ${
+                    codexMode === "new"
+                      ? "bg-background text-foreground shadow-2xs"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
-                  Dán mẫu thử
+                  Cấp Key mới (Mặc định)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCodexMode("topup")}
+                  className={`py-1.5 px-2.5 rounded-md text-xs font-semibold transition-all ${
+                    codexMode === "topup"
+                      ? "bg-background text-foreground shadow-2xs"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Nạp vào Key đã có
                 </button>
               </div>
-            </div>
 
-            {/* Smart Tip Box */}
-            <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-3 text-xs text-blue-800 dark:text-blue-300 space-y-1">
-              <div className="font-bold flex items-center gap-1.5 text-blue-700 dark:text-blue-300">
-                <span>💡 Mẹo bảo mật an tâm tuyệt đối:</span>
-              </div>
-              <p className="text-[11.5px] leading-relaxed text-blue-900/80 dark:text-blue-200/80">
-                Bạn có thể đưa một <strong>Gmail phụ (clone)</strong> để shop nâng cấp gói 5TB. Sau khi hoàn tất, bạn chỉ cần dùng tài khoản đó tạo nhóm Family và mời Gmail chính của mình vào nhóm để cùng hưởng trọn vẹn 5TB và Gemini Pro mà không lo lộ mật khẩu chính!
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Target Link Input for SMM services */}
-        {requiresLink && (
-          <div>
-            <label
-              htmlFor="targetLink"
-              className="block text-xs font-semibold uppercase tracking-wider text-foreground mb-1.5"
-            >
-              {targetLinkLabel} <span className="text-destructive">*</span>
-            </label>
-            <div className="relative">
-              <input
-                id="targetLink"
-                type="url"
-                required
-                placeholder={targetLinkPlaceholder}
-                value={targetLink}
-                disabled={isLoading || !inStock}
-                onChange={(e) => {
-                  setTargetLink(e.target.value);
-                  if (errorMessage) setErrorMessage(null);
-                }}
-                className={`w-full rounded-xl border bg-secondary py-2.5 pl-10 pr-4 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 transition-all ${
-                  errorMessage && !targetLink.trim()
-                    ? "border-destructive text-destructive focus:border-destructive"
-                    : "border-border focus:border-primary"
-                }`}
-              />
-              <Globe className="absolute left-3.5 top-3 h-4 w-4 text-primary" />
-            </div>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {targetLinkHelper}
-            </p>
-          </div>
-        )}
-
-        {/* Optional Customer API Key for Codex */}
-        {isCodexProduct && (
-          <div className="space-y-3">
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label
-                  htmlFor="customerApiKey"
-                  className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
-                >
-                  API Key cần nạp thêm
-                </label>
-                <span className="text-xs text-slate-400">
-                  (để trống nếu muốn tạo key mới)
-                </span>
-              </div>
-              <div className="relative flex items-center">
-                <input
-                  id="customerApiKey"
-                  type="text"
-                  placeholder="sk-... (nhập key đã có để nạp thêm)"
-                  value={customerApiKey}
-                  disabled={isLoading || isVerifyingKey}
-                  onBlur={() => {
-                    const trimmed = customerApiKey.trim();
-                    if (trimmed.startsWith("sk-") && (!verifiedKeyData || verifiedKeyData.rawKey !== trimmed)) {
-                      handleVerifyCodexKey(trimmed);
-                    }
-                  }}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setCustomerApiKey(val);
-                    if (verifiedKeyData && verifiedKeyData.rawKey !== val.trim()) {
-                      setVerifiedKeyData(null);
-                    }
-                    if (keyVerifyError) {
-                      setKeyVerifyError(null);
-                    }
-                  }}
-                  className={`w-full rounded-xl border bg-slate-50 dark:bg-[#131926] py-2.5 pl-3.5 pr-24 text-xs font-mono text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 disabled:opacity-50 transition-all ${
-                    keyVerifyError
-                      ? "border-rose-500/50 focus:border-rose-500 focus:ring-rose-500/20"
-                      : verifiedKeyData && verifiedKeyData.rawKey === customerApiKey.trim()
-                      ? "border-emerald-500/50 focus:border-emerald-500 focus:ring-emerald-500/20"
-                      : "border-slate-200 dark:border-zinc-800/80 focus:border-blue-600 focus:ring-blue-500/20"
-                  }`}
-                />
-
-                {customerApiKey.trim() && (
-                  <button
-                    type="button"
-                    disabled={isVerifyingKey || isLoading}
-                    onClick={() => handleVerifyCodexKey(customerApiKey.trim())}
-                    className={`absolute right-1.5 top-1.5 bottom-1.5 px-3 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all disabled:opacity-50 ${
-                      verifiedKeyData && verifiedKeyData.rawKey === customerApiKey.trim()
-                        ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                        : "bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 shadow-xs"
-                    }`}
-                  >
-                    {isVerifyingKey ? (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    ) : verifiedKeyData && verifiedKeyData.rawKey === customerApiKey.trim() ? (
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                    ) : (
-                      <ShieldCheck className="h-3.5 w-3.5" />
-                    )}
-                    <span>
-                      {isVerifyingKey
-                        ? "Đang check..."
-                        : verifiedKeyData && verifiedKeyData.rawKey === customerApiKey.trim()
-                        ? "Đã check"
-                        : "Kiểm tra"}
-                    </span>
-                  </button>
-                )}
-              </div>
-
-              {/* Verified badge */}
-              {verifiedKeyData && verifiedKeyData.rawKey === customerApiKey.trim() && (
-                <div className="mt-2 flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 p-2.5 text-xs text-emerald-800 dark:text-emerald-200 animate-in fade-in">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                    <div>
-                      <p className="font-semibold text-emerald-900 dark:text-emerald-100">
-                        Key hợp lệ: {verifiedKeyData.keyName}
-                      </p>
-                      <p className="text-xs text-emerald-700/90 dark:text-emerald-300/90">
-                        Hạn mức hiện tại: ${verifiedKeyData.currentQuotaUsd.toFixed(2)} USD • Sẵn sàng nạp cộng dồn
-                      </p>
+              {codexMode === "new" ? (
+                <div className="px-1">
+                  {!showKeyNameInput ? (
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Hệ thống tự tạo Key mới ngay sau khi thanh toán.</span>
+                      <button
+                        type="button"
+                        onClick={() => setShowKeyNameInput(true)}
+                        className="text-primary hover:underline font-medium shrink-0 ml-2"
+                      >
+                        Đặt tên Key
+                      </button>
                     </div>
-                  </div>
-                  <span className="rounded-md bg-emerald-600/15 border border-emerald-500/30 px-2 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 shrink-0">
-                    SẴN SÀNG
-                  </span>
+                  ) : (
+                    <div className="space-y-1">
+                      <input
+                        id="customerKeyUsername"
+                        type="text"
+                        placeholder="Tên gợi nhớ cho Key (VD: cursor_cua_toi)..."
+                        value={customerKeyUsername}
+                        disabled={isLoading}
+                        onChange={(e) => setCustomerKeyUsername(e.target.value)}
+                        className="w-full rounded-lg border border-border bg-background py-2 px-3 text-xs text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                  )}
                 </div>
-              )}
+              ) : (
+                <div className="space-y-2">
+                  <div className="relative flex items-center">
+                    <input
+                      id="customerApiKey"
+                      type="text"
+                      placeholder="Dán mã sk-... của bạn vào đây"
+                      value={customerApiKey}
+                      disabled={isLoading || isVerifyingKey}
+                      onBlur={() => {
+                        const trimmed = customerApiKey.trim();
+                        if (trimmed.startsWith("sk-") && (!verifiedKeyData || verifiedKeyData.rawKey !== trimmed)) {
+                          handleVerifyCodexKey(trimmed);
+                        }
+                      }}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setCustomerApiKey(val);
+                        if (verifiedKeyData && verifiedKeyData.rawKey !== val.trim()) {
+                          setVerifiedKeyData(null);
+                        }
+                        if (keyVerifyError) setKeyVerifyError(null);
+                      }}
+                      className="w-full rounded-lg border border-border bg-background py-2 pl-3 pr-20 text-xs font-mono text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none"
+                    />
+                    {customerApiKey.trim() && (
+                      <button
+                        type="button"
+                        disabled={isVerifyingKey || isLoading}
+                        onClick={() => handleVerifyCodexKey(customerApiKey.trim())}
+                        className="absolute right-1 top-1 bottom-1 px-2.5 rounded-md bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 disabled:opacity-50"
+                      >
+                        {isVerifyingKey
+                          ? "..."
+                          : verifiedKeyData && verifiedKeyData.rawKey === customerApiKey.trim()
+                          ? "Hợp lệ ✓"
+                          : "Kiểm tra"}
+                      </button>
+                    )}
+                  </div>
 
-              {/* Verify error */}
-              {keyVerifyError && (
-                <div className="mt-2 flex items-start gap-2 rounded-xl border border-rose-500/30 bg-rose-50 dark:bg-rose-950/40 p-2.5 text-xs text-rose-700 dark:text-rose-300 animate-in fade-in">
-                  <AlertCircle className="h-4 w-4 text-rose-500 shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="font-medium">{keyVerifyError}</p>
-                    <p className="mt-0.5 text-xs text-rose-600/80 dark:text-rose-400/80">
-                      Vui lòng kiểm tra lại key hoặc xóa trắng ô này để hệ thống tạo key mới mang tên bạn.
+                  {verifiedKeyData && verifiedKeyData.rawKey === customerApiKey.trim() && (
+                    <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1.5">
+                      <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                      <span>
+                        {verifiedKeyData.keyName} • Đang có ${verifiedKeyData.currentQuotaUsd.toFixed(2)}
+                      </span>
                     </p>
-                  </div>
+                  )}
+
+                  {keyVerifyError && (
+                    <p className="text-xs text-destructive flex items-center gap-1.5">
+                      <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                      <span>{keyVerifyError}</span>
+                    </p>
+                  )}
                 </div>
               )}
-
-              {!customerApiKey.trim() && (
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                  💡 Nếu chưa có key, bạn có thể nhập Username bên dưới để tạo key mới mang tên mình.
-                </p>
-              )}
             </div>
+          )}
 
-            {!customerApiKey.trim() && (
-              <div>
-                <label
-                  htmlFor="customerKeyUsername"
-                  className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
+          {/* 3. Collapsible Coupon Code (Progressive Disclosure) */}
+          {!isAccountUpgrade && (
+            <div>
+              {!showCouponInput && !appliedCoupon ? (
+                <button
+                  type="button"
+                  onClick={() => setShowCouponInput(true)}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Username đặt tên cho Key mới
-                </label>
-                <div className="relative">
-                  <input
-                    id="customerKeyUsername"
-                    type="text"
-                    placeholder="VD: thang_dev, cursor_user..."
-                    value={customerKeyUsername}
-                    disabled={isLoading}
-                    onChange={(e) => setCustomerKeyUsername(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 dark:border-zinc-800/80 bg-slate-50 dark:bg-[#131926] py-2.5 px-3.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
-                  />
+                  <Ticket className="h-3.5 w-3.5" />
+                  <span>Có mã giảm giá hoặc mã CTV?</span>
+                  <ChevronDown className="h-3 w-3" />
+                </button>
+              ) : (
+                <div className="space-y-1.5">
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <input
+                        id="couponCode"
+                        type="text"
+                        placeholder="Nhập mã giảm giá..."
+                        value={couponCode}
+                        disabled={isLoading || !canPurchase || appliedCoupon !== null}
+                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                        className="w-full rounded-xl border border-border bg-secondary/40 py-2 pl-8 pr-3 text-xs font-mono uppercase text-foreground placeholder-muted-foreground focus:border-primary focus:bg-background focus:outline-none"
+                      />
+                      <Tag className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                    </div>
+
+                    {appliedCoupon ? (
+                      <button
+                        type="button"
+                        onClick={handleRemoveCoupon}
+                        className="px-3 py-2 rounded-xl border border-border hover:bg-secondary text-xs font-semibold text-muted-foreground flex items-center gap-1"
+                      >
+                        <CloseIcon className="h-3.5 w-3.5 text-destructive" />
+                        <span>Bỏ mã</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleApplyCoupon}
+                        disabled={isValidatingCoupon || !couponCode.trim() || !canPurchase}
+                        className="px-3.5 py-2 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground border border-border disabled:opacity-50 text-xs font-semibold transition-all"
+                      >
+                        {isValidatingCoupon ? "Đang kiểm..." : "Áp dụng"}
+                      </button>
+                    )}
+                  </div>
+
+                  {couponFeedback && (
+                    <p
+                      className={`text-xs ${
+                        couponFeedback.type === "success"
+                          ? "text-emerald-600 dark:text-emerald-400 font-medium"
+                          : "text-destructive"
+                      }`}
+                    >
+                      {couponFeedback.message}
+                    </p>
+                  )}
                 </div>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                  Tên này sẽ được đặt làm tên đại diện của API Key mới trên hệ thống.
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Coupon Code Input */}
-        {isAccountUpgrade ? (
-          <div className="rounded-xl border border-border bg-secondary/50 p-3 text-xs text-muted-foreground flex items-center justify-between">
-            <span className="flex items-center gap-1.5 font-medium">
-              <Tag className="h-3.5 w-3.5 text-primary" />
-              <span>Gói xả kho siêu rẻ 19.000đ:</span>
-            </span>
-            <span className="font-semibold text-foreground bg-primary/10 px-2 py-0.5 rounded text-[11px]">
-              Không áp dụng thêm mã giảm giá
-            </span>
-          </div>
-        ) : (
-        <div>
-          <label
-            htmlFor="couponCode"
-            className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5"
-          >
-            Mã giảm giá
-          </label>
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <input
-                id="couponCode"
-                type="text"
-                placeholder="Nhập mã giảm giá..."
-                value={couponCode}
-                disabled={isLoading || !canPurchase || appliedCoupon !== null}
-                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                className="w-full rounded-xl border border-slate-200 dark:border-zinc-800/80 bg-slate-50 dark:bg-[#131926] py-2 pl-9 pr-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 uppercase focus:border-blue-600 focus:outline-none font-mono"
-              />
-              <Ticket className="absolute left-3 top-2.5 h-4 w-4 text-blue-600 dark:text-blue-400" />
-            </div>
-
-            {appliedCoupon ? (
-              <button
-                type="button"
-                onClick={handleRemoveCoupon}
-                className="px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center gap-1 transition-all"
-              >
-                <CloseIcon className="h-3.5 w-3.5 text-rose-500" />
-                <span>Hủy</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={handleApplyCoupon}
-                disabled={isValidatingCoupon || !couponCode.trim() || !canPurchase}
-                className="px-3.5 py-2 rounded-xl bg-zinc-900 dark:bg-white disabled:opacity-50 text-white dark:text-zinc-950 text-xs font-semibold hover:bg-zinc-800 dark:hover:bg-zinc-100 flex items-center gap-1.5 transition-all shadow-sm"
-              >
-                {isValidatingCoupon ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Tag className="h-3.5 w-3.5" />
-                )}
-                <span>Áp dụng</span>
-              </button>
-            )}
-          </div>
-
-          {/* Coupon Feedback */}
-          {couponFeedback && (
-            <p
-              className={`mt-1 text-xs ${
-                couponFeedback.type === "success"
-                  ? "text-emerald-600 dark:text-emerald-400 font-medium"
-                  : "text-rose-500"
-              }`}
-            >
-              {couponFeedback.message}
-            </p>
-          )}
-
-          {appliedCoupon && (
-            <div className="mt-2 inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs">
-              <span className="font-mono font-bold">{appliedCoupon.code}</span>
-              <span>giảm -{formatVND(appliedCoupon.discountAmount)}</span>
+              )}
             </div>
           )}
-        </div>
-        )}
 
-        {/* Error notification banner */}
-        {errorMessage && (
-          <div className="flex items-start gap-2.5 rounded-xl border border-rose-500/20 bg-rose-50 dark:bg-rose-950/30 p-3 text-xs text-rose-600 dark:text-rose-400">
-            <AlertCircle className="h-4 w-4 shrink-0 text-rose-500 mt-0.5" />
-            <span>{errorMessage}</span>
-          </div>
-        )}
+          {/* Error notification */}
+          {errorMessage && (
+            <div className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
+              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
 
-        {/* Action Buttons: Add to cart + Buy Now */}
-        <div>
+          {/* 4. Total Payment Summary (shown clearly when qty > 1 or coupon applied) */}
+          {(quantity > 1 || appliedCoupon) && (
+            <div className="flex items-center justify-between rounded-xl bg-secondary/50 border border-border px-3.5 py-2.5 text-xs">
+              <span className="text-muted-foreground font-medium">
+                Tổng thanh toán ({quantity.toLocaleString("vi-VN")} {isCustomQuantity ? unitLabel : "sản phẩm"}):
+              </span>
+              <span className="text-base font-extrabold text-primary font-mono">
+                {formatVND(netTotal)}
+              </span>
+            </div>
+          )}
+
+          {/* 5. Primary Action Buttons */}
           {canPurchase ? (
-            <div className="flex flex-col sm:flex-row gap-2.5">
+            <div className="flex gap-2.5 pt-1">
               <button
                 type="button"
                 onClick={handleAddToCart}
                 disabled={isLoading}
-                className="flex-1 flex min-h-[46px] items-center justify-center gap-2 rounded-xl border border-border bg-secondary text-secondary-foreground hover:bg-secondary/80 py-2.5 px-4 text-sm font-semibold transition-all active:scale-[0.99] shadow-2xs"
+                className="flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-border bg-secondary/70 hover:bg-secondary text-foreground px-4 text-sm font-semibold transition-all active:scale-[0.99]"
+                title="Thêm vào giỏ hàng"
               >
-                <ShoppingBag className="h-4 w-4 text-primary" />
-                <span>Thêm vào giỏ</span>
+                <ShoppingBag className="h-4 w-4" />
+                <span className="hidden sm:inline">Thêm giỏ</span>
               </button>
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`flex-1 flex min-h-[46px] items-center justify-center gap-2 rounded-xl py-2.5 px-5 text-sm font-bold shadow-md disabled:opacity-60 transition-all active:scale-[0.99] ${
-                  !inStock && allowsManualFulfillment
-                    ? "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-600/20"
-                    : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm shadow-primary/25 active:scale-[0.98]"
-                }`}
+                className="flex-1 flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground py-3 px-5 text-sm font-bold shadow-sm transition-all active:scale-[0.99] disabled:opacity-60"
               >
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Đang tạo đơn...</span>
+                    <span>Đang tạo mã QR...</span>
                   </>
-                ) : !inStock && allowsManualFulfillment ? (
-                  <span>Mua ngay (Cấp mã thủ công)</span>
                 ) : (
-                  <span>Mua ngay</span>
+                  <>
+                    <Zap className="h-4 w-4 fill-current" />
+                    <span>Mua ngay • {formatVND(netTotal)}</span>
+                  </>
                 )}
               </button>
             </div>
@@ -1359,96 +1148,75 @@ export default function ProductPurchaseBox({
             <button
               type="button"
               disabled
-              className="w-full rounded-xl bg-muted py-3 px-6 text-sm font-semibold text-muted-foreground cursor-not-allowed"
+              className="w-full min-h-[48px] rounded-xl bg-muted py-3 px-6 text-sm font-semibold text-muted-foreground cursor-not-allowed"
+            >
+              Tạm hết hàng
+            </button>
+          )}
+        </form>
+
+        {/* Minimal Footer Guarantee */}
+        <div className="mt-4 pt-3.5 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5">
+            <KeyRound className="h-3.5 w-3.5 text-primary" />
+            Quét VietQR tự động 5 giây
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+            Bảo hành 1 đổi 1
+          </span>
+        </div>
+      </div>
+
+      {/* Mobile Sticky Bottom Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t border-border bg-card/95 backdrop-blur-md px-4 py-3 shadow-2xl safe-area-bottom flex items-center justify-between gap-3">
+        <div className="flex flex-col min-w-0 flex-1">
+          <span className="text-xs text-muted-foreground truncate">{productTitle}</span>
+          <span className="text-base font-extrabold text-primary font-mono truncate">
+            {formatVND(netTotal)}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          {canPurchase && (
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              disabled={isLoading}
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border border-border bg-secondary text-foreground"
+              aria-label="Thêm vào giỏ"
+            >
+              <ShoppingBag className="h-4 w-4" />
+            </button>
+          )}
+
+          {canPurchase ? (
+            <button
+              type="button"
+              disabled={isLoading}
+              onClick={(e) => {
+                if (requiresLink && !targetLink.trim()) {
+                  const box = document.getElementById("purchase-config-box") || document.getElementById("targetLink");
+                  if (box) box.scrollIntoView({ behavior: "smooth", block: "center" });
+                  setErrorMessage("Vui lòng dán đường link cần thực hiện.");
+                  return;
+                }
+                handleCheckout(e);
+              }}
+              className="min-h-[44px] px-5 rounded-xl bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center shadow-sm"
+            >
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <span>Mua ngay</span>}
+            </button>
+          ) : (
+            <button
+              disabled
+              className="min-h-[44px] px-4 rounded-xl bg-muted text-muted-foreground font-semibold text-xs"
             >
               Hết hàng
             </button>
           )}
         </div>
-      </form>
-
-      {/* Basic product notes */}
-      <div className="mt-5 pt-4 border-t border-border space-y-1.5 text-xs text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <Clock className="h-3.5 w-3.5 text-primary shrink-0" />
-          <span>Thanh toán quét mã VietQR nhận thông tin tự động</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="h-3.5 w-3.5 text-accent shrink-0" />
-          <span>Hỗ trợ kỹ thuật và bảo hành theo thời hạn gói</span>
-        </div>
       </div>
-    </div>
-
-    {/* Mobile Fixed Sticky Bottom Purchase Bar */}
-    <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t border-border bg-card/95 backdrop-blur-md px-4 py-3 shadow-2xl safe-area-bottom flex items-center justify-between gap-3">
-      <div className="flex flex-col min-w-0 flex-1">
-        <span className="text-xs font-semibold text-foreground truncate">
-          {productTitle}
-        </span>
-        <div className="flex items-baseline gap-1.5 flex-wrap">
-          <span className="text-base font-extrabold text-primary font-mono truncate">
-            {formatVND(netTotal)}
-          </span>
-          {originalPrice && originalPrice > price && (
-            <span className="text-xs text-muted-foreground line-through font-mono">
-              {formatVND(originalPrice * quantity)}
-            </span>
-          )}
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2 shrink-0">
-        {canPurchase && (
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            disabled={isLoading}
-            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border border-border bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all active:scale-95"
-            title="Thêm vào giỏ"
-            aria-label="Thêm vào giỏ"
-          >
-            <ShoppingBag className="h-4 w-4 text-primary" />
-          </button>
-        )}
-
-        {canPurchase ? (
-          <button
-            type="button"
-            disabled={isLoading}
-            onClick={(e) => {
-              if (requiresLink && !targetLink.trim()) {
-                const box = document.getElementById("purchase-config-box") || document.getElementById("targetLink");
-                if (box) {
-                  box.scrollIntoView({ behavior: "smooth", block: "center" });
-                  setTimeout(() => {
-                    const input = document.getElementById("targetLink");
-                    if (input) input.focus();
-                  }, 400);
-                }
-                setErrorMessage("Vui lòng nhập đường link mục tiêu trước khi thanh toán.");
-                return;
-              }
-              handleCheckout(e);
-            }}
-            className="min-h-[44px] px-4 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs sm:text-sm flex items-center justify-center shadow-md shadow-primary/20 active:scale-95 transition-all shrink-0"
-          >
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <span>Mua ngay →</span>
-            )}
-          </button>
-        ) : (
-          <button
-            disabled
-            className="min-h-[44px] px-4 rounded-xl bg-muted text-muted-foreground font-semibold text-xs cursor-not-allowed"
-          >
-            Hết hàng
-          </button>
-        )}
-      </div>
-    </div>
-  </>
+    </>
   );
 }
