@@ -57,6 +57,12 @@ if [ -f scripts/sync-banners-and-failover.js ]; then
   node scripts/sync-banners-and-failover.js || true
 fi
 
+# Standardize all product descriptions and realistic original prices
+if [ -f scripts/standardize-all-product-content.js ]; then
+  echo "[Entrypoint] Standardizing all product descriptions..."
+  node scripts/standardize-all-product-content.js || true
+fi
+
 # Sanitize all products in database to guarantee 100% white-label customer storefront
 if [ -f scripts/sanitize-db-white-label.js ]; then
   echo "[Entrypoint] Sanitizing database records for strict white-label storefront..."

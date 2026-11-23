@@ -541,7 +541,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Bước 3: Chuyển đổi sang Workspace Business để kích hoạt quyền lợi",
       },
       {
-        text: "Bước 4: Sử dụng toàn bộ tính năng cao cấp: GPT-4o, o3-mini, Canvas, tạo ảnh DALL-E với hạn mức tin nhắn cao hơn gói Plus thông thường. Toàn bộ lịch sử trò chuyện của bạn là riêng tư 100%.",
+        text: "Bước 4: Sử dụng toàn bộ tính năng cao cấp: GPT-6 series, GPT-5 Reasoning, OpenAI o3 & o3-mini, o1, GPT-4.5 High-EQ, Canvas, tạo ảnh DALL·E 3 với hạn mức tin nhắn cao hơn gói Plus thông thường. Toàn bộ lịch sử trò chuyện của bạn là riêng tư 100%.",
         caption: "Bước 4: Trải nghiệm tính năng ChatGPT Business bản quyền",
       },
     ],
@@ -790,6 +790,42 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
     note: "CHÍNH SÁCH BẢO HÀNH (GÓI KBH): Bảo hành đăng nhập thành công và chuẩn xác số dư 31 tỷ token ban đầu lúc nhận. Sau khi đăng nhập thành công: KHÔNG BẢO HÀNH THỜI GIAN SỬ DỤNG đối với gói trải nghiệm giá rẻ.",
     docsUrl: "https://muse.ai",
   },
+  // ==========================================
+  // 31. NORDVPN PREMIUM 3 THÁNG
+  // ==========================================
+  "nordvpn-premium-3-thang": {
+    title: "Hướng dẫn đăng nhập & Sử dụng NordVPN Premium",
+    steps: [
+      {
+        text: "Bước 1: Tải ứng dụng NordVPN chính thức trên máy tính (Windows / macOS) hoặc điện thoại (iOS / Android) tại https://nordvpn.com/download/",
+        caption: "Bước 1: Cài đặt phần mềm NordVPN chính hãng",
+      },
+      {
+        text: "Bước 2: Mở ứng dụng và chọn 'Log In' (Đăng nhập) bằng Email và Mật khẩu được bàn giao trong đơn hàng.",
+        caption: "Bước 2: Đăng nhập tài khoản NordVPN",
+      },
+      {
+        text: "Bước 3: Chọn quốc gia muốn kết nối trên bản đồ và bấm 'Quick Connect' để đổi IP tốc độ cao và bảo mật kết nối.",
+        caption: "Bước 3: Kết nối VPN tốc độ cao tại hơn 111 quốc gia",
+      },
+    ],
+    note: "Bảo hành 1 đổi 1 suốt 90 ngày (3 tháng). Vui lòng không tự ý đổi mật khẩu hoặc email của tài khoản.",
+    docsUrl: "https://nordvpn.com",
+  },
+
+  // ==========================================
+  // 32. DỊCH VỤ TĂNG TƯƠNG TÁC MẠNG XÃ HỘI (TIKTOK / FACEBOOK)
+  // ==========================================
+  "smm-service": {
+    title: "Hướng dẫn đặt đơn & theo dõi tiến độ Tăng tương tác MXH",
+    steps: [
+      "Bước 1: Mở bài viết, video hoặc trang cá nhân TikTok / Facebook của bạn, kiểm tra chắc chắn đã bật chế độ Công khai (Public).",
+      "Bước 2: Sao chép đường dẫn (Copy Link) và dán vào ô 'Đường link' ở khung đặt hàng kèm số lượng cần tăng.",
+      "Bước 3: Sau khi quét VietQR thanh toán, hệ thống tự động đẩy đơn lên máy chủ xử lý ngay lập tức (thời gian bắt đầu lên tương tác từ 1 – 15 phút).",
+    ],
+    note: "Trong quá trình đơn đang chạy, vui lòng không ẩn video/bài viết, không chuyển tài khoản sang Riêng tư và không đổi Username.",
+  },
+
 };
 
 /**
@@ -941,6 +977,23 @@ export function resolveProductInstruction(params: {
   if (cleanSlug.includes("suno") || cleanTitle.includes("suno")) {
     return PRODUCT_GUIDES["suno-ai-pro-1-thang"];
   }
+
+  // 2.19 NordVPN
+  if (cleanSlug.includes("nordvpn") || cleanTitle.includes("nordvpn")) {
+    return PRODUCT_GUIDES["nordvpn-premium-3-thang"];
+  }
+
+  // 2.20 SMM Services (TikTok / Facebook)
+  if (
+    cleanSlug.includes("tang-tim") ||
+    cleanSlug.includes("tang-like") ||
+    cleanSlug.includes("tang-follow") ||
+    cleanTitle.includes("tiktok") ||
+    cleanTitle.includes("facebook")
+  ) {
+    return PRODUCT_GUIDES["smm-service"];
+  }
+
 
   // 3. Fallback theo Product Type mặc định
   switch (type) {

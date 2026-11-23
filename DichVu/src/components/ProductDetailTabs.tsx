@@ -67,6 +67,18 @@ export default function ProductDetailTabs({
 
   const isCapCut = slugLower.includes("capcut") || titleLower.includes("capcut");
   const isCapCut7D = isCapCut && (slugLower.includes("7-ngay") || titleLower.includes("7 day") || titleLower.includes("7 ngày"));
+  const isSingleDeviceApp =
+    isCapCut ||
+    slugLower.includes("meitu") ||
+    slugLower.includes("wink") ||
+    slugLower.includes("xingtu");
+  const singleDeviceAppName = isCapCut
+    ? `CapCut Pro (${isCapCut7D ? "7 ngày" : "30 ngày"})`
+    : slugLower.includes("xingtu")
+    ? "Xingtu VIP (30 ngày)"
+    : slugLower.includes("meitu")
+    ? "Meitu VIP (7 ngày)"
+    : "Wink VIP+ (7 ngày)";
 
   const handleCopy = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
@@ -184,16 +196,16 @@ console.log(res.choices[0].message.content);`,
           </div>
 
           {/* 2. Product-Specific Crucial Rule (Only shown if the product has strict rules) */}
-          {isCapCut && (
+          {isSingleDeviceApp && (
             <div className="rounded-2xl border border-amber-500/25 bg-amber-500/5 p-4 sm:p-5 space-y-2">
               <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-bold text-xs sm:text-sm">
                 <AlertTriangle className="h-4 w-4 shrink-0" />
-                <span>Lưu ý quan trọng khi dùng CapCut Pro ({isCapCut7D ? "7 ngày" : "30 ngày"})</span>
+                <span>Quy định bảo hành {singleDeviceAppName}</span>
               </div>
               <ul className="text-xs sm:text-sm text-muted-foreground space-y-1.5 list-disc list-inside">
                 <li>Chỉ đăng nhập trên <strong>1 thiết bị duy nhất</strong>.</li>
                 <li>Không bấm đăng xuất (Logout) và không xóa ứng dụng trong thời gian sử dụng.</li>
-                <li>Bảo hành 1 đổi 1 suốt thời hạn nếu mất Pro khi dùng đúng quy định trên.</li>
+                <li>Bảo hành 1 đổi 1 suốt thời hạn nếu mất VIP / Pro khi dùng đúng quy định trên.</li>
               </ul>
             </div>
           )}

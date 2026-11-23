@@ -175,39 +175,13 @@ async function main() {
     });
     console.log("[SyncBanners] Updated Claude API product thumbnails to /images/products/claude-api.svg");
 
-    // 11. Normalize all AI product descriptions across database
+    // 11. Ensure ChatGPT Plus thumbnail
     await prisma.product.updateMany({
       where: { slug: "chatgpt-plus-1-thang" },
       data: {
         thumbnailUrl: "/images/products/chatgpt-plus.svg",
-        description: "Tài khoản ChatGPT Plus 1 tháng chính chủ, mở khóa toàn bộ mô hình thế hệ mới nhất của OpenAI (GPT-6 series, GPT-5 Reasoning, OpenAI o3, o1, GPT-4.5), DALL·E 3, Canvas và Advanced Voice. Bảo hành trọn thời gian sử dụng."
       }
     });
-
-    const codexProducts = await prisma.product.findMany({
-      where: {
-        OR: [
-          { slug: { startsWith: "cdx-" } },
-          { slug: { startsWith: "codex-" } }
-        ]
-      }
-    });
-
-    for (const cdx of codexProducts) {
-      if (cdx.description && (cdx.description.includes("GPT-4o") || cdx.description.includes("Claude 3.5") || cdx.description.includes("Gemini 1.5") || cdx.description.includes("Gemini 2.0") || cdx.description.includes("Gemini 2.5"))) {
-        let updatedDesc = cdx.description
-          .replace(/Claude 3\.5 Sonnet/g, "Claude Sonnet 5.5")
-          .replace(/Claude Opus/g, "Claude Opus 5.5")
-          .replace(/GPT-4o/g, "GPT-6, GPT-5, OpenAI o3 & o1")
-          .replace(/Gemini 2\.0 Flash & 2\.0 Pro \(2M Context\)/g, "Gemini 4 Argon & 3.8 Flash (2M Context)")
-          .replace(/Gemini 2\.5 \/ 3 Pro/g, "Gemini 4 Argon & 3.8 Flash (2M Context)")
-          .replace(/Gemini 1\.5 Pro/g, "Gemini 4 Argon & 3.8 Flash (2M Context)");
-        await prisma.product.update({
-          where: { id: cdx.id },
-          data: { description: updatedDesc }
-        });
-      }
-    }
     console.log("[SyncBanners] Normalized OpenAI & Gemini product descriptions in DB.");
 
     console.log("[SyncBanners] All product banners and failover mappings synced successfully.");
