@@ -145,6 +145,9 @@ export function getProductCommissionRate(
 ): number {
   const slug = (productSlug || "").toLowerCase();
 
+  if (slug.includes("youtube")) {
+    return 8.0; // 8% for YouTube Premium (CTV nhận ~22.400đ/đơn 1 năm, Shop bảo đảm lãi ròng an toàn)
+  }
   if (slug.includes("adobe-full-apps")) {
     return 6.0; // 6% for Adobe Full Apps to safeguard profit margin
   }

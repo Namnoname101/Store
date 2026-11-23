@@ -55,6 +55,8 @@ yarn-error.log*
 # Backups & QA artifacts
 *.backup
 *.phase4_backup
+backups/
+.vite/
 .superpowers/qa-screenshots/
 *.tmp
 *.temp

@@ -46,7 +46,14 @@ export default function GroupedProductCard({
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const activeVariant = sortedVariants[selectedIndex] || sortedVariants[0];
-  const inStock = activeVariant.stockCount > 0;
+  const isYoutube =
+    (activeVariant?.slug || "").toLowerCase().includes("youtube") ||
+    activeVariant?.title.toLowerCase().includes("youtube");
+  const isManualAllowed =
+    isYoutube ||
+    (activeVariant?.slug || "").toLowerCase().includes("up-gemini") ||
+    activeVariant?.title.toLowerCase().includes("up pro");
+  const inStock = isManualAllowed || activeVariant.stockCount > 0;
 
   const cleanBrand = brandName.replace(/AI$/i, "").trim().toUpperCase();
   const badgeLabel = `API ${cleanBrand}`;
@@ -171,7 +178,12 @@ export default function GroupedProductCard({
 
           {/* 3-Tier Stock Status */}
           <div className="shrink-0">
-            {activeVariant.stockCount > 5 ? (
+            {isManualAllowed ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent font-mono">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+                {isYoutube ? "Gia hạn 24/7" : "Nhận nâng 24/7"}
+              </span>
+            ) : activeVariant.stockCount > 5 ? (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent font-mono">
                 <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
                 Sẵn hàng ({activeVariant.stockCount})

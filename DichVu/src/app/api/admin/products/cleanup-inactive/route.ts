@@ -41,6 +41,7 @@ export async function POST(req: NextRequest) {
       "tang-like-facebook-1000",
       "tang-follow-tiktok-1000",
       "tang-tim-tiktok-1000",
+      "youtube-premium-1-thang",
     ];
 
     const allProducts = await prisma.product.findMany({

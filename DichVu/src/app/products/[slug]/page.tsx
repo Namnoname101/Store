@@ -117,6 +117,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   const isSuno = slugLower.includes("suno") || titleLower.includes("suno");
   const isHMA = slugLower.includes("hma") || titleLower.includes("hma");
+  const isYoutube = slugLower.includes("youtube") || titleLower.includes("youtube");
   const isGeminiSlot = slugLower.includes("gemini") && slugLower.includes("slot");
   const isGeminiFamily =
     slugLower.includes("gemini") &&
@@ -127,6 +128,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   const deliveryFormat = isSMM
     ? "Hệ thống tự động khởi tạo theo link mục tiêu"
+    : isYoutube
+    ? "Mời nhóm Family vào Gmail chính chủ (Admin bấm Done là xong)"
     : isGeminiUpPro5TB
     ? "Nâng trực tiếp trên Gmail của bạn (Bấm Done là xong)"
     : isCodex
@@ -151,6 +154,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   const durationLabel = isSMM
     ? "Hoàn thành theo số lượng đặt mua"
+    : isYoutube && (slugLower.includes("1-thang") || titleLower.includes("1 tháng") || titleLower.includes("30 ngày"))
+    ? "30 ngày (1 tháng) - Bảo hành trọn thời hạn"
+    : isYoutube
+    ? "30 ngày (1 tháng) - Bảo hành trọn thời hạn"
     : isGeminiUpPro5TB
     ? "12 tháng (1 năm) - Nâng chính chủ 5TB"
     : isCodex

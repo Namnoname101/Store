@@ -44,8 +44,8 @@ async function activateInDb(dbUrl) {
         slug: "api-claude-10-max-10-credit",
         oldSlug: "cla-0036-api-claude-10-max-10-credit",
         title: "API Claude 10$ Max (10$ Credit)",
-        price: 18000,
-        originalPrice: 22500,
+        price: 29000,
+        originalPrice: 250000,
         description:
           "Hạn mức 10$ Credit API Anthropic Claude chính hãng tốc độ cao. Cấp phát key tự động 24/7, hỗ trợ Claude Sonnet 5.5 & Opus 5.5, tương thích Cursor IDE, Claude Code CLI, Cline, Roo Code và SDK.",
         supplierCode: "CLA-0036",
@@ -56,8 +56,8 @@ async function activateInDb(dbUrl) {
         slug: "api-claude-30-max-30-credit",
         oldSlug: "cla-0042-api-claude-30-max-30-credit",
         title: "API Claude 30$ Max (30$ Credit)",
-        price: 54000,
-        originalPrice: 67500,
+        price: 79000,
+        originalPrice: 750000,
         description:
           "Hạn mức 30$ Credit API Anthropic Claude chính hãng tốc độ cao. Cấp phát key tự động 24/7, hỗ trợ Claude 5.5 & 5.6 (Sonnet 5.5 / Opus 5.5), tối ưu cho lập trình viên và dự án cá nhân.",
         supplierCode: "CLA-0042",
@@ -68,8 +68,8 @@ async function activateInDb(dbUrl) {
         slug: "api-claude-50-max-50-credit",
         oldSlug: "cla-0044-api-claude-50-max-50-credit",
         title: "API Claude 50$ Max (50$ Credit)",
-        price: 90000,
-        originalPrice: 112500,
+        price: 129000,
+        originalPrice: 1250000,
         description:
           "Hạn mức 50$ Credit API Anthropic Claude chính hãng tốc độ cao. Gói phổ biến nhất cho lập trình viên chuyên nghiệp, hỗ trợ Claude Opus 5.5 & Claude Sonnet 5.5 (Claude 5.5/5.6).",
         supplierCode: "CLA-0044",
@@ -80,8 +80,8 @@ async function activateInDb(dbUrl) {
         slug: "api-claude-100-max-100-credit",
         oldSlug: "cla-0037-api-claude-100-max-100-credit",
         title: "API Claude 100$ Max (100$ Credit)",
-        price: 180000,
-        originalPrice: 225000,
+        price: 249000,
+        originalPrice: 2500000,
         description:
           "Hạn mức 100$ Credit API Anthropic Claude chính hãng tốc độ cao. Dành cho lập trình viên làm việc liên tục và team dự án.",
         supplierCode: "CLA-0037",
@@ -92,12 +92,12 @@ async function activateInDb(dbUrl) {
         slug: "api-claude-1-thang-max-5000-credit",
         oldSlug: "cla-0083-api-claude-1-thang-max-5000-credit",
         title: "API Claude 1 tháng Max (5000$ Credit)",
-        price: 3000000,
-        originalPrice: 3750000,
+        price: 2490000,
+        originalPrice: 125000000,
         description:
           "Hạn mức 5.000$ Credit API Anthropic Claude Max chính hãng tốc độ cao. Tự động cấp key tức thì sau khi thanh toán, dùng cho hệ thống Production tải lớn.",
         supplierCode: "CLA-0083",
-        supplierPrice: 2500000,
+        supplierPrice: 1500000,
         supplierStock: 10,
       },
     ];
@@ -145,11 +145,34 @@ async function activateInDb(dbUrl) {
         console.log(`✓ Created & Activated: ${product.title} (${product.slug})`);
       }
 
-      // Option 1: Claude API products use LOCAL_STOCK (warehouse inventory).
-      await prisma.supplierProductMapping.deleteMany({
-        where: { productId: product.id },
+      // Ensure supplier mapping records accurate cost price & gross markup
+      const genzSupplier = await prisma.supplier.findFirst({
+        where: { code: "GENZSHOP" },
       });
-      console.log(`  └─ Configured as LOCAL_STOCK (Kho hàng nội bộ sẵn có)`);
+      if (genzSupplier) {
+        await prisma.supplierProductMapping.upsert({
+          where: { productId: product.id },
+          update: {
+            supplierId: genzSupplier.id,
+            supplierProductCode: pkg.supplierCode,
+            supplierPrice: pkg.supplierPrice,
+            markupType: "FIXED_AMOUNT",
+            markupValue: pkg.price - pkg.supplierPrice,
+            isAutoSync: false,
+          },
+          create: {
+            productId: product.id,
+            supplierId: genzSupplier.id,
+            supplierProductCode: pkg.supplierCode,
+            supplierPrice: pkg.supplierPrice,
+            supplierStock: pkg.supplierStock,
+            markupType: "FIXED_AMOUNT",
+            markupValue: pkg.price - pkg.supplierPrice,
+            isAutoSync: false,
+          },
+        });
+      }
+      console.log(`  └─ Configured as LOCAL_STOCK with cost=${pkg.supplierPrice.toLocaleString("vi-VN")}đ, markup=+${(pkg.price - pkg.supplierPrice).toLocaleString("vi-VN")}đ`);
     }
 
     // 3. Deactivate old duplicate Codex products if present

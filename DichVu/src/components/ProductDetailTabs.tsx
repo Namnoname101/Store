@@ -20,6 +20,7 @@ import {
   XCircle,
   ShieldAlert,
   Bot,
+  Play,
 } from "lucide-react";
 import CodexApiGuideHub from "@/components/CodexApiGuideHub";
 import { AI_FRONTIER_MODELS, DEFAULT_CLAUDE_MODEL_ID } from "@/lib/constants/ai-models";
@@ -135,6 +136,11 @@ export default function ProductDetailTabs({
     ? {
         title: "Bảo hành kích hoạt bản quyền 5 thiết bị",
         desc: "Bảo hành 1 đổi 1 trong suốt thời hạn sử dụng nếu key phát sinh lỗi kích hoạt trên ứng dụng HMA.",
+      }
+    : slugLower.includes("youtube") || titleLower.includes("youtube")
+    ? {
+        title: "Bảo hành 1-Đổi-1 trọn thời hạn 30 ngày (1 tháng)",
+        desc: "Bảo hành suốt thời gian sử dụng 30 ngày (1 tháng). Nếu nhóm Family gặp sự cố, shop hỗ trợ add lại nhóm mới hoặc hoàn tiền theo tỷ lệ thời gian còn lại nhanh chóng trong 15-30 phút.",
       }
     : catSlugLower.includes("smm") || product.type === "CUSTOM"
     ? {
@@ -464,6 +470,24 @@ main();`,
                 <li><strong>Tuyệt đối KHÔNG ĐĂNG XUẤT (Logout):</strong> Đăng xuất sẽ làm mất quyền Pro của tài khoản.</li>
                 <li><strong>Tuyệt đối KHÔNG XÓA APP:</strong> Xóa ứng dụng và cài lại sẽ được tính là thiết bị mới, hệ thống sẽ từ chối bảo hành.</li>
                 <li><strong>Chính sách bảo hành:</strong> Cam kết bảo hành 1 đổi 1 trong suốt {isCapCut7D ? "7 ngày" : "30 ngày"} nếu tài khoản tuân thủ đúng các quy định trên mà bị mất Pro.</li>
+              </ul>
+            </div>
+          )}
+
+          {/* YouTube Family Technical Notice */}
+          {(slugLower.includes("youtube") || titleLower.includes("youtube")) && (
+            <div className="rounded-2xl border border-red-500/20 bg-red-500/5 dark:bg-red-950/10 p-5 sm:p-6 shadow-xs space-y-3">
+              <div className="flex items-center gap-2 text-red-600 dark:text-red-400 font-bold text-sm">
+                <Play className="h-4 w-4 shrink-0 fill-current" />
+                <span>QUY TRÌNH GIA HẠN YOUTUBE PREMIUM CHÍNH CHỦ (AN TÂM 100%)</span>
+              </div>
+              <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside leading-relaxed">
+                <li><strong>Không cần mật khẩu:</strong> Tuyệt đối bảo mật, shop KHÔNG yêu cầu mật khẩu Gmail hay bất kỳ thông tin nhạy cảm nào. Bạn chỉ cần cung cấp địa chỉ Gmail nhận thư mời.</li>
+                <li><strong>Cách thức kích hoạt:</strong> Sau khi thanh toán, Admin sẽ gửi lời mời tham gia nhóm Google Family vào Gmail của bạn. Bạn mở hòm thư Gmail và bấm nút <em>&quot;Chấp nhận lời mời&quot; (Accept Invitation)</em> là YouTube lập tức chuyển thành Premium.</li>
+                <li><strong>Đặc quyền YouTube Premium:</strong> Xem video 100% không quảng cáo trên mọi thiết bị (Smart TV, máy tính, iPhone, Android), tải video xem ngoại tuyến (offline) và chạy nền khi tắt màn hình.</li>
+                <li><strong>Bao gồm trọn gói YouTube Music:</strong> Mở khóa kho nhạc bản quyền hàng triệu bài hát, nghe nhạc tắt màn hình mượt mà, chất lượng âm thanh 256kbps cao nhất.</li>
+                <li><strong>Quy định Google:</strong> Gmail của quý khách trong vòng 12 tháng qua chưa đổi nhóm gia đình Google quá 1 lần (đây là chính sách chung của Google).</li>
+                <li><strong>Chính sách bảo hành:</strong> Bảo hành 1-đổi-1 trọn thời hạn gói. Nếu nhóm gia đình gặp bất kỳ sự cố nào, shop hỗ trợ add lại nhóm mới hoặc hoàn tiền theo tỷ lệ thời gian còn lại.</li>
               </ul>
             </div>
           )}

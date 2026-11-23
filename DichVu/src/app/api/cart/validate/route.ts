@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getLiveProductStock } from "@/services/live-stock.service";
+import { isAllowManualFulfillmentProduct } from "@/lib/product-types";
 
 interface ValidateCartItemInput {
   productId: string;
@@ -105,7 +106,8 @@ export async function POST(request: Request) {
           };
         }
 
-        if (!isSMM && liveStock < item.quantity) {
+        const allowsManual = isAllowManualFulfillmentProduct(dbProduct);
+        if (!isSMM && !allowsManual && liveStock < item.quantity) {
           isValid = false;
           return {
             productId: dbProduct.id,

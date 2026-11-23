@@ -73,7 +73,7 @@ async function run() {
         title: item.title,
         description: desc,
         thumbnailUrl: thumb,
-        price: item.creditUsd === 10 ? 22000 : item.creditUsd === 50 ? 110000 : item.creditUsd === 100 ? 220000 : item.creditUsd === 200 ? 440000 : 990000,
+        price: item.creditUsd === 10 ? 19000 : item.creditUsd === 50 ? 89000 : item.creditUsd === 100 ? 169000 : item.creditUsd === 200 ? 329000 : 749000,
         originalPrice: item.creditUsd === 10 ? 45000 : item.creditUsd === 50 ? 190000 : item.creditUsd === 100 ? 360000 : item.creditUsd === 200 ? 750000 : 1490000,
         type: "LICENSE_KEY",
         fulfillmentType: "API_DROPSHIP",

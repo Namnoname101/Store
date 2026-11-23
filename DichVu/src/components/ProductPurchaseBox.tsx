@@ -23,6 +23,7 @@ import {
   EyeOff,
   Sparkles,
   Check,
+  Play,
 } from "lucide-react";
 import { formatVND } from "@/lib/product-types";
 import { useCart } from "@/contexts/CartContext";
@@ -78,13 +79,19 @@ export default function ProductPurchaseBox({
     (slug || "").toLowerCase().startsWith("cla-") ||
     productTitle.toLowerCase().includes("claude");
 
+  const isYoutubeProduct =
+    (slug || "").toLowerCase().includes("youtube") ||
+    productTitle.toLowerCase().includes("youtube");
+
   const isAccountUpgrade =
-    (slug || "").toLowerCase().includes("up-gemini") ||
+    !isYoutubeProduct &&
+    ((slug || "").toLowerCase().includes("up-gemini") ||
     (slug || "").toLowerCase().includes("chinh-chu") ||
     productTitle.toLowerCase().includes("chính chủ") ||
-    productTitle.toLowerCase().includes("up pro");
+    productTitle.toLowerCase().includes("up pro"));
 
   const allowsManualFulfillment =
+    isYoutubeProduct ||
     isAccountUpgrade ||
     isClaudeProduct ||
     categorySlug === "ai-api" ||
@@ -123,6 +130,19 @@ export default function ProductPurchaseBox({
   const [customerApiKey, setCustomerApiKey] = useState<string>("");
   const [customerKeyUsername, setCustomerKeyUsername] = useState<string>("");
   const [upgradeAccountsRaw, setUpgradeAccountsRaw] = useState<string>("");
+  const [youtubeEmailInput, setYoutubeEmailInput] = useState<string>("");
+
+  const parsedYoutubeEmails = useMemo<Array<{ email: string; isValid: boolean }>>(() => {
+    if (!youtubeEmailInput.trim()) return [];
+    return youtubeEmailInput
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean)
+      .map((email) => ({
+        email,
+        isValid: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+      }));
+  }, [youtubeEmailInput]);
 
   const parsedUpgradeAccounts = useMemo<ParsedUpgradeAccount[]>(() => {
     if (!upgradeAccountsRaw.trim()) return [];
@@ -143,7 +163,7 @@ export default function ProductPurchaseBox({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Authentication state for mandatory account-bound orders
-  const [currentUser, setCurrentUser] = useState<{ id: string; username: string } | null>(null);
+  const [currentUser, setCurrentUser] = useState<{ id: string; username: string; email?: string } | null>(null);
   const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
 
@@ -240,7 +260,7 @@ export default function ProductPurchaseBox({
     message: string;
   } | null>(null);
 
-  const inStock = isAccountUpgrade || isCustomQuantity || effectiveStock > 0;
+  const inStock = isYoutubeProduct || isAccountUpgrade || isCustomQuantity || effectiveStock > 0;
   const canPurchase = inStock || allowsManualFulfillment;
   const totalPrice = price * (quantity || 0);
   const netTotal = appliedCoupon
@@ -371,7 +391,21 @@ export default function ProductPurchaseBox({
 
   const handleAddToCart = async () => {
     setErrorMessage(null);
-    if (isAccountUpgrade) {
+    if (isYoutubeProduct) {
+      if (parsedYoutubeEmails.length === 0) {
+        setErrorMessage("Vui lòng nhập địa chỉ Gmail nhận lời mời YouTube Family.");
+        return;
+      }
+      const invalid = parsedYoutubeEmails.find((a) => !a.isValid);
+      if (invalid) {
+        setErrorMessage(`Địa chỉ "${invalid.email}" chưa đúng định dạng Gmail (VD: example@gmail.com).`);
+        return;
+      }
+      if (parsedYoutubeEmails.length !== quantity) {
+        setErrorMessage(`Số lượng đặt mua là ${quantity}, nhưng bạn đã nhập ${parsedYoutubeEmails.length} địa chỉ Gmail. Vui lòng nhập đủ mỗi dòng 1 Gmail.`);
+        return;
+      }
+    } else if (isAccountUpgrade) {
       if (parsedUpgradeAccounts.length === 0) {
         setErrorMessage("Vui lòng nhập danh sách tài khoản theo định dạng: tk|mk|2fa (mỗi dòng 1 tài khoản).");
         return;
@@ -436,7 +470,9 @@ export default function ProductPurchaseBox({
       fulfillmentType: fulfillmentType || "LOCAL_STOCK",
       categorySlug,
       requiresLink,
-      targetLink: requiresLink
+      targetLink: isYoutubeProduct
+        ? parsedYoutubeEmails.map((e) => e.email).join("\n")
+        : requiresLink
         ? targetLink.trim()
         : isCodexProduct && customerApiKey.trim()
         ? customerApiKey.trim()
@@ -447,6 +483,22 @@ export default function ProductPurchaseBox({
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+
+    if (isYoutubeProduct) {
+      if (parsedYoutubeEmails.length === 0) {
+        setErrorMessage("Vui lòng nhập địa chỉ Gmail nhận lời mời YouTube Family.");
+        return;
+      }
+      const invalid = parsedYoutubeEmails.find((a) => !a.isValid);
+      if (invalid) {
+        setErrorMessage(`Địa chỉ "${invalid.email}" chưa đúng định dạng Gmail (VD: example@gmail.com).`);
+        return;
+      }
+      if (parsedYoutubeEmails.length !== quantity) {
+        setErrorMessage(`Số lượng đặt mua là ${quantity}, nhưng bạn đã nhập ${parsedYoutubeEmails.length} địa chỉ Gmail. Vui lòng nhập đủ mỗi dòng 1 Gmail.`);
+        return;
+      }
+    }
 
     if (requiresLink) {
       const linkErr = validateTargetLink(targetLink);
@@ -490,7 +542,9 @@ export default function ProductPurchaseBox({
     setIsLoading(true);
 
     try {
-      const finalCustomerNote = isAccountUpgrade
+      const finalCustomerNote = isYoutubeProduct
+        ? `YOUTUBE_FAMILY_INVITE\n` + parsedYoutubeEmails.map((e) => e.email).join("\n")
+        : isAccountUpgrade
         ? `UPGRADE_ACCOUNT\n` + parsedUpgradeAccounts.map((a: ParsedUpgradeAccount) => a.twoFa ? `${a.user}|${a.pass}|${a.twoFa}` : `${a.user}|${a.pass}`).join("\n")
         : requiresLink
         ? targetLink.trim()
@@ -505,7 +559,7 @@ export default function ProductPurchaseBox({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          customerEmail: null,
+          customerEmail: isYoutubeProduct && parsedYoutubeEmails.length > 0 ? parsedYoutubeEmails[0].email : null,
           customerNote: finalCustomerNote,
           couponCode: appliedCoupon?.code || undefined,
           items: [
@@ -582,7 +636,18 @@ export default function ProductPurchaseBox({
 
         {/* 3-Tier Stock status banner */}
         <div className="mb-5">
-          {isAccountUpgrade ? (
+          {isYoutubeProduct ? (
+            <div className="flex items-center justify-between rounded-xl bg-red-500/10 border border-red-500/30 px-3.5 py-2 text-xs font-medium text-red-600 dark:text-red-400">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+                <span>Gia hạn YouTube Premium chính chủ • Mời nhóm Family</span>
+              </div>
+              <span className="text-xs text-red-600 dark:text-red-400 font-semibold uppercase">Nhận đơn 24/7</span>
+            </div>
+          ) : isAccountUpgrade ? (
             <div className="flex items-center justify-between rounded-xl bg-purple-500/10 border border-purple-500/30 px-3.5 py-2 text-xs font-medium text-purple-700 dark:text-purple-300">
               <div className="flex items-center gap-2">
                 <span className="relative flex h-2 w-2">
@@ -825,6 +890,91 @@ export default function ProductPurchaseBox({
             </div>
           </div>
         ) : null}
+
+        {/* YouTube Family Invite Email Box */}
+        {isYoutubeProduct && (
+          <div className="space-y-3 rounded-2xl border border-red-500/30 bg-red-500/5 dark:bg-red-950/20 p-4">
+            <div className="flex items-center justify-between border-b border-red-500/20 pb-2.5">
+              <div className="flex items-center gap-2">
+                <div className="h-5 w-5 rounded bg-red-600 flex items-center justify-center text-white">
+                  <Play className="h-2.5 w-2.5 fill-current" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400">
+                  Địa chỉ Gmail nhận lời mời YouTube Family
+                </span>
+              </div>
+              <span className="text-[11px] font-mono font-bold text-red-600 dark:text-red-400 bg-red-500/10 px-2.5 py-0.5 rounded-full border border-red-500/20">
+                Không Cần Mật Khẩu
+              </span>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold text-foreground">
+                  Nhập địa chỉ Gmail của bạn <span className="text-destructive">*</span>
+                </label>
+                {parsedYoutubeEmails.length > 0 && (
+                  <span className="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
+                    <Check className="h-3 w-3" />
+                    <span>Đã nhận diện: {parsedYoutubeEmails.filter((e) => e.isValid).length} Gmail</span>
+                  </span>
+                )}
+              </div>
+
+              <div className="relative">
+                <textarea
+                  rows={Math.min(5, Math.max(2, (parsedYoutubeEmails.length || 1) + 1))}
+                  required
+                  value={youtubeEmailInput}
+                  disabled={isLoading}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setYoutubeEmailInput(val);
+                    if (errorMessage) setErrorMessage(null);
+                    const lines = val
+                      .split("\n")
+                      .map((l) => l.trim())
+                      .filter(Boolean);
+                    if (lines.length > 0) {
+                      setQuantity(lines.length);
+                    }
+                  }}
+                  placeholder={`example@gmail.com\n(Nếu mua cho nhiều người, hãy nhập mỗi dòng 1 Gmail)`}
+                  className="w-full rounded-xl border border-border bg-secondary/80 py-2.5 px-3.5 text-xs sm:text-sm font-mono text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-500/30 transition-all leading-relaxed"
+                />
+              </div>
+
+              <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground">
+                <span>Nhập chính xác <code className="text-foreground font-mono font-bold">@gmail.com</code> cần nâng cấp</span>
+                {currentUser?.email && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setYoutubeEmailInput(currentUser.email || "");
+                      setQuantity(1);
+                    }}
+                    className="text-red-600 dark:text-red-400 hover:underline font-semibold cursor-pointer"
+                  >
+                    Dùng email của tôi ({currentUser.email})
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Smart Tip Box */}
+            <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-xs text-red-900 dark:text-red-200 space-y-1.5">
+              <div className="font-bold flex items-center gap-1.5 text-red-700 dark:text-red-300">
+                <ShieldCheck className="h-4 w-4" />
+                <span>Quy trình kích hoạt YouTube Premium an tâm 100%:</span>
+              </div>
+              <ul className="text-[11.5px] leading-relaxed text-red-950/80 dark:text-red-200/80 list-disc list-inside space-y-1">
+                <li><strong>Tuyệt đối bảo mật:</strong> Không yêu cầu mật khẩu hay mã xác minh. Shop chỉ gửi lời mời vào Gmail của bạn.</li>
+                <li><strong>Cách kích hoạt:</strong> Sau khi thanh toán, Admin gửi thư mời Family vào Gmail. Bạn chỉ cần mở hộp thư Gmail bấm <strong>&quot;Chấp nhận lời mời&quot;</strong> là xong!</li>
+                <li><strong>Lưu ý:</strong> Trong vòng 12 tháng qua, Gmail của bạn chưa tham gia hoặc đổi nhóm gia đình Google quá 1 lần.</li>
+              </ul>
+            </div>
+          </div>
+        )}
 
         {/* Account Upgrade Inputs - Single Auto-detect Box */}
         {isAccountUpgrade && (

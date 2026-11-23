@@ -1,5 +1,6 @@
 import { prisma, ItemStatus, FulfillmentType } from "@/lib/prisma";
 import { getSupplierAdapter } from "@/services/suppliers/adapter.registry";
+import { isAllowManualFulfillmentProduct } from "@/lib/product-types";
 
 export interface LiveStockResult {
   productId: string;
@@ -178,16 +179,9 @@ async function executeLiveStockCheck(productIdOrSlug: string): Promise<LiveStock
         },
       });
 
-      // Update product status
-      // Out-of-stock products remain active on storefront displaying "Hết hàng" with disabled purchase button
-      const totalAvail = localStock + liveSupplierStock;
-      if (totalAvail > 0 && !product.isActive) {
-        await prisma.product.update({
-          where: { id: product.id },
-          data: { isActive: true },
-        });
-        product.isActive = true;
-      }
+      // Product visibility (isActive) is controlled by admin only.
+      // Out-of-stock products remain active on storefront displaying "Hết hàng" with disabled purchase button,
+      // so we must NOT auto re-activate products an admin has intentionally hidden.
     } catch (err: any) {
       console.warn(
         `[LiveStockService] Failed to fetch live supplier stock for ${product.slug}:`,
@@ -197,8 +191,9 @@ async function executeLiveStockCheck(productIdOrSlug: string): Promise<LiveStock
     }
   }
 
-  const totalStock = localStock + liveSupplierStock;
-  const isAvailable = product.isActive && totalStock > 0;
+  const isManualAllowed = isAllowManualFulfillmentProduct(product);
+  const totalStock = isManualAllowed ? Math.max(localStock + liveSupplierStock, 999) : localStock + liveSupplierStock;
+  const isAvailable = product.isActive && (totalStock > 0 || isManualAllowed);
 
   return {
     productId: product.id,

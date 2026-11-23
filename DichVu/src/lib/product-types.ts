@@ -166,6 +166,10 @@ export function isAllowManualFulfillmentProduct(product?: {
   const cat = (product.categorySlug || product.category?.slug || "").toLowerCase();
 
   return (
+    slug.includes("youtube") ||
+    title.includes("youtube") ||
+    slug.includes("up-gemini") ||
+    title.includes("up pro") ||
     slug.includes("claude") ||
     slug.startsWith("cla-") ||
     title.includes("claude") ||

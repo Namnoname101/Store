@@ -48,13 +48,16 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
   const titleLower = (title || "").toLowerCase();
   const slugLower = (slug || "").toLowerCase();
 
+  const isYoutube = slugLower.includes("youtube") || titleLower.includes("youtube");
+
   const isAccountUpgrade =
-    slugLower.includes("up-gemini") ||
+    !isYoutube &&
+    (slugLower.includes("up-gemini") ||
     slugLower.includes("chinh-chu") ||
     titleLower.includes("chính chủ") ||
-    titleLower.includes("up pro");
+    titleLower.includes("up pro"));
 
-  const hideExactStock = isSMM || isApiKey || isAccountUpgrade || stockCount >= 99999;
+  const hideExactStock = isSMM || isApiKey || isYoutube || isAccountUpgrade || stockCount >= 99999;
   const inStock = hideExactStock || stockCount > 0;
   let durationBadge: string | null = null;
   if (titleLower.includes("2 năm") || slugLower.includes("2-nam")) {
@@ -176,7 +179,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
             {hideExactStock ? (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent font-mono">
                 <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-                {isAccountUpgrade ? "Nhận nâng 24/7" : "Sẵn hàng"}
+                {isYoutube ? "Gia hạn 24/7" : isAccountUpgrade ? "Nhận nâng 24/7" : "Sẵn hàng"}
               </span>
             ) : stockCount > 5 ? (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent font-mono">

@@ -30,6 +30,7 @@ import { playSuccessChime } from "@/lib/sound";
 import ClaudeApiGuideHub from "@/components/ClaudeApiGuideHub";
 import CodexApiGuideHub from "@/components/CodexApiGuideHub";
 import GeminiProUpgradeCelebrationHub from "@/components/GeminiProUpgradeCelebrationHub";
+import YoutubePremiumCelebrationHub from "@/components/YoutubePremiumCelebrationHub";
 import { saveRecentOrder } from "@/lib/order-storage";
 import BuffProgressCard from "@/components/BuffProgressCard";
 import BrandLogo from "@/components/BrandLogo";
@@ -314,7 +315,15 @@ export default function SecretDisplay({
     )
   );
 
-  const isGeminiUpgradeOrder = Boolean(
+  const isYoutubeOrder = Boolean(
+    orderItems?.some((item) => {
+      const slug = (item.product?.slug || "").toLowerCase();
+      const title = (item.product?.title || "").toLowerCase();
+      return slug.includes("youtube") || title.includes("youtube");
+    })
+  );
+
+  const isGeminiUpgradeOrder = !isYoutubeOrder && Boolean(
     orderItems?.some((item) => {
       const slug = (item.product?.slug || "").toLowerCase();
       const title = (item.product?.title || "").toLowerCase();
@@ -915,6 +924,20 @@ export default function SecretDisplay({
     primarySlug.includes("codex") ||
     primaryTitle.toLowerCase().includes("api") ||
     firstSecret.startsWith("sk-");
+
+  if (isYoutubeOrder && validDeliveredItems.length > 0) {
+    return (
+      <div className="space-y-6">
+        <BuffProgressCard orderCode={orderCode} />
+        <YoutubePremiumCelebrationHub
+          orderCode={orderCode}
+          customerEmail={customerEmail}
+          customerNote={customerNote}
+          deliveredItems={validDeliveredItems}
+        />
+      </div>
+    );
+  }
 
   if (isGeminiUpgradeOrder && validDeliveredItems.length > 0) {
     return (

@@ -113,8 +113,6 @@ async function main() {
         where: { id: existingGpt.id },
         data: {
           thumbnailUrl: "/images/products/chatgpt-plus.svg",
-          price: 199000,
-          originalPrice: 499000,
         },
       });
     }
@@ -130,14 +128,13 @@ async function main() {
           await prisma.supplierProductMapping.delete({ where: { id: gemini.supplierMapping.id } }).catch(() => {});
         }
         if (gemini.orderItems && gemini.orderItems.length > 0) {
-          // Has order history: deactivate and hide completely
+          const cleanTitle = gemini.title.replace(/^(\[NGỪNG BÁN\]\s*)+/i, "").trim();
           await prisma.product.update({
             where: { id: gemini.id },
-            data: { isActive: false, title: "[NGỪNG BÁN] " + gemini.title },
+            data: { isActive: false, title: "[NGỪNG BÁN] " + cleanTitle },
           });
           console.log("[SyncBanners] Deactivated discontinued Gemini 18M product (preserved order history)");
         } else {
-          // No orders: delete items and product cleanly
           await prisma.productItem.deleteMany({ where: { productId: gemini.id } }).catch(() => {});
           await prisma.product.delete({ where: { id: gemini.id } });
           console.log("[SyncBanners] Cleanly removed discontinued Gemini 18M product");
@@ -147,214 +144,22 @@ async function main() {
       console.warn("[SyncBanners] Gemini removal notice:", e.message);
     }
 
-    // 5. Office 365 1 Năm
-    const office = await prisma.product.findUnique({
-      where: { slug: "office-365-1-nam" },
-      include: { supplierMapping: true },
-    });
-    if (office) {
-      await prisma.product.update({
-        where: { id: office.id },
-        data: {
-          thumbnailUrl: "/images/products/microsoft-365.svg",
-          price: 45000,
-          originalPrice: 120000,
-        },
-      });
-      if (office.supplierMapping) {
-        await prisma.supplierProductMapping.update({
-          where: { id: office.supplierMapping.id },
-          data: {
-            supplierPrice: 16800,
-            customConfig: JSON.stringify({
-              retailPrice: 45000,
-              resellerPrice: 28000,
-              supplierCost: 16800,
-              alternativeSuppliers: [
-                {
-                  supplierCode: "DSHOP_TELE",
-                  supplierProductCode: "OFFICE_365",
-                  supplierPrice: 22000,
-                  priority: 2,
-                },
-                {
-                  supplierCode: "NGHIENTRICK_TELE",
-                  supplierProductCode: "OFFICE_42",
-                  supplierPrice: 34500,
-                  priority: 3,
-                },
-              ],
-            }),
-          },
-        });
-      }
-      console.log(`[SyncBanners] Updated Office 365`);
-    }
-
-    // 6. Duolingo Super 12 Tháng
-    const duolingo = await prisma.product.findUnique({
-      where: { slug: "duolingo-super-12-thang" },
-      include: { supplierMapping: true },
-    });
-    if (duolingo) {
-      await prisma.product.update({
-        where: { id: duolingo.id },
-        data: {
-          thumbnailUrl: "/images/products/duolingo-super.svg",
-          price: 45000,
-          originalPrice: 190000,
-        },
-      });
-      if (duolingo.supplierMapping) {
-        await prisma.supplierProductMapping.update({
-          where: { id: duolingo.supplierMapping.id },
-          data: {
-            supplierPrice: 19800,
-            customConfig: JSON.stringify({
-              retailPrice: 45000,
-              resellerPrice: 32000,
-              supplierCost: 19800,
-              alternativeSuppliers: [
-                {
-                  supplierCode: "KHOMMO_TELE",
-                  supplierProductCode: "DUOLINGO_12M",
-                  supplierPrice: 25000,
-                  priority: 2,
-                },
-              ],
-            }),
-          },
-        });
-      }
-      console.log(`[SyncBanners] Updated Duolingo Super`);
-    }
-
-    // 7. CapCut Pro
-    const capcut30 = await prisma.product.findUnique({
-      where: { slug: "capcut-pro-30-ngay" },
-      include: { supplierMapping: true },
-    });
-    if (capcut30) {
-      await prisma.product.update({
-        where: { id: capcut30.id },
-        data: {
-          thumbnailUrl: "/images/products/capcut-pro.svg",
-          price: 75000,
-          originalPrice: 150000,
-        },
-      });
-      if (capcut30.supplierMapping) {
-        await prisma.supplierProductMapping.update({
-          where: { id: capcut30.supplierMapping.id },
-          data: {
-            supplierPrice: 38800,
-            customConfig: JSON.stringify({
-              retailPrice: 75000,
-              resellerPrice: 55000,
-              supplierCost: 38800,
-              alternativeSuppliers: [
-                {
-                  supplierCode: "DSHOP_TELE",
-                  supplierProductCode: "CAPCUT_PRO_MONTH",
-                  supplierPrice: 45000,
-                  priority: 2,
-                },
-                {
-                  supplierCode: "NGHIENTRICK_TELE",
-                  supplierProductCode: "CAPCUT_PRO_6M",
-                  supplierPrice: 155000,
-                  priority: 3,
-                },
-              ],
-            }),
-          },
-        });
-      }
-      console.log(`[SyncBanners] Updated CapCut Pro 30 Ngày`);
-    }
-
-    const capcut7 = await prisma.product.findUnique({ where: { slug: "capcut-pro-7-ngay" } });
-    if (capcut7) {
-      await prisma.product.update({
-        where: { id: capcut7.id },
-        data: { thumbnailUrl: "/images/products/capcut-pro.svg" },
+    // 5. Ensure thumbnails for Office 365, Duolingo, CapCut, Canva, NordVPN (preserve Admin DB prices!)
+    const thumbUpdates = [
+      { slug: "office-365-1-nam", thumbnailUrl: "/images/products/microsoft-365.svg" },
+      { slug: "duolingo-super-12-thang", thumbnailUrl: "/images/products/duolingo-super.svg" },
+      { slug: "capcut-pro-30-ngay", thumbnailUrl: "/images/products/capcut-pro.svg" },
+      { slug: "capcut-pro-7-ngay", thumbnailUrl: "/images/products/capcut-pro.svg" },
+      { slug: "canva-pro-1-thang", thumbnailUrl: "/images/products/canva-pro.svg" },
+      { slug: "nordvpn-premium-3-thang", thumbnailUrl: "/images/products/nordvpn.svg" },
+    ];
+    for (const item of thumbUpdates) {
+      await prisma.product.updateMany({
+        where: { slug: item.slug },
+        data: { thumbnailUrl: item.thumbnailUrl },
       });
     }
-
-    // 8. Canva Pro
-    const canva = await prisma.product.findUnique({
-      where: { slug: "canva-pro-1-thang" },
-      include: { supplierMapping: true },
-    });
-    if (canva) {
-      await prisma.product.update({
-        where: { id: canva.id },
-        data: {
-          thumbnailUrl: "/images/products/canva-pro.svg",
-          price: 29000,
-          originalPrice: 99000,
-        },
-      });
-      if (canva.supplierMapping) {
-        await prisma.supplierProductMapping.update({
-          where: { id: canva.supplierMapping.id },
-          data: {
-            supplierPrice: 9900,
-            customConfig: JSON.stringify({
-              retailPrice: 29000,
-              resellerPrice: 19000,
-              supplierCost: 9900,
-              alternativeSuppliers: [
-                {
-                  supplierCode: "DSHOP_TELE",
-                  supplierProductCode: "CANVA_EDU_PRO",
-                  supplierPrice: 12000,
-                  priority: 2,
-                },
-              ],
-            }),
-          },
-        });
-      }
-      console.log(`[SyncBanners] Updated Canva Pro`);
-    }
-
-    // 9. NordVPN
-    const nordvpn = await prisma.product.findUnique({
-      where: { slug: "nordvpn-premium-3-thang" },
-      include: { supplierMapping: true },
-    });
-    if (nordvpn) {
-      await prisma.product.update({
-        where: { id: nordvpn.id },
-        data: {
-          thumbnailUrl: "/images/products/nordvpn.svg",
-          price: 65000,
-          originalPrice: 199000,
-        },
-      });
-      if (nordvpn.supplierMapping) {
-        await prisma.supplierProductMapping.update({
-          where: { id: nordvpn.supplierMapping.id },
-          data: {
-            customConfig: JSON.stringify({
-              retailPrice: 65000,
-              resellerPrice: 45000,
-              supplierCost: 28000,
-              alternativeSuppliers: [
-                {
-                  supplierCode: "XOAINON_TELE",
-                  supplierProductCode: "NORDVPN_1Y",
-                  supplierPrice: 28000,
-                  priority: 1,
-                },
-              ],
-            }),
-          },
-        });
-      }
-      console.log(`[SyncBanners] Updated NordVPN`);
-    }
+    console.log("[SyncBanners] Verified thumbnails for Office 365, Duolingo, CapCut, Canva, NordVPN.");
 
         // 10. Sync Claude AI & API thumbnails to high-res 5.5/5.6 generation banner
     await prisma.product.updateMany({
@@ -370,12 +175,12 @@ async function main() {
     });
     console.log("[SyncBanners] Updated Claude API product thumbnails to /images/products/claude-api.svg");
 
-        // 11. Normalize all AI product descriptions across database
+    // 11. Normalize all AI product descriptions across database
     await prisma.product.updateMany({
       where: { slug: "chatgpt-plus-1-thang" },
       data: {
         thumbnailUrl: "/images/products/chatgpt-plus.svg",
-        description: "Tài khoản ChatGPT Plus 1 tháng chính chủ, mở khóa toàn bộ mô hình thế hệ mới nhất của OpenAI (GPT-4.5, OpenAI o3, o1, GPT-4o), DALL·E 3, Canvas và Advanced Voice. Bảo hành trọn thời gian sử dụng."
+        description: "Tài khoản ChatGPT Plus 1 tháng chính chủ, mở khóa toàn bộ mô hình thế hệ mới nhất của OpenAI (GPT-6 series, GPT-5 Reasoning, OpenAI o3, o1, GPT-4.5), DALL·E 3, Canvas và Advanced Voice. Bảo hành trọn thời gian sử dụng."
       }
     });
 
@@ -389,12 +194,11 @@ async function main() {
     });
 
     for (const cdx of codexProducts) {
-      if (cdx.description && (cdx.description.includes("GPT-4o") || cdx.description.includes("Claude 3.5") || cdx.description.includes("Gemini 1.5") || cdx.description.includes("Gemini 2.0") || cdx.description.includes("Gemini 2.5") || cdx.description.includes("GPT-6"))) {
+      if (cdx.description && (cdx.description.includes("GPT-4o") || cdx.description.includes("Claude 3.5") || cdx.description.includes("Gemini 1.5") || cdx.description.includes("Gemini 2.0") || cdx.description.includes("Gemini 2.5"))) {
         let updatedDesc = cdx.description
           .replace(/Claude 3\.5 Sonnet/g, "Claude Sonnet 5.5")
           .replace(/Claude Opus/g, "Claude Opus 5.5")
-          .replace(/GPT-6 & GPT-5 \/ OpenAI o3/g, "GPT-4.5, OpenAI o3, o1")
-          .replace(/GPT-4o/g, "GPT-4.5, o3 & o1")
+          .replace(/GPT-4o/g, "GPT-6, GPT-5, OpenAI o3 & o1")
           .replace(/Gemini 2\.0 Flash & 2\.0 Pro \(2M Context\)/g, "Gemini 4 Argon & 3.8 Flash (2M Context)")
           .replace(/Gemini 2\.5 \/ 3 Pro/g, "Gemini 4 Argon & 3.8 Flash (2M Context)")
           .replace(/Gemini 1\.5 Pro/g, "Gemini 4 Argon & 3.8 Flash (2M Context)");
