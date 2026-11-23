@@ -38,6 +38,7 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
   const categories = await getCategoriesWithProducts();
 
   // Flatten and match products strictly belonging to this brand
+  const allBrandProducts: any[] = [];
   const matchedProducts: any[] = [];
   categories.forEach((cat) => {
     cat.products.forEach((prod) => {
@@ -49,6 +50,7 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
         },
       };
       if (matchProductBrand(flattened, brandSlug)) {
+        allBrandProducts.push(flattened);
         // If sub-type requested (e.g. account vs api)
         if (searchParams?.type === "account") {
           const t = prod.title.toLowerCase();
@@ -61,6 +63,9 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
       }
     });
   });
+
+  // Fallback to allBrandProducts if sub-type filter resulted in 0 items (e.g. /brand/claude?type=account)
+  const displayProducts = matchedProducts.length > 0 ? matchedProducts : allBrandProducts;
 
   const displayName = brandItem ? brandItem.name : brandSlug.toUpperCase();
 
@@ -115,17 +120,17 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
 
           {/* Value Badges */}
           <div className="flex flex-wrap sm:flex-col gap-2 shrink-0 text-xs text-zinc-300">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/5">
-              <Zap className="w-3.5 h-3.5 text-amber-400" />
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10">
+              <Zap className="w-3.5 h-3.5 text-zinc-400" />
               <span>Giao tự động &lt; 30s</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/5">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10">
+              <ShieldCheck className="w-3.5 h-3.5 text-zinc-400" />
               <span>Bảo hành theo gói</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/5">
-              <PackageCheck className="w-3.5 h-3.5 text-sky-400" />
-              <span>{matchedProducts.length} dịch vụ sẵn có</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10">
+              <PackageCheck className="w-3.5 h-3.5 text-zinc-400" />
+              <span>{displayProducts.length} dịch vụ sẵn có</span>
             </div>
           </div>
         </div>
@@ -139,14 +144,14 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
               Danh sách gói & tài khoản
             </h2>
             <span className="text-xs text-slate-500 dark:text-zinc-400">
-              ({matchedProducts.length} sản phẩm)
+              ({displayProducts.length} sản phẩm)
             </span>
           </div>
         </div>
 
-        {matchedProducts.length > 0 ? (
+        {displayProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
-            {matchedProducts.map((product) => (
+            {displayProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

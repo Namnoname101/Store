@@ -228,25 +228,25 @@ export default function AppSidebar() {
                     {user.username.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-zinc-200 truncate max-w-[100px] group-hover:text-blue-400 transition-colors">
+                    <span className="text-xs font-semibold text-zinc-200 truncate max-w-[100px] group-hover:text-white transition-colors">
                       {user.username}
                     </span>
-                    <span className="text-[9px] text-emerald-400 font-medium">
-                      {user.role === "admin" ? "Quản trị viên" : "Thành viên VIP"}
+                    <span className="text-[10px] text-zinc-500 font-medium">
+                      {user.role === "admin" ? "Quản trị viên" : "Thành viên"}
                     </span>
                   </div>
                 </Link>
                 <Link
                   href="/topup"
                   onClick={() => setMobileOpen(false)}
-                  className="px-2 py-1 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold shadow-sm transition-colors"
+                  className="px-2.5 py-1 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold shadow-xs transition-colors"
                 >
                   + Nạp
                 </Link>
               </div>
               <div className="flex items-center justify-between text-xs pt-2 border-t border-white/5">
                 <span className="text-zinc-500 text-[11px]">Số dư ví:</span>
-                <span className="font-bold text-sky-400 text-[13px]">
+                <span className="font-bold text-white font-mono text-[13px]">
                   {new Intl.NumberFormat("vi-VN").format(user.balance || 0)}đ
                 </span>
               </div>
@@ -279,7 +279,7 @@ export default function AppSidebar() {
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-4 text-xs scrollbar-thin scrollbar-thumb-white/10">
         {/* Section: General Management & Useful Guides */}
         <div>
-          <div className="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+          <div className="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500">
             Quản lý chung
           </div>
           <div className="space-y-0.5">
@@ -290,14 +290,14 @@ export default function AppSidebar() {
               className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg font-medium transition-colors ${
                 pathname === "/"
                   ? "bg-blue-600/15 text-blue-400 border border-blue-500/20"
-                  : "text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
+                  : "text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]"
               }`}
             >
               <div className="flex items-center gap-2.5">
-                <Compass className="w-4 h-4 text-blue-400" />
+                <Compass className={`w-4 h-4 ${pathname === "/" ? "text-blue-400" : "text-zinc-400"}`} />
                 <span>Tất cả sản phẩm</span>
               </div>
-              <span className="text-[9px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded-full font-bold">
+              <span className="text-[10px] bg-white/[0.06] text-zinc-300 border border-white/10 px-1.5 py-0.5 rounded-md font-medium">
                 Kho Live
               </span>
             </Link>
@@ -308,15 +308,15 @@ export default function AppSidebar() {
               onClick={() => handleNavClick(user?.isAffiliate ? "/dashboard/affiliate" : "/ctv")}
               className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-colors ${
                 pathname?.startsWith("/ctv") || pathname?.startsWith("/dashboard/affiliate")
-                  ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 font-medium"
-                  : "text-zinc-400 hover:text-emerald-400 hover:bg-emerald-500/10"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]"
               }`}
             >
               <div className="flex items-center gap-2.5">
-                <Coins className="w-4 h-4 text-emerald-400" />
+                <Coins className={`w-4 h-4 ${pathname?.startsWith("/ctv") || pathname?.startsWith("/dashboard/affiliate") ? "text-blue-400" : "text-zinc-400"}`} />
                 <span>Kiếm Tiền CTV</span>
               </div>
-              <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded-full font-bold uppercase">
+              <span className="text-[10px] bg-white/[0.06] text-zinc-300 border border-white/10 px-1.5 py-0.5 rounded-md font-medium">
                 0đ Vốn
               </span>
             </Link>
@@ -327,11 +327,11 @@ export default function AppSidebar() {
               onClick={() => handleNavClick("/tools/prompt-master")}
               className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg transition-colors ${
                 pathname === "/tools/prompt-master"
-                  ? "bg-purple-600/15 text-purple-400 border border-purple-500/20 font-medium"
-                  : "text-zinc-400 hover:text-purple-300 hover:bg-white/5"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]"
               }`}
             >
-              <Sparkles className="w-4 h-4 text-purple-400" />
+              <Sparkles className={`w-4 h-4 ${pathname === "/tools/prompt-master" ? "text-blue-400" : "text-zinc-400"}`} />
               <span>Prompt AI Master</span>
             </Link>
 
@@ -341,11 +341,11 @@ export default function AppSidebar() {
               onClick={() => handleNavClick("/huong-dan/api-claude")}
               className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg transition-colors ${
                 pathname === "/huong-dan/api-claude"
-                  ? "bg-indigo-600/15 text-indigo-400 border border-indigo-500/20 font-medium"
-                  : "text-zinc-400 hover:text-indigo-300 hover:bg-white/5"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]"
               }`}
             >
-              <BookOpen className="w-4 h-4 text-indigo-400" />
+              <BookOpen className={`w-4 h-4 ${pathname === "/huong-dan/api-claude" ? "text-blue-400" : "text-zinc-400"}`} />
               <span>Cấu Hình API Claude</span>
             </Link>
 
@@ -355,11 +355,11 @@ export default function AppSidebar() {
               onClick={() => handleNavClick("/huong-dan/codex")}
               className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg transition-colors ${
                 pathname === "/huong-dan/codex"
-                  ? "bg-emerald-600/15 text-emerald-400 border border-emerald-500/20 font-medium"
-                  : "text-zinc-400 hover:text-emerald-300 hover:bg-white/5"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]"
               }`}
             >
-              <Terminal className="w-4 h-4 text-emerald-400" />
+              <Terminal className={`w-4 h-4 ${pathname === "/huong-dan/codex" ? "text-blue-400" : "text-zinc-400"}`} />
               <span>Kích Hoạt App ChatGPT</span>
             </Link>
 
@@ -370,10 +370,10 @@ export default function AppSidebar() {
               className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg transition-colors ${
                 pathname === "/check-usage"
                   ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
-                  : "text-zinc-400 hover:text-blue-300 hover:bg-white/5"
+                  : "text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]"
               }`}
             >
-              <Activity className="w-4 h-4 text-blue-400" />
+              <Activity className={`w-4 h-4 ${pathname === "/check-usage" ? "text-blue-400" : "text-zinc-400"}`} />
               <span>Check Quota Claude / Cursor</span>
             </Link>
 
@@ -383,11 +383,11 @@ export default function AppSidebar() {
               onClick={() => handleNavClick("/developer/usage")}
               className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg transition-colors ${
                 pathname === "/developer/usage"
-                  ? "bg-cyan-600/15 text-cyan-400 border border-cyan-500/20 font-medium"
-                  : "text-zinc-400 hover:text-cyan-300 hover:bg-white/5"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]"
               }`}
             >
-              <Database className="w-4 h-4 text-cyan-400" />
+              <Database className={`w-4 h-4 ${pathname === "/developer/usage" ? "text-blue-400" : "text-zinc-400"}`} />
               <span>Check Quota Codex</span>
             </Link>
           </div>
@@ -395,7 +395,7 @@ export default function AppSidebar() {
 
         {/* Section: AI Models & Dev APIs */}
         <div>
-          <div className="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+          <div className="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500">
             Mô hình AI & Dev API
           </div>
           <div className="space-y-1">
@@ -404,11 +404,11 @@ export default function AppSidebar() {
               <button
                 type="button"
                 onClick={() => toggleTree("chatgpt")}
-                className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-zinc-200 font-medium hover:bg-white/5 cursor-pointer transition-colors"
+                className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-zinc-300 font-medium hover:text-white hover:bg-white/[0.06] cursor-pointer transition-colors"
               >
                 <div className="flex items-center gap-2">
                   {svgOpenAI}
-                  <span className="text-xs font-semibold">ChatGPT / OpenAI</span>
+                  <span className="text-xs font-medium">ChatGPT / OpenAI</span>
                 </div>
                 {openTrees.chatgpt ? (
                   <ChevronDown className="w-3.5 h-3.5 text-zinc-500" />
@@ -421,10 +421,10 @@ export default function AppSidebar() {
                   <Link
                     href="/brand/chatgpt?type=account"
                     onClick={() => handleNavClick("/brand/chatgpt?type=account")}
-                    className={`block py-1 px-2 rounded text-[11.5px] font-medium transition-colors ${
+                    className={`block py-1 px-2 rounded-md text-[11.5px] transition-colors ${
                       pathname === "/brand/chatgpt"
-                        ? "text-emerald-400 bg-emerald-500/15"
-                        : "text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/15"
+                        ? "text-blue-400 bg-blue-600/15 border border-blue-500/20 font-medium"
+                        : "text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]"
                     }`}
                   >
                     Tài khoản ChatGPT
@@ -432,10 +432,10 @@ export default function AppSidebar() {
                   <Link
                     href="/brand/codex"
                     onClick={() => handleNavClick("/brand/codex")}
-                    className={`block py-1 px-2 rounded text-[11.5px] transition-colors ${
+                    className={`block py-1 px-2 rounded-md text-[11.5px] transition-colors ${
                       pathname === "/brand/codex"
-                        ? "text-blue-400 bg-blue-500/15 font-medium"
-                        : "text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
+                        ? "text-blue-400 bg-blue-600/15 border border-blue-500/20 font-medium"
+                        : "text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]"
                     }`}
                   >
                     API Codex
@@ -444,46 +444,22 @@ export default function AppSidebar() {
               )}
             </div>
 
-            {/* Claude Tree */}
-            <div>
-              <button
-                type="button"
-                onClick={() => toggleTree("claude")}
-                className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-zinc-200 font-medium hover:bg-white/5 cursor-pointer transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  {svgClaude}
-                  <span className="text-xs font-semibold">Claude AI</span>
-                </div>
-                {openTrees.claude ? (
-                  <ChevronDown className="w-3.5 h-3.5 text-zinc-500" />
-                ) : (
-                  <ChevronRight className="w-3.5 h-3.5 text-zinc-500" />
-                )}
-              </button>
-              {openTrees.claude && (
-                <div className="ml-4 pl-3 border-l border-white/10 space-y-0.5 mt-1">
-                  <Link
-                    href="/brand/claude?type=account"
-                    onClick={() => handleNavClick("/brand/claude?type=account")}
-                    className={`block py-1 px-2 rounded text-[11.5px] transition-colors ${
-                      pathname === "/brand/claude"
-                        ? "text-amber-400 bg-amber-500/15 font-medium"
-                        : "text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
-                    }`}
-                  >
-                    Tài khoản Claude
-                  </Link>
-                  <Link
-                    href="/brand/claude?type=api"
-                    onClick={() => handleNavClick("/brand/claude?type=api")}
-                    className="block py-1 px-2 rounded text-[11.5px] text-zinc-400 hover:text-zinc-200 hover:bg-white/5 transition-colors"
-                  >
-                    API Claude
-                  </Link>
-                </div>
-              )}
-            </div>
+            {/* Claude Direct Link (5 gói API Claude) */}
+            <Link
+              href="/brand/claude"
+              onClick={() => handleNavClick("/brand/claude")}
+              className={`flex items-center justify-between px-2.5 py-1.5 rounded-md transition-colors ${
+                pathname === "/brand/claude"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                {svgClaude}
+                <span className="text-xs font-medium">API Claude 5.5 / 5.6</span>
+              </div>
+              <ChevronRight className="w-3.5 h-3.5 text-zinc-500" />
+            </Link>
 
             {/* Gemini Link */}
             <Link
@@ -491,8 +467,8 @@ export default function AppSidebar() {
               onClick={() => handleNavClick("/brand/gemini")}
               className={`flex items-center justify-between px-2.5 py-1.5 rounded-md transition-colors ${
                 pathname === "/brand/gemini"
-                  ? "bg-blue-600/15 text-blue-400 font-medium"
-                  : "text-zinc-300 hover:text-white hover:bg-white/5"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
               }`}
             >
               <div className="flex items-center gap-2">
@@ -506,7 +482,7 @@ export default function AppSidebar() {
 
         {/* Section: Apps & Tools */}
         <div>
-          <div className="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+          <div className="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500">
             Ứng dụng & Công cụ
           </div>
           <div className="space-y-0.5">
@@ -515,8 +491,8 @@ export default function AppSidebar() {
               onClick={() => handleNavClick("/brand/canva")}
               className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-colors ${
                 pathname === "/brand/canva"
-                  ? "bg-teal-500/15 text-teal-300 font-medium"
-                  : "text-zinc-300 hover:text-white hover:bg-white/5"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
               }`}
             >
               {svgCanva}
@@ -527,8 +503,8 @@ export default function AppSidebar() {
               onClick={() => handleNavClick("/brand/capcut")}
               className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-colors ${
                 pathname === "/brand/capcut"
-                  ? "bg-white/10 text-white font-medium"
-                  : "text-zinc-300 hover:text-white hover:bg-white/5"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
               }`}
             >
               {svgCapCut}
@@ -539,56 +515,32 @@ export default function AppSidebar() {
               onClick={() => handleNavClick("/brand/duolingo")}
               className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-colors ${
                 pathname === "/brand/duolingo"
-                  ? "bg-lime-500/15 text-lime-300 font-medium"
-                  : "text-zinc-300 hover:text-white hover:bg-white/5"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
               }`}
             >
               {svgDuolingo}
               <span className="font-medium text-xs">Duolingo Super</span>
             </Link>
             <Link
-              href="/brand/netflix"
-              onClick={() => handleNavClick("/brand/netflix")}
-              className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-colors ${
-                pathname === "/brand/netflix"
-                  ? "bg-red-500/15 text-red-400 font-medium"
-                  : "text-zinc-300 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              {svgNetflix}
-              <span className="font-medium text-xs">Netflix Premium</span>
-            </Link>
-            <Link
               href="/brand/office"
               onClick={() => handleNavClick("/brand/office")}
               className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-colors ${
                 pathname === "/brand/office"
-                  ? "bg-blue-500/15 text-blue-300 font-medium"
-                  : "text-zinc-300 hover:text-white hover:bg-white/5"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
               }`}
             >
               {svgMS}
               <span className="font-medium text-xs">Microsoft 365</span>
             </Link>
             <Link
-              href="/brand/spotify"
-              onClick={() => handleNavClick("/brand/spotify")}
-              className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-colors ${
-                pathname === "/brand/spotify"
-                  ? "bg-emerald-500/15 text-emerald-300 font-medium"
-                  : "text-zinc-300 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              {svgSpotify}
-              <span className="font-medium text-xs">Spotify Premium</span>
-            </Link>
-            <Link
               href="/brand/meitu"
               onClick={() => handleNavClick("/brand/meitu")}
               className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-colors ${
                 pathname === "/brand/meitu"
-                  ? "bg-pink-500/15 text-pink-300 font-medium"
-                  : "text-zinc-300 hover:text-white hover:bg-white/5"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
               }`}
             >
               <div className="w-5 h-5 relative rounded-[5px] overflow-hidden shrink-0 shadow-xs">
@@ -606,14 +558,18 @@ export default function AppSidebar() {
 
         {/* Section: Help & Support */}
         <div>
-          <div className="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+          <div className="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500">
             Hỗ trợ & Tra cứu
           </div>
           <div className="space-y-0.5">
             <Link
               href="/lookup"
               onClick={() => handleNavClick("/lookup")}
-              className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-white/5 transition-colors"
+              className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-colors ${
+                pathname === "/lookup"
+                  ? "bg-blue-600/15 text-blue-400 border border-blue-500/20 font-medium"
+                  : "text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06]"
+              }`}
             >
               <Search className="w-3.5 h-3.5" />
               <span>Tra cứu đơn hàng</span>
@@ -622,7 +578,7 @@ export default function AppSidebar() {
               href="https://t.me/daitruongkocode"
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-white/5 transition-colors"
+              className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.06] transition-colors"
             >
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Hỗ trợ & Bảo hành</span>
@@ -633,18 +589,15 @@ export default function AppSidebar() {
 
       {/* 4. Footer Telegram */}
       <div className="p-3 border-t border-white/5 bg-[#080d1a] shrink-0">
-        <div className="flex items-center gap-1.5 mb-2 text-[10px] text-emerald-400 font-medium">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span>Live 24/7 Bàn giao tức thì</span>
-        </div>
         <a
           href="https://t.me/daitruongkocode"
           target="_blank"
           rel="noreferrer"
-          className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 font-semibold text-xs border border-sky-500/20 transition-all"
+          className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-white/[0.05] hover:bg-white/10 text-zinc-200 font-medium text-xs border border-white/10 transition-all"
         >
-          <Send className="w-3.5 h-3.5" />
-          <span>Chat Telegram Admin 24/7</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+          <Send className="w-3.5 h-3.5 text-zinc-400" />
+          <span>Hỗ trợ Telegram 24/7</span>
         </a>
       </div>
     </div>

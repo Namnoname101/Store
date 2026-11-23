@@ -8,8 +8,8 @@ export default function Footer() {
       <div className="border-b border-slate-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-[#0e1424]/40 py-6">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
           <div className="flex items-center justify-center sm:justify-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
-              <Zap className="h-5 w-5" />
+            <div className="w-10 h-10 rounded-xl bg-slate-200/70 dark:bg-white/[0.05] border border-slate-300/60 dark:border-white/10 flex items-center justify-center text-slate-700 dark:text-zinc-300 shrink-0">
+              <Zap className="h-4 w-4" />
             </div>
             <div>
               <div className="font-bold text-slate-900 dark:text-white text-sm">Giao Hàng Tự Động 24/7</div>
@@ -18,8 +18,8 @@ export default function Footer() {
           </div>
 
           <div className="flex items-center justify-center sm:justify-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
-              <ShieldCheck className="h-5 w-5" />
+            <div className="w-10 h-10 rounded-xl bg-slate-200/70 dark:bg-white/[0.05] border border-slate-300/60 dark:border-white/10 flex items-center justify-center text-slate-700 dark:text-zinc-300 shrink-0">
+              <ShieldCheck className="h-4 w-4" />
             </div>
             <div>
               <div className="font-bold text-slate-900 dark:text-white text-sm">Bảo Hành Minh Bạch</div>
@@ -28,8 +28,8 @@ export default function Footer() {
           </div>
 
           <div className="flex items-center justify-center sm:justify-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shrink-0">
-              <Headphones className="h-5 w-5" />
+            <div className="w-10 h-10 rounded-xl bg-slate-200/70 dark:bg-white/[0.05] border border-slate-300/60 dark:border-white/10 flex items-center justify-center text-slate-700 dark:text-zinc-300 shrink-0">
+              <Headphones className="h-4 w-4" />
             </div>
             <div>
               <div className="font-bold text-slate-900 dark:text-white text-sm">Hỗ Trợ Kỹ Thuật MMO</div>
@@ -104,47 +104,47 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link href="/topup" className="hover:text-emerald-400 transition-colors flex items-center gap-1.5">
+                <Link href="/topup" className="hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1.5">
                   <span>Nạp Số Dư Ví Tự Động</span>
-                  <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold">+5%</span>
+                  <span className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-white/[0.06] text-slate-700 dark:text-zinc-300 border border-slate-300/60 dark:border-white/10 text-[10px] font-mono font-semibold">+5%</span>
                 </Link>
               </li>
               <li>
-                <Link href="/lookup" className="hover:text-blue-400 transition-colors">
+                <Link href="/lookup" className="hover:text-slate-900 dark:hover:text-white transition-colors">
                   Tra Cứu Đơn Hàng & Lấy Lại Key
                 </Link>
               </li>
               <li>
-                <Link href="/developer/usage" className="hover:text-blue-400 transition-colors">
+                <Link href="/developer/usage" className="hover:text-slate-900 dark:hover:text-white transition-colors">
                   Tra Cứu Quota Codex API
                 </Link>
               </li>
               <li>
-                <Link href="/check-usage" className="hover:text-blue-400 transition-colors">
+                <Link href="/check-usage" className="hover:text-slate-900 dark:hover:text-white transition-colors">
                   Kiểm Tra Dung Lượng Claude / Cursor
                 </Link>
               </li>
               <li>
-                <Link href="/huong-dan/codex" className="hover:text-emerald-400 transition-colors flex items-center gap-1 font-semibold text-emerald-400">
+                <Link href="/huong-dan/codex" className="hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1">
                   <span>Kích Hoạt Ứng Dụng ChatGPT & Codex (1-Click)</span>
-                  <ArrowUpRight className="h-3 w-3 text-emerald-400" />
+                  <ArrowUpRight className="h-3 w-3 text-slate-400" />
                 </Link>
               </li>
               <li>
-                <Link href="/tools/prompt-master" className="hover:text-blue-400 transition-colors">
+                <Link href="/tools/prompt-master" className="hover:text-slate-900 dark:hover:text-white transition-colors">
                   Công Cụ Tạo Prompt AI Chuẩn
                 </Link>
               </li>
               <li>
-                <Link href="/huong-dan/api-claude" className="hover:text-indigo-400 transition-colors flex items-center gap-1 font-semibold text-indigo-400">
+                <Link href="/huong-dan/api-claude" className="hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1">
                   <span>Hướng Dẫn Cấu Hình API Claude</span>
-                  <ArrowUpRight className="h-3 w-3 text-indigo-400" />
+                  <ArrowUpRight className="h-3 w-3 text-slate-400" />
                 </Link>
               </li>
               <li>
-                <Link href="/preview/guide" className="hover:text-indigo-400 transition-colors flex items-center gap-1">
+                <Link href="/preview/guide" className="hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1">
                   <span>Xem Trước Quy Trình Bàn Giao</span>
-                  <ArrowUpRight className="h-3 w-3 text-indigo-400" />
+                  <ArrowUpRight className="h-3 w-3 text-slate-400" />
                 </Link>
               </li>
             </ul>

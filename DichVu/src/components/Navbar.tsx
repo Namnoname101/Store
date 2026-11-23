@@ -150,22 +150,22 @@ export default function Navbar() {
             href="/topup"
             className={`px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
               pathname === "/topup"
-                ? "bg-emerald-50 dark:bg-[#131926] text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-200/80 dark:border-zinc-800 shadow-2xs"
-                : "hover:bg-slate-100 dark:hover:bg-[#131926] hover:text-emerald-600 dark:hover:text-emerald-400"
+                ? "bg-blue-50 dark:bg-[#131926] text-blue-600 dark:text-blue-400 font-bold border border-blue-200/80 dark:border-zinc-800 shadow-2xs"
+                : "hover:bg-slate-100 dark:hover:bg-[#131926] hover:text-slate-900 dark:hover:text-white"
             }`}
           >
             <span>Nạp Ví</span>
-            <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-[10px] text-emerald-600 dark:text-emerald-300 font-mono font-bold">+5%</span>
+            <span className="px-1.5 py-0.5 rounded-md bg-slate-200/80 dark:bg-white/[0.06] text-[10px] text-slate-700 dark:text-zinc-300 border border-slate-300/60 dark:border-white/10 font-mono font-semibold">+5%</span>
           </Link>
           <Link
             href="/lookup"
             className={`px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
               pathname === "/lookup"
-                ? "bg-indigo-50 dark:bg-[#131926] text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-200/80 dark:border-zinc-800 shadow-2xs"
+                ? "bg-blue-50 dark:bg-[#131926] text-blue-600 dark:text-blue-400 font-bold border border-blue-200/80 dark:border-zinc-800 shadow-2xs"
                 : "hover:bg-slate-100 dark:hover:bg-[#131926] hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            <ReceiptText className="h-3.5 w-3.5 text-indigo-500 dark:text-indigo-400 shrink-0" />
+            <ReceiptText className="h-3.5 w-3.5 text-slate-400 dark:text-zinc-400 shrink-0" />
             <span>Tra Cứu</span>
           </Link>
 
@@ -181,11 +181,11 @@ export default function Navbar() {
               aria-expanded={isGuidesOpen}
               className={`px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 whitespace-nowrap shrink-0 text-slate-700 dark:text-slate-300 ${
                 isGuidesOpen
-                  ? "bg-slate-100 dark:bg-white/10 text-indigo-600 dark:text-indigo-400"
-                  : "hover:bg-slate-100 dark:hover:bg-white/5 hover:text-indigo-600 dark:hover:text-indigo-400"
+                  ? "bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white"
+                  : "hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              <BookOpen className="h-3.5 w-3.5 text-indigo-500 dark:text-indigo-400 shrink-0" />
+              <BookOpen className="h-3.5 w-3.5 text-slate-400 dark:text-zinc-400 shrink-0" />
               <span>Hướng Dẫn</span>
               <ChevronDown className={`h-3 w-3 text-slate-400 transition-transform duration-200 ${isGuidesOpen ? "rotate-180" : ""}`} />
             </button>
@@ -197,13 +197,13 @@ export default function Navbar() {
                     <Link
                       href="/dashboard/affiliate"
                       onClick={() => setIsGuidesOpen(false)}
-                      className="flex items-start gap-2.5 px-3 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 transition-colors"
+                      className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-[#131926] text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-colors"
                     >
-                      <Sparkles className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                      <Sparkles className="h-4 w-4 text-slate-400 dark:text-zinc-400 shrink-0 mt-0.5" />
                       <div className="flex flex-col">
                         <div className="flex items-center gap-1.5">
                           <span className="font-semibold text-xs">Bảng Quản Lý CTV</span>
-                          <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase">CTV</span>
+                          <span className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-white/10 text-[9px] font-bold text-slate-700 dark:text-zinc-300 uppercase">CTV</span>
                         </div>
                         <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Hoa hồng, link giới thiệu & rút tiền</span>
                       </div>
@@ -212,9 +212,9 @@ export default function Navbar() {
                     <Link
                       href="/ctv"
                       onClick={() => setIsGuidesOpen(false)}
-                      className="flex items-start gap-2.5 px-3 py-2 rounded-xl bg-emerald-500/5 hover:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 transition-colors"
+                      className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-[#131926] text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-colors"
                     >
-                      <Sparkles className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                      <Sparkles className="h-4 w-4 text-slate-400 dark:text-zinc-400 shrink-0 mt-0.5" />
                       <div className="flex flex-col">
                         <span className="font-semibold text-xs">Kiếm Tiền CTV (0đ Vốn)</span>
                         <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Chính sách hoa hồng hấp dẫn</span>
@@ -224,9 +224,9 @@ export default function Navbar() {
                   <Link
                     href="/huong-dan/codex"
                     onClick={() => setIsGuidesOpen(false)}
-                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-[#131926] text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-[#131926] text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-colors"
                   >
-                    <Terminal className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <Terminal className="h-4 w-4 text-slate-400 dark:text-zinc-400 shrink-0 mt-0.5" />
                     <div className="flex flex-col">
                       <span className="font-semibold text-xs">Kích Hoạt App ChatGPT (1-Click)</span>
                       <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Tool KhoDEE-helper cho ChatGPT Windows & IDE</span>
@@ -235,9 +235,9 @@ export default function Navbar() {
                   <Link
                     href="/huong-dan/api-claude"
                     onClick={() => setIsGuidesOpen(false)}
-                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-[#131926] text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-[#131926] text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-colors"
                   >
-                    <BookOpen className="h-4 w-4 text-indigo-500 shrink-0 mt-0.5" />
+                    <BookOpen className="h-4 w-4 text-slate-400 dark:text-zinc-400 shrink-0 mt-0.5" />
                     <div className="flex flex-col">
                       <span className="font-semibold text-xs">Cấu Hình API Claude</span>
                       <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Cài đặt Cursor, Cline, Roo Code</span>
@@ -246,9 +246,9 @@ export default function Navbar() {
                   <Link
                     href="/check-usage"
                     onClick={() => setIsGuidesOpen(false)}
-                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-[#131926] text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-[#131926] text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-colors"
                   >
-                    <Activity className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
+                    <Activity className="h-4 w-4 text-slate-400 dark:text-zinc-400 shrink-0 mt-0.5" />
                     <div className="flex flex-col">
                       <span className="font-semibold text-xs">Check Quota Claude / Cursor</span>
                       <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Check quota Claude & Cursor tức thì</span>
@@ -257,9 +257,9 @@ export default function Navbar() {
                   <Link
                     href="/developer/usage"
                     onClick={() => setIsGuidesOpen(false)}
-                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-[#131926] text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-[#131926] text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-colors"
                   >
-                    <Terminal className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <Terminal className="h-4 w-4 text-slate-400 dark:text-zinc-400 shrink-0 mt-0.5" />
                     <div className="flex flex-col">
                       <span className="font-semibold text-xs">Check Quota Codex</span>
                       <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Kiểm tra hạn mức Codex API & nạp thêm</span>
@@ -268,9 +268,9 @@ export default function Navbar() {
                   <Link
                     href="/tools/prompt-master"
                     onClick={() => setIsGuidesOpen(false)}
-                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-[#131926] text-slate-700 dark:text-slate-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                    className="flex items-start gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-[#131926] text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-colors"
                   >
-                    <Sparkles className="h-4 w-4 text-purple-500 shrink-0 mt-0.5" />
+                    <Sparkles className="h-4 w-4 text-slate-400 dark:text-zinc-400 shrink-0 mt-0.5" />
                     <div className="flex flex-col">
                       <span className="font-semibold text-xs">Prompt AI Master</span>
                       <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Công cụ tạo prompt chuẩn kỹ thuật</span>
