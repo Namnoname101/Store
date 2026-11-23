@@ -210,7 +210,9 @@ export function isDisallowedShortTermApiPackage(product: {
     text.includes("netflix") ||
     text.includes("spotify") ||
     text.includes("vpn") ||
-    text.includes("zoom")
+    text.includes("zoom") ||
+    text.includes("tiktok") ||
+    text.includes("facebook")
   ) {
     return false;
   }

@@ -58,22 +58,24 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
   const hideExactStock = isSMM || isApiKey || isYoutube || isAccountUpgrade || stockCount >= 99999;
   const inStock = hideExactStock || stockCount > 0;
   let durationBadge: string | null = null;
-  if (titleLower.includes("2 năm") || slugLower.includes("2-nam")) {
-    durationBadge = "HẠN 2 NĂM";
-  } else if (titleLower.includes("18 tháng") || slugLower.includes("18-thang")) {
-    durationBadge = "18 THÁNG";
-  } else if (titleLower.includes("1 năm") || titleLower.includes("12 tháng") || slugLower.includes("1-nam") || slugLower.includes("12-thang")) {
-    durationBadge = "1 NĂM";
-  } else if (titleLower.includes("6 tháng") || slugLower.includes("6-thang")) {
-    durationBadge = "6 THÁNG";
-  } else if (titleLower.includes("3 tháng") || slugLower.includes("3-thang")) {
-    durationBadge = "3 THÁNG";
-  } else if (titleLower.includes("30 ngày") || titleLower.includes("1 tháng") || slugLower.includes("1-thang") || slugLower.includes("30-ngay")) {
-    durationBadge = "30 NGÀY";
-  } else if (titleLower.includes("7 ngày") || slugLower.includes("7-ngay")) {
-    durationBadge = "7 NGÀY";
-  } else if (titleLower.includes("vĩnh viễn") || slugLower.includes("vinh-vien")) {
-    durationBadge = "VĨNH VIỄN";
+  if (!isSMM) {
+    if (titleLower.includes("2 năm") || slugLower.includes("2-nam")) {
+      durationBadge = "HẠN 2 NĂM";
+    } else if (titleLower.includes("18 tháng") || slugLower.includes("18-thang")) {
+      durationBadge = "18 THÁNG";
+    } else if (titleLower.includes("1 năm") || titleLower.includes("12 tháng") || slugLower.includes("1-nam") || slugLower.includes("12-thang")) {
+      durationBadge = "1 NĂM";
+    } else if (titleLower.includes("6 tháng") || slugLower.includes("6-thang")) {
+      durationBadge = "6 THÁNG";
+    } else if (titleLower.includes("3 tháng") || slugLower.includes("3-thang")) {
+      durationBadge = "3 THÁNG";
+    } else if (titleLower.includes("30 ngày") || titleLower.includes("1 tháng") || slugLower.includes("1-thang") || slugLower.includes("30-ngay")) {
+      durationBadge = "30 NGÀY";
+    } else if (titleLower.includes("7 ngày") || slugLower.includes("7-ngay")) {
+      durationBadge = "7 NGÀY";
+    } else if (titleLower.includes("vĩnh viễn") || slugLower.includes("vinh-vien")) {
+      durationBadge = "VĨNH VIỄN";
+    }
   }
 
   const discountPercent =
@@ -118,8 +120,8 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
           />
 
           {/* Type Badge */}
-          <div className="pointer-events-none absolute top-2.5 left-2.5">
-            <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-zinc-950/75 px-2.5 py-1 text-xs font-semibold text-zinc-100 shadow-sm backdrop-blur-md whitespace-nowrap">
+          <div className="pointer-events-none absolute top-2 left-2">
+            <span className="inline-flex items-center gap-1 rounded-lg border border-white/15 bg-zinc-950/75 px-2 py-0.5 text-xs font-semibold text-zinc-100 shadow-sm backdrop-blur-md whitespace-nowrap">
               <TypeIcon aria-hidden="true" className="h-3.5 w-3.5 text-zinc-300 shrink-0" />
               {typeInfo.shortLabel}
             </span>
@@ -127,8 +129,8 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
 
           {/* Duration Pill at bottom-left */}
           {durationBadge && (
-            <div className="pointer-events-none absolute bottom-2.5 left-2.5">
-              <span className="inline-flex items-center gap-1 rounded-lg bg-zinc-950/80 border border-amber-400/40 px-2.5 py-0.5 text-xs font-bold font-mono text-amber-300 shadow-sm backdrop-blur-md whitespace-nowrap">
+            <div className="pointer-events-none absolute bottom-2 left-2">
+              <span className="inline-flex items-center gap-1 rounded-lg bg-zinc-950/80 border border-amber-400/40 px-2 py-0.5 text-xs font-bold font-mono text-amber-300 shadow-sm backdrop-blur-md whitespace-nowrap">
                 <Clock aria-hidden="true" className="h-3 w-3 text-amber-400 shrink-0" />
                 {durationBadge}
               </span>
@@ -137,7 +139,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
 
           {/* Discount Badge */}
           {discountPercent > 0 && (
-            <div className="pointer-events-none absolute top-2.5 right-2.5">
+            <div className="pointer-events-none absolute top-2 right-2">
               <span className="inline-flex items-center rounded-lg bg-rose-600/90 border border-rose-400/40 px-2 py-0.5 text-xs font-bold font-mono text-white shadow-sm backdrop-blur-md whitespace-nowrap">
                 -{discountPercent}%
               </span>

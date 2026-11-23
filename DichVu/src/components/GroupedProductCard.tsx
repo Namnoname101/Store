@@ -103,16 +103,16 @@ export default function GroupedProductCard({
           />
 
           {/* Official Brand Badge with SVG logo */}
-          <div className="pointer-events-none absolute top-2.5 left-2.5">
-            <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-zinc-950/75 px-2.5 py-1 text-xs font-semibold text-zinc-100 shadow-sm backdrop-blur-md whitespace-nowrap">
+          <div className="pointer-events-none absolute top-2 left-2">
+            <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-zinc-950/75 px-2 py-0.5 text-xs font-semibold text-zinc-100 shadow-sm backdrop-blur-md whitespace-nowrap">
               <BrandLogo brandName={brandName} size={14} className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
               {brandName}
             </span>
           </div>
 
           {/* Variants Count Badge */}
-          <div className="pointer-events-none absolute top-2.5 right-2.5">
-            <span className="inline-flex items-center rounded-lg bg-zinc-950/75 border border-white/15 px-2.5 py-1 text-xs font-semibold font-mono text-zinc-100 shadow-sm backdrop-blur-md whitespace-nowrap">
+          <div className="pointer-events-none absolute top-2 right-2">
+            <span className="inline-flex items-center rounded-lg bg-zinc-950/75 border border-white/15 px-2 py-0.5 text-xs font-semibold font-mono text-zinc-100 shadow-sm backdrop-blur-md whitespace-nowrap">
               {sortedVariants.length} gói
             </span>
           </div>

@@ -32,7 +32,7 @@ export const BRAND_NAVIGATOR_ITEMS: BrandFilterItem[] = [
   { id: "office", name: "Office 365", query: "office", iconKey: "microsoft", badge: "1 NĂM", hoverBorder: "hover:border-amber-500" },
   { id: "windows", name: "Key Windows", query: "windows", iconKey: "windows", badge: "PRO", hoverBorder: "hover:border-sky-500" },
   { id: "tiktok", name: "TikTok", query: "tiktok", iconKey: "tiktok", badge: "BUFF", hoverBorder: "hover:border-pink-500" },
-  { id: "facebook", name: "Facebook", query: "facebook", iconKey: "facebook", badge: "BM", hoverBorder: "hover:border-blue-500" },
+  { id: "facebook", name: "Facebook", query: "facebook", iconKey: "facebook", badge: "BUFF", hoverBorder: "hover:border-blue-500" },
   { id: "vps", name: "Cloud VPS", query: "vps", iconKey: "vps", badge: "NVME", hoverBorder: "hover:border-sky-400" },
   { id: "nordvpn", name: "NordVPN", query: "nordvpn", iconKey: "nordvpn", badge: "VPN", hoverBorder: "hover:border-blue-400" },
   { id: "netflix", name: "Netflix", query: "netflix", iconKey: "netflix", badge: "4K", hoverBorder: "hover:border-rose-500" },

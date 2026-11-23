@@ -819,11 +819,11 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
   "smm-service": {
     title: "Hướng dẫn đặt đơn & theo dõi tiến độ Tăng tương tác MXH",
     steps: [
-      "Bước 1: Mở bài viết, video hoặc trang cá nhân TikTok / Facebook của bạn, kiểm tra chắc chắn đã bật chế độ Công khai (Public).",
-      "Bước 2: Sao chép đường dẫn (Copy Link) và dán vào ô 'Đường link' ở khung đặt hàng kèm số lượng cần tăng.",
-      "Bước 3: Sau khi quét VietQR thanh toán, hệ thống tự động đẩy đơn lên máy chủ xử lý ngay lập tức (thời gian bắt đầu lên tương tác từ 1 – 15 phút).",
+      "Bước 1: Mở video, bài viết, trang cá nhân, Fanpage hoặc Group TikTok / Facebook của bạn, kiểm tra chắc chắn đã bật chế độ Công khai (Public).",
+      "Bước 2: Sao chép đường dẫn (Copy Link) chính xác và dán vào ô 'Đường link' ở khung đặt hàng kèm số lượng cần tăng.",
+      "Bước 3: Sau khi quét VietQR thanh toán, hệ thống tự động đẩy đơn lên máy chủ xử lý ngay lập tức và cập nhật tiến độ trực tiếp theo thời gian thực trên trang đơn hàng.",
     ],
-    note: "Trong quá trình đơn đang chạy, vui lòng không ẩn video/bài viết, không chuyển tài khoản sang Riêng tư và không đổi Username.",
+    note: "Trong quá trình đơn đang chạy, vui lòng không ẩn bài viết/video, không chuyển sang Riêng tư, không đổi Username và không đặt chồng nhiều đơn cùng lúc cho cùng 1 link.",
   },
 
   "muse-ai-2-ty-token": {
@@ -1065,6 +1065,10 @@ export function resolveProductInstruction(params: {
     cleanSlug.includes("tang-tim") ||
     cleanSlug.includes("tang-like") ||
     cleanSlug.includes("tang-follow") ||
+    cleanSlug.includes("tang-view") ||
+    cleanSlug.includes("tang-yeu-thich") ||
+    cleanSlug.includes("tang-chia-se") ||
+    cleanSlug.includes("tang-member") ||
     cleanTitle.includes("tiktok") ||
     cleanTitle.includes("facebook")
   ) {

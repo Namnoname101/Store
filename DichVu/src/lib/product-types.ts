@@ -4,6 +4,117 @@ export function formatVND(amount: number): string {
   return new Intl.NumberFormat("vi-VN").format(amount) + " đ";
 }
 
+export function getSmmUnitLabel(title?: string | null): string {
+  const lower = (title || "").toLowerCase();
+  if (lower.includes("thành viên") || lower.includes("member")) {
+    return "thành viên";
+  }
+  if (lower.includes("view")) {
+    return "view";
+  }
+  if (lower.includes("fanpage") || (lower.includes("like") && lower.includes("follow"))) {
+    return "lượt";
+  }
+  if (lower.includes("follow")) {
+    return "follow";
+  }
+  if (lower.includes("tim")) {
+    return "tim";
+  }
+  if (lower.includes("like")) {
+    return "like";
+  }
+  return "lượt";
+}
+
+export function getSmmLinkMeta(
+  title?: string | null,
+  categorySlug?: string | null
+): {
+  isTikTok: boolean;
+  isFacebook: boolean;
+  label: string;
+  placeholder: string;
+} {
+  const lower = (title || "").toLowerCase();
+  const catLower = (categorySlug || "").toLowerCase();
+
+  const isTikTok = lower.includes("tiktok") || catLower === "tiktok";
+  const isFacebook = lower.includes("facebook") || catLower === "facebook";
+  const isGroup = lower.includes("group") || lower.includes("nhóm");
+  const isPage = lower.includes("fanpage") || lower.includes("page");
+  const isView = lower.includes("view") || lower.includes("reel") || lower.includes("video");
+  const isFollower =
+    lower.includes("follow") ||
+    lower.includes("kênh") ||
+    lower.includes("trang") ||
+    isPage;
+
+  if (isTikTok) {
+    return isFollower
+      ? {
+          isTikTok,
+          isFacebook,
+          label: "Link kênh TikTok nhận Follow",
+          placeholder: "https://www.tiktok.com/@username",
+        }
+      : {
+          isTikTok,
+          isFacebook,
+          label: "Link video TikTok cần tăng tương tác",
+          placeholder: "https://www.tiktok.com/@username/video/...",
+        };
+  }
+
+  if (isFacebook) {
+    if (isGroup) {
+      return {
+        isTikTok,
+        isFacebook,
+        label: "Link Nhóm (Group) Facebook",
+        placeholder: "https://www.facebook.com/groups/...",
+      };
+    }
+    if (isPage && lower.includes("like")) {
+      return {
+        isTikTok,
+        isFacebook,
+        label: "Link Fanpage Facebook",
+        placeholder: "https://www.facebook.com/fanpage",
+      };
+    }
+    if (isFollower) {
+      return {
+        isTikTok,
+        isFacebook,
+        label: "Link Facebook nhận Follow",
+        placeholder: "https://www.facebook.com/username",
+      };
+    }
+    if (isView) {
+      return {
+        isTikTok,
+        isFacebook,
+        label: "Link Video / Reels Facebook",
+        placeholder: "https://www.facebook.com/reel/...",
+      };
+    }
+    return {
+      isTikTok,
+      isFacebook,
+      label: "Link bài viết Facebook nhận Like",
+      placeholder: "https://www.facebook.com/username/posts/...",
+    };
+  }
+
+  return {
+    isTikTok,
+    isFacebook,
+    label: "Đường link cần tăng tương tác",
+    placeholder: "https://...",
+  };
+}
+
 export function getProductTypeInfo(
   type: string,
   context?: { categorySlug?: string; title?: string }
