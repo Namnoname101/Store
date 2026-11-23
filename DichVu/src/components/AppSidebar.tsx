@@ -123,22 +123,13 @@ export default function AppSidebar() {
   );
 
   const svgDuolingo = (
-    <svg width="20" height="20" viewBox="-130 -115 260 230" fill="none" className="shrink-0">
-      <ellipse cx="0" cy="0" rx="112" ry="105" fill="#58CC02" />
-      <path d="M-65,25 Q0,75 65,25 Q85,-35 45,-65 Q0,-80 -45,-65 Q-85,-35 -65,25 Z" fill="#78C800" />
-      <path d="M-110,-10 C-135,15 -125,60 -95,75 C-90,50 -95,15 -110,-10 Z" fill="#46A302" />
-      <path d="M110,-10 C135,15 125,60 95,75 C90,50 95,15 110,-10 Z" fill="#46A302" />
-      <ellipse cx="-44" cy="-18" rx="34" ry="34" fill="#FFFFFF" />
-      <circle cx="-38" cy="-18" r="18" fill="#4B4B4B" />
-      <circle cx="-33" cy="-22" r="7" fill="#FFFFFF" />
-      <ellipse cx="44" cy="-18" rx="34" ry="34" fill="#FFFFFF" />
-      <circle cx="38" cy="-18" r="18" fill="#4B4B4B" />
-      <circle cx="43" cy="-22" r="7" fill="#FFFFFF" />
-      <polygon points="-16,-6 16,-6 0,22" fill="#FF9600" />
-      <polygon points="-12,-6 12,-6 0,16" fill="#FFC800" />
-      <ellipse cx="-35" cy="102" rx="18" ry="10" fill="#FF9600" />
-      <ellipse cx="35" cy="102" rx="18" ry="10" fill="#FF9600" />
-    </svg>
+    <img
+      src="/images/raw_logos/duolingo.png"
+      alt="Duolingo Super"
+      width={20}
+      height={20}
+      className="w-5 h-5 rounded-[5px] object-cover shrink-0 shadow-xs"
+    />
   );
 
   const svgNetflix = (
