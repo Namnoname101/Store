@@ -1,121 +1,88 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1200 750" width="1200" height="750">
   <defs>
-    <radialGradient id="msBg" cx="50%" cy="38%" r="65%">
-      <stop offset="0%" stop-color="#0a192f"/>
-      <stop offset="55%" stop-color="#050d1a"/>
-      <stop offset="100%" stop-color="#010308"/>
+    <radialGradient id="b_ms_bg" cx="50%" cy="38%" r="72%">
+      <stop offset="0%" stop-color="#0b2247"/>
+      <stop offset="100%" stop-color="#02060f"/>
     </radialGradient>
-    <filter id="msGlow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="35" result="blur"/>
-      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-    </filter>
-    <linearGradient id="msCard" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.14"/>
-      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"/>
+    <radialGradient id="b_ms_halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.34"/>
+      <stop offset="55%" stop-color="#818cf8" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#02060f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="b_ms_corner" cx="88%" cy="88%" r="48%">
+      <stop offset="0%" stop-color="#818cf8" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#02060f" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="b_ms_grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.032"/>
+    </pattern>
+    <linearGradient id="b_ms_pillGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#818cf8" stop-opacity="0.16"/>
     </linearGradient>
-    <linearGradient id="msBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00a4ef"/>
-      <stop offset="100%" stop-color="#0078d4"/>
-    </linearGradient>
+    
   </defs>
 
-  <!-- Background -->
-  <rect width="1200" height="800" fill="url(#msBg)"/>
+  <!-- Full-bleed edge-to-edge backdrop (Zero inner box frame) -->
+  <rect width="1200" height="750" fill="url(#b_ms_bg)"/>
+  <rect width="1200" height="750" fill="url(#b_ms_grid)"/>
+  <rect width="1200" height="750" fill="url(#b_ms_corner)"/>
 
-  <!-- Subtle grid lines -->
-  <g opacity="0.1" stroke="#00a4ef" stroke-width="1">
-    <line x1="0" y1="200" x2="1200" y2="200"/>
-    <line x1="0" y1="400" x2="1200" y2="400"/>
-    <line x1="0" y1="600" x2="1200" y2="600"/>
-    <line x1="300" y1="0" x2="300" y2="800"/>
-    <line x1="600" y1="0" x2="600" y2="800"/>
-    <line x1="900" y1="0" x2="900" y2="800"/>
+  <!-- Atmospheric hero spotlight halo -->
+  <circle cx="600" cy="240" r="295" fill="url(#b_ms_halo)"/>
+
+  <!-- Enlarged hero brand emblem (Clear of corner overlay zones) -->
+  <g transform="translate(600, 240)">
+    <svg x="-132" y="-140" width="264" height="280" viewBox="4 2 40 44"><path d="M20.0842 3.02588L19.8595 3.16179C19.5021 3.37799 19.1654 3.61972 18.8512 3.88385L19.4993 3.42798H25L26 11L21 16L16 19.4754V23.4829C16 26.2819 17.4629 28.8774 19.8574 30.3268L25.1211 33.5129L14 40.0002H11.8551L7.85737 37.5804C5.46286 36.131 4 33.5355 4 30.7365V17.2606C4 14.4607 5.46379 11.8645 7.85952 10.4154L19.8595 3.15687C19.9339 3.11189 20.0088 3.06823 20.0842 3.02588Z" fill="url(#paint0_radial_2994_8373)"/>
+                                <path d="M20.0842 3.02588L19.8595 3.16179C19.5021 3.37799 19.1654 3.61972 18.8512 3.88385L19.4993 3.42798H25L26 11L21 16L16 19.4754V23.4829C16 26.2819 17.4629 28.8774 19.8574 30.3268L25.1211 33.5129L14 40.0002H11.8551L7.85737 37.5804C5.46286 36.131 4 33.5355 4 30.7365V17.2606C4 14.4607 5.46379 11.8645 7.85952 10.4154L19.8595 3.15687C19.9339 3.11189 20.0088 3.06823 20.0842 3.02588Z" fill="url(#paint1_linear_2994_8373)"/>
+                                <path d="M32 19V23.4803C32 26.2793 30.5371 28.8748 28.1426 30.3242L16.1426 37.5878C13.6878 39.0737 10.6335 39.1273 8.1355 37.7487L19.8573 44.844C22.4039 46.3855 25.5959 46.3855 28.1426 44.844L40.1426 37.5803C42.5371 36.1309 43.9999 33.5354 43.9999 30.7364V27.5L42.9999 26L32 19Z" fill="url(#paint2_radial_2994_8373)"/>
+                                <path d="M32 19V23.4803C32 26.2793 30.5371 28.8748 28.1426 30.3242L16.1426 37.5878C13.6878 39.0737 10.6335 39.1273 8.1355 37.7487L19.8573 44.844C22.4039 46.3855 25.5959 46.3855 28.1426 44.844L40.1426 37.5803C42.5371 36.1309 43.9999 33.5354 43.9999 30.7364V27.5L42.9999 26L32 19Z" fill="url(#paint3_linear_2994_8373)"/>
+                                <path d="M40.1405 10.4153L28.1405 3.15678C25.6738 1.66471 22.6021 1.61849 20.0979 3.01811L19.8595 3.16231C17.4638 4.61143 16 7.20757 16 10.0075V19.4914L19.8595 17.1568C22.4051 15.6171 25.5949 15.6171 28.1405 17.1568L40.1405 24.4153C42.4613 25.8192 43.9076 28.2994 43.9957 30.9985C43.9986 30.9113 44 30.824 44 30.7364V17.2605C44 14.4606 42.5362 11.8644 40.1405 10.4153Z" fill="url(#paint4_radial_2994_8373)"/>
+                                <path d="M40.1405 10.4153L28.1405 3.15678C25.6738 1.66471 22.6021 1.61849 20.0979 3.01811L19.8595 3.16231C17.4638 4.61143 16 7.20757 16 10.0075V19.4914L19.8595 17.1568C22.4051 15.6171 25.5949 15.6171 28.1405 17.1568L40.1405 24.4153C42.4613 25.8192 43.9076 28.2994 43.9957 30.9985C43.9986 30.9113 44 30.824 44 30.7364V17.2605C44 14.4606 42.5362 11.8644 40.1405 10.4153Z" fill="url(#paint5_linear_2994_8373)"/>
+                                <path d="M4.00428 30.9984C4.00428 30.9984 4.00428 30.9984 4.00428 30.9984Z" fill="url(#paint6_radial_2994_8373)"/>
+                                <path d="M4.00428 30.9984C4.00428 30.9984 4.00428 30.9984 4.00428 30.9984Z" fill="url(#paint7_linear_2994_8373)"/>
+                                <defs>
+                                    <radialGradient id="paint0_radial_2994_8373" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(17.4186 10.6383) rotate(110.528) scale(33.3657 58.1966)">
+                                        <stop offset="0.06441" stop-color="#AE7FE2"/>
+                                        <stop offset="1" stop-color="#0078D4"/>
+                                    </radialGradient>
+                                    <linearGradient id="paint1_linear_2994_8373" x1="17.5119" y1="37.8685" x2="12.7513" y2="29.6347" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0" stop-color="#114A8B"/>
+                                        <stop offset="1" stop-color="#0078D4" stop-opacity="0"/>
+                                    </linearGradient>
+                                    <radialGradient id="paint2_radial_2994_8373" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(10.4299 36.3511) rotate(-8.36717) scale(31.0503 20.5108)">
+                                        <stop offset="0.133928" stop-color="#D59DFF"/>
+                                        <stop offset="1" stop-color="#5E438F"/>
+                                    </radialGradient>
+                                    <linearGradient id="paint3_linear_2994_8373" x1="40.3566" y1="25.3768" x2="35.2552" y2="32.6916" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0" stop-color="#493474"/>
+                                        <stop offset="1" stop-color="#8C66BA" stop-opacity="0"/>
+                                    </linearGradient>
+                                    <radialGradient id="paint4_radial_2994_8373" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(41.0552 26.504) rotate(-165.772) scale(24.9228 41.9552)">
+                                        <stop offset="0.0584996" stop-color="#50E6FF"/>
+                                        <stop offset="1" stop-color="#436DCD"/>
+                                    </radialGradient>
+                                    <linearGradient id="paint5_linear_2994_8373" x1="16.9758" y1="3.05655" x2="24.4868" y2="3.05655" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0" stop-color="#2D3F80"/>
+                                        <stop offset="1" stop-color="#436DCD" stop-opacity="0"/>
+                                    </linearGradient>
+                                    <radialGradient id="paint6_radial_2994_8373" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(41.0552 26.504) rotate(-165.772) scale(24.9228 41.9552)">
+                                        <stop offset="0.0584996" stop-color="#50E6FF"/>
+                                        <stop offset="1" stop-color="#436DCD"/>
+                                    </radialGradient>
+                                    <linearGradient id="paint7_linear_2994_8373" x1="16.9758" y1="3.05655" x2="24.4868" y2="3.05655" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0" stop-color="#2D3F80"/>
+                                        <stop offset="1" stop-color="#436DCD" stop-opacity="0"/>
+                                    </linearGradient>
+                                </defs></svg>
   </g>
 
-  <!-- Glow Aura -->
-  <circle cx="600" cy="285" r="240" fill="#00a4ef" opacity="0.2" filter="url(#msGlow)"/>
-
-  <!-- Center Card -->
-  <rect x="220" y="80" width="760" height="640" rx="44" fill="url(#msCard)" stroke="#00a4ef" stroke-opacity="0.35" stroke-width="2"/>
-
-  <!-- Feature Tags -->
-  <g transform="translate(290, 140)">
-    <rect width="160" height="38" rx="19" fill="#00a4ef" fill-opacity="0.2" stroke="#00a4ef" stroke-width="1.5"/>
-    <text x="80" y="24" fill="#38bdf8" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" text-anchor="middle">💻 CÀI ĐẶT 5 THIẾT BỊ</text>
-  </g>
-  <g transform="translate(750, 140)">
-    <rect width="160" height="38" rx="19" fill="#0078d4" fill-opacity="0.2" stroke="#0078d4" stroke-width="1.5"/>
-    <text x="80" y="24" fill="#38bdf8" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" text-anchor="middle">☁️ 1TB ONEDRIVE CLOUD</text>
-  </g>
-
-  <!-- ================= AUTHENTIC MICROSOFT &amp; OFFICE SUITE ================= -->
-  <g transform="translate(600, 285)">
-    <!-- Outer ambient ring -->
-    <circle cx="0" cy="0" r="110" fill="#030b14" stroke="#00a4ef" stroke-width="3" filter="url(#msGlow)"/>
-
-    <!-- Central Official Microsoft 4-Color Grid Logo -->
-    <g transform="translate(-40, -40)">
-      <!-- Red (Office/PowerPoint) -->
-      <rect x="0" y="0" width="37" height="37" rx="4" fill="#f25022"/>
-      <!-- Green (Excel) -->
-      <rect x="43" y="0" width="37" height="37" rx="4" fill="#7fba00"/>
-      <!-- Blue (Word/Windows) -->
-      <rect x="0" y="43" width="37" height="37" rx="4" fill="#00a4ef"/>
-      <!-- Yellow/Orange (Outlook/Access) -->
-      <rect x="43" y="43" width="37" height="37" rx="4" fill="#ffb900"/>
-    </g>
-
-    <!-- Orbiting Official App Badges (W, X, P, Cloud) -->
-    <!-- Word -->
-    <g transform="translate(-135, -45)">
-      <circle cx="0" cy="0" r="26" fill="#005a9e" stroke="#ffffff" stroke-width="1.5"/>
-      <text x="0" y="9" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="900" text-anchor="middle">W</text>
-    </g>
-    <!-- Excel -->
-    <g transform="translate(135, -45)">
-      <circle cx="0" cy="0" r="26" fill="#107c41" stroke="#ffffff" stroke-width="1.5"/>
-      <text x="0" y="9" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="900" text-anchor="middle">X</text>
-    </g>
-    <!-- PowerPoint -->
-    <g transform="translate(-135, 45)">
-      <circle cx="0" cy="0" r="26" fill="#d83b01" stroke="#ffffff" stroke-width="1.5"/>
-      <text x="0" y="9" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="900" text-anchor="middle">P</text>
-    </g>
-    <!-- OneDrive -->
-    <g transform="translate(135, 45)">
-      <circle cx="0" cy="0" r="26" fill="#0078d4" stroke="#ffffff" stroke-width="1.5"/>
-      <path d="M-10,4 a7,7 0 0,1 12,-4 a6,6 0 0,1 8,4 a5,5 0 0,1 -2,5 h-18 a4,4 0 0,1 0,-5 z" fill="#ffffff"/>
+  <!-- Large legible typography safely above bottom badge safe-zone -->
+  <g transform="translate(600, 470)" text-anchor="middle">
+    <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="64" font-weight="900" letter-spacing="1.5">MICROSOFT 365</text>
+    <g transform="translate(0, 62)">
+      <rect x="-340" y="-28" width="680" height="56" rx="28" fill="url(#b_ms_pillGrad)" stroke="#38bdf8" stroke-opacity="0.52" stroke-width="1.75"/>
+      <text x="0" y="9" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" letter-spacing="1">5 THIẾT BỊ • 1TB ONEDRIVE</text>
     </g>
   </g>
-  <!-- ================= END MICROSOFT ================= -->
-
-  <!-- Brand Typography -->
-  <g transform="translate(600, 480)" text-anchor="middle">
-    <!-- Blue Badge -->
-    <rect x="-115" y="-18" width="230" height="34" rx="17" fill="url(#msBlue)"/>
-    <text x="0" y="6" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-size="17" font-weight="900" letter-spacing="3">BẢN QUYỀN 1 NĂM</text>
-
-    <!-- Main Title -->
-    <text x="0" y="58" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="900" letter-spacing="1">
-      MICROSOFT OFFICE 365
-    </text>
-
-    <!-- Subtitle -->
-    <text x="0" y="94" fill="#38bdf8" font-family="'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="700" letter-spacing="2">
-      WORD • EXCEL • POWERPOINT • ONEDRIVE
-    </text>
-  </g>
-
-  <!-- Bottom CTA Strip -->
-  <g transform="translate(380, 615)">
-    <rect width="440" height="54" rx="27" fill="url(#msBlue)"/>
-    <text x="220" y="34" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="900" text-anchor="middle">
-      CHỈ 45.000đ • GIAO TÀI KHOẢN TỨC THÌ
-    </text>
-  </g>
-
-  <!-- Store Footer -->
-  <text x="600" y="760" fill="#00a4ef" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" letter-spacing="2" text-anchor="middle" opacity="0.8">
-    KHODEE MMO HUB — PHẦN MỀM VĂN PHÒNG CHÍNH HÃNG 24/7
-  </text>
 </svg>

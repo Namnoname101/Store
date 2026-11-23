@@ -1,121 +1,63 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1200 750" width="1200" height="750">
   <defs>
-    <!-- Background Gradient -->
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0a0d18" />
-      <stop offset="50%" stop-color="#10172a" />
-      <stop offset="100%" stop-color="#060812" />
-    </linearGradient>
-
-    <!-- Gemini Spark Gradient -->
-    <linearGradient id="geminiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#4285F4" />
-      <stop offset="35%" stop-color="#9B72CB" />
-      <stop offset="70%" stop-color="#D96570" />
-      <stop offset="100%" stop-color="#F2994A" />
-    </linearGradient>
-
-    <!-- Cloud Gradient -->
-    <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1e293b" />
-      <stop offset="100%" stop-color="#0f172a" />
-    </linearGradient>
-
-    <!-- Accent Glow -->
-    <radialGradient id="sparkGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#818cf8" stop-opacity="0.35" />
-      <stop offset="100%" stop-color="#818cf8" stop-opacity="0" />
+    <radialGradient id="p_gem5_bg" cx="50%" cy="38%" r="72%">
+      <stop offset="0%" stop-color="#111638"/>
+      <stop offset="100%" stop-color="#040610"/>
     </radialGradient>
-
-    <radialGradient id="amberGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.25" />
-      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0" />
+    <radialGradient id="p_gem5_halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.34"/>
+      <stop offset="55%" stop-color="#38bdf8" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#040610" stop-opacity="0"/>
     </radialGradient>
-
-    <!-- Filter for Shadow -->
-    <filter id="dropGlow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#6366f1" flood-opacity="0.3" />
-    </filter>
+    <radialGradient id="p_gem5_corner" cx="88%" cy="88%" r="48%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#040610" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="p_gem5_grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.032"/>
+    </pattern>
+    <linearGradient id="p_gem5_pillGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.16"/>
+    </linearGradient>
+    <linearGradient id="p_gem5_gem" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="35%" stop-color="#6366f1"/>
+      <stop offset="70%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+    </linearGradient>
   </defs>
 
-  <!-- Background -->
-  <rect width="800" height="500" rx="32" fill="url(#bgGrad)" />
+  <!-- Full-bleed edge-to-edge backdrop (Zero inner box frame) -->
+  <rect width="1200" height="750" fill="url(#p_gem5_bg)"/>
+  <rect width="1200" height="750" fill="url(#p_gem5_grid)"/>
+  <rect width="1200" height="750" fill="url(#p_gem5_corner)"/>
 
-  <!-- Ambient Glows -->
-  <circle cx="200" cy="250" r="220" fill="url(#sparkGlow)" />
-  <circle cx="650" cy="180" r="180" fill="url(#amberGlow)" />
+  <!-- Atmospheric hero spotlight halo -->
+  <circle cx="600" cy="240" r="295" fill="url(#p_gem5_halo)"/>
 
-  <!-- Grid Pattern Overlay -->
-  <g opacity="0.07" stroke="#ffffff" stroke-width="1">
-    <line x1="0" y1="100" x2="800" y2="100" />
-    <line x1="0" y1="200" x2="800" y2="200" />
-    <line x1="0" y1="300" x2="800" y2="300" />
-    <line x1="0" y1="400" x2="800" y2="400" />
-    <line x1="200" y1="0" x2="200" y2="500" />
-    <line x1="400" y1="0" x2="400" y2="500" />
-    <line x1="600" y1="0" x2="600" y2="500" />
-  </g>
-
-  <!-- Central Left: Gemini AI &amp; Google One Symbol -->
-  <g transform="translate(140, 170)">
-    <!-- Gemini 4-Point Star Core -->
-    <path d="M 0 -85 C 0 -25 25 0 85 0 C 25 0 0 25 0 85 C 0 25 -25 0 -85 0 C -25 0 0 -25 0 -85 Z" fill="url(#geminiGrad)" filter="url(#dropGlow)" />
-    <!-- Center white core spark -->
-    <circle cx="0" cy="0" r="14" fill="#ffffff" opacity="0.9" />
-  </g>
-
-  <!-- Header Badge: Google One 5TB Official -->
-  <g transform="translate(320, 95)">
-    <rect width="360" height="36" rx="18" fill="#1e1b4b" stroke="#6366f1" stroke-width="1.5" stroke-opacity="0.6" />
-    <circle cx="20" cy="18" r="6" fill="#10b981" />
-    <text x="36" y="23" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#a5b4fc" letter-spacing="0.5">GOOGLE ONE • GEMINI PRO OFFICIAL</text>
-  </g>
-
-  <!-- Main Headline Title -->
-  <g transform="translate(320, 180)">
-    <text x="0" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="900" fill="#ffffff" letter-spacing="-0.5">
-      UP PRO 5TB CHÍNH CHỦ
-    </text>
-    <text x="0" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" fill="#94a3b8">
-      HẠN 12 THÁNG • GÓI KBH
-    </text>
-  </g>
-
-  <!-- Bento Features Pills -->
-  <g transform="translate(320, 260)">
-    <!-- Pill 1: 5TB Cloud Storage -->
-    <g transform="translate(0, 0)">
-      <rect width="200" height="42" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.2" />
-      <text x="14" y="26" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#38bdf8">☁️ 5TB (5.000GB) CLOUD</text>
+  <!-- Enlarged hero brand emblem (Clear of corner overlay zones) -->
+  <g transform="translate(600, 240)">
+    <g transform="translate(-138, -138) scale(11.5)">
+      <path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#p_gem5_gem)"/>
     </g>
-
-    <!-- Pill 2: Gemini 4 Argon &amp; 3.8 Flash -->
-    <g transform="translate(215, 0)">
-      <rect width="210" height="42" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.2" />
-      <text x="14" y="26" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#c084fc">✨ GEMINI 4 ARGON &amp; 3.8</text>
-    </g>
-
-    <!-- Pill 3: Nâng Mail Chính Chủ / Add Family -->
-    <g transform="translate(0, 54)">
-      <rect width="200" height="42" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.2" />
-      <text x="14" y="26" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#34d399">👥 HỖ TRỢ ADD FAMILY</text>
-    </g>
-
-    <!-- Pill 4: Nâng Cấp Nhanh -->
-    <g transform="translate(215, 54)">
-      <rect width="210" height="42" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.2" />
-      <text x="14" y="26" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#fbbf24">⚡ THỦ CÔNG CHU ĐÁO</text>
-    </g>
+    <g transform="translate(112, 68)">
+    <circle cx="0" cy="0" r="46" fill="#090517" stroke="#ffffff" stroke-opacity="0.28" stroke-width="2"/>
+    <svg x="-28" y="-25" width="56" height="50" viewBox="0 0 87.3 78"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
+	<path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/>
+	<path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/>
+	<path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
+	<path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/>
+	<path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/></svg>
+  </g>
   </g>
 
-  <!-- Price Tag Special 19.000đ -->
-  <g transform="translate(320, 395)">
-    <rect width="425" height="64" rx="16" fill="#111827" stroke="#4f46e5" stroke-width="1.5" />
-    <text x="24" y="40" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="700" fill="#9ca3af">GIÁ SIÊU ƯU ĐÃI:</text>
-    <text x="170" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="30" font-weight="900" fill="#22c55e">19.000đ</text>
-    <text x="310" y="40" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="500" fill="#64748b" text-decoration="line-through">99.000đ</text>
-    <!-- Tag KBH -->
-    <rect x="365" y="20" width="46" height="24" rx="6" fill="#ef4444" opacity="0.2" />
-    <text x="371" y="37" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="800" fill="#f87171">KBH</text>
+  <!-- Large legible typography safely above bottom badge safe-zone -->
+  <g transform="translate(600, 470)" text-anchor="middle">
+    <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="54" font-weight="900" letter-spacing="1.5">UP PRO 5TB CHÍNH CHỦ</text>
+    <g transform="translate(0, 62)">
+      <rect x="-340" y="-28" width="680" height="56" rx="28" fill="url(#p_gem5_pillGrad)" stroke="#6366f1" stroke-opacity="0.52" stroke-width="1.75"/>
+      <text x="0" y="9" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" letter-spacing="1">GEMINI 4 ARGON • 5.000GB ONE</text>
+    </g>
   </g>
 </svg>

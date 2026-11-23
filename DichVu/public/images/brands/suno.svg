@@ -1,39 +1,53 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1200 750" width="1200" height="750">
   <defs>
-    <linearGradient id="suBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#220715" />
-      <stop offset="100%" stop-color="#080206" />
-    </linearGradient>
-    <radialGradient id="suGlow" cx="50%" cy="45%" r="45%">
-      <stop offset="0%" stop-color="#FF007A" stop-opacity="0.28" />
-      <stop offset="100%" stop-color="#FF007A" stop-opacity="0" />
+    <radialGradient id="b_suno_bg" cx="50%" cy="38%" r="72%">
+      <stop offset="0%" stop-color="#2e091e"/>
+      <stop offset="100%" stop-color="#060105"/>
     </radialGradient>
-    <linearGradient id="suGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FF007A" />
-      <stop offset="50%" stop-color="#FF5400" />
-      <stop offset="100%" stop-color="#FFBD00" />
-    </linearGradient>
-    <pattern id="suGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.03" />
+    <radialGradient id="b_suno_halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FF007A" stop-opacity="0.34"/>
+      <stop offset="55%" stop-color="#FFBD00" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#060105" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="b_suno_corner" cx="88%" cy="88%" r="48%">
+      <stop offset="0%" stop-color="#FFBD00" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#060105" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="b_suno_grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.032"/>
     </pattern>
+    <linearGradient id="b_suno_pillGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF007A" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#FFBD00" stop-opacity="0.16"/>
+    </linearGradient>
+    <linearGradient id="b_suno_su" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF007A"/>
+      <stop offset="50%" stop-color="#FF5400"/>
+      <stop offset="100%" stop-color="#FFBD00"/>
+    </linearGradient>
   </defs>
 
-  <rect width="800" height="500" fill="url(#suBg)" />
-  <rect width="800" height="500" fill="url(#suGrid)" />
-  <circle cx="400" cy="220" r="280" fill="url(#suGlow)" />
+  <!-- Full-bleed edge-to-edge backdrop (Zero inner box frame) -->
+  <rect width="1200" height="750" fill="url(#b_suno_bg)"/>
+  <rect width="1200" height="750" fill="url(#b_suno_grid)"/>
+  <rect width="1200" height="750" fill="url(#b_suno_corner)"/>
 
-  <g transform="translate(400, 210)">
-    <circle cx="0" cy="0" r="85" fill="#18181b" fill-opacity="0.7" stroke="#27272a" stroke-width="1.5" />
-    <circle cx="0" cy="0" r="75" fill="#12030b" stroke="url(#suGrad)" stroke-width="1.5" stroke-opacity="0.6" />
-    <g transform="translate(-46, -46) scale(0.75)">
-      <path fill="url(#suGrad)" fill-rule="evenodd" clip-rule="evenodd" d="M105.733 61c0-24.705-12.517-44.733-27.958-44.733S49.817 36.295 49.817 61h-33.55c0 24.706 12.517 44.733 27.958 44.733S72.183 85.705 72.183 61z"/>
+  <!-- Atmospheric hero spotlight halo -->
+  <circle cx="600" cy="240" r="295" fill="url(#b_suno_halo)"/>
+
+  <!-- Enlarged hero brand emblem (Clear of corner overlay zones) -->
+  <g transform="translate(600, 240)">
+    <g transform="translate(-142, -142) scale(2.33)">
+      <path fill="url(#b_suno_su)" fill-rule="evenodd" clip-rule="evenodd" d="M105.733 61c0-24.705-12.517-44.733-27.958-44.733S49.817 36.295 49.817 61h-33.55c0 24.706 12.517 44.733 27.958 44.733S72.183 85.705 72.183 61z"/>
     </g>
   </g>
 
-  <g transform="translate(400, 385)" text-anchor="middle">
-    <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="1">SUNO AI MUSIC</text>
-    <g transform="translate(0, 32)">
-      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="700" fill="#FF5400" letter-spacing="1.5">SÁNG TẠO NHẠC BẢN QUYỀN • PRO &amp; PREMIER</text>
+  <!-- Large legible typography safely above bottom badge safe-zone -->
+  <g transform="translate(600, 470)" text-anchor="middle">
+    <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="64" font-weight="900" letter-spacing="1.5">SUNO AI MUSIC</text>
+    <g transform="translate(0, 62)">
+      <rect x="-340" y="-28" width="680" height="56" rx="28" fill="url(#b_suno_pillGrad)" stroke="#FF007A" stroke-opacity="0.52" stroke-width="1.75"/>
+      <text x="0" y="9" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" letter-spacing="1">TẠO NHẠC BẢN QUYỀN • PRO AI</text>
     </g>
   </g>
 </svg>

@@ -1,54 +1,58 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1200 750" width="1200" height="750">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0d1424" />
-      <stop offset="100%" stop-color="#040710" />
-    </linearGradient>
-    <radialGradient id="glow" cx="50%" cy="45%" r="45%">
-      <stop offset="0%" stop-color="#00c4cc" stop-opacity="0.25" />
-      <stop offset="100%" stop-color="#00c4cc" stop-opacity="0" />
+    <radialGradient id="b_canva_bg" cx="50%" cy="38%" r="72%">
+      <stop offset="0%" stop-color="#0a2036"/>
+      <stop offset="100%" stop-color="#02060c"/>
     </radialGradient>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.03" />
+    <radialGradient id="b_canva_halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00c4cc" stop-opacity="0.34"/>
+      <stop offset="55%" stop-color="#7d2ae8" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#02060c" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="b_canva_corner" cx="88%" cy="88%" r="48%">
+      <stop offset="0%" stop-color="#7d2ae8" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#02060c" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="b_canva_grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.032"/>
     </pattern>
-    <radialGradient id="canva_card_g0" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(15.453 70.9057) rotate(-49.416) scale(61.8733)">
-      <stop stop-color="#6420FF"/>
-      <stop offset="1" stop-color="#6420FF" stop-opacity="0"/>
+    <linearGradient id="b_canva_pillGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00c4cc" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#7d2ae8" stop-opacity="0.16"/>
+    </linearGradient>
+    
+    <radialGradient id="b_canva_cg0" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(15.453 70.9057) rotate(-49.416) scale(61.8733)">
+      <stop stop-color="#6420FF"/><stop offset="1" stop-color="#6420FF" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="canva_card_g1" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(21.1788 9.09457) rotate(54.703) scale(69.7735)">
-      <stop stop-color="#00C4CC"/>
-      <stop offset="1" stop-color="#00C4CC" stop-opacity="0"/>
+    <radialGradient id="b_canva_cg1" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(21.1788 9.09457) rotate(54.703) scale(69.7735)">
+      <stop stop-color="#00C4CC"/><stop offset="1" stop-color="#00C4CC" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
-  <!-- Background -->
-  <rect width="800" height="500" fill="url(#bg)" />
-  <rect width="800" height="500" fill="url(#grid)" />
-  <circle cx="400" cy="210" r="280" fill="url(#glow)" />
+  <!-- Full-bleed edge-to-edge backdrop (Zero inner box frame) -->
+  <rect width="1200" height="750" fill="url(#b_canva_bg)"/>
+  <rect width="1200" height="750" fill="url(#b_canva_grid)"/>
+  <rect width="1200" height="750" fill="url(#b_canva_corner)"/>
 
-  <!-- Center Emblem Container -->
-  <g transform="translate(400, 205)">
-    <!-- Ambient Ring -->
-    <circle cx="0" cy="0" r="82" fill="#18181b" fill-opacity="0.7" stroke="#27272a" stroke-width="1.5" />
-    <circle cx="0" cy="0" r="70" fill="#09090b" fill-opacity="0.9" stroke="#00c4cc" stroke-width="1" stroke-opacity="0.4" />
-    
-    <!-- Authentic Canva Logo Emblem -->
-    <g transform="scale(1.4) translate(-40, -40)">
+  <!-- Atmospheric hero spotlight halo -->
+  <circle cx="600" cy="240" r="295" fill="url(#b_canva_halo)"/>
+
+  <!-- Enlarged hero brand emblem (Clear of corner overlay zones) -->
+  <g transform="translate(600, 240)">
+    <g transform="scale(3.35) translate(-40, -40)">
       <circle cx="40" cy="40" r="40" fill="#7D2AE7"/>
-      <circle cx="40" cy="40" r="40" fill="url(#canva_card_g0)"/>
-      <circle cx="40" cy="40" r="40" fill="url(#canva_card_g1)"/>
+      <circle cx="40" cy="40" r="40" fill="url(#b_canva_cg0)"/>
+      <circle cx="40" cy="40" r="40" fill="url(#b_canva_cg1)"/>
       <path d="M57.2691 48.2052C56.939 48.2052 56.6485 48.484 56.3462 49.0928C52.9323 56.0153 47.0358 60.9134 40.2125 60.9134C32.3228 60.9134 27.437 53.7913 27.437 43.9522C27.437 27.2855 36.7232 17.6491 44.8796 17.6491C48.691 17.6491 51.0186 20.0443 51.0186 23.8559C51.0186 28.3796 48.4485 30.7748 48.4485 32.3702C48.4485 33.0864 48.8939 33.5201 49.7773 33.5201C53.3264 33.5201 57.4918 29.4419 57.4918 23.6808C57.4918 18.0947 52.63 13.9888 44.4737 13.9888C30.994 13.9888 19.0142 26.4858 19.0142 43.777C19.0142 57.1614 26.6572 66.0061 38.45 66.0061C50.9668 66.0061 58.2043 53.5526 58.2043 49.5105C58.2043 48.6153 57.7466 48.2052 57.2691 48.2052Z" fill="white"/>
     </g>
   </g>
 
-  <!-- Text Badges -->
-  <g transform="translate(400, 385)" text-anchor="middle">
-    <!-- Brand Title -->
-    <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="1">CANVA PRO</text>
-    
-    <!-- Subtitle Pill -->
-    <g transform="translate(0, 32)">
-      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#00c4cc" letter-spacing="1.5">THIẾT KẾ ĐỒ HỌA • KHÔNG GIỚI HẠN</text>
+  <!-- Large legible typography safely above bottom badge safe-zone -->
+  <g transform="translate(600, 470)" text-anchor="middle">
+    <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="64" font-weight="900" letter-spacing="1.5">CANVA PRO</text>
+    <g transform="translate(0, 62)">
+      <rect x="-349" y="-28" width="698" height="56" rx="28" fill="url(#b_canva_pillGrad)" stroke="#00c4cc" stroke-opacity="0.52" stroke-width="1.75"/>
+      <text x="0" y="9" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="26" font-weight="800" letter-spacing="1">THIẾT KẾ ĐỒ HỌA • KHÔNG GIỚI HẠN</text>
     </g>
   </g>
 </svg>

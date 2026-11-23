@@ -1,43 +1,50 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1200 750" width="1200" height="750">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0a1224" />
-      <stop offset="100%" stop-color="#030610" />
-    </linearGradient>
-    <radialGradient id="glow" cx="50%" cy="45%" r="45%">
-      <stop offset="0%" stop-color="#1877f2" stop-opacity="0.25" />
-      <stop offset="100%" stop-color="#1877f2" stop-opacity="0" />
+    <radialGradient id="b_fb_bg" cx="50%" cy="38%" r="72%">
+      <stop offset="0%" stop-color="#0a1936"/>
+      <stop offset="100%" stop-color="#02050b"/>
     </radialGradient>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.03" />
+    <radialGradient id="b_fb_halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1877f2" stop-opacity="0.34"/>
+      <stop offset="55%" stop-color="#1877f2" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#02050b" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="b_fb_corner" cx="88%" cy="88%" r="48%">
+      <stop offset="0%" stop-color="#1877f2" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#02050b" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="b_fb_grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.032"/>
     </pattern>
+    <linearGradient id="b_fb_pillGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1877f2" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#1877f2" stop-opacity="0.16"/>
+    </linearGradient>
+    
   </defs>
 
-  <!-- Background -->
-  <rect width="800" height="500" fill="url(#bg)" />
-  <rect width="800" height="500" fill="url(#grid)" />
-  <circle cx="400" cy="220" r="280" fill="url(#glow)" />
+  <!-- Full-bleed edge-to-edge backdrop (Zero inner box frame) -->
+  <rect width="1200" height="750" fill="url(#b_fb_bg)"/>
+  <rect width="1200" height="750" fill="url(#b_fb_grid)"/>
+  <rect width="1200" height="750" fill="url(#b_fb_corner)"/>
 
-  <!-- Center Emblem Container -->
-  <g transform="translate(400, 210)">
-    <!-- Ambient Ring -->
-    <circle cx="0" cy="0" r="85" fill="#18181b" fill-opacity="0.7" stroke="#27272a" stroke-width="1.5" />
-    <circle cx="0" cy="0" r="75" fill="#09090b" fill-opacity="0.9" stroke="#1877f2" stroke-width="1" stroke-opacity="0.4" />
-    
-    <!-- Icon -->
-    <g transform="translate(-40, -40) scale(3.33)">
-      <path d="M24 12c0-6.6-5.4-12-12-12S0 5.4 0 12c0 6 4.4 11 10.1 11.9v-8.4H7.1V12h3V9.3c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.8V12h3.4l-.5 3.5h-2.9v8.4C19.6 23 24 18 24 12z" fill="#1877f2" />
+  <!-- Atmospheric hero spotlight halo -->
+  <circle cx="600" cy="240" r="295" fill="url(#b_fb_halo)"/>
+
+  <!-- Enlarged hero brand emblem (Clear of corner overlay zones) -->
+  <g transform="translate(600, 240)">
+    <circle cx="0" cy="4" r="106" fill="#ffffff"/>
+    <g transform="translate(-129.6, -129.6) scale(10.8)">
+      <path d="M24 12c0-6.6-5.4-12-12-12S0 5.4 0 12c0 6 4.4 11 10.1 11.9v-8.4H7.1V12h3V9.3c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.8V12h3.4l-.5 3.5h-2.9v8.4C19.6 23 24 18 24 12z" fill="#0866FF"/>
     </g>
   </g>
 
-  <!-- Text Badges -->
-  <g transform="translate(400, 385)" text-anchor="middle">
-    <!-- Brand Title -->
-    <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="1">FACEBOOK</text>
-    
-    <!-- Subtitle Pill -->
-    <g transform="translate(0, 32)">
-      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#1877f2" letter-spacing="1.5">SUB VIP • TĂNG TƯƠNG TÁC PROFILE</text>
+  <!-- Large legible typography safely above bottom badge safe-zone -->
+  <g transform="translate(600, 470)" text-anchor="middle">
+    <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="64" font-weight="900" letter-spacing="1.5">FACEBOOK VIP</text>
+    <g transform="translate(0, 62)">
+      <rect x="-340" y="-28" width="680" height="56" rx="28" fill="url(#b_fb_pillGrad)" stroke="#1877f2" stroke-opacity="0.52" stroke-width="1.75"/>
+      <text x="0" y="9" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" letter-spacing="1">SUB VIP • TĂNG TƯƠNG TÁC</text>
     </g>
   </g>
 </svg>

@@ -1,130 +1,63 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1200 750" width="1200" height="750">
   <defs>
-    <!-- Background Gradient -->
-    <radialGradient id="gemBg" cx="50%" cy="38%" r="75%">
-      <stop offset="0%" stop-color="#1e1045"/>
-      <stop offset="40%" stop-color="#0c0621"/>
-      <stop offset="75%" stop-color="#04020a"/>
-      <stop offset="100%" stop-color="#000000"/>
+    <radialGradient id="p_gemfam_bg" cx="50%" cy="38%" r="72%">
+      <stop offset="0%" stop-color="#1b1042"/>
+      <stop offset="100%" stop-color="#04020d"/>
     </radialGradient>
-
-    <!-- Gemini Brand Gradient -->
-    <linearGradient id="geminiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#22d3ee"/>
-      <stop offset="25%" stop-color="#3b82f6"/>
-      <stop offset="55%" stop-color="#a855f7"/>
-      <stop offset="80%" stop-color="#ec4899"/>
-      <stop offset="100%" stop-color="#f97316"/>
+    <radialGradient id="p_gemfam_halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#facc15" stop-opacity="0.34"/>
+      <stop offset="55%" stop-color="#818cf8" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#04020d" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="p_gemfam_corner" cx="88%" cy="88%" r="48%">
+      <stop offset="0%" stop-color="#818cf8" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#04020d" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="p_gemfam_grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.032"/>
+    </pattern>
+    <linearGradient id="p_gemfam_pillGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#facc15" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#818cf8" stop-opacity="0.16"/>
     </linearGradient>
-
-    <!-- Gold Accent Gradient -->
-    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#fef08a"/>
-      <stop offset="40%" stop-color="#facc15"/>
-      <stop offset="100%" stop-color="#f97316"/>
+    <linearGradient id="p_gemfam_gem" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="35%" stop-color="#6366f1"/>
+      <stop offset="70%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#f472b6"/>
     </linearGradient>
-
-    <!-- Glow Filter -->
-    <filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="30" result="blur"/>
-      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-    </filter>
-    <filter id="starGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="20" result="blur"/>
-      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-    </filter>
   </defs>
 
-  <!-- Deep Cosmic Background -->
-  <rect width="1200" height="750" fill="url(#gemBg)"/>
+  <!-- Full-bleed edge-to-edge backdrop (Zero inner box frame) -->
+  <rect width="1200" height="750" fill="url(#p_gemfam_bg)"/>
+  <rect width="1200" height="750" fill="url(#p_gemfam_grid)"/>
+  <rect width="1200" height="750" fill="url(#p_gemfam_corner)"/>
 
-  <!-- High-Intensity Light Auras -->
-  <circle cx="600" cy="230" r="260" fill="#3b82f6" opacity="0.28" filter="url(#neonGlow)"/>
-  <circle cx="600" cy="230" r="180" fill="#a855f7" opacity="0.32" filter="url(#neonGlow)"/>
-  <circle cx="300" cy="420" r="160" fill="#22d3ee" opacity="0.18" filter="url(#neonGlow)"/>
-  <circle cx="900" cy="420" r="160" fill="#f43f5e" opacity="0.18" filter="url(#neonGlow)"/>
+  <!-- Atmospheric hero spotlight halo -->
+  <circle cx="600" cy="240" r="295" fill="url(#p_gemfam_halo)"/>
 
-  <!-- Glass Card Outer Border -->
-  <rect x="60" y="40" width="1080" height="670" rx="36" fill="#ffffff" fill-opacity="0.03" stroke="url(#geminiGrad)" stroke-width="2.5" stroke-opacity="0.5"/>
-
-  <!-- TOP BAR: Pill Badge Left + Giant Duration Badge Right -->
-  <!-- Left Pill: Frontier Brand -->
-  <g transform="translate(110, 85)">
-    <rect x="0" y="0" width="440" height="54" rx="27" fill="#170c36" stroke="#a855f7" stroke-width="2"/>
-    <circle cx="28" cy="27" r="9" fill="#22d3ee" filter="url(#neonGlow)"/>
-    <text x="50" y="36" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="21" font-weight="900" fill="#ffffff" letter-spacing="2">
-      GEMINI 4 ARGON • GOOGLE AI
-    </text>
-  </g>
-
-  <!-- Right Pill: GIANT GOLDEN DURATION BADGE -->
-  <g transform="translate(770, 85)">
-    <rect x="0" y="0" width="320" height="54" rx="27" fill="#854d0e" fill-opacity="0.5" stroke="#facc15" stroke-width="2.5" filter="url(#neonGlow)"/>
-    <rect x="2" y="2" width="316" height="50" rx="25" fill="#ca8a04" fill-opacity="0.25"/>
-    <path d="M28 20 L32 29 L41 30 L34 36 L36 45 L28 40 L20 45 L22 36 L15 30 L24 29 Z" fill="#facc15"/>
-    <text x="175" y="37" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="26" font-weight="900" fill="#fef08a" text-anchor="middle" letter-spacing="2">
-      HẠN 2 NĂM (24T)
-    </text>
-  </g>
-
-  <!-- CENTRAL ICON &amp; HERO GRAPHIC -->
-  <g transform="translate(600, 245)">
-    <!-- Outer Glow Rings -->
-    <circle cx="0" cy="0" r="105" fill="#0c0524" stroke="url(#geminiGrad)" stroke-width="3" filter="url(#starGlow)"/>
-    
-    <!-- Gemini 4-Point AI Spark (Extra Large &amp; Punchy) -->
-    <path d="M0 -85 C3 -25 25 -3 85 0 C25 3 3 25 0 85 C-3 25 -25 3 -85 0 C-25 -3 -3 -25 0 -85 Z" fill="url(#geminiGrad)" filter="url(#starGlow)"/>
-    <!-- Intense White Core Sparkle -->
-    <path d="M0 -50 C1.5 -15 15 -1.5 50 0 C15 1.5 1.5 15 0 50 C-1.5 15 -15 1.5 -50 0 C-15 -1.5 -1.5 -15 0 -50 Z" fill="#ffffff"/>
-
-    <!-- Family Icon Badge Overlap -->
-    <g transform="translate(65, 55)">
-      <circle cx="0" cy="0" r="32" fill="#170c36" stroke="#facc15" stroke-width="2.5" filter="url(#neonGlow)"/>
-      <path d="M-8 -6 A6 6 0 1 1 4 -6 A6 6 0 1 1 -8 -6 M-15 9 C-15 3 -8 1 -2 1 C4 1 11 3 11 9 Z" fill="#facc15"/>
-      <path d="M5 -8 A4.5 4.5 0 1 1 14 -8 A4.5 4.5 0 1 1 5 -8 M9 7 C9 3.5 13 2.5 16 2.5 C19 2.5 22 3.5 22 7 Z" fill="#fef08a" opacity="0.8"/>
+  <!-- Enlarged hero brand emblem (Clear of corner overlay zones) -->
+  <g transform="translate(600, 240)">
+    <g transform="translate(-138, -138) scale(11.5)">
+      <path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#p_gemfam_gem)"/>
     </g>
+    <g transform="translate(112, 68)">
+    <circle cx="0" cy="0" r="46" fill="#090517" stroke="#ffffff" stroke-opacity="0.28" stroke-width="2"/>
+    <svg x="-28" y="-25" width="56" height="50" viewBox="0 0 87.3 78"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
+	<path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/>
+	<path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/>
+	<path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
+	<path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/>
+	<path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/></svg>
+  </g>
   </g>
 
-  <!-- BIG TYPOGRAPHY (LARGE, CRISP, SCALABLE) -->
-  <!-- Main Title -->
-  <text x="600" y="420" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="64" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="3">
-    GEMINI PRO 5TB
-  </text>
-  
-  <!-- Highlight Duration &amp; Family Subtitle -->
-  <g transform="translate(600, 480)">
-    <rect x="-380" y="-32" width="760" height="58" rx="29" fill="#1c113b" stroke="url(#goldGrad)" stroke-width="2"/>
-    <text x="0" y="8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="30" font-weight="900" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="2">
-      ⚡ HẠN 2 NĂM • CHỦ FAMILY 5TB • ADD 5 GMAIL
-    </text>
-  </g>
-
-  <!-- Explanatory Tagline -->
-  <text x="600" y="555" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="700" fill="#c7d2fe" text-anchor="middle" letter-spacing="1">
-    Mô hình Gemini 4 Argon • 5.000GB Google One • Cấp Acc 2FA Tự Động
-  </text>
-
-  <!-- 3 GIANT BENTO PILLS AT BOTTOM -->
-  <g transform="translate(600, 635)">
-    <!-- Pill 1: 5000GB Cloud -->
-    <g transform="translate(-460, -35)">
-      <rect x="0" y="0" width="290" height="70" rx="20" fill="#150a30" stroke="#3b82f6" stroke-width="2"/>
-      <text x="145" y="27" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="800" fill="#93c5fd" text-anchor="middle" letter-spacing="2">DUNG LƯỢNG CLOUD</text>
-      <text x="145" y="55" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="900" fill="#ffffff" text-anchor="middle">5.000 GB (5TB)</text>
-    </g>
-
-    <!-- Pill 2: Duration 2 Years -->
-    <g transform="translate(-145, -35)">
-      <rect x="0" y="0" width="290" height="70" rx="20" fill="#2e1b04" stroke="#facc15" stroke-width="2.5" filter="url(#neonGlow)"/>
-      <text x="145" y="27" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="900" fill="#fde047" text-anchor="middle" letter-spacing="2">THỜI HẠN SỬ DỤNG</text>
-      <text x="145" y="55" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="25" font-weight="900" fill="#ffffff" text-anchor="middle">HẠN 2 NĂM (24T)</text>
-    </g>
-
-    <!-- Pill 3: Head of Family -->
-    <g transform="translate(170, -35)">
-      <rect x="0" y="0" width="290" height="70" rx="20" fill="#150a30" stroke="#10b981" stroke-width="2"/>
-      <text x="145" y="27" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="800" fill="#6ee7b7" text-anchor="middle" letter-spacing="2">QUYỀN CHỦ NHÓM</text>
-      <text x="145" y="55" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="900" fill="#ffffff" text-anchor="middle">MỜI 5 GMAIL PHỤ</text>
+  <!-- Large legible typography safely above bottom badge safe-zone -->
+  <g transform="translate(600, 470)" text-anchor="middle">
+    <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="54" font-weight="900" letter-spacing="1.5">GEMINI 4 ARGON FAMILY</text>
+    <g transform="translate(0, 62)">
+      <rect x="-340" y="-28" width="680" height="56" rx="28" fill="url(#p_gemfam_pillGrad)" stroke="#facc15" stroke-opacity="0.52" stroke-width="1.75"/>
+      <text x="0" y="9" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" letter-spacing="1">CHỦ FAMILY 5TB • ADD 5 GMAIL</text>
     </g>
   </g>
 </svg>

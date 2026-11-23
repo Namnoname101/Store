@@ -1,43 +1,49 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1200 750" width="1200" height="750">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#08121e" />
-      <stop offset="100%" stop-color="#03070d" />
-    </linearGradient>
-    <radialGradient id="glow" cx="50%" cy="45%" r="45%">
-      <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.25" />
-      <stop offset="100%" stop-color="#00f2fe" stop-opacity="0" />
+    <radialGradient id="b_cursor_bg" cx="50%" cy="38%" r="72%">
+      <stop offset="0%" stop-color="#081b2b"/>
+      <stop offset="100%" stop-color="#02060c"/>
     </radialGradient>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.03" />
+    <radialGradient id="b_cursor_halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.34"/>
+      <stop offset="55%" stop-color="#00f2fe" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#02060c" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="b_cursor_corner" cx="88%" cy="88%" r="48%">
+      <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#02060c" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="b_cursor_grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.032"/>
     </pattern>
+    <linearGradient id="b_cursor_pillGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#00f2fe" stop-opacity="0.16"/>
+    </linearGradient>
+    
   </defs>
 
-  <!-- Background -->
-  <rect width="800" height="500" fill="url(#bg)" />
-  <rect width="800" height="500" fill="url(#grid)" />
-  <circle cx="400" cy="220" r="280" fill="url(#glow)" />
+  <!-- Full-bleed edge-to-edge backdrop (Zero inner box frame) -->
+  <rect width="1200" height="750" fill="url(#b_cursor_bg)"/>
+  <rect width="1200" height="750" fill="url(#b_cursor_grid)"/>
+  <rect width="1200" height="750" fill="url(#b_cursor_corner)"/>
 
-  <!-- Center Emblem Container -->
-  <g transform="translate(400, 210)">
-    <!-- Ambient Ring -->
-    <circle cx="0" cy="0" r="85" fill="#18181b" fill-opacity="0.7" stroke="#27272a" stroke-width="1.5" />
-    <circle cx="0" cy="0" r="75" fill="#09090b" fill-opacity="0.9" stroke="#00f2fe" stroke-width="1" stroke-opacity="0.4" />
-    
-    <!-- Icon -->
-    <g transform="translate(-40, -40) scale(3.33)">
-      <path d="M22.106 5.68L12.5.135a.998.998 0 00-.998 0L1.893 5.68a.84.84 0 00-.419.726v11.186c0 .3.16.577.42.727l9.607 5.547a.999.999 0 00.998 0l9.608-5.547a.84.84 0 00.42-.727V6.407a.84.84 0 00-.42-.726zm-.603 1.176L12.228 22.92c-.063.108-.228.064-.228-.061V12.34a.59.59 0 00-.295-.51l-9.11-5.26c-.107-.062-.063-.228.062-.228h18.55c.264 0 .428.286.296.514z" fill="#00f2fe" fill-rule="evenodd" />
+  <!-- Atmospheric hero spotlight halo -->
+  <circle cx="600" cy="240" r="295" fill="url(#b_cursor_halo)"/>
+
+  <!-- Enlarged hero brand emblem (Clear of corner overlay zones) -->
+  <g transform="translate(600, 240)">
+    <g transform="translate(-132, -132) scale(11.0)">
+      <path d="M22.106 5.68L12.5.135a.998.998 0 00-.998 0L1.893 5.68a.84.84 0 00-.419.726v11.186c0 .3.16.577.42.727l9.607 5.547a.999.999 0 00.998 0l9.608-5.547a.84.84 0 00.42-.727V6.407a.84.84 0 00-.42-.726zm-.603 1.176L12.228 22.92c-.063.108-.228.064-.228-.061V12.34a.59.59 0 00-.295-.51l-9.11-5.26c-.107-.062-.063-.228.062-.228h18.55c.264 0 .428.286.296.514z" fill="#22d3ee" fill-rule="evenodd"/>
     </g>
   </g>
 
-  <!-- Text Badges -->
-  <g transform="translate(400, 385)" text-anchor="middle">
-    <!-- Brand Title -->
-    <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="1">CURSOR AI</text>
-    
-    <!-- Subtitle Pill -->
-    <g transform="translate(0, 32)">
-      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="600" fill="#00f2fe" letter-spacing="1.5">PRO &amp; BUSINESS • AUTO-COMPLETE</text>
+  <!-- Large legible typography safely above bottom badge safe-zone -->
+  <g transform="translate(600, 470)" text-anchor="middle">
+    <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="64" font-weight="900" letter-spacing="1.5">CURSOR AI IDE</text>
+    <g transform="translate(0, 62)">
+      <rect x="-340" y="-28" width="680" height="56" rx="28" fill="url(#b_cursor_pillGrad)" stroke="#00f2fe" stroke-opacity="0.52" stroke-width="1.75"/>
+      <text x="0" y="9" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" letter-spacing="1">PRO &amp; BUSINESS • AUTO-COMPLETE</text>
     </g>
   </g>
 </svg>

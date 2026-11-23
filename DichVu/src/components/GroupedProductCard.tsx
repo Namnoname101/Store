@@ -84,10 +84,15 @@ export default function GroupedProductCard({
   }, [displayThumbnail]);
 
   return (
-    <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card text-card-foreground p-3.5 sm:p-4 transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5">
+    <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card text-card-foreground transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5">
       <div>
-        {/* Compact 16:10 Thumbnail */}
-        <div className="relative mb-3 flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-xl border border-border bg-secondary/50">
+        {/* Full-bleed 16:10 Thumbnail (No nested box-in-box border) */}
+        <Link
+          href={`/products/${activeVariant.slug}`}
+          tabIndex={-1}
+          aria-hidden="true"
+          className="relative block aspect-[16/10] w-full overflow-hidden border-b border-border/70 bg-secondary/40"
+        >
           <img
             key={displayThumbnail}
             ref={imgRef}
@@ -98,65 +103,71 @@ export default function GroupedProductCard({
           />
 
           {/* Official Brand Badge with SVG logo */}
-          <div className="absolute top-2.5 left-2.5">
-            <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card/95 px-2.5 py-1 text-xs font-semibold text-card-foreground shadow-xs backdrop-blur-md">
-              <BrandLogo brandName={brandName} size={14} className="w-3.5 h-3.5 text-muted-foreground" />
+          <div className="pointer-events-none absolute top-2.5 left-2.5">
+            <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-zinc-950/75 px-2.5 py-1 text-xs font-semibold text-zinc-100 shadow-sm backdrop-blur-md whitespace-nowrap">
+              <BrandLogo brandName={brandName} size={14} className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
               {brandName}
             </span>
           </div>
 
           {/* Variants Count Badge */}
-          <div className="absolute top-2.5 right-2.5">
-            <span className="rounded-lg bg-secondary border border-border px-2 py-0.5 text-xs font-medium font-mono text-secondary-foreground shadow-xs backdrop-blur-md">
+          <div className="pointer-events-none absolute top-2.5 right-2.5">
+            <span className="inline-flex items-center rounded-lg bg-zinc-950/75 border border-white/15 px-2.5 py-1 text-xs font-semibold font-mono text-zinc-100 shadow-sm backdrop-blur-md whitespace-nowrap">
               {sortedVariants.length} gói
             </span>
           </div>
-        </div>
-
-        {/* Category Header Label */}
-        <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground truncate">
-          {category?.name || badgeLabel}
-        </p>
-
-        {/* Title synced with active variant */}
-        <Link href={`/products/${activeVariant.slug}`} className="block">
-          <h3 className="line-clamp-2 text-sm font-semibold text-foreground group-hover:text-primary transition-colors leading-snug min-h-[2.5rem]">
-            {activeVariant.title || title}
-          </h3>
         </Link>
 
-        {/* Interactive Credit / Variant Selector Pills with >= 44px Touch Targets */}
-        <div className="mt-3 pt-2.5 border-t border-border">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs font-medium text-muted-foreground">
-              Chọn mức gói:
-            </span>
-          </div>
+        {/* Card Content Body */}
+        <div className="px-3.5 pt-3.5 sm:px-4 sm:pt-4">
+          {/* Category Header Label */}
+          <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground truncate">
+            {category?.name || badgeLabel}
+          </p>
 
-          <div className="flex flex-wrap gap-2 pt-1">
-            {sortedVariants.map((variant, index) => {
-              const isSelected = selectedIndex === index;
-              return (
-                <button
-                  key={variant.id}
-                  type="button"
-                  onClick={() => setSelectedIndex(index)}
-                  className={`min-h-[44px] px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all flex items-center justify-center touch-manipulation focus-visible:ring-2 focus-visible:ring-ring ${
-                    isSelected
-                      ? "border border-primary bg-primary text-primary-foreground shadow-sm ring-1 ring-primary scale-[1.02] font-bold"
-                      : "border border-border bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                  }`}
-                  title={`${variant.title} - ${formatVND(variant.price)}`}
-                >
-                  {variant.variantLabel}
-                </button>
-              );
-            })}
+          {/* Title synced with active variant */}
+          <Link
+            href={`/products/${activeVariant.slug}`}
+            className="block rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <h3 className="line-clamp-2 text-sm font-semibold text-foreground group-hover:text-primary transition-colors leading-snug min-h-[2.5rem]">
+              {activeVariant.title || title}
+            </h3>
+          </Link>
+
+          {/* Interactive Credit / Variant Selector Pills with >= 44px Touch Targets */}
+          <div className="mt-3 pt-2.5 border-t border-border">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs font-medium text-muted-foreground">
+                Chọn mức gói:
+              </span>
+            </div>
+
+            <div className="flex flex-wrap gap-2 pt-1">
+              {sortedVariants.map((variant, index) => {
+                const isSelected = selectedIndex === index;
+                return (
+                  <button
+                    key={variant.id}
+                    type="button"
+                    onClick={() => setSelectedIndex(index)}
+                    className={`min-h-[44px] px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all flex items-center justify-center touch-manipulation focus-visible:ring-2 focus-visible:ring-ring ${
+                      isSelected
+                        ? "border border-primary bg-primary text-primary-foreground shadow-sm ring-1 ring-primary scale-[1.02] font-bold"
+                        : "border border-border bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    }`}
+                    title={`${variant.title} - ${formatVND(variant.price)}`}
+                  >
+                    {variant.variantLabel}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="mt-3.5 pt-3 border-t border-border">
+      <div className="mx-3.5 mb-3.5 sm:mx-4 sm:mb-4 mt-3.5 pt-3 border-t border-border">
         {/* Price & Stock Row */}
         <div className="flex items-center justify-between gap-1 mb-3">
           <div className="min-w-0">

@@ -1,46 +1,49 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1200 750" width="1200" height="750">
   <defs>
-    <linearGradient id="abBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#200508" />
-      <stop offset="100%" stop-color="#0a0203" />
-    </linearGradient>
-    <radialGradient id="abGlow" cx="50%" cy="45%" r="45%">
-      <stop offset="0%" stop-color="#FA0F00" stop-opacity="0.28" />
-      <stop offset="100%" stop-color="#FA0F00" stop-opacity="0" />
+    <radialGradient id="b_adobe_bg" cx="50%" cy="38%" r="72%">
+      <stop offset="0%" stop-color="#2a060a"/>
+      <stop offset="100%" stop-color="#060102"/>
     </radialGradient>
-    <pattern id="abGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.03" />
+    <radialGradient id="b_adobe_halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FA0F00" stop-opacity="0.34"/>
+      <stop offset="55%" stop-color="#FA0F00" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#060102" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="b_adobe_corner" cx="88%" cy="88%" r="48%">
+      <stop offset="0%" stop-color="#FA0F00" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#060102" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="b_adobe_grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.032"/>
     </pattern>
+    <linearGradient id="b_adobe_pillGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FA0F00" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#FA0F00" stop-opacity="0.16"/>
+    </linearGradient>
+    
   </defs>
 
-  <!-- Background -->
-  <rect width="800" height="500" fill="url(#abBg)" />
-  <rect width="800" height="500" fill="url(#abGrid)" />
-  <circle cx="400" cy="220" r="280" fill="url(#abGlow)" />
+  <!-- Full-bleed edge-to-edge backdrop (Zero inner box frame) -->
+  <rect width="1200" height="750" fill="url(#b_adobe_bg)"/>
+  <rect width="1200" height="750" fill="url(#b_adobe_grid)"/>
+  <rect width="1200" height="750" fill="url(#b_adobe_corner)"/>
 
-  <!-- Center Emblem Container -->
-  <g transform="translate(400, 210)">
-    <!-- Ambient Ring -->
-    <circle cx="0" cy="0" r="85" fill="#18181b" fill-opacity="0.7" stroke="#27272a" stroke-width="1.5" />
-    <circle cx="0" cy="0" r="75" fill="#FA0F00" fill-opacity="0.15" stroke="#FA0F00" stroke-width="1.5" stroke-opacity="0.6" />
-    
-    <!-- Authentic Official Adobe 'A' Signature Logo -->
-    <g transform="translate(-68, -58)">
-      <path
-        fill="#FA0F00"
-        d="M48.787 88.855h19.82c-.09.105 8.617 20.771 8.617 20.967h18.385c.025.055-28.025-63.931-28.151-64.057C67.736 45.55 48.967 88.908 48.787 88.855zM7.71 6.471C7.755 6.398 7.854 109.536 7.854 109.68 7.997 109.814 50.923 6.444 50.798 6.471H7.71zM83.599 6.471c0 0 44.55 103.595 44.522 103.263 0 .144.03-103.003.03-103.263H83.599z"
-      />
+  <!-- Atmospheric hero spotlight halo -->
+  <circle cx="600" cy="240" r="295" fill="url(#b_adobe_halo)"/>
+
+  <!-- Enlarged hero brand emblem (Clear of corner overlay zones) -->
+  <g transform="translate(600, 240)">
+    <g transform="translate(-136, -116) scale(2.0)">
+      <path fill="#FA0F00" d="M48.787 88.855h19.82c-.09.105 8.617 20.771 8.617 20.967h18.385c.025.055-28.025-63.931-28.151-64.057C67.736 45.55 48.967 88.908 48.787 88.855zM7.71 6.471C7.755 6.398 7.854 109.536 7.854 109.68 7.997 109.814 50.923 6.444 50.798 6.471H7.71zM83.599 6.471c0 0 44.55 103.595 44.522 103.263 0 .144.03-103.003.03-103.263H83.599z"/>
     </g>
   </g>
 
-  <!-- Text Badges -->
-  <g transform="translate(400, 385)" text-anchor="middle">
-    <!-- Brand Title -->
-    <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="1">ADOBE CREATIVE CLOUD</text>
-    
-    <!-- Subtitle Pill -->
-    <g transform="translate(0, 32)">
-      <text font-family="'JetBrains Mono', monospace, sans-serif" font-size="12" font-weight="700" fill="#FF5252" letter-spacing="1.5">PHOTOSHOP • ILLUSTRATOR • PREMIERE • FIREFLY AI</text>
+  <!-- Large legible typography safely above bottom badge safe-zone -->
+  <g transform="translate(600, 470)" text-anchor="middle">
+    <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="54" font-weight="900" letter-spacing="1.5">ADOBE CREATIVE CLOUD</text>
+    <g transform="translate(0, 62)">
+      <rect x="-340" y="-28" width="680" height="56" rx="28" fill="url(#b_adobe_pillGrad)" stroke="#FA0F00" stroke-opacity="0.52" stroke-width="1.75"/>
+      <text x="0" y="9" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="800" letter-spacing="1">PHOTOSHOP • AI • FIREFLY AI</text>
     </g>
   </g>
 </svg>

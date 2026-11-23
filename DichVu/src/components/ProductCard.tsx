@@ -95,10 +95,15 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
   }, [resolvedThumbnail]);
 
   return (
-    <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card text-card-foreground p-3.5 sm:p-4 transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5">
+    <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card text-card-foreground transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5">
       <div>
-        {/* Aspect Ratio Product Image */}
-        <div className="relative mb-3 flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-xl border border-border bg-secondary/50">
+        {/* Full-bleed 16:10 Product Media (No nested box-in-box border) */}
+        <Link
+          href={`/products/${slug}`}
+          tabIndex={-1}
+          aria-hidden="true"
+          className="relative block aspect-[16/10] w-full overflow-hidden border-b border-border/70 bg-secondary/40"
+        >
           <img
             key={resolvedThumbnail}
             ref={imgRef}
@@ -113,18 +118,18 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
           />
 
           {/* Type Badge */}
-          <div className="absolute top-2.5 left-2.5">
-            <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card/95 px-2.5 py-1 text-xs font-semibold text-card-foreground shadow-xs backdrop-blur-md">
-              <TypeIcon className="h-3.5 w-3.5 text-muted-foreground" />
+          <div className="pointer-events-none absolute top-2.5 left-2.5">
+            <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-zinc-950/75 px-2.5 py-1 text-xs font-semibold text-zinc-100 shadow-sm backdrop-blur-md whitespace-nowrap">
+              <TypeIcon aria-hidden="true" className="h-3.5 w-3.5 text-zinc-300 shrink-0" />
               {typeInfo.shortLabel}
             </span>
           </div>
 
           {/* Duration Pill at bottom-left */}
           {durationBadge && (
-            <div className="absolute bottom-2.5 left-2.5">
-              <span className="inline-flex items-center gap-1 rounded-md bg-slate-900/90 border border-amber-500/40 px-2 py-0.5 text-[11px] font-bold font-mono text-amber-300 shadow-md backdrop-blur-md">
-                <Clock className="h-3 w-3 text-amber-400 shrink-0" />
+            <div className="pointer-events-none absolute bottom-2.5 left-2.5">
+              <span className="inline-flex items-center gap-1 rounded-lg bg-zinc-950/80 border border-amber-400/40 px-2.5 py-0.5 text-xs font-bold font-mono text-amber-300 shadow-sm backdrop-blur-md whitespace-nowrap">
+                <Clock aria-hidden="true" className="h-3 w-3 text-amber-400 shrink-0" />
                 {durationBadge}
               </span>
             </div>
@@ -132,28 +137,34 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
 
           {/* Discount Badge */}
           {discountPercent > 0 && (
-            <div className="absolute top-2.5 right-2.5">
-              <span className="rounded-lg bg-destructive/15 border border-destructive/30 px-2 py-0.5 text-xs font-bold font-mono text-destructive shadow-xs backdrop-blur-md">
+            <div className="pointer-events-none absolute top-2.5 right-2.5">
+              <span className="inline-flex items-center rounded-lg bg-rose-600/90 border border-rose-400/40 px-2 py-0.5 text-xs font-bold font-mono text-white shadow-sm backdrop-blur-md whitespace-nowrap">
                 -{discountPercent}%
               </span>
             </div>
           )}
-        </div>
-
-        {/* Category Label */}
-        <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground truncate">
-          {getProductBadgeLabel(product)}
-        </p>
-
-        {/* Product Title */}
-        <Link href={`/products/${slug}`} className="block">
-          <h3 className="line-clamp-2 text-sm font-semibold text-foreground group-hover:text-primary transition-colors leading-snug min-h-[2.5rem]">
-            {title}
-          </h3>
         </Link>
+
+        {/* Card Content Body */}
+        <div className="px-3.5 pt-3.5 sm:px-4 sm:pt-4">
+          {/* Category Label */}
+          <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground truncate">
+            {getProductBadgeLabel(product)}
+          </p>
+
+          {/* Product Title */}
+          <Link
+            href={`/products/${slug}`}
+            className="block rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <h3 className="line-clamp-2 text-sm font-semibold text-foreground group-hover:text-primary transition-colors leading-snug min-h-[2.5rem]">
+              {title}
+            </h3>
+          </Link>
+        </div>
       </div>
 
-      <div className="mt-3.5 pt-3 border-t border-border">
+      <div className="mx-3.5 mb-3.5 sm:mx-4 sm:mb-4 mt-3.5 pt-3 border-t border-border">
         {/* Price & Stock Row */}
         <div className="flex items-center justify-between gap-1 mb-3">
           <div className="min-w-0">
