@@ -1,4 +1,4 @@
-# Khodee Gateway OneClick v0.2 - HTML UI via WebBrowser control
+﻿# Khodee Gateway OneClick v0.2 - HTML UI via WebBrowser control
 # Single-file PowerShell → EXE. No third-party runtime needed.
 trap {
   [System.IO.File]::WriteAllText("$env:TEMP\khodee_err.log",
@@ -657,9 +657,13 @@ function Test-KeyUsage([string]$key) {
     $payload = @{ apiKey = $key.Trim() } | ConvertTo-Json
     
     $wc = New-Object System.Net.WebClient
+    $wc.Encoding = [System.Text.Encoding]::UTF8
     $wc.Headers.Add('Content-Type', 'application/json')
-    $wc.Headers.Add('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
-    $wc.Headers.Add('Accept', 'application/json')
+    $wc.Headers.Add('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+    $wc.Headers.Add('Accept', 'application/json, text/plain, */*')
+    $wc.Headers.Add('Origin', 'https://genzshop.vn')
+    $wc.Headers.Add('Referer', 'https://genzshop.vn/check-usage')
+    $wc.Headers.Add('X-Requested-With', 'XMLHttpRequest')
 
     $task = $wc.UploadStringTaskAsync('https://genzshop.vn/api/check-usage.php', 'POST', $payload)
 

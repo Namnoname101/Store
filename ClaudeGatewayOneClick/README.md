@@ -1,10 +1,10 @@
-# Khodee Gateway OneClick v0.3.3 (Windows)
+# Khodee Gateway OneClick v0.3.4 (Windows)
 
 **Mục đích:** Cấu hình Gateway cho ứng dụng Claude Desktop chính chủ, kiểm tra hạn mức API Key thời gian thực và tự động mở tính năng Import chat từ Claude.ai chỉ với 1 cú click chuột.
 
 ---
 
-## 🚀 Tính năng nổi bật (v0.3.3)
+## 🚀 Tính năng nổi bật (v0.3.4)
 
 - ⚡ **Kiểm tra Key thời gian thực**: Tự động kết nối hệ sinh thái API check-usage để kiểm tra tính hợp lệ và hạn mức của Key. Nếu hết hạn mức hoặc sai key sẽ cảnh báo ngay; key hợp lệ hiển thị số dư còn lại (ví dụ: `Còn $9.99/$10.00`).
 - 🎯 **Trải nghiệm 1-Click sạch sẽ**: Không có bất kỳ hộp thoại popup nào (`Yes/No` hay `OK`) làm gián đoạn — toàn bộ tiến trình xuất trực tiếp ra thanh **Terminal Log macOS** sang trọng.
