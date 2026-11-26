@@ -1,13 +1,21 @@
 @echo off
 setlocal
-echo ==============================================
-echo   Building Khodee Gateway OneClick EXE
-echo ==============================================
+echo ======================================================
+echo   Building DaiTruong-helper v3.0 (Windows + macOS)
+echo ======================================================
 
-powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-  "if (-not (Get-Module -ListAvailable -Name ps2exe)) { Write-Host 'Installing ps2exe...'; Install-Module -Name ps2exe -Scope CurrentUser -Force }; ^
-   Import-Module ps2exe; ^
-   Invoke-PS2EXE -InputFile '%~dp0src\interface.ps1' -OutputFile '%~dp0KhodeeGateway.exe' -iconFile '%~dp0app.ico' -NoConsole -Title 'Khodee Gateway' -Description 'Khodee Gateway OneClick Tool' -Company 'Khodee' -Version '0.3.4.0' -STA -requireAdmin"
+set "CSC=C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
+set "WPF=C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF"
+set "FW=C:\Windows\Microsoft.NET\Framework64\v4.0.30319"
+
+"%CSC%" /nologo /target:winexe /optimize+ /out:"%~dp0DaiTruong-helper.exe" /win32icon:"%~dp0app.ico" /win32manifest:"%~dp0src\app.manifest" ^
+  /r:"%WPF%\PresentationFramework.dll" ^
+  /r:"%WPF%\PresentationCore.dll" ^
+  /r:"%WPF%\WindowsBase.dll" ^
+  /r:"%FW%\System.Xaml.dll" ^
+  /r:"%FW%\System.Drawing.dll" ^
+  /r:"%FW%\System.Security.dll" ^
+  "%~dp0src\DaiTruongHelper.cs"
 
 if errorlevel 1 (
     echo [ERROR] Build that bai!
@@ -15,7 +23,9 @@ if errorlevel 1 (
     exit /b 1
 )
 
+copy /Y "%~dp0DaiTruong-helper.exe" "%~dp0DaiTruongGateway.exe" >nul
+copy /Y "%~dp0DaiTruong-helper.exe" "%~dp0KhodeeGateway.exe" >nul
+
 echo.
-echo [OK] Da tao thanh cong: KhodeeGateway.exe
+echo [OK] Da tao thanh cong: DaiTruong-helper.exe (v3.0.0)
 echo.
-pause

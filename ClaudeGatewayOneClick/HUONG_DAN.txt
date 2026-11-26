@@ -1,0 +1,32 @@
+====================================================================
+   DAITRUONG-HELPER v3.0 (UNIFIED NATIVE GUI - WINDOWS & MACOS)
+   Trợ lý 1-Click cấu hình Claude Desktop Gateway & OpenAI Codex
+   Độc quyền phát hành bởi DaiTruong Store (daitruongstore.fly.dev)
+====================================================================
+
+Phiên bản: 3.0.0 Unified Standalone (Windows 10/11 & macOS)
+
+1. TÍNH NĂNG NỔI BẬT (2 TRONG 1):
+   - Tích hợp 2 chế độ độc lập trong 1 công cụ duy nhất:
+     [Tab 1] Claude Desktop (Claude Opus 5.5 & Sonnet 5.5 + Mở khóa Import Chat)
+     [Tab 2] OpenAI Codex CLI & App (gpt-6.1-sol, 1-Click cài đặt & cấu hình)
+   - Giao diện Zinc Dark chuẩn kỹ thuật, tự động kiểm tra hạn mức/số dư API Key
+     theo thời gian thực ngay khi dán Key.
+   - Tự động sao lưu cấu hình cũ (Mã hóa DPAPI trên Windows / Plist trên macOS)
+     và khóa phân quyền bảo mật tệp tin (Windows ACL / macOS chmod 600).
+
+2. HƯỚNG DẪN SỬ DỤNG TRÊN WINDOWS (Windows 10 / 11):
+   - Bước 1: Mở trực tiếp file "DaiTruong-helper.exe".
+   - Bước 2: Chọn tab "Claude Desktop" hoặc "OpenAI Codex".
+   - Bước 3: Dán mã API Key vào ô nhập -> Bấm nút "Kích hoạt".
+   - Bước 4: Bấm "Mở ứng dụng" để bắt đầu sử dụng ngay!
+
+3. HƯỚNG DẪN SỬ DỤNG TRÊN MACOS (Apple Silicon M1/M2/M3/M4 & Intel):
+   - Bước 1: Nhấp đúp mở file "DaiTruong-helper.command"
+     (Nếu macOS hỏi xác nhận lần đầu: Chuột phải vào file -> chọn Open).
+   - Bước 2: Giao diện đồ họa 2 Tab sẽ tự động mở lên. Chọn tab "Claude Desktop"
+     hoặc "OpenAI Codex", dán mã API Key và bấm "Kích hoạt".
+
+4. BẢO MẬT & HỖ TRỢ:
+   - API Key chỉ được lưu cục bộ trên máy tính của bạn, tuyệt đối không lưu log.
+   - Website chính thức & Tra cứu hạn mức: https://daitruongstore.fly.dev/

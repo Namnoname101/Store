@@ -121,7 +121,7 @@ export const PRODUCT_GUIDES: Record<string, InstructionGuide> = {
         caption: "Tự động hóa lập trình trực tiếp trong Terminal của VS Code",
       },
       {
-        text: "2. Claude AI Desktop (1-Click DaiTruong Gateway): Tải DaiTruongGateway.exe (Google Drive) > Dán API Key > Bấm START. Tool tự động kiểm tra hạn mức, cấu hình và tự mở khóa tính năng Import chat từ Claude.ai. Xem hướng dẫn tại /huong-dan/api-claude.",
+        text: "2. Claude AI Desktop (1-Click DaiTruong-helper v3.0): Tải DaiTruong-helper.zip (Hỗ trợ cả Windows .exe & macOS .command) > Chọn tab Claude Desktop > Dán API Key > Bấm Kích hoạt. Tool tự động kiểm tra hạn mức, cấu hình và tự mở khóa tính năng Import chat từ Claude.ai. Xem hướng dẫn tại /huong-dan/api-claude.",
         caption: "Ứng dụng desktop chính thức của Claude trên PC/Mac",
       },
       {

@@ -250,10 +250,10 @@ export default function CodexApiGuideHub({
                   </div>
                   <h4 className="text-xs sm:text-sm font-bold text-foreground flex items-center gap-1.5">
                     <Zap className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                    <span>Tải Tool DaiTruong-helper</span>
+                    <span>Tải Tool DaiTruong-helper v3.0</span>
                   </h4>
                   <p className="text-[11px] text-muted-foreground leading-relaxed">
-                    Tool tự động nhận diện hệ điều hành và ghi cấu hình Key &amp; Gateway vào máy:
+                    Tool tổng 2-trong-1 (Claude Desktop &amp; OpenAI Codex) hỗ trợ cả Windows (<code className="font-mono">.exe</code>) và macOS (<code className="font-mono">.command</code>):
                   </p>
                 </div>
 
@@ -264,10 +264,10 @@ export default function CodexApiGuideHub({
                     className="w-full min-h-[44px] inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 text-xs font-bold transition shadow-xs active:scale-95 text-center"
                   >
                     <Download className="h-4 w-4" />
-                    <span>Tải DaiTruong-helper.zip (59 KB)</span>
+                    <span>Tải DaiTruong-helper.zip (Win &amp; Mac)</span>
                   </a>
                   <p className="text-[10px] text-muted-foreground text-center">
-                    Giải nén và chạy ngay, không cần cài đặt
+                    Giải nén, chọn tab OpenAI Codex và kích hoạt ngay
                   </p>
                 </div>
               </div>

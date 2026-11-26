@@ -372,28 +372,26 @@ export default function ClaudeApiGuideHub({
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-                      Cấu hình Claude Desktop App (Tự động 1-Click với DaiTruong Gateway)
+                      Cấu hình Claude Desktop App (Tự động 1-Click với DaiTruong-helper)
                     </h3>
                     <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-[#D97757] bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-800/60 px-2 py-0.5 rounded-full">
                       <Sparkles className="h-3 w-3" />
-                      v0.3.3 Mới nhất
+                      v3.0 Unified (Win &amp; Mac)
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    Dành cho Windows &amp; macOS. Trò chuyện trực tiếp với Claude Opus 5.5 &amp; Sonnet 5.5 qua Gateway, tự động mở sẵn tính năng Import chat từ Claude.ai.
+                    Hỗ trợ cả Windows (<code className="font-mono">DaiTruong-helper.exe</code>) &amp; macOS (<code className="font-mono">DaiTruong-helper.command</code>). Tích hợp chung Claude Desktop (Opus 5.5 &amp; Sonnet 5.5 + Import chat) và OpenAI Codex trong 1 tool duy nhất.
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
                   <a
-                    href="https://drive.google.com/file/d/1lOjC5O7QGW7P5eOmPhAkXU3QyZIxOGAX/view?usp=sharing"
-                    target="_blank"
-                    rel="noreferrer"
+                    href="/downloads/DaiTruong-helper.zip"
+                    download="DaiTruong-helper.zip"
                     className="min-h-[44px] inline-flex items-center gap-1.5 rounded-xl bg-[#D97757] hover:bg-[#c26547] text-white px-3.5 py-2 text-xs font-bold transition shadow-xs active:scale-95"
                   >
                     <Download className="h-3.5 w-3.5" />
-                    <span>Tải DaiTruongGateway.exe (94 KB)</span>
-                    <ExternalLink className="h-3 w-3" />
+                    <span>Tải DaiTruong-helper.zip (Win &amp; Mac)</span>
                   </a>
 
                   <a
@@ -417,21 +415,21 @@ export default function ClaudeApiGuideHub({
                         1
                       </span>
                       <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                        Bước 1: Mở DaiTruong Gateway &amp; Bấm START (1-Click cấu hình)
+                        Bước 1: Mở DaiTruong-helper &amp; Chọn Tab Claude Desktop (1-Click)
                       </h5>
                     </div>
                     <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
-                      Tự động 100% trong 5 giây
+                      Hỗ trợ Windows &amp; macOS
                     </span>
                   </div>
 
                   <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-8 space-y-1.5">
                     <p>
-                      Mở file <code className="font-mono font-bold text-slate-900 dark:text-white">DaiTruongGateway.exe</code> (chọn <em>Yes</em> nếu Windows hỏi quyền Administrator). Dán mã API Key được cấp vào ô duy nhất rồi nhấn nút <strong className="text-blue-600 dark:text-blue-400 font-bold">⚡ START</strong>.
+                      Giải nén <code className="font-mono font-bold text-slate-900 dark:text-white">DaiTruong-helper.zip</code>: trên <strong>Windows</strong> mở <code className="font-mono font-bold text-slate-900 dark:text-white">DaiTruong-helper.exe</code>, trên <strong>macOS</strong> nhấp đúp mở <code className="font-mono font-bold text-slate-900 dark:text-white">DaiTruong-helper.command</code>. Chọn tab <strong>Claude Desktop</strong>, dán mã API Key vào ô nhập rồi bấm <strong className="text-blue-600 dark:text-blue-400 font-bold">Kích hoạt Claude Desktop</strong>.
                     </p>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      • <strong>Tự động kiểm tra Key:</strong> Hệ thống kết nối kiểm tra hạn mức API thời gian thực, báo số dư còn lại (ví dụ: <code className="font-mono text-emerald-600 dark:text-emerald-400 font-semibold">Còn $9.99/$10.00</code>).<br />
-                      • <strong>Tự động nạp Gateway &amp; Mở khóa Import chat:</strong> Ghi cấu hình bảo mật vào máy và tự động khởi động lại Claude Desktop trong 1-2 giây.
+                      • <strong>Tự động kiểm tra Key:</strong> Hệ thống kết nối kiểm tra hạn mức API thời gian thực ngay khi dán Key, báo số dư còn lại (ví dụ: <code className="font-mono text-emerald-600 dark:text-emerald-400 font-semibold">Còn $9.99 / $10.00</code>).<br />
+                      • <strong>Tự động nạp Gateway &amp; Mở khóa Import chat:</strong> Ghi cấu hình bảo mật vào máy (Windows Registry / macOS Preferences) và tự động khởi động lại Claude Desktop.
                     </p>
                   </div>
 
