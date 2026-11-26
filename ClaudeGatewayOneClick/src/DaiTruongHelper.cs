@@ -104,6 +104,7 @@ namespace DaiTruongHelper
         private Border EnvStatusDot;
         private TextBlock EnvStatusText;
         private Button EnvActionButton;
+        private Button EnvSecondaryButton;
 
         private TextBlock KeyLabelText;
         private PasswordBox KeyPassword;
@@ -133,6 +134,9 @@ namespace DaiTruongHelper
         private Border HeaderEnvDotBorder;
 
         private string cachedCodexPath = null;
+        private string cachedCodexAppState = "none";
+        private string cachedCodexAppPackage = null;
+        private string cachedCodexAppExe = null;
         private string cachedClaudeState = "none";
         private bool isKeyVisible = false;
         private DispatcherTimer checkKeyTimer;
@@ -330,20 +334,36 @@ requires_openai_auth = true
                                 </Grid.ColumnDefinitions>
                                 <Border x:Name=""EnvStatusDot"" Width=""6"" Height=""6"" CornerRadius=""3"" Background=""#10B981"" VerticalAlignment=""Center"" Margin=""0,0,8,0""/>
                                 <TextBlock x:Name=""EnvStatusText"" Grid.Column=""1"" Text=""Đang kiểm tra môi trường..."" FontSize=""11"" Foreground=""#D4D4D8"" VerticalAlignment=""Center"" TextTrimming=""CharacterEllipsis""/>
-                                <Button x:Name=""EnvActionButton"" Grid.Column=""2"" Content=""Cài đặt"" Background=""#27272A"" BorderBrush=""#3F3F46"" BorderThickness=""1"" Foreground=""#F4F4F5"" FontSize=""10.5"" Padding=""8,2"" Visibility=""Collapsed"">
-                                    <Button.Template>
-                                        <ControlTemplate TargetType=""Button"">
-                                            <Border x:Name=""b"" Background=""{TemplateBinding Background}"" BorderBrush=""{TemplateBinding BorderBrush}"" BorderThickness=""{TemplateBinding BorderThickness}"" CornerRadius=""3"">
-                                                <ContentPresenter HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property=""IsMouseOver"" Value=""True"">
-                                                    <Setter TargetName=""b"" Property=""Background"" Value=""#3F3F46""/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Button.Template>
-                                </Button>
+                                <StackPanel Grid.Column=""2"" Orientation=""Horizontal"" VerticalAlignment=""Center"">
+                                    <Button x:Name=""EnvActionButton"" Content=""Cài đặt"" Background=""#27272A"" BorderBrush=""#3F3F46"" BorderThickness=""1"" Foreground=""#F4F4F5"" FontSize=""10.5"" Padding=""8,2"" Visibility=""Collapsed"">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType=""Button"">
+                                                <Border x:Name=""b"" Background=""{TemplateBinding Background}"" BorderBrush=""{TemplateBinding BorderBrush}"" BorderThickness=""{TemplateBinding BorderThickness}"" CornerRadius=""3"">
+                                                    <ContentPresenter HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property=""IsMouseOver"" Value=""True"">
+                                                        <Setter TargetName=""b"" Property=""Background"" Value=""#3F3F46""/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <Button x:Name=""EnvSecondaryButton"" Content=""Cài CLI"" Background=""#27272A"" BorderBrush=""#3F3F46"" BorderThickness=""1"" Foreground=""#F4F4F5"" FontSize=""10.5"" Padding=""8,2"" Margin=""5,0,0,0"" Visibility=""Collapsed"">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType=""Button"">
+                                                <Border x:Name=""b"" Background=""{TemplateBinding Background}"" BorderBrush=""{TemplateBinding BorderBrush}"" BorderThickness=""{TemplateBinding BorderThickness}"" CornerRadius=""3"">
+                                                    <ContentPresenter HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property=""IsMouseOver"" Value=""True"">
+                                                        <Setter TargetName=""b"" Property=""Background"" Value=""#3F3F46""/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </StackPanel>
                             </Grid>
                         </Border>
 
@@ -549,6 +569,7 @@ requires_openai_auth = true
             EnvStatusDot = (Border)Window.FindName("EnvStatusDot");
             EnvStatusText = (TextBlock)Window.FindName("EnvStatusText");
             EnvActionButton = (Button)Window.FindName("EnvActionButton");
+            EnvSecondaryButton = (Button)Window.FindName("EnvSecondaryButton");
 
             KeyLabelText = (TextBlock)Window.FindName("KeyLabelText");
             KeyPassword = (PasswordBox)Window.FindName("KeyPassword");
@@ -655,6 +676,7 @@ requires_openai_auth = true
 
             StartButton.Click += async (s, e) => await StartConfigurationAsync();
             EnvActionButton.Click += async (s, e) => await HandleEnvActionAsync();
+            EnvSecondaryButton.Click += async (s, e) => await InstallCodexCliAsync();
             LaunchAppButton.Click += (s, e) => LaunchTargetApplication();
             BackDoneButton.Click += (s, e) => ShowPage("Connect");
             CloseDoneButton.Click += (s, e) => Window.Close();
@@ -732,6 +754,7 @@ requires_openai_auth = true
         private void CheckClaudeDesktopStatus()
         {
             cachedClaudeState = FindClaudeDesktop();
+            EnvSecondaryButton.Visibility = Visibility.Collapsed;
             if (cachedClaudeState == "running")
             {
                 HeaderEnvStatus.Text = "Claude đang chạy";
@@ -765,24 +788,45 @@ requires_openai_auth = true
         private void CheckCodexCliStatus()
         {
             cachedCodexPath = FindCodexCli();
-            if (!string.IsNullOrEmpty(cachedCodexPath))
+            cachedCodexAppState = FindCodexOrChatGptApp();
+            bool hasCli = !string.IsNullOrEmpty(cachedCodexPath);
+            bool hasApp = cachedCodexAppState != "none";
+
+            if (hasApp || hasCli)
             {
-                HeaderEnvStatus.Text = "Codex sẵn sàng";
+                HeaderEnvStatus.Text = cachedCodexAppState == "running" ? "Codex đang chạy" : "Codex sẵn sàng";
                 HeaderEnvDotBorder.Background = BrushFromHex("#10B981");
                 EnvStatusDot.Background = BrushFromHex("#10B981");
-                EnvStatusText.Text = "Đã tìm thấy Codex CLI (" + Path.GetFileName(cachedCodexPath) + ")";
                 EnvStatusCard.BorderBrush = BrushFromHex("#2E2E34");
                 EnvActionButton.Visibility = Visibility.Collapsed;
+                EnvSecondaryButton.Visibility = Visibility.Collapsed;
+
+                if (hasApp && hasCli)
+                {
+                    EnvStatusText.Text = "Đã phát hiện App ChatGPT/Codex & CLI (" + Path.GetFileName(cachedCodexPath) + ")";
+                }
+                else if (hasApp)
+                {
+                    EnvStatusText.Text = cachedCodexAppState == "running"
+                        ? "Đã phát hiện App ChatGPT / Codex (đang chạy)"
+                        : "Đã phát hiện App ChatGPT / Codex trên máy";
+                }
+                else
+                {
+                    EnvStatusText.Text = "Đã tìm thấy Codex CLI (" + Path.GetFileName(cachedCodexPath) + ")";
+                }
             }
             else
             {
                 HeaderEnvStatus.Text = "Chưa có Codex";
                 HeaderEnvDotBorder.Background = BrushFromHex("#F59E0B");
                 EnvStatusDot.Background = BrushFromHex("#F59E0B");
-                EnvStatusText.Text = "Chưa phát hiện Codex CLI trên hệ thống";
+                EnvStatusText.Text = "Chưa tìm thấy App ChatGPT/Codex hoặc CLI";
                 EnvStatusCard.BorderBrush = BrushFromHex("#443A1B");
-                EnvActionButton.Content = "Cài đặt Codex";
+                EnvActionButton.Content = "Tải App";
                 EnvActionButton.Visibility = Visibility.Visible;
+                EnvSecondaryButton.Content = "Cài CLI";
+                EnvSecondaryButton.Visibility = Visibility.Visible;
             }
         }
 
@@ -794,7 +838,8 @@ requires_openai_auth = true
             }
             else
             {
-                await InstallCodexCliAsync();
+                try { Process.Start("https://openai.com/chatgpt/download/"); } catch { }
+                await Task.CompletedTask;
             }
         }
 
@@ -1028,11 +1073,13 @@ requires_openai_auth = true
                         });
                     }));
 
+                    CheckCodexCliStatus();
                     DoneModeText.Text = "OpenAI Codex CLI & App";
                     VerifiedKeyNameText.Text = quotaSummary;
                     DoneModelText.Text = "gpt-6.1-sol (DaiTruong Store)";
-                    LaunchAppButton.Content = "Mở ứng dụng Codex";
-                    CheckCodexCliStatus();
+                    LaunchAppButton.Content = cachedCodexAppState != "none"
+                        ? "Mở App ChatGPT / Codex"
+                        : (!string.IsNullOrEmpty(cachedCodexPath) ? "Mở Codex CLI" : "Tải App ChatGPT / Codex");
                 }
 
                 await Task.Delay(250);
@@ -1715,8 +1762,8 @@ requires_openai_auth = true
                 return;
             }
 
-            EnvActionButton.IsEnabled = false;
-            EnvActionButton.Content = "Đang cài đặt...";
+            EnvSecondaryButton.IsEnabled = false;
+            EnvSecondaryButton.Content = "Đang cài...";
             try
             {
                 int exitCode = await Task.Run(() =>
@@ -1747,8 +1794,8 @@ requires_openai_auth = true
             }
             finally
             {
-                EnvActionButton.IsEnabled = true;
-                EnvActionButton.Content = "Cài đặt Codex";
+                EnvSecondaryButton.IsEnabled = true;
+                EnvSecondaryButton.Content = "Cài CLI";
             }
         }
 
@@ -1765,18 +1812,96 @@ requires_openai_auth = true
 
             try
             {
+                if (!string.IsNullOrEmpty(cachedCodexAppPackage))
+                {
+                    Process.Start(new ProcessStartInfo("explorer.exe", @"shell:AppsFolder\" + cachedCodexAppPackage + "!App") { UseShellExecute = true });
+                    return;
+                }
+                if (!string.IsNullOrEmpty(cachedCodexAppExe) && File.Exists(cachedCodexAppExe))
+                {
+                    Process.Start(new ProcessStartInfo(cachedCodexAppExe) { UseShellExecute = true });
+                    return;
+                }
                 string codexCli = FindCodexCli();
                 if (!string.IsNullOrEmpty(codexCli))
                 {
                     Process.Start(new ProcessStartInfo("cmd.exe", "/k \"" + codexCli + "\"") { UseShellExecute = true });
                     return;
                 }
-                Process.Start(new ProcessStartInfo("explorer.exe", @"shell:AppsFolder\OpenAI.Codex_2p2nqsd0c76g0!App") { UseShellExecute = true });
+                Process.Start("https://openai.com/chatgpt/download/");
             }
             catch
             {
                 try { Process.Start("https://chatgpt.com"); } catch { }
             }
+        }
+
+        private string FindCodexOrChatGptApp()
+        {
+            cachedCodexAppPackage = null;
+            cachedCodexAppExe = null;
+            try
+            {
+                string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string progFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                string progFiles86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+
+                string pkgDir = Path.Combine(localAppData, "Packages");
+                if (Directory.Exists(pkgDir))
+                {
+                    string[] patterns = new string[] { "OpenAI.Codex*", "OpenAI.ChatGPT*" };
+                    foreach (string pat in patterns)
+                    {
+                        string[] matches = Directory.GetDirectories(pkgDir, pat);
+                        if (matches.Length > 0)
+                        {
+                            cachedCodexAppPackage = Path.GetFileName(matches[0]);
+                            break;
+                        }
+                    }
+                }
+
+                string[] exeCandidates = new string[]
+                {
+                    Path.Combine(localAppData, @"Microsoft\WindowsApps\Codex.exe"),
+                    Path.Combine(localAppData, @"Microsoft\WindowsApps\ChatGPT.exe"),
+                    Path.Combine(localAppData, @"Programs\Codex\Codex.exe"),
+                    Path.Combine(localAppData, @"Programs\ChatGPT\ChatGPT.exe"),
+                    Path.Combine(progFiles, @"OpenAI\Codex\Codex.exe"),
+                    Path.Combine(progFiles, @"OpenAI\ChatGPT\ChatGPT.exe"),
+                    Path.Combine(progFiles86, @"OpenAI\Codex\Codex.exe"),
+                    Path.Combine(progFiles86, @"OpenAI\ChatGPT\ChatGPT.exe")
+                };
+
+                foreach (string exe in exeCandidates)
+                {
+                    if (File.Exists(exe))
+                    {
+                        cachedCodexAppExe = exe;
+                        break;
+                    }
+                }
+
+                bool installed = !string.IsNullOrEmpty(cachedCodexAppPackage) || !string.IsNullOrEmpty(cachedCodexAppExe);
+
+                foreach (Process p in Process.GetProcesses())
+                {
+                    try
+                    {
+                        string pn = p.ProcessName.ToLowerInvariant();
+                        if ((pn == "codex" || pn == "chatgpt" || pn.Contains("openai.codex") || pn.Contains("openai.chatgpt")) &&
+                            !pn.Contains("helper") && !pn.Contains("gateway"))
+                        {
+                            return "running";
+                        }
+                    }
+                    catch { }
+                }
+
+                if (installed) return "installed";
+            }
+            catch { }
+            return "none";
         }
 
         private string FindCodexCli()

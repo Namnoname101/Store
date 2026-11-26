@@ -352,7 +352,10 @@ HTML_UI = r"""<!DOCTYPE html>
         <span class="dot" id="envDot"></span>
         <span class="status-text" id="envText">Đang kiểm tra môi trường macOS...</span>
       </div>
-      <button type="button" class="mini-btn" id="envBtn" style="display:none" onclick="handleEnvAction()">Cài đặt</button>
+      <div style="display:flex;gap:5px;flex-shrink:0">
+        <button type="button" class="mini-btn" id="envBtn" style="display:none" onclick="handleEnvAction()">Tải App</button>
+        <button type="button" class="mini-btn" id="envBtnCli" style="display:none" onclick="installCodexCli()">Cài CLI</button>
+      </div>
     </div>
 
     <div class="label-row">
@@ -383,7 +386,7 @@ HTML_UI = r"""<!DOCTYPE html>
 let currentMode = 'claude';
 let keyCache = { claude: '', codex: '' };
 let debounceTimer = null;
-let envState = { claudeInstalled: false, codexInstalled: false };
+let envState = { claudeInstalled: false, codexInstalled: false, codexAppInstalled: false };
 
 async function fetchStatus() {
   try {
@@ -400,6 +403,9 @@ function renderEnvStatus() {
   const text = document.getElementById('envText');
   const hText = document.getElementById('headerStatusText');
   const btn = document.getElementById('envBtn');
+  const btnCli = document.getElementById('envBtnCli');
+
+  btnCli.style.display = 'none';
 
   if (currentMode === 'claude') {
     if (envState.claudeInstalled) {
@@ -419,19 +425,29 @@ function renderEnvStatus() {
       btn.style.display = 'inline-block';
     }
   } else {
-    if (envState.codexInstalled) {
+    if (envState.codexAppInstalled || envState.codexInstalled) {
       dot.style.background = '#10B981';
       hDot.style.background = '#10B981';
-      text.textContent = 'Đã tìm thấy Codex CLI (' + envState.codexPath + ')';
-      hText.textContent = 'Codex sẵn sàng';
+      hText.textContent = envState.codexAppRunning ? 'Codex đang chạy' : 'Codex sẵn sàng';
       btn.style.display = 'none';
+      if (envState.codexAppInstalled && envState.codexInstalled) {
+        text.textContent = 'Đã phát hiện App ChatGPT/Codex & CLI';
+      } else if (envState.codexAppInstalled) {
+        text.textContent = envState.codexAppRunning
+          ? 'Đã phát hiện App ChatGPT / Codex (đang chạy)'
+          : 'Đã phát hiện App ChatGPT / Codex trên macOS';
+      } else {
+        text.textContent = 'Đã tìm thấy Codex CLI (' + envState.codexPath + ')';
+      }
     } else {
       dot.style.background = '#F59E0B';
       hDot.style.background = '#F59E0B';
-      text.textContent = 'Chưa phát hiện Codex CLI trên macOS';
+      text.textContent = 'Chưa tìm thấy App ChatGPT/Codex hoặc CLI';
       hText.textContent = 'Chưa có Codex';
-      btn.textContent = 'Cài đặt Codex';
+      btn.textContent = 'Tải App';
       btn.style.display = 'inline-block';
+      btnCli.textContent = 'Cài CLI';
+      btnCli.style.display = 'inline-block';
     }
   }
 }
@@ -565,7 +581,7 @@ async function activateConfig() {
       document.getElementById('doneActions').style.display = 'flex';
       document.getElementById('openAppBtn').textContent = currentMode === 'claude'
         ? 'Mở Claude Desktop'
-        : 'Mở Codex CLI trong Terminal';
+        : (envState.codexAppInstalled ? 'Mở App ChatGPT / Codex' : 'Mở Codex CLI trong Terminal');
       fetchStatus();
     } else if (d.error) {
       appendLog(d.error, 'error');
@@ -578,24 +594,32 @@ async function activateConfig() {
 }
 
 async function handleEnvAction() {
-  if (currentMode === 'claude') {
-    await fetch('/api/open-url', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: 'https://claude.com/download' })
-    });
-  } else {
-    const btn = document.getElementById('envBtn');
-    btn.disabled = true;
-    btn.textContent = 'Đang cài...';
+  const targetUrl = currentMode === 'claude'
+    ? 'https://claude.com/download'
+    : 'https://openai.com/chatgpt/download/';
+  await fetch('/api/open-url', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url: targetUrl })
+  });
+}
+
+async function installCodexCli() {
+  const btn = document.getElementById('envBtnCli');
+  btn.disabled = true;
+  btn.textContent = 'Đang cài...';
+  try {
     const r = await fetch('/api/install-codex', { method: 'POST' });
     const d = await r.json();
-    btn.disabled = false;
-    btn.textContent = 'Cài đặt Codex';
     if (d.error) {
       appendLog(d.error, 'error');
+    } else {
+      appendLog('Cài đặt Codex CLI thành công!', 'ok');
     }
     fetchStatus();
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Cài CLI';
   }
 }
 
@@ -613,15 +637,31 @@ fetchStatus();
 </html>
 """
 
+def find_codex_app_macos():
+    for app_name in ("Codex.app", "ChatGPT.app"):
+        for base in ("/Applications", os.path.expanduser("~/Applications")):
+            p = os.path.join(base, app_name)
+            if os.path.exists(p):
+                return app_name.replace(".app", "")
+    return ""
+
 def check_env_status():
     claude_installed = os.path.exists("/Applications/Claude.app") or os.path.exists(os.path.expanduser("~/Applications/Claude.app"))
     claude_running = subprocess.call(["pgrep", "-x", "Claude"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0
     codex_path = shutil.which("codex") or ""
+    codex_app = find_codex_app_macos()
+    codex_app_running = (
+        subprocess.call(["pgrep", "-x", "Codex"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0
+        or subprocess.call(["pgrep", "-x", "ChatGPT"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0
+    )
     return {
         "claudeInstalled": claude_installed,
         "claudeRunning": claude_running,
         "codexInstalled": bool(codex_path),
         "codexPath": codex_path,
+        "codexAppInstalled": bool(codex_app),
+        "codexAppName": codex_app,
+        "codexAppRunning": codex_app_running,
     }
 
 def verify_claude_key(api_key):
@@ -917,8 +957,14 @@ class HelperHandler(http.server.BaseHTTPRequestHandler):
             if mode == "claude":
                 subprocess.run(["open", "-a", "Claude"], check=False)
             else:
-                subprocess.run(["osascript", "-e", 'tell application "Terminal" to do script "codex"'], check=False)
-                subprocess.run(["osascript", "-e", 'tell application "Terminal" to activate'], check=False)
+                codex_app = find_codex_app_macos()
+                if codex_app:
+                    subprocess.run(["open", "-a", codex_app], check=False)
+                elif shutil.which("codex"):
+                    subprocess.run(["osascript", "-e", 'tell application "Terminal" to do script "codex"'], check=False)
+                    subprocess.run(["osascript", "-e", 'tell application "Terminal" to activate'], check=False)
+                else:
+                    subprocess.run(["open", "https://openai.com/chatgpt/download/"], check=False)
             self._send_json({"ok": True})
         else:
             self.send_error(404)
